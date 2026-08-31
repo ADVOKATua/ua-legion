@@ -6,228 +6,209 @@
 
   <meta name="theme-color" content="#05070b">
 
-  <title>Про UA LEGION — Українська gaming-спільнота</title>
+  <title>Про UA LEGION</title>
 
   <meta
     name="description"
-    content="UA LEGION — українська gaming-спільнота, яка об'єднує гравців, стримерів та однодумців."
+    content="UA LEGION — українська gaming-спільнота для гравців, стримерів та команд."
   >
 
   <link rel="stylesheet" href="style.css">
 
   <style>
-
     /* =========================================
-       UA LEGION — ABOUT PAGE
+       UA LEGION — ПРО НАС
+       Компактна інформаційна сторінка
        ========================================= */
 
     .about-page {
-      background:
-        radial-gradient(
-          circle at 85% 15%,
-          rgba(20, 105, 255, 0.13),
-          transparent 32%
-        ),
-        #05070b;
+      min-height: 100vh;
+      overflow-x: hidden;
     }
 
-    /* HERO */
+    .about-main {
+      width: 100%;
+    }
+
+    /* =========================================
+       ЗАГАЛЬНИЙ КОНТЕЙНЕР
+       ========================================= */
+
+    .about-container {
+      width: min(1100px, 90%);
+      margin: 0 auto;
+    }
+
+    /* =========================================
+       ВЕРХНІЙ ЗАГОЛОВОК
+       ========================================= */
 
     .about-hero {
-      position: relative;
-      min-height: 430px;
-      display: flex;
-      align-items: center;
-      overflow: hidden;
-      border-bottom: 1px solid rgba(255,255,255,.06);
-    }
-
-    .about-hero::before {
-      content: "";
-      position: absolute;
-      width: 600px;
-      height: 600px;
-      right: -180px;
-      top: -170px;
-      background: radial-gradient(
-        circle,
-        rgba(243,184,31,.12),
-        transparent 68%
-      );
-      pointer-events: none;
-    }
-
-    .about-hero-content {
-      position: relative;
-      z-index: 2;
-      width: min(1200px, 90%);
-      margin: 0 auto;
-      padding: 80px 0;
+      padding: 70px 0 45px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      background:
+        radial-gradient(
+          circle at 85% 30%,
+          rgba(20, 75, 150, 0.18),
+          transparent 45%
+        );
     }
 
     .about-label {
-      color: #f3b81f;
+      display: block;
+      margin-bottom: 10px;
+
       font-size: 10px;
-      font-weight: 900;
-      letter-spacing: 2px;
+      font-weight: 800;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+
+      color: #f5b800;
     }
 
     .about-hero h1 {
-      margin: 18px 0 18px;
-      font-family: Rajdhani, sans-serif;
-      font-size: clamp(60px, 8vw, 110px);
-      line-height: .85;
-      font-weight: 700;
-      letter-spacing: -2px;
+      margin: 0;
+
+      font-size: clamp(46px, 6vw, 78px);
+      line-height: 0.95;
+      font-weight: 900;
+      letter-spacing: -3px;
+      text-transform: uppercase;
     }
 
     .about-hero h1 span {
-      color: #f3b81f;
+      color: #f5b800;
     }
 
     .about-intro {
-      max-width: 760px;
-      color: #9ca8b8;
-      font-size: 16px;
-      line-height: 1.8;
+      max-width: 650px;
+      margin-top: 18px;
+
+      color: #9ba6b7;
+      font-size: 14px;
+      line-height: 1.7;
     }
 
-    .about-hero-logo {
-      position: absolute;
-      right: 7%;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 290px;
-      opacity: .16;
-      pointer-events: none;
-    }
-
-    .about-hero-logo img {
-      width: 100%;
-      height: auto;
-    }
-
-    /* GENERAL */
+    /* =========================================
+       СЕКЦІЇ
+       ========================================= */
 
     .about-section {
-      max-width: 1200px;
-      margin: auto;
-      padding: 90px 5%;
+      padding: 42px 0;
     }
 
-    .about-section-head {
-      margin-bottom: 40px;
+    .about-section + .about-section {
+      border-top: 1px solid rgba(255,255,255,0.06);
     }
 
-    .about-section-head small {
-      color: #f3b81f;
-      font-size: 9px;
-      font-weight: 900;
-      letter-spacing: 2px;
-    }
+    .about-title {
+      margin: 0 0 22px;
 
-    .about-section-head h2 {
-      margin: 10px 0 0;
-      font-family: Rajdhani, sans-serif;
-      font-size: clamp(38px, 5vw, 58px);
+      font-size: clamp(30px, 4vw, 46px);
       line-height: 1;
+      font-weight: 900;
+      letter-spacing: -1px;
+      text-transform: uppercase;
     }
 
-    .about-section-head h2 span {
-      color: #f3b81f;
+    .about-title span {
+      color: #f5b800;
     }
 
-    /* MISSION */
+    /* =========================================
+       ХТО МИ
+       ========================================= */
 
-    .mission-box {
+    .who-box {
       display: grid;
-      grid-template-columns: 1.4fr .6fr;
+      grid-template-columns: 1fr 220px;
       gap: 30px;
-      padding: 45px;
-      background:
-        linear-gradient(
-          135deg,
-          rgba(15,25,39,.95),
-          rgba(7,10,15,.98)
-        );
-      border: 1px solid rgba(255,255,255,.07);
+
+      padding: 28px;
+
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(10, 16, 27, 0.65);
     }
 
-    .mission-box p {
-      color: #a8b2c0;
+    .who-box p {
+      margin: 0 0 14px;
+
+      color: #aeb7c6;
       font-size: 14px;
-      line-height: 1.9;
-      margin: 0 0 18px;
+      line-height: 1.7;
     }
 
-    .mission-box p:last-child {
+    .who-box p:last-child {
       margin-bottom: 0;
     }
 
-    .mission-mark {
+    .who-box strong {
+      color: #fff;
+    }
+
+    .who-badge {
       display: flex;
       align-items: center;
       justify-content: center;
-      min-height: 180px;
-      border-left: 1px solid rgba(243,184,31,.25);
-      color: #f3b81f;
-      font-family: Rajdhani, sans-serif;
-      font-size: 80px;
-      font-weight: 700;
+
+      border-left: 1px solid rgba(245,184,0,0.35);
+
+      font-size: 40px;
+      font-weight: 900;
+      color: #f5b800;
     }
 
-    /* DIRECTIONS */
+    /* =========================================
+       НАПРЯМКИ
+       ========================================= */
 
-    .direction-grid {
+    .directions-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
     }
 
     .direction-card {
-      position: relative;
-      min-height: 200px;
-      padding: 28px;
-      background: #090e16;
-      border: 1px solid rgba(255,255,255,.07);
-      overflow: hidden;
-      transition: .25s ease;
+      min-height: 125px;
+
+      padding: 18px;
+
+      border: 1px solid rgba(255,255,255,0.09);
+      background: rgba(12, 18, 29, 0.75);
+
+      transition: 0.25s ease;
     }
 
     .direction-card:hover {
-      transform: translateY(-4px);
-      border-color: rgba(243,184,31,.35);
+      transform: translateY(-3px);
+      border-color: rgba(245,184,0,0.45);
+      background: rgba(18, 27, 42, 0.9);
     }
 
     .direction-icon {
-      font-size: 38px;
-      margin-bottom: 20px;
+      font-size: 25px;
+      margin-bottom: 12px;
     }
 
     .direction-card h3 {
-      margin: 0 0 8px;
-      font-family: Rajdhani, sans-serif;
-      font-size: 27px;
+      margin: 0 0 6px;
+
+      color: #fff;
+      font-size: 15px;
+      font-weight: 800;
     }
 
     .direction-card p {
       margin: 0;
-      color: #8995a6;
+
+      color: #7f8b9e;
       font-size: 11px;
-      line-height: 1.7;
+      line-height: 1.5;
     }
 
-    .direction-number {
-      position: absolute;
-      right: 18px;
-      top: 14px;
-      color: rgba(255,255,255,.05);
-      font-family: Rajdhani, sans-serif;
-      font-size: 60px;
-      font-weight: 700;
-    }
-
-    /* PRINCIPLES */
+    /* =========================================
+       ПРИНЦИПИ
+       ========================================= */
 
     .principles-grid {
       display: grid;
@@ -236,217 +217,164 @@
     }
 
     .principle {
-      padding: 28px 20px;
-      background: #090e16;
-      border: 1px solid rgba(255,255,255,.07);
-      text-align: center;
+      padding: 20px;
+
+      border-top: 2px solid #f5b800;
+      background: rgba(12, 18, 29, 0.7);
     }
 
     .principle-icon {
-      font-size: 34px;
-      margin-bottom: 15px;
+      font-size: 25px;
+      margin-bottom: 10px;
     }
 
     .principle h3 {
-      margin: 0 0 8px;
-      font-family: Rajdhani, sans-serif;
-      font-size: 22px;
+      margin: 0 0 7px;
+
+      color: #fff;
+      font-size: 14px;
+      font-weight: 800;
     }
 
     .principle p {
       margin: 0;
-      color: #8995a6;
-      font-size: 10px;
-      line-height: 1.6;
+
+      color: #8490a3;
+      font-size: 11px;
+      line-height: 1.5;
     }
 
-    /* GOAL */
+    /* =========================================
+       МЕТА
+       ========================================= */
 
     .goal-box {
-      position: relative;
-      padding: 65px 55px;
-      overflow: hidden;
-      border: 1px solid rgba(243,184,31,.25);
-      background:
-        radial-gradient(
-          circle at 90% 50%,
-          rgba(23,104,255,.13),
-          transparent 40%
-        ),
-        #080d14;
-    }
+      padding: 30px;
 
-    .goal-box::after {
-      content: "UA";
-      position: absolute;
-      right: 30px;
-      bottom: -70px;
-      font-family: Rajdhani, sans-serif;
-      font-size: 260px;
-      font-weight: 700;
-      color: rgba(255,255,255,.025);
-    }
+      border: 1px solid rgba(35, 108, 255, 0.25);
 
-    .goal-box small {
-      color: #f3b81f;
-      font-size: 9px;
-      letter-spacing: 2px;
-      font-weight: 900;
-    }
-
-    .goal-box h2 {
-      position: relative;
-      z-index: 2;
-      max-width: 800px;
-      margin: 15px 0;
-      font-family: Rajdhani, sans-serif;
-      font-size: clamp(38px, 5vw, 62px);
-      line-height: 1;
-    }
-
-    .goal-box p {
-      position: relative;
-      z-index: 2;
-      max-width: 780px;
-      color: #9ca8b8;
-      font-size: 13px;
-      line-height: 1.8;
-    }
-
-    /* JOIN */
-
-    .join-box {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 30px;
-      padding: 45px;
       background:
         linear-gradient(
           110deg,
-          #0b1420,
-          #080c12
+          rgba(20, 65, 130, 0.16),
+          rgba(10, 15, 25, 0.7)
         );
-      border: 1px solid rgba(255,255,255,.08);
+    }
+
+    .goal-box p {
+      max-width: 850px;
+
+      margin: 0 0 12px;
+
+      color: #aeb7c6;
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    .goal-box p:last-child {
+      margin-bottom: 0;
+    }
+
+    .goal-box strong {
+      color: #fff;
+    }
+
+    /* =========================================
+       ПРИЄДНАННЯ
+       ========================================= */
+
+    .join-section {
+      padding: 20px 0 55px;
+    }
+
+    .join-box {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 30px;
+
+      padding: 28px 30px;
+
+      border: 1px solid rgba(245,184,0,0.25);
+
+      background:
+        linear-gradient(
+          100deg,
+          rgba(245,184,0,0.08),
+          rgba(10,15,25,0.8)
+        );
     }
 
     .join-box h2 {
-      margin: 10px 0;
-      font-family: Rajdhani, sans-serif;
-      font-size: 42px;
-      line-height: 1;
+      margin: 0 0 8px;
+
+      color: #fff;
+      font-size: 26px;
+      font-weight: 900;
     }
 
     .join-box h2 span {
-      color: #f3b81f;
+      color: #f5b800;
     }
 
     .join-box p {
       margin: 0;
-      color: #8f9baa;
-      font-size: 11px;
+
+      color: #8994a6;
+      font-size: 13px;
     }
 
-    .tag-line {
-      margin-top: 20px;
-      color: #f3b81f;
-      font-size: 11px;
-      font-weight: 900;
-      letter-spacing: 1px;
-    }
-
-    /* TAG */
-
-    .official-tag {
-      text-align: center;
-      padding: 45px 20px 90px;
-    }
-
-    .official-tag .tag {
-      display: inline-block;
-      padding: 9px 16px;
-      border: 1px solid rgba(243,184,31,.35);
-      color: #f3b81f;
-      font-family: monospace;
-      font-size: 14px;
-      background: rgba(243,184,31,.04);
-    }
-
-    .official-tag h2 {
-      margin: 25px 0 5px;
-      font-family: Rajdhani, sans-serif;
-      font-size: 38px;
-    }
-
-    .official-tag p {
-      margin: 0;
-      color: #7f8b9b;
-      font-size: 11px;
-    }
-
-    /* MOBILE */
+    /* =========================================
+       МОБІЛЬНА ВЕРСІЯ
+       ========================================= */
 
     @media (max-width: 900px) {
 
-      .about-hero-logo {
-        right: -80px;
-        opacity: .08;
-      }
-
-      .mission-box {
-        grid-template-columns: 1fr;
-      }
-
-      .mission-mark {
-        border-left: 0;
-        border-top: 1px solid rgba(243,184,31,.25);
-        min-height: 100px;
-      }
-
-      .direction-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
+      .directions-grid,
       .principles-grid {
         grid-template-columns: repeat(2, 1fr);
       }
 
-      .join-box {
-        display: block;
+      .who-box {
+        grid-template-columns: 1fr;
       }
 
-      .join-box .btn {
-        display: inline-block;
-        margin-top: 25px;
+      .who-badge {
+        min-height: 70px;
+        border-left: 0;
+        border-top: 1px solid rgba(245,184,0,0.35);
+      }
+
+      .join-box {
+        flex-direction: column;
+        align-items: flex-start;
       }
     }
 
     @media (max-width: 600px) {
 
       .about-hero {
-        min-height: 420px;
+        padding: 45px 0 30px;
       }
 
       .about-section {
-        padding: 65px 22px;
+        padding: 30px 0;
       }
 
-      .direction-grid,
+      .directions-grid,
       .principles-grid {
         grid-template-columns: 1fr;
       }
 
-      .mission-box,
-      .goal-box,
-      .join-box {
-        padding: 30px 25px;
+      .who-box,
+      .goal-box {
+        padding: 20px;
       }
 
-      .join-box h2 {
-        font-size: 34px;
+      .about-hero h1 {
+        letter-spacing: -2px;
       }
     }
-
   </style>
 </head>
 
@@ -455,7 +383,7 @@
   <div class="noise"></div>
 
   <!-- =========================================
-       NAVIGATION
+       МЕНЮ
        ========================================= -->
 
   <header class="topbar">
@@ -465,10 +393,7 @@
       <span>UA LEGION</span>
     </a>
 
-    <button
-      class="menu-btn"
-      aria-label="Відкрити меню"
-    >
+    <button class="menu-btn" aria-label="Відкрити меню">
       ☰
     </button>
 
@@ -508,19 +433,19 @@
   </header>
 
 
-  <main>
+  <main class="about-main">
 
     <!-- =========================================
-         HERO
+         ЗАГОЛОВОК
          ========================================= -->
 
     <section class="about-hero">
 
-      <div class="about-hero-content">
+      <div class="about-container">
 
-        <div class="about-label">
+        <span class="about-label">
           UA LEGION / COMMUNITY
-        </div>
+        </span>
 
         <h1>
           ПРО <span>UA LEGION</span>
@@ -534,63 +459,49 @@
 
       </div>
 
-      <div class="about-hero-logo">
-        <img
-          src="ua-legion-logo.png"
-          alt="UA LEGION"
-        >
-      </div>
-
     </section>
 
 
     <!-- =========================================
-         MISSION
+         ХТО МИ
          ========================================= -->
 
     <section class="about-section">
 
-      <div class="about-section-head">
+      <div class="about-container">
 
-        <small>
-          01 / ХТО МИ
-        </small>
-
-        <h2>
-          Єдиний простір.
-          <span>Одна команда.</span>
+        <h2 class="about-title">
+          ХТО <span>МИ</span>
         </h2>
 
-      </div>
+        <div class="who-box">
 
-      <div class="mission-box">
+          <div>
 
-        <div>
+            <p>
+              <strong>UA LEGION</strong> — це українська
+              gaming-спільнота для людей, які люблять
+              грати, спілкуватися та грати командою.
+            </p>
 
-          <p>
-            <strong>UA LEGION</strong> — українська
-            gaming-спільнота, яка об'єднує гравців,
-            стримерів та всіх, хто любить ігри,
-            командну гру та спілкування.
-          </p>
+            <p>
+              Ми створюємо єдиний простір, де кожен
+              може знайти свою гру, свою команду
+              та однодумців.
+            </p>
 
-          <p>
-            Ми створюємо єдиний простір, де кожен
-            може знайти свою гру, свою команду
-            та однодумців.
-          </p>
+            <p>
+              Різні ігри — різні напрямки,
+              але головний бренд залишається один:
+              <strong>UA LEGION.</strong>
+            </p>
 
-          <p>
-            Наш головний бренд залишається один —
-            <strong>UA LEGION</strong>.
-            Різні ігри — різні напрямки,
-            але всі ми є частиною одного LEGION.
-          </p>
+          </div>
 
-        </div>
+          <div class="who-badge">
+            UA
+          </div>
 
-        <div class="mission-mark">
-          UA
         </div>
 
       </div>
@@ -599,302 +510,95 @@
 
 
     <!-- =========================================
-         DIRECTIONS
+         НАПРЯМКИ
          ========================================= -->
 
     <section class="about-section">
 
-      <div class="about-section-head">
+      <div class="about-container">
 
-        <small>
-          02 / НАПРЯМКИ
-        </small>
-
-        <h2>
-          Наші <span>gaming-напрямки</span>
+        <h2 class="about-title">
+          НАШІ <span>НАПРЯМКИ</span>
         </h2>
 
-      </div>
+        <div class="directions-grid">
 
+          <div class="direction-card">
 
-      <div class="direction-grid">
+            <div class="direction-icon">🚛</div>
 
+            <h3>ETS2</h3>
 
-        <article class="direction-card">
+            <p>
+              Спільні рейси, конвої
+              та заходи.
+            </p>
 
-          <div class="direction-number">
-            01
           </div>
 
-          <div class="direction-icon">
-            🚛
+
+          <div class="direction-card">
+
+            <div class="direction-icon">🪖</div>
+
+            <h3>World of Tanks</h3>
+
+            <p>
+              Взводи, бої та
+              командна гра.
+            </p>
+
           </div>
 
-          <h3>
-            ETS2
-          </h3>
 
-          <p>
-            Спільні рейси, конвої та заходи
-            у Euro Truck Simulator 2.
-          </p>
+          <div class="direction-card">
 
-        </article>
+            <div class="direction-icon">⚔️</div>
 
+            <h3>World of Warcraft</h3>
 
-        <article class="direction-card">
+            <p>
+              PvE, PvP та
+              спільна гра.
+            </p>
 
-          <div class="direction-number">
-            02
           </div>
 
-          <div class="direction-icon">
-            🪖
+
+          <div class="direction-card">
+
+            <div class="direction-icon">🛡️</div>
+
+            <h3>Dota 2</h3>
+
+            <p>
+              Команди, матчі
+              та турніри.
+            </p>
+
           </div>
 
-          <h3>
-            World of Tanks
-          </h3>
 
-          <p>
-            Взводи, бої, командна гра
-            та спільні активності.
-          </p>
+          <div class="direction-card">
 
-        </article>
+            <div class="direction-icon">🎥</div>
 
+            <h3>Streaming</h3>
 
-        <article class="direction-card">
+            <p>
+              TikTok, YouTube
+              та спільні трансляції.
+            </p>
 
-          <div class="direction-number">
-            03
           </div>
 
-          <div class="direction-icon">
-            ⚔️
-          </div>
-
-          <h3>
-            World of Warcraft
-          </h3>
-
-          <p>
-            PvE, PvP та спільна гра
-            з учасниками UA LEGION.
-          </p>
-
-        </article>
-
-
-        <article class="direction-card">
-
-          <div class="direction-number">
-            04
-          </div>
-
-          <div class="direction-icon">
-            🛡️
-          </div>
-
-          <h3>
-            Dota 2
-          </h3>
-
-          <p>
-            Команди, матчі, турніри
-            та спільна гра.
-          </p>
-
-        </article>
-
-
-        <article class="direction-card">
-
-          <div class="direction-number">
-            05
-          </div>
-
-          <div class="direction-icon">
-            🎥
-          </div>
-
-          <h3>
-            Streaming
-          </h3>
-
-          <p>
-            TikTok, YouTube та спільні
-            трансляції UA LEGION.
-          </p>
-
-        </article>
-
-
-        <article class="direction-card">
-
-          <div class="direction-number">
-            +
-          </div>
-
-          <div class="direction-icon">
-            🚀
-          </div>
-
-          <h3>
-            Нові напрямки
-          </h3>
-
-          <p>
-            UA LEGION відкритий до нових
-            ігор, напрямків та учасників.
-          </p>
-
-        </article>
-
-      </div>
-
-    </section>
-
-
-    <!-- =========================================
-         PRINCIPLES
-         ========================================= -->
-
-    <section class="about-section">
-
-      <div class="about-section-head">
-
-        <small>
-          03 / НАШІ ПРИНЦИПИ
-        </small>
-
-        <h2>
-          Те, що нас <span>об'єднує</span>
-        </h2>
-
-      </div>
-
-
-      <div class="principles-grid">
-
-
-        <article class="principle">
-
-          <div class="principle-icon">
-            🤝
-          </div>
-
-          <h3>
-            Єдність
-          </h3>
-
-          <p>
-            Різні ігри,
-            але одна команда.
-          </p>
-
-        </article>
-
-
-        <article class="principle">
-
-          <div class="principle-icon">
-            🏆
-          </div>
-
-          <h3>
-            Командний дух
-          </h3>
-
-          <p>
-            Граємо разом
-            та підтримуємо один одного.
-          </p>
-
-        </article>
-
-
-        <article class="principle">
-
-          <div class="principle-icon">
-            🔥
-          </div>
-
-          <h3>
-            Активність
-          </h3>
-
-          <p>
-            Створюємо заходи,
-            турніри, конвої та стріми.
-          </p>
-
-        </article>
-
-
-        <article class="principle">
-
-          <div class="principle-icon">
-            🛡️
-          </div>
-
-          <h3>
-            Повага
-          </h3>
-
-          <p>
-            Цінуємо кожного учасника
-            та дружню атмосферу.
-          </p>
-
-        </article>
-
-
-        <article class="principle">
-
-          <div class="principle-icon">
-            🇺🇦
-          </div>
-
-          <h3>
-            Україна
-          </h3>
-
-          <p>
-            Розвиваємо українську
-            gaming-спільноту.
-          </p>
-
-        </article>
-
-      </div>
-
-    </section>
-
-
-    <!-- =========================================
-         GOAL
-         ========================================= -->
-
-    <section class="about-section">
-
-      <div class="goal-box">
-
-        <small>
-          04 / НАША МЕТА
-        </small>
-
-        <h2>
-          Створити велику
-          <span>українську gaming-спільноту.</span>
-        </h2>
-
-        <p>
-          Де не має значення, у що ти граєш.
-          Ми об'єднуємо людей навколо спільних
-          інтересів, створюємо команди, проводимо
-          заходи та розвиваємо власний gaming-
-          і медіапростір.
+        </div>
+
+        <p class="about-intro">
+          <strong style="color:#fff;">
+            UA LEGION відкритий до нових ігор,
+            нових напрямків та нових учасників.
+          </strong>
         </p>
 
       </div>
@@ -903,43 +607,89 @@
 
 
     <!-- =========================================
-         JOIN
+         ПРИНЦИПИ
          ========================================= -->
 
     <section class="about-section">
 
-      <div class="join-box">
+      <div class="about-container">
 
-        <div>
+        <h2 class="about-title">
+          НАШІ <span>ПРИНЦИПИ</span>
+        </h2>
 
-          <div class="about-label">
-            UA LEGION / JOIN
+        <div class="principles-grid">
+
+          <div class="principle">
+
+            <div class="principle-icon">🤝</div>
+
+            <h3>Єдність</h3>
+
+            <p>
+              Різні ігри,
+              але одна команда.
+            </p>
+
           </div>
 
-          <h2>
-            Готовий стати частиною
-            <span>LEGION?</span>
-          </h2>
 
-          <p>
-            Грай. Спілкуйся. Знаходь однодумців.
-            Ставай частиною команди.
-          </p>
+          <div class="principle">
 
-          <div class="tag-line">
-            🚛 ETS2 • 🪖 WoT • ⚔️ WoW • 🛡️ Dota 2 • 🎥 Streaming
+            <div class="principle-icon">🏆</div>
+
+            <h3>Командний дух</h3>
+
+            <p>
+              Граємо разом
+              та підтримуємо один одного.
+            </p>
+
+          </div>
+
+
+          <div class="principle">
+
+            <div class="principle-icon">🔥</div>
+
+            <h3>Активність</h3>
+
+            <p>
+              Створюємо заходи,
+              турніри, конвої та стріми.
+            </p>
+
+          </div>
+
+
+          <div class="principle">
+
+            <div class="principle-icon">🛡️</div>
+
+            <h3>Повага</h3>
+
+            <p>
+              Цінуємо кожного
+              учасника.
+            </p>
+
+          </div>
+
+
+          <div class="principle">
+
+            <div class="principle-icon">🇺🇦</div>
+
+            <h3>Україна</h3>
+
+            <p>
+              Розвиваємо українську
+              gaming-спільноту.
+            </p>
+
           </div>
 
         </div>
-
-        <a
-          href="https://discord.gg/gfunf3yq7"
-          target="_blank"
-          rel="noopener"
-          class="btn btn-primary"
-        >
-          ПРИЄДНАТИСЯ
-        </a>
 
       </div>
 
@@ -947,64 +697,79 @@
 
 
     <!-- =========================================
-         OFFICIAL TAG
+         МЕТА
          ========================================= -->
 
-    <section class="official-tag">
+    <section class="about-section">
 
-      <div class="tag">
-        UA_LEG
+      <div class="about-container">
+
+        <h2 class="about-title">
+          НАША <span>МЕТА</span>
+        </h2>
+
+        <div class="goal-box">
+
+          <p>
+            Створити <strong>велику українську
+            gaming-спільноту</strong>, де не має
+            значення, у що ти граєш.
+          </p>
+
+          <p>
+            Ми об'єднуємо людей навколо спільних
+            інтересів, створюємо команди, проводимо
+            заходи та розвиваємо власний gaming-
+            і медіапростір.
+          </p>
+
+        </div>
+
       </div>
 
-      <h2>
-        🇺🇦 UA LEGION
-      </h2>
+    </section>
 
-      <p>
-        «Україна грає. LEGION перемагає.»
-      </p>
+
+    <!-- =========================================
+         ПРИЄДНУЙСЯ
+         ========================================= -->
+
+    <section class="join-section">
+
+      <div class="about-container">
+
+        <div class="join-box">
+
+          <div>
+
+            <h2>
+              Готовий стати частиною
+              <span>LEGION?</span>
+            </h2>
+
+            <p>
+              Грай. Спілкуйся. Знаходь однодумців.
+              Ставай частиною команди.
+            </p>
+
+          </div>
+
+          <a
+            href="https://discord.gg/gfunf3yq7"
+            target="_blank"
+            rel="noopener"
+            class="btn btn-primary"
+          >
+            ПРИЄДНАТИСЯ
+          </a>
+
+        </div>
+
+      </div>
 
     </section>
 
   </main>
-
-
-  <!-- =========================================
-       FOOTER
-       ========================================= -->
-
-  <footer>
-
-    <div class="footer-brand">
-
-      <img
-        src="ua-legion-logo.png"
-        alt="UA LEGION"
-      >
-
-      <div>
-
-        <b>
-          UA LEGION
-        </b>
-
-        <span>
-          GAMING • STREAMING • COMMUNITY
-        </span>
-
-      </div>
-
-    </div>
-
-    <p>
-      Україна грає. ЛЕГІОН перемагає.
-    </p>
-
-    <small>
-      © 2026 UA LEGION
-    </small>
-
-  </footer>
 
 
   <script src="script.js"></script>
