@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Приєднатися — UA LEGION</title>
+
+  <meta
+    name="description"
+    content="Заявка на вступ до української gaming-спільноти UA LEGION."
+  >
+
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    /* =========================================
+       UA LEGION — АНКЕТА
+       ========================================= */
+
+    .join-page {
+      min-height: 100vh;
+      background:
+        radial-gradient(
+          circle at 80% 20%,
+          rgba(20, 80, 180, 0.18),
+          transparent 35%
+        ),
+        #05070b;
+    }
+
+    .join-main {
+      width: min(900px, 92%);
+      margin: 0 auto;
+      padding: 110px 0 70px;
+    }
+
+    .join-header {
+      text-align: center;
+      margin-bottom: 45px;
+    }
+
+    .join-header .eyebrow {
+      color: #f5b800;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      margin-bottom: 12px;
+    }
+
+    .join-header h1 {
+      margin: 0;
+      font-size: clamp(38px, 6vw, 70px);
+      line-height: 1;
+      color: #f4f6fb;
+    }
+
+    .join-header h1 span {
+      color: #f5b800;
+    }
+
+    .join-header p {
+      max-width: 650px;
+      margin: 20px auto 0;
+      color: #8f9aaa;
+      line-height: 1.7;
+      font-size: 16px;
+    }
+
+    .application-form {
+      background: rgba(10, 14, 22, 0.92);
+      border: 1px solid rgba(255,255,255,0.09);
+      box-shadow: 0 25px 80px rgba(0,0,0,0.35);
+      padding: 35px;
+    }
+
+    .form-section {
+      margin-bottom: 38px;
+    }
+
+    .form-section-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 22px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .form-section-title span {
+      color: #f5b800;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
+
+    .form-section-title h2 {
+      margin: 0;
+      color: #fff;
+      font-size: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: #e9edf5;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .required {
+      color: #f5b800;
+    }
+
+    .optional {
+      color: #687384;
+      font-weight: 400;
+      font-size: 12px;
+      margin-left: 5px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 14px 15px;
+      background: #080b10;
+      border: 1px solid #252c38;
+      color: #fff;
+      font-family: inherit;
+      font-size: 14px;
+      outline: none;
+      transition: 0.2s ease;
+    }
+
+    .form-group textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: #2878ff;
+      box-shadow: 0 0 0 3px rgba(40,120,255,0.10);
+    }
+
+    .form-group select option {
+      background: #080b10;
+      color: #fff;
+    }
+
+    .direction-grid,
+    .source-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .choice {
+      position: relative;
+    }
+
+    .choice input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .choice label {
+      display: block;
+      padding: 16px;
+      background: #080b10;
+      border: 1px solid #252c38;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .choice label:hover {
+      border-color: #3b4657;
+      transform: translateY(-1px);
+    }
+
+    .choice input:checked + label {
+      border-color: #2878ff;
+      background: rgba(40,120,255,0.10);
+      box-shadow: inset 3px 0 0 #2878ff;
+    }
+
+    .choice-title {
+      display: block;
+      color: #fff;
+      font-weight: 800;
+      margin-bottom: 5px;
+    }
+
+    .choice-description {
+      display: block;
+      color: #778294;
+      font-size: 12px;
+    }
+
+    .form-footer {
+      margin-top: 35px;
+      padding-top: 25px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      text-align: center;
+    }
+
+    .submit-btn {
+      border: 0;
+      padding: 15px 35px;
+      background: #2878ff;
+      color: #fff;
+      font-family: inherit;
+      font-weight: 800;
+      font-size: 14px;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .submit-btn:hover {
+      background: #3d87ff;
+      transform: translateY(-1px);
+    }
+
+    .form-note {
+      margin-top: 15px;
+      color: #697486;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-top: 25px;
+      color: #8792a3;
+      text-decoration: none;
+      font-size: 13px;
+    }
+
+    .back-link:hover {
+      color: #fff;
+    }
+
+    @media (max-width: 650px) {
+
+      .join-main {
+        padding: 90px 0 40px;
+      }
+
+      .application-form {
+        padding: 22px;
+      }
+
+      .direction-grid,
+      .source-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .join-header h1 {
+        font-size: 42px;
+      }
+    }
+  </style>
+</head>
+
+<body class="join-page">
+
+  <div class="noise"></div>
+
+  <!-- =========================================
+       ВЕРХНЄ МЕНЮ
+       ========================================= -->
+
+  <header class="topbar">
+
+    <a class="brand" href="index.html">
+      <img src="ua-legion-logo.png" alt="UA LEGION">
+      <span>UA LEGION</span>
+    </a>
+
+    <button
+      class="menu-btn"
+      aria-label="Відкрити меню"
+    >
+      ☰
+    </button>
+
+    <nav class="nav">
+
+      <a href="index.html">Головна</a>
+      <a href="about.html">Про нас</a>
+      <a href="games.html">Ігри</a>
+      <a href="events.html">Події</a>
+      <a href="media.html">Медіа</a>
+      <a href="gallery.html">Галерея</a>
+
+      <a
+        href="https://www.tiktok.com/@ua_legion_"
+        target="_blank"
+        rel="noopener"
+      >
+        TikTok
+      </a>
+
+      <a
+        href="https://discord.gg/gfunf3yq7"
+        target="_blank"
+        rel="noopener"
+        class="nav-cta"
+      >
+        Discord
+      </a>
+
+    </nav>
+
+  </header>
+
+
+  <!-- =========================================
+       АНКЕТА
+       ========================================= -->
+
+  <main class="join-main">
+
+    <div class="join-header">
+
+      <div class="eyebrow">
+        🇺🇦 UA LEGION / COMMUNITY
+      </div>
+
+      <h1>
+        ПРИЄДНАТИСЯ ДО <span>LEGION</span>
+      </h1>
+
+      <p>
+        Заповни анкету, щоб стати частиною української
+        gaming-спільноти UA LEGION.
+      </p>
+
+    </div>
+
+
+    <form class="application-form" id="applicationForm">
+
+
+      <!-- ОСОБИСТІ ДАНІ -->
+
+      <div class="form-section">
+
+        <div class="form-section-title">
+          <span>01</span>
+          <h2>Особисті дані</h2>
+        </div>
+
+
+        <div class="form-group">
+
+          <label for="name">
+            Ваше ім'я <span class="required">*</span>
+          </label>
+
+          <input
+            type="text"
+            id="name"
+            name="name"
+            placeholder="Введіть ваше ім'я"
+            required
+          >
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label for="age">
+            Вік <span class="required">*</span>
+          </label>
+
+          <input
+            type="number"
+            id="age"
+            name="age"
+            min="1"
+            max="100"
+            placeholder="Ваш вік"
+            required
+          >
+
+        </div>
+
+      </div>
+
+
+      <!-- DISCORD -->
+
+      <div class="form-section">
+
+        <div class="form-section-title">
+          <span>02</span>
+          <h2>Discord</h2>
+        </div>
+
+
+        <div class="form-group">
+
+          <label for="discord_nick">
+            Ваш нікнейм у Discord
+            <span class="required">*</span>
+          </label>
+
+          <input
+            type="text"
+            id="discord_nick"
+            name="discord_nick"
+            placeholder="Наприклад: UA_Legioner"
+            required
+          >
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label for="discord_id">
+            ID Discord
+            <span class="required">*</span>
+          </label>
+
+          <input
+            type="text"
+            id="discord_id"
+            name="discord_id"
+            placeholder="Ваш Discord ID"
+            required
+          >
+
+        </div>
+
+      </div>
+
+
+      <!-- ІГРОВІ ДАНІ -->
+
+      <div class="form-section">
+
+        <div class="form-section-title">
+          <span>03</span>
+          <h2>Ігрові дані</h2>
+        </div>
+
+
+        <div class="form-group">
+
+          <label for="truckersmp_nick">
+            Нікнейм у TruckersMP
+            <span class="optional">(необов'язково)</span>
+          </label>
+
+          <input
+            type="text"
+            id="truckersmp_nick"
+            name="truckersmp_nick"
+            placeholder="Ваш нікнейм у TruckersMP"
+          >
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label for="truckersmp_id">
+            ID TruckersMP
+            <span class="optional">(необов'язково)</span>
+          </label>
+
+          <input
+            type="text"
+            id="truckersmp_id"
+            name="truckersmp_id"
+            placeholder="Ваш ID TruckersMP"
+          >
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label for="steam_id">
+            ID Steam
+            <span class="optional">(необов'язково)</span>
+          </label>
+
+          <input
+            type="text"
+            id="steam_id"
+            name="steam_id"
+            placeholder="Ваш Steam ID"
+          >
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label for="game_nick">
+            Ваш ігровий нікнейм
+            <span class="required">*</span>
+          </label>
+
+          <input
+            type="text"
+            id="game_nick"
+            name="game_nick"
+            placeholder="Ваш основний ігровий нік"
+            required
+          >
+
+        </div>
+
+      </div>
+
+
+      <!-- НАПРЯМОК -->
+
+      <div class="form-section">
+
+        <div class="form-section-title">
+          <span>04</span>
+          <h2>Ваш напрямок</h2>
+        </div>
+
+
+        <div class="direction-grid">
+
+
+          <div class="choice">
+
+            <input
+              type="radio"
+              id="ets2"
+              name="direction"
+              value="ETS2"
+              required
+            >
+
+            <label for="ets2">
+
+              <span class="choice-title">
+                🚛 ETS2
+              </span>
+
+              <span class="choice-description">
+                Конвої, рейси та TruckersMP
+              </span>
+
+            </label>
+
+          </div>
+
+
+          <div class="choice">
+
+            <input
+              type="radio"
+              id="wot"
+              name="direction"
+              value="World of Tanks"
+            >
+
+            <label for="wot">
+
+              <span class="choice-title">
+                🪖 World of Tanks
+              </span>
+
+              <span class="choice-description">
+                Взводи та командна гра
+              </span>
+
+            </label>
+
+          </div>
+
+
+          <div class="choice">
+
+            <input
+              type="radio"
+              id="wow"
+              name="direction"
+              value="World of Warcraft"
+            >
+
+            <label for="wow">
+
+              <span class="choice-title">
+                ⚔️ World of Warcraft
+              </span>
+
+              <span class="choice-description">
+                PvE, PvP та спільна гра
+              </span>
+
+            </label>
+
+          </div>
+
+
+          <div class="choice">
+
+            <input
+              type="radio"
+              id="dota"
+              name="direction"
+              value="Dota 2"
+            >
+
+            <label for="dota">
+
+              <span class="choice-title">
+                🛡️ Dota 2
+              </span>
+
+              <span class="choice-description">
+                Команди, матчі та турніри
+              </span>
+
+            </label>
+
+          </div>
+
+
+          <div class="choice">
+
+            <input
+              type="radio"
+              id="streaming"
+              name="direction"
+              value="Streaming"
+            >
+
+            <label for="streaming">
+
+              <span class="choice-title">
+                🎥 Streaming
+              </span>
+
+              <span class="choice-description">
+                TikTok, YouTube та трансляції
+              </span>
+
+            </label>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- ДЖЕРЕЛО -->
+
+      <div class="form-section">
+
+        <div class="form-section-title">
+          <span>05</span>
+          <h2>Як ви нас знайшли?</h2>
+        </div>
+
+
+        <div class="source-grid">
+
+
+          <div class="choice">
+
+            <input
+              type="radio"
+              id="source-tiktok"
+              name="source"
+              value="TikTok"
+              required
+            >
+
+            <label for="source-tiktok">
+
+              <span class="choice-title">
+                🎵 TikTok
+              </span>
+
+            </label>
+
+          </div>
+
+
+          <div class="choice">
+
+            <input
+              type="radio"
+              id="source-youtube"
+              name="source"
+              value="YouTube"
+            >
+
+            <label for="source-youtube">
+
+              <span class="choice-title">
+                ▶️ YouTube
+              </span>
+
+            </label>
+
+          </div>
+
+
+          <div class="choice">
+
+            <input
+              type="radio"
+              id="source-instagram"
+              name="source"
+              value="Instagram"
+            >
+
+            <label for="source-instagram">
+
+              <span class="choice-title">
+                📸 Instagram
+              </span>
+
+            </label>
+
+          </div>
+
+
+          <div class="choice">
+
+            <input
+              type="radio"
+              id="source-truckersmp"
+              name="source"
+              value="TruckersMP"
+            >
+
+            <label for="source-truckersmp">
+
+              <span class="choice-title">
+                🚛 TruckersMP
+              </span>
+
+            </label>
+
+          </div>
+
+
+          <div class="choice">
+
+            <input
+              type="radio"
+              id="source-discord"
+              name="source"
+              value="Discord"
+            >
+
+            <label for="source-discord">
+
+              <span class="choice-title">
+                💬 Discord
+              </span>
+
+            </label>
+
+          </div>
+
+
+          <div class="choice">
+
+            <input
+              type="radio"
+              id="source-friends"
+              name="source"
+              value="Від друзів / знайомих"
+            >
+
+            <label for="source-friends">
+
+              <span class="choice-title">
+                🤝 Від друзів
+              </span>
+
+            </label>
+
+          </div>
+
+
+          <div class="choice">
+
+            <input
+              type="radio"
+              id="source-other"
+              name="source"
+              value="Інше"
+            >
+
+            <label for="source-other">
+
+              <span class="choice-title">
+                ➕ Інше
+              </span>
+
+            </label>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- ПРО СЕБЕ -->
+
+      <div class="form-section">
+
+        <div class="form-section-title">
+          <span>06</span>
+          <h2>Про вас</h2>
+        </div>
+
+
+        <div class="form-group">
+
+          <label for="about">
+            Розкажіть трохи про себе
+            <span class="optional">(необов'язково)</span>
+          </label>
+
+          <textarea
+            id="about"
+            name="about"
+            placeholder="Розкажіть про себе, свої ігри, досвід або просто залиште кілька слів..."
+          ></textarea>
+
+        </div>
+
+      </div>
+
+
+      <!-- ВІДПРАВКА -->
+
+      <div class="form-footer">
+
+        <button
+          type="submit"
+          class="submit-btn"
+        >
+          НАДІСЛАТИ ЗАЯВКУ
+        </button>
+
+        <div class="form-note">
+          Натискаючи кнопку, ви надсилаєте заявку
+          до UA LEGION для розгляду.
+        </div>
+
+        <a
+          href="index.html"
+          class="back-link"
+        >
+          ← Повернутися на головну
+        </a>
+
+      </div>
+
+
+    </form>
+
+  </main>
+
+
+  <script src="script.js"></script>
+
+</body>
+</html>
