@@ -1,17 +1,13 @@
-UA LEGION — SIMPLE UPLOAD VERSION
+UA LEGION WEBSITE — v5 FIXED
 
-Upload all files from this folder directly into the GitHub repository root.
-
-Files:
-index.html
-ets2.html
-style.css
-ets2.css
-script.js
-README.txt
-ua-legion-logo.png
-
-No folders are required.
+Page navigation:
+index.html   — Головна
+about.html   — Про нас
+games.html   — Ігри
+events.html  — Події
+media.html   — Медіа
+gallery.html — Галерея
+ets2.html    — UA LEGION ETS2 (opens from Ігри)
 
 ETS2 Discord:
 https://discord.gg/gfunf3yq7
