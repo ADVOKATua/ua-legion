@@ -2,11 +2,12 @@
 // UA LEGION — Авторизація
 // ==========================================
 
-
 let isRegistration = false;
 
 
-// Елементи
+// ==========================================
+// ЕЛЕМЕНТИ
+// ==========================================
 
 const authForm =
   document.getElementById("auth-form");
@@ -35,15 +36,20 @@ const messageBox =
 const googleLoginButton =
   document.getElementById("google-login");
 
+const discordLoginButton =
+  document.getElementById("discord-login");
+
 
 // ==========================================
 // ПОВІДОМЛЕННЯ
 // ==========================================
 
-function showMessage(
-  text,
-  type
-) {
+function showMessage(text, type = "success") {
+
+  if (!messageBox) {
+    console.log(text);
+    return;
+  }
 
   messageBox.textContent = text;
 
@@ -54,106 +60,190 @@ function showMessage(
 
 
 // ==========================================
+// ПЕРЕВІРКА SUPABASE
+// ==========================================
+
+if (!window.supabaseClient) {
+
+  console.error(
+    "Supabase не підключений"
+  );
+
+  showMessage(
+    "Помилка підключення до сервера",
+    "error"
+  );
+
+}
+
+
+// ==========================================
 // ПЕРЕМИКАННЯ
 // ВХІД / РЕЄСТРАЦІЯ
 // ==========================================
 
-switchModeButton.addEventListener(
-  "click",
-  function () {
+if (switchModeButton) {
 
-    isRegistration =
-      !isRegistration;
+  switchModeButton.addEventListener(
+    "click",
+    function () {
 
-
-    if (isRegistration) {
-
-      formTitle.textContent =
-        "Реєстрація UA LEGION";
+      isRegistration =
+        !isRegistration;
 
 
-      submitButton.textContent =
-        "СТВОРИТИ АКАУНТ";
+      if (isRegistration) {
+
+        formTitle.textContent =
+          "Реєстрація UA LEGION";
 
 
-      switchText.textContent =
-        "Вже маєте акаунт?";
+        submitButton.textContent =
+          "СТВОРИТИ АКАУНТ";
 
 
-      switchModeButton.textContent =
-        "Увійти";
+        switchText.textContent =
+          "Вже маєте акаунт?";
+
+
+        switchModeButton.textContent =
+          "Увійти";
+
+      }
+
+      else {
+
+        formTitle.textContent =
+          "Вхід до UA LEGION";
+
+
+        submitButton.textContent =
+          "УВІЙТИ";
+
+
+        switchText.textContent =
+          "Ще немає акаунта?";
+
+
+        switchModeButton.textContent =
+          "Реєстрація";
+
+      }
+
+
+      messageBox.className =
+        "message";
+
+      messageBox.textContent =
+        "";
 
     }
+  );
 
-    else {
-
-      formTitle.textContent =
-        "Вхід до UA LEGION";
-
-
-      submitButton.textContent =
-        "УВІЙТИ";
-
-
-      switchText.textContent =
-        "Ще немає акаунта?";
-
-
-      switchModeButton.textContent =
-        "Реєстрація";
-
-    }
-
-
-    messageBox.className =
-      "message";
-
-  }
-);
+}
 
 
 // ==========================================
 // EMAIL + ПАРОЛЬ
 // ==========================================
 
-authForm.addEventListener(
-  "submit",
-  async function (
-    event
-  ) {
+if (authForm) {
 
-    event.preventDefault();
+  authForm.addEventListener(
+    "submit",
+    async function (event) {
 
-
-    const email =
-      emailInput.value.trim();
+      event.preventDefault();
 
 
-    const password =
-      passwordInput.value;
+      if (!window.supabaseClient) {
+        return;
+      }
 
 
-    submitButton.disabled =
-      true;
+      const email =
+        emailInput.value.trim();
 
 
-    // ----------------------------
-    // РЕЄСТРАЦІЯ
-    // ----------------------------
+      const password =
+        passwordInput.value;
 
-    if (isRegistration) {
+
+      if (!email || !password) {
+
+        showMessage(
+          "Заповніть email та пароль",
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      submitButton.disabled =
+        true;
+
+
+      // ======================================
+      // РЕЄСТРАЦІЯ
+      // ======================================
+
+      if (isRegistration) {
+
+        const {
+          data,
+          error
+        } =
+          await window.supabaseClient.auth.signUp({
+
+            email: email,
+
+            password: password
+
+          });
+
+
+        submitButton.disabled =
+          false;
+
+
+        if (error) {
+
+          showMessage(
+            error.message,
+            "error"
+          );
+
+          return;
+
+        }
+
+
+        showMessage(
+          "Акаунт створено! Перевірте свою електронну пошту.",
+          "success"
+        );
+
+
+        return;
+
+      }
+
+
+      // ======================================
+      // ВХІД
+      // ======================================
 
       const {
         data,
         error
       } =
-        await window.supabaseClient.auth.signUp({
+        await window.supabaseClient.auth.signInWithPassword({
 
-          email:
-            email,
+          email: email,
 
-          password:
-            password
+          password: password
 
         });
 
@@ -175,96 +265,121 @@ authForm.addEventListener(
 
 
       showMessage(
-        "Акаунт створено! Перевірте свою електронну пошту.",
+        "Успішний вхід!",
         "success"
       );
 
 
-      return;
+      // Перехід у профіль
+
+      setTimeout(() => {
+
+        window.location.href =
+          "profile.html";
+
+      }, 500);
 
     }
+  );
 
-
-    // ----------------------------
-    // ВХІД
-    // ----------------------------
-
-    const {
-      data,
-      error
-    } =
-      await window.supabaseClient.auth.signInWithPassword({
-
-        email:
-          email,
-
-        password:
-          password
-
-      });
-
-
-    submitButton.disabled =
-      false;
-
-
-    if (error) {
-
-      showMessage(
-        error.message,
-        "error"
-      );
-
-      return;
-
-    }
-
-
-    // Перехід у профіль
-
-    window.location.href =
-      "profile.html";
-
-  }
-);
+}
 
 
 // ==========================================
-// GOOGLE LOGIN
+// GOOGLE / GMAIL LOGIN
 // ==========================================
 
-googleLoginButton.addEventListener(
-  "click",
-  async function () {
+if (googleLoginButton) {
 
-    const {
-      data,
-      error
-    } =
-      await window.supabaseClient.auth.signInWithOAuth({
+  googleLoginButton.addEventListener(
+    "click",
+    async function () {
 
-        provider:
-          "google",
-
-        options: {
-
-          redirectTo:
-            window.location.origin +
-            "/ua-legion/profile.html"
-
-        }
-
-      });
+      if (!window.supabaseClient) {
+        return;
+      }
 
 
-    if (error) {
+      const {
+        data,
+        error
+      } =
+        await window.supabaseClient.auth.signInWithOAuth({
 
-      showMessage(
-        error.message,
-        "error"
-      );
+          provider:
+            "google",
+
+          options: {
+
+            redirectTo:
+              window.location.origin +
+              "/ua-legion/profile.html"
+
+          }
+
+        });
+
+
+      if (error) {
+
+        showMessage(
+          error.message,
+          "error"
+        );
+
+      }
 
     }
+  );
 
-  }
-);
+}
+
+
+// ==========================================
+// DISCORD LOGIN
+// ==========================================
+
+if (discordLoginButton) {
+
+  discordLoginButton.addEventListener(
+    "click",
+    async function () {
+
+      if (!window.supabaseClient) {
+        return;
+      }
+
+
+      const {
+        data,
+        error
+      } =
+        await window.supabaseClient.auth.signInWithOAuth({
+
+          provider:
+            "discord",
+
+          options: {
+
+            redirectTo:
+              window.location.origin +
+              "/ua-legion/profile.html"
+
+          }
+
+        });
+
+
+      if (error) {
+
+        showMessage(
+          error.message,
+          "error"
+        );
+
+      }
+
+    }
+  );
+
+}
