@@ -1,8 +1,13 @@
 <!DOCTYPE html>
 <html lang="uk">
+
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
   <title>Приєднатися — UA LEGION</title>
 
@@ -13,13 +18,16 @@
 
   <link rel="stylesheet" href="style.css">
 
+
   <style>
+
     /* =========================================
        UA LEGION — АНКЕТА
        ========================================= */
 
     .join-page {
       min-height: 100vh;
+
       background:
         radial-gradient(
           circle at 80% 20%,
@@ -29,16 +37,19 @@
         #05070b;
     }
 
+
     .join-main {
       width: min(900px, 92%);
       margin: 0 auto;
       padding: 110px 0 70px;
     }
 
+
     .join-header {
       text-align: center;
       margin-bottom: 45px;
     }
+
 
     .join-header .eyebrow {
       color: #f5b800;
@@ -48,6 +59,7 @@
       margin-bottom: 12px;
     }
 
+
     .join-header h1 {
       margin: 0;
       font-size: clamp(38px, 6vw, 70px);
@@ -55,9 +67,11 @@
       color: #f4f6fb;
     }
 
+
     .join-header h1 span {
       color: #f5b800;
     }
+
 
     .join-header p {
       max-width: 650px;
@@ -67,6 +81,11 @@
       font-size: 16px;
     }
 
+
+    /* =========================================
+       ФОРМА
+       ========================================= */
+
     .application-form {
       background: rgba(10, 14, 22, 0.92);
       border: 1px solid rgba(255,255,255,0.09);
@@ -74,9 +93,11 @@
       padding: 35px;
     }
 
+
     .form-section {
       margin-bottom: 38px;
     }
+
 
     .form-section-title {
       display: flex;
@@ -87,6 +108,7 @@
       border-bottom: 1px solid rgba(255,255,255,0.08);
     }
 
+
     .form-section-title span {
       color: #f5b800;
       font-size: 12px;
@@ -94,15 +116,18 @@
       letter-spacing: 1px;
     }
 
+
     .form-section-title h2 {
       margin: 0;
       color: #fff;
       font-size: 20px;
     }
 
+
     .form-group {
       margin-bottom: 20px;
     }
+
 
     .form-group label {
       display: block;
@@ -112,9 +137,11 @@
       font-weight: 700;
     }
 
+
     .required {
       color: #f5b800;
     }
+
 
     .optional {
       color: #687384;
@@ -122,6 +149,7 @@
       font-size: 12px;
       margin-left: 5px;
     }
+
 
     .form-group input,
     .form-group select,
@@ -138,10 +166,12 @@
       transition: 0.2s ease;
     }
 
+
     .form-group textarea {
       min-height: 120px;
       resize: vertical;
     }
+
 
     .form-group input:focus,
     .form-group select:focus,
@@ -150,10 +180,10 @@
       box-shadow: 0 0 0 3px rgba(40,120,255,0.10);
     }
 
-    .form-group select option {
-      background: #080b10;
-      color: #fff;
-    }
+
+    /* =========================================
+       ВИБІР НАПРЯМКІВ
+       ========================================= */
 
     .direction-grid,
     .source-grid {
@@ -162,15 +192,18 @@
       gap: 12px;
     }
 
+
     .choice {
       position: relative;
     }
+
 
     .choice input {
       position: absolute;
       opacity: 0;
       pointer-events: none;
     }
+
 
     .choice label {
       display: block;
@@ -181,16 +214,19 @@
       transition: 0.2s ease;
     }
 
+
     .choice label:hover {
       border-color: #3b4657;
       transform: translateY(-1px);
     }
+
 
     .choice input:checked + label {
       border-color: #2878ff;
       background: rgba(40,120,255,0.10);
       box-shadow: inset 3px 0 0 #2878ff;
     }
+
 
     .choice-title {
       display: block;
@@ -199,11 +235,17 @@
       margin-bottom: 5px;
     }
 
+
     .choice-description {
       display: block;
       color: #778294;
       font-size: 12px;
     }
+
+
+    /* =========================================
+       ВІДПРАВКА
+       ========================================= */
 
     .form-footer {
       margin-top: 35px;
@@ -211,6 +253,7 @@
       border-top: 1px solid rgba(255,255,255,0.08);
       text-align: center;
     }
+
 
     .submit-btn {
       border: 0;
@@ -224,10 +267,12 @@
       transition: 0.2s ease;
     }
 
+
     .submit-btn:hover {
       background: #3d87ff;
       transform: translateY(-1px);
     }
+
 
     .form-note {
       margin-top: 15px;
@@ -235,6 +280,7 @@
       font-size: 12px;
       line-height: 1.6;
     }
+
 
     .back-link {
       display: inline-block;
@@ -244,9 +290,15 @@
       font-size: 13px;
     }
 
+
     .back-link:hover {
       color: #fff;
     }
+
+
+    /* =========================================
+       МОБІЛЬНА ВЕРСІЯ
+       ========================================= */
 
     @media (max-width: 650px) {
 
@@ -266,13 +318,18 @@
       .join-header h1 {
         font-size: 42px;
       }
+
     }
+
   </style>
+
 </head>
+
 
 <body class="join-page">
 
   <div class="noise"></div>
+
 
   <!-- =========================================
        ВЕРХНЄ МЕНЮ
@@ -280,10 +337,22 @@
 
   <header class="topbar">
 
-    <a class="brand" href="index.html">
-      <img src="ua-legion-logo.png" alt="UA LEGION">
-      <span>UA LEGION</span>
+    <a
+      class="brand"
+      href="index.html"
+    >
+      <img
+        src="ua-legion-logo.png"
+        alt="UA LEGION"
+      >
+
+      <span>
+        UA LEGION
+      </span>
     </a>
+
+
+    <!-- МОБІЛЬНЕ МЕНЮ -->
 
     <button
       class="menu-btn"
@@ -292,14 +361,44 @@
       ☰
     </button>
 
+
+    <!-- НАВІГАЦІЯ -->
+
     <nav class="nav">
 
-      <a href="index.html">Головна</a>
-      <a href="about.html">Про нас</a>
-      <a href="games.html">Ігри</a>
-      <a href="events.html">Події</a>
-      <a href="media.html">Медіа</a>
-      <a href="gallery.html">Галерея</a>
+      <a href="index.html">
+        Головна
+      </a>
+
+      <a href="about.html">
+        Про нас
+      </a>
+
+      <a href="games.html">
+        Ігри
+      </a>
+
+      <a href="events.html">
+        Події
+      </a>
+
+      <a href="media.html">
+        Медіа
+      </a>
+
+      <a href="gallery.html">
+        Галерея
+      </a>
+
+
+      <!-- ПОДАТИ ЗАЯВКУ -->
+
+      <a href="join.html">
+        Подати заявку
+      </a>
+
+
+      <!-- TIKTOK -->
 
       <a
         href="https://www.tiktok.com/@ua_legion_"
@@ -309,6 +408,9 @@
         TikTok
       </a>
 
+
+      <!-- DISCORD -->
+
       <a
         href="https://discord.gg/gfunf3yq7"
         target="_blank"
@@ -316,6 +418,16 @@
         class="nav-cta"
       >
         Discord
+      </a>
+
+
+      <!-- АВТОРИЗАЦІЯ -->
+
+      <a
+        href="login.html"
+        id="authButton"
+      >
+        Увійти / Реєстрація
       </a>
 
     </nav>
@@ -329,15 +441,18 @@
 
   <main class="join-main">
 
+
     <div class="join-header">
 
       <div class="eyebrow">
         🇺🇦 UA LEGION / COMMUNITY
       </div>
 
+
       <h1>
         ПРИЄДНАТИСЯ ДО <span>LEGION</span>
       </h1>
+
 
       <p>
         Заповни анкету, щоб стати частиною української
@@ -347,7 +462,14 @@
     </div>
 
 
-    <form class="application-form" id="applicationForm">
+    <!-- =========================================
+         ФОРМА ЗАЯВКИ
+         ========================================= -->
+
+    <form
+      class="application-form"
+      id="applicationForm"
+    >
 
 
       <!-- ОСОБИСТІ ДАНІ -->
@@ -363,7 +485,8 @@
         <div class="form-group">
 
           <label for="name">
-            Ваше ім'я <span class="required">*</span>
+            Ваше ім'я
+            <span class="required">*</span>
           </label>
 
           <input
@@ -380,7 +503,8 @@
         <div class="form-group">
 
           <label for="age">
-            Вік <span class="required">*</span>
+            Вік
+            <span class="required">*</span>
           </label>
 
           <input
@@ -460,7 +584,9 @@
 
           <label for="truckersmp_nick">
             Нікнейм у TruckersMP
-            <span class="optional">(необов'язково)</span>
+            <span class="optional">
+              (необов'язково)
+            </span>
           </label>
 
           <input
@@ -477,7 +603,9 @@
 
           <label for="truckersmp_id">
             ID TruckersMP
-            <span class="optional">(необов'язково)</span>
+            <span class="optional">
+              (необов'язково)
+            </span>
           </label>
 
           <input
@@ -494,7 +622,9 @@
 
           <label for="steam_id">
             ID Steam
-            <span class="optional">(необов'язково)</span>
+            <span class="optional">
+              (необов'язково)
+            </span>
           </label>
 
           <input
@@ -527,7 +657,7 @@
       </div>
 
 
-      <!-- НАПРЯМОК -->
+      <!-- ВАШ НАПРЯМОК -->
 
       <div class="form-section">
 
@@ -665,7 +795,7 @@
       </div>
 
 
-      <!-- ДЖЕРЕЛО -->
+      <!-- ЯК ЗНАЙШЛИ -->
 
       <div class="form-section">
 
@@ -823,7 +953,7 @@
       </div>
 
 
-      <!-- ПРО СЕБЕ -->
+      <!-- ПРО ВАС -->
 
       <div class="form-section">
 
@@ -836,9 +966,15 @@
         <div class="form-group">
 
           <label for="about">
+
             Розкажіть трохи про себе
-            <span class="optional">(необов'язково)</span>
+
+            <span class="optional">
+              (необов'язково)
+            </span>
+
           </label>
+
 
           <textarea
             id="about"
@@ -855,6 +991,7 @@
 
       <div class="form-footer">
 
+
         <button
           type="submit"
           class="submit-btn"
@@ -862,10 +999,15 @@
           НАДІСЛАТИ ЗАЯВКУ
         </button>
 
+
         <div class="form-note">
-          Натискаючи кнопку, ви надсилаєте заявку
+
+          Натискаючи кнопку,
+          ви надсилаєте заявку
           до UA LEGION для розгляду.
+
         </div>
+
 
         <a
           href="index.html"
@@ -882,7 +1024,30 @@
   </main>
 
 
+  <!-- =========================================
+       JAVASCRIPT
+       ========================================= -->
+
+
+  <!-- SUPABASE -->
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+  <!-- ПІДКЛЮЧЕННЯ SUPABASE -->
+
+  <script src="supabase.js"></script>
+
+
+  <!-- ОСНОВНИЙ JAVASCRIPT -->
+
   <script src="script.js"></script>
+
+
+  <!-- АВТОРИЗАЦІЯ В МЕНЮ -->
+
+  <script src="auth-menu.js"></script>
+
 
 </body>
 </html>
