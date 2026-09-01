@@ -2,7 +2,11 @@
 <html lang="uk">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
   <meta name="theme-color" content="#05070b">
 
@@ -16,6 +20,7 @@
   <link rel="stylesheet" href="style.css">
 
   <style>
+
     /* =========================================
        UA LEGION — ГОЛОВНА
        Один екран без вертикальної прокрутки
@@ -56,16 +61,21 @@
     }
 
     /* Щоб логотип не виходив за межі екрана */
+
     .home-page .hero-logo img {
-  max-height: 68vh;
-  max-width: 44vw;
-  width: auto;
-  height: auto;
-  object-fit: contain;
-  transform: translate(-4vw, 5vh);
+      max-height: 68vh;
+      max-width: 44vw;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      transform: translate(-4vw, 5vh);
     }
 
-    /* На менших екранах */
+
+    /* =========================================
+       ПЛАНШЕТ / МЕНШІ ЕКРАНИ
+       ========================================= */
+
     @media (max-width: 900px) {
 
       html,
@@ -81,9 +91,14 @@
         max-width: 42vw;
         max-height: 55vh;
       }
+
     }
 
-    /* Телефон */
+
+    /* =========================================
+       ТЕЛЕФОН
+       ========================================= */
+
     @media (max-width: 700px) {
 
       .home-page {
@@ -108,13 +123,22 @@
         max-width: 75vw;
         max-height: 60vh;
       }
+
     }
+
   </style>
+
 </head>
+
 
 <body class="home-page">
 
+  <!-- =========================================
+       ФОН
+       ========================================= -->
+
   <div class="noise"></div>
+
 
   <!-- =========================================
        ВЕРХНЄ МЕНЮ
@@ -122,10 +146,24 @@
 
   <header class="topbar">
 
-    <a class="brand" href="index.html">
-      <img src="ua-legion-logo.png" alt="UA LEGION">
-      <span>UA LEGION</span>
+    <a
+      class="brand"
+      href="index.html"
+    >
+
+      <img
+        src="ua-legion-logo.png"
+        alt="UA LEGION"
+      >
+
+      <span>
+        UA LEGION
+      </span>
+
     </a>
+
+
+    <!-- МОБІЛЬНЕ МЕНЮ -->
 
     <button
       class="menu-btn"
@@ -133,6 +171,9 @@
     >
       ☰
     </button>
+
+
+    <!-- НАВІГАЦІЯ -->
 
     <nav class="nav">
 
@@ -160,6 +201,9 @@
         Галерея
       </a>
 
+
+      <!-- TIKTOK -->
+
       <a
         href="https://www.tiktok.com/@ua_legion_"
         target="_blank"
@@ -167,6 +211,9 @@
       >
         TikTok
       </a>
+
+
+      <!-- DISCORD -->
 
       <a
         href="https://discord.gg/gfunf3yq7"
@@ -193,7 +240,9 @@
       <div class="hero-glow"></div>
 
 
-      <!-- ЛІВА ЧАСТИНА -->
+      <!-- =====================================
+           ЛІВА ЧАСТИНА
+           ===================================== -->
 
       <div class="hero-content">
 
@@ -201,23 +250,39 @@
           🇺🇦 УКРАЇНСЬКА GAMING-СПІЛЬНОТА
         </div>
 
+
         <h1>
-          UA <span>LEGION</span>
+          UA
+          <span>
+            LEGION
+          </span>
         </h1>
 
+
         <p class="slogan">
+
           Україна грає.
-          <strong>ЛЕГІОН перемагає.</strong>
+
+          <strong>
+            ЛЕГІОН перемагає.
+          </strong>
+
         </p>
+
 
         <p class="hero-text">
+
           Єдина спільнота для геймерів,
           стрімерів та команд.
+
           Різні ігри — один LEGION.
+
         </p>
 
 
-        <!-- КНОПКИ -->
+        <!-- =====================================
+             КНОПКИ
+             ===================================== -->
 
         <div class="hero-actions">
 
@@ -229,6 +294,7 @@
           >
             ПРИЄДНАТИСЯ
           </a>
+
 
           <a
             href="about.html"
@@ -242,7 +308,9 @@
       </div>
 
 
-      <!-- ЛОГОТИП -->
+      <!-- =====================================
+           ЛОГОТИП
+           ===================================== -->
 
       <div class="hero-logo">
 
@@ -258,9 +326,25 @@
   </main>
 
 
-  <!-- JS -->
+  <!-- =========================================
+       JAVASCRIPT
+       ВАЖЛИВИЙ ПОРЯДОК
+       ========================================= -->
+
+  <!-- 1. Спочатку бібліотека Supabase -->
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+  <!-- 2. Потім підключення UA LEGION до Supabase -->
+
+  <script src="supabase.js"></script>
+
+
+  <!-- 3. Потім основний JavaScript сайту -->
 
   <script src="script.js"></script>
+
 
 </body>
 </html>
