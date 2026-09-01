@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="uk">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <meta name="theme-color" content="#05070b">
+
+  <title>Мій профіль — UA LEGION</title>
+
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
+
+  <style>
+
+    /* =========================================
+       UA LEGION — ОСОБИСТИЙ КАБІНЕТ
+       ========================================= */
+
+    body {
+      min-height: 100vh;
+    }
+
+
+    .profile-page {
+
+      width: 100%;
+      min-height: calc(100vh - 76px);
+
+      display: flex;
+
+      justify-content: center;
+
+      padding:
+        50px 20px;
+
+      box-sizing: border-box;
+
+    }
+
+
+    .profile-container {
+
+      width: 100%;
+      max-width: 900px;
+
+    }
+
+
+    .profile-header {
+
+      margin-bottom: 30px;
+
+    }
+
+
+    .profile-header h1 {
+
+      margin-bottom: 10px;
+
+      font-size:
+        clamp(
+          32px,
+          5vw,
+          52px
+        );
+
+    }
+
+
+    .profile-header p {
+
+      opacity: 0.7;
+
+    }
+
+
+    .profile-card {
+
+      background:
+        rgba(
+          255,
+          255,
+          255,
+          0.04
+        );
+
+      border:
+        1px solid
+        rgba(
+          255,
+          255,
+          255,
+          0.1
+        );
+
+      border-radius: 20px;
+
+      padding: 30px;
+
+      backdrop-filter:
+        blur(12px);
+
+    }
+
+
+    /* =========================================
+       АВАТАР
+       ========================================= */
+
+    .avatar-section {
+
+      display: flex;
+
+      align-items: center;
+
+      gap: 25px;
+
+      margin-bottom: 35px;
+
+      padding-bottom: 30px;
+
+      border-bottom:
+        1px solid
+        rgba(
+          255,
+          255,
+          255,
+          0.1
+        );
+
+    }
+
+
+    .profile-avatar {
+
+      width: 110px;
+
+      height: 110px;
+
+      border-radius: 50%;
+
+      object-fit: cover;
+
+      background:
+        rgba(
+          255,
+          255,
+          255,
+          0.08
+        );
+
+      border:
+        2px solid
+        rgba(
+          255,
+          255,
+          255,
+          0.15
+        );
+
+    }
+
+
+    .avatar-info h2 {
+
+      margin:
+        0 0 8px;
+
+    }
+
+
+    .avatar-info p {
+
+      margin: 0;
+
+      opacity: 0.65;
+
+    }
+
+
+    /* =========================================
+       ФОРМА
+       ========================================= */
+
+    .profile-grid {
+
+      display: grid;
+
+      grid-template-columns:
+        repeat(
+          2,
+          minmax(0, 1fr)
+        );
+
+      gap: 20px;
+
+    }
+
+
+    .profile-field {
+
+      display: flex;
+
+      flex-direction: column;
+
+      gap: 8px;
+
+    }
+
+
+    .profile-field.full {
+
+      grid-column:
+        1 / -1;
+
+    }
+
+
+    .profile-field label {
+
+      font-size: 14px;
+
+      opacity: 0.75;
+
+    }
+
+
+    .profile-field input {
+
+      width: 100%;
+
+      padding: 14px 16px;
+
+      box-sizing: border-box;
+
+      border-radius: 10px;
+
+      border:
+        1px solid
+        rgba(
+          255,
+          255,
+          255,
+          0.12
+        );
+
+      background:
+        rgba(
+          0,
+          0,
+          0,
+          0.25
+        );
+
+      color: white;
+
+      font-size: 16px;
+
+      outline: none;
+
+    }
+
+
+    .profile-field input:focus {
+
+      border-color:
+        #ffd34d;
+
+    }
+
+
+    /* =========================================
+       НАПРЯМКИ
+       ========================================= */
+
+    .directions {
+
+      margin-top: 35px;
+
+    }
+
+
+    .directions h2 {
+
+      margin-bottom: 10px;
+
+    }
+
+
+    .directions-description {
+
+      opacity: 0.65;
+
+      margin-bottom: 20px;
+
+    }
+
+
+    .direction-list {
+
+      display: grid;
+
+      grid-template-columns:
+        repeat(
+          auto-fit,
+          minmax(
+            180px,
+            1fr
+          )
+        );
+
+      gap: 15px;
+
+    }
+
+
+    .direction-item {
+
+      display: flex;
+
+      align-items: center;
+
+      gap: 10px;
+
+      padding: 16px;
+
+      border-radius: 12px;
+
+      cursor: pointer;
+
+      background:
+        rgba(
+          255,
+          255,
+          255,
+          0.04
+        );
+
+      border:
+        1px solid
+        rgba(
+          255,
+          255,
+          255,
+          0.08
+        );
+
+      transition:
+        0.2s;
+
+    }
+
+
+    .direction-item:hover {
+
+      border-color:
+        #ffd34d;
+
+    }
+
+
+    .direction-item input {
+
+      width: 18px;
+
+      height: 18px;
+
+    }
+
+
+    /* =========================================
+       КНОПКИ
+       ========================================= */
+
+    .profile-actions {
+
+      display: flex;
+
+      gap: 15px;
+
+      margin-top: 35px;
+
+      flex-wrap: wrap;
+
+    }
+
+
+    .profile-actions button {
+
+      padding:
+        14px 25px;
+
+      border-radius: 10px;
+
+      border: none;
+
+      cursor: pointer;
+
+      font-size: 15px;
+
+      font-weight: 700;
+
+    }
+
+
+    #saveProfile {
+
+      background:
+        #ffd34d;
+
+      color:
+        #111;
+
+    }
+
+
+    #logoutButton {
+
+      background:
+        rgba(
+          255,
+          255,
+          255,
+          0.08
+        );
+
+      color:
+        white;
+
+    }
+
+
+    /* =========================================
+       ПОВІДОМЛЕННЯ
+       ========================================= */
+
+    .profile-message {
+
+      margin-top: 20px;
+
+      min-height: 20px;
+
+      font-size: 14px;
+
+    }
+
+
+    .profile-message.success {
+
+      color:
+        #62e59c;
+
+    }
+
+
+    .profile-message.error {
+
+      color:
+        #ff7070;
+
+    }
+
+
+    /* =========================================
+       МОБІЛЬНА ВЕРСІЯ
+       ========================================= */
+
+    @media (
+      max-width: 700px
+    ) {
+
+      .profile-grid {
+
+        grid-template-columns:
+          1fr;
+
+      }
+
+
+      .avatar-section {
+
+        flex-direction:
+          column;
+
+        text-align:
+          center;
+
+      }
+
+
+      .profile-card {
+
+        padding:
+          20px;
+
+      }
+
+    }
+
+  </style>
+
+</head>
+
+
+<body>
+
+
+  <div class="noise"></div>
+
+
+  <!-- =========================================
+       ВЕРХНЄ МЕНЮ
+       ========================================= -->
+
+  <header class="topbar">
+
+    <a
+      class="brand"
+      href="index.html"
+    >
+
+      <img
+        src="ua-legion-logo.png"
+        alt="UA LEGION"
+      >
+
+      <span>
+        UA LEGION
+      </span>
+
+    </a>
+
+
+    <nav class="nav">
+
+      <a href="index.html">
+        Головна
+      </a>
+
+      <a href="games.html">
+        Ігри
+      </a>
+
+      <a href="events.html">
+        Події
+      </a>
+
+      <a href="media.html">
+        Медіа
+      </a>
+
+      <a
+        href="profile.html"
+        class="nav-cta"
+      >
+        Мій профіль
+      </a>
+
+    </nav>
+
+  </header>
+
+
+  <!-- =========================================
+       ОСОБИСТИЙ КАБІНЕТ
+       ========================================= -->
+
+  <main class="profile-page">
+
+
+    <div class="profile-container">
+
+
+      <div class="profile-header">
+
+        <h1>
+          👤 Мій профіль
+        </h1>
+
+        <p>
+          Налаштуйте свій профіль UA LEGION
+        </p>
+
+      </div>
+
+
+      <div class="profile-card">
+
+
+        <!-- АВАТАР -->
+
+        <div class="avatar-section">
+
+          <img
+            id="profileAvatar"
+            class="profile-avatar"
+            src="ua-legion-logo.png"
+            alt="Аватар"
+          >
+
+
+          <div class="avatar-info">
+
+            <h2
+              id="profileNamePreview"
+            >
+              UA LEGION Member
+            </h2>
+
+
+            <p>
+              Особистий профіль
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <!-- ФОРМА -->
+
+        <form
+          id="profileForm"
+        >
+
+
+          <div class="profile-grid">
+
+
+            <!-- ІМ'Я -->
+
+            <div class="profile-field">
+
+              <label>
+                👤 Ім'я
+              </label>
+
+              <input
+                type="text"
+                id="displayName"
+                placeholder="Ваше ім'я"
+              >
+
+            </div>
+
+
+            <!-- ДАТА НАРОДЖЕННЯ -->
+
+            <div class="profile-field">
+
+              <label>
+                🎂 Дата народження
+              </label>
+
+              <input
+                type="date"
+                id="birthDate"
+              >
+
+            </div>
+
+
+            <!-- AVATAR URL -->
+
+            <div class="profile-field full">
+
+              <label>
+                👤 Посилання на фото профілю
+              </label>
+
+              <input
+                type="url"
+                id="avatarUrl"
+                placeholder="https://..."
+              >
+
+            </div>
+
+
+            <!-- DISCORD USERNAME -->
+
+            <div class="profile-field">
+
+              <label>
+                💬 Ваш нікнейм у Discord
+              </label>
+
+              <input
+                type="text"
+                id="discordUsername"
+                placeholder="Наприклад: ADVOKAT"
+              >
+
+            </div>
+
+
+            <!-- DISCORD ID -->
+
+            <div class="profile-field">
+
+              <label>
+                🆔 Discord ID
+              </label>
+
+              <input
+                type="text"
+                id="discordUserId"
+                placeholder="Ваш Discord ID"
+              >
+
+            </div>
+
+
+            <!-- STEAM ID -->
+
+            <div class="profile-field">
+
+              <label>
+                🎮 Steam ID
+              </label>
+
+              <input
+                type="text"
+                id="steamId"
+                placeholder="Ваш Steam ID"
+              >
+
+            </div>
+
+
+            <!-- GAME NICKNAME -->
+
+            <div class="profile-field">
+
+              <label>
+                🎮 Ігровий нік
+              </label>
+
+              <input
+                type="text"
+                id="gameNickname"
+                placeholder="Ваш ігровий нік"
+              >
+
+            </div>
+
+
+          </div>
+
+
+          <!-- НАПРЯМКИ -->
+
+          <section
+            class="directions"
+          >
+
+            <h2>
+              📍 Напрямки UA LEGION
+            </h2>
+
+
+            <p
+              class="directions-description"
+            >
+
+              Можна вибрати
+              один або декілька напрямків.
+
+            </p>
+
+
+            <div
+              class="direction-list"
+            >
+
+
+              <label
+                class="direction-item"
+              >
+
+                <input
+                  type="checkbox"
+                  value="ets2"
+                  name="direction"
+                >
+
+                🚛 ETS2 / TruckersMP
+
+              </label>
+
+
+              <label
+                class="direction-item"
+              >
+
+                <input
+                  type="checkbox"
+                  value="wot"
+                  name="direction"
+                >
+
+                🪖 World of Tanks
+
+              </label>
+
+
+              <label
+                class="direction-item"
+              >
+
+                <input
+                  type="checkbox"
+                  value="dota2"
+                  name="direction"
+                >
+
+                ⚔️ Dota 2
+
+              </label>
+
+
+              <label
+                class="direction-item"
+              >
+
+                <input
+                  type="checkbox"
+                  value="wow"
+                  name="direction"
+                >
+
+                🐉 World of Warcraft
+
+              </label>
+
+
+            </div>
+
+          </section>
+
+
+          <!-- КНОПКИ -->
+
+          <div
+            class="profile-actions"
+          >
+
+            <button
+              type="submit"
+              id="saveProfile"
+            >
+              💾 ЗБЕРЕГТИ ПРОФІЛЬ
+            </button>
+
+
+            <button
+              type="button"
+              id="logoutButton"
+            >
+              🚪 ВИЙТИ
+            </button>
+
+          </div>
+
+
+          <div
+            id="profileMessage"
+            class="profile-message"
+          ></div>
+
+
+        </form>
+
+
+      </div>
+
+
+    </div>
+
+
+  </main>
+
+
+  <!-- =========================================
+       JAVASCRIPT
+       ========================================= -->
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script src="supabase.js"></script>
+
+  <script src="profile.js"></script>
+
+
+</body>
+
+</html>
