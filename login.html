@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="uk">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <meta name="theme-color" content="#05070b">
+
+  <title>Вхід — UA LEGION</title>
+
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      background: #05070b;
+      color: #ffffff;
+      font-family: Arial, sans-serif;
+    }
+
+
+    .login-page {
+      min-height: calc(100vh - 76px);
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      padding: 30px;
+
+      box-sizing: border-box;
+    }
+
+
+    .login-box {
+
+      width: 100%;
+
+      max-width: 460px;
+
+      padding: 40px;
+
+      background: rgba(16, 20, 28, 0.95);
+
+      border: 1px solid rgba(255, 255, 255, 0.1);
+
+      box-sizing: border-box;
+    }
+
+
+    .login-logo {
+
+      text-align: center;
+
+      margin-bottom: 25px;
+
+    }
+
+
+    .login-logo img {
+
+      width: 90px;
+
+      height: 90px;
+
+      object-fit: contain;
+
+    }
+
+
+    .login-box h1 {
+
+      text-align: center;
+
+      margin-bottom: 10px;
+
+    }
+
+
+    .login-description {
+
+      text-align: center;
+
+      color: #9ca3af;
+
+      margin-bottom: 30px;
+
+    }
+
+
+    .login-form {
+
+      display: flex;
+
+      flex-direction: column;
+
+      gap: 15px;
+
+    }
+
+
+    .login-form input {
+
+      width: 100%;
+
+      padding: 14px;
+
+      box-sizing: border-box;
+
+      background: #0a0d13;
+
+      border: 1px solid #2b3340;
+
+      color: white;
+
+      font-size: 15px;
+
+    }
+
+
+    .login-form input:focus {
+
+      outline: none;
+
+      border-color: #f5b400;
+
+    }
+
+
+    .login-button {
+
+      padding: 15px;
+
+      border: none;
+
+      cursor: pointer;
+
+      font-weight: bold;
+
+      background: #f5b400;
+
+      color: #000;
+
+      font-size: 15px;
+
+    }
+
+
+    .google-button {
+
+      width: 100%;
+
+      padding: 15px;
+
+      margin-top: 20px;
+
+      background: #ffffff;
+
+      color: #111;
+
+      border: none;
+
+      cursor: pointer;
+
+      font-weight: bold;
+
+      font-size: 15px;
+
+    }
+
+
+    .divider {
+
+      display: flex;
+
+      align-items: center;
+
+      gap: 10px;
+
+      margin: 25px 0;
+
+      color: #777;
+
+    }
+
+
+    .divider::before,
+    .divider::after {
+
+      content: "";
+
+      flex: 1;
+
+      height: 1px;
+
+      background: #2b3340;
+
+    }
+
+
+    .login-switch {
+
+      text-align: center;
+
+      margin-top: 20px;
+
+      color: #aaa;
+
+    }
+
+
+    .login-switch button {
+
+      background: none;
+
+      border: none;
+
+      color: #f5b400;
+
+      cursor: pointer;
+
+      font-weight: bold;
+
+    }
+
+
+    .message {
+
+      margin-top: 20px;
+
+      padding: 12px;
+
+      display: none;
+
+      text-align: center;
+
+      font-size: 14px;
+
+    }
+
+
+    .message.error {
+
+      display: block;
+
+      background: rgba(220, 38, 38, 0.15);
+
+      border: 1px solid #dc2626;
+
+      color: #ff8a8a;
+
+    }
+
+
+    .message.success {
+
+      display: block;
+
+      background: rgba(34, 197, 94, 0.15);
+
+      border: 1px solid #22c55e;
+
+      color: #86efac;
+
+    }
+
+
+    @media (max-width: 600px) {
+
+      .login-page {
+
+        padding: 15px;
+
+      }
+
+      .login-box {
+
+        padding: 25px;
+
+      }
+
+    }
+
+  </style>
+
+</head>
+
+
+<body>
+
+
+  <!-- ВЕРХНЄ МЕНЮ -->
+
+  <header class="topbar">
+
+    <a
+      class="brand"
+      href="index.html"
+    >
+
+      <img
+        src="ua-legion-logo.png"
+        alt="UA LEGION"
+      >
+
+      <span>
+        UA LEGION
+      </span>
+
+    </a>
+
+
+    <button
+      class="menu-btn"
+      aria-label="Відкрити меню"
+    >
+      ☰
+    </button>
+
+
+    <nav class="nav">
+
+      <a href="index.html">
+        Головна
+      </a>
+
+      <a href="about.html">
+        Про нас
+      </a>
+
+      <a href="games.html">
+        Ігри
+      </a>
+
+      <a href="join.html">
+        Подати заявку
+      </a>
+
+    </nav>
+
+  </header>
+
+
+  <!-- СТОРІНКА ВХОДУ -->
+
+  <main class="login-page">
+
+
+    <section class="login-box">
+
+
+      <div class="login-logo">
+
+        <img
+          src="ua-legion-logo.png"
+          alt="UA LEGION"
+        >
+
+      </div>
+
+
+      <h1 id="form-title">
+
+        Вхід до UA LEGION
+
+      </h1>
+
+
+      <p class="login-description">
+
+        Увійдіть до свого особистого кабінету
+
+      </p>
+
+
+      <!-- EMAIL / ПАРОЛЬ -->
+
+      <form
+        class="login-form"
+        id="auth-form"
+      >
+
+
+        <input
+          type="email"
+          id="email"
+          placeholder="Email"
+          required
+        >
+
+
+        <input
+          type="password"
+          id="password"
+          placeholder="Пароль"
+          minlength="6"
+          required
+        >
+
+
+        <button
+          type="submit"
+          class="login-button"
+          id="submit-button"
+        >
+
+          УВІЙТИ
+
+        </button>
+
+
+      </form>
+
+
+      <div class="divider">
+
+        або
+
+      </div>
+
+
+      <!-- GOOGLE -->
+
+      <button
+        class="google-button"
+        id="google-login"
+      >
+
+        УВІЙТИ ЧЕРЕЗ GOOGLE
+
+      </button>
+
+
+      <div class="login-switch">
+
+
+        <span id="switch-text">
+
+          Ще немає акаунта?
+
+        </span>
+
+
+        <button
+          id="switch-mode"
+        >
+
+          Реєстрація
+
+        </button>
+
+
+      </div>
+
+
+      <div
+        class="message"
+        id="message"
+      >
+      </div>
+
+
+    </section>
+
+
+  </main>
+
+
+  <!-- SUPABASE -->
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script src="supabase.js"></script>
+
+  <script src="login.js"></script>
+
+
+</body>
+
+</html>
