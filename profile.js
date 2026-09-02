@@ -1,67 +1,130 @@
+// ==========================================
 // UA LEGION — PROFILE SYSTEM
 // profile.js
+// ==========================================
 
 document.addEventListener("DOMContentLoaded", async () => {
 
-  const supabase = window.supabaseClient;
+  // ======================================
+  // SUPABASE
+  // ======================================
+
+  const supabase =
+    window.supabaseClient;
+
 
   if (!supabase) {
-    console.error("Supabase не підключений");
+
+    console.error(
+      "Supabase не підключений"
+    );
+
     return;
+
   }
+
 
   // ======================================
   // ПЕРЕВІРКА АВТОРИЗАЦІЇ
   // ======================================
 
   const {
-    data: { user },
+    data: {
+      user
+    },
     error: userError
-  } = await supabase.auth.getUser();
+  } = await supabase
+    .auth
+    .getUser();
 
-  if (userError || !user) {
-    window.location.href = "login.html";
+
+  if (
+    userError ||
+    !user
+  ) {
+
+    window.location.href =
+      "login.html";
+
     return;
+
   }
+
 
   // ======================================
   // ЕЛЕМЕНТИ СТОРІНКИ
   // ======================================
 
-  const profileForm = document.getElementById("profileForm");
+  const profileForm =
+    document.getElementById(
+      "profileForm"
+    );
+
 
   const displayName =
-    document.getElementById("displayName");
+    document.getElementById(
+      "displayName"
+    );
+
 
   const birthDate =
-    document.getElementById("birthDate");
+    document.getElementById(
+      "birthDate"
+    );
+
 
   const avatarUrl =
-    document.getElementById("avatarUrl");
+    document.getElementById(
+      "avatarUrl"
+    );
+
 
   const discordUsername =
-    document.getElementById("discordUsername");
+    document.getElementById(
+      "discordUsername"
+    );
+
 
   const discordUserId =
-    document.getElementById("discordUserId");
+    document.getElementById(
+      "discordUserId"
+    );
+
 
   const steamId =
-    document.getElementById("steamId");
+    document.getElementById(
+      "steamId"
+    );
+
 
   const gameNickname =
-    document.getElementById("gameNickname");
+    document.getElementById(
+      "gameNickname"
+    );
+
 
   const profileAvatar =
-    document.getElementById("profileAvatar");
+    document.getElementById(
+      "profileAvatar"
+    );
+
 
   const profileNamePreview =
-    document.getElementById("profileNamePreview");
+    document.getElementById(
+      "profileNamePreview"
+    );
+
 
   const messageBox =
-    document.getElementById("profileMessage");
+    document.getElementById(
+      "profileMessage"
+    );
+
 
   const logoutButton =
-    document.getElementById("logoutButton");
+    document.getElementById(
+      "logoutButton"
+    );
 
 
   // ======================================
@@ -77,7 +140,10 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
     }
 
-    messageBox.textContent = message;
+
+    messageBox.textContent =
+      message;
+
 
     messageBox.className =
       "profile-message " + type;
@@ -111,30 +177,44 @@ document.addEventListener("DOMContentLoaded", async () => {
         error
       );
 
+
       showMessage(
         error.message,
         "error"
       );
 
+
       return;
+
     }
 
+
+    // Якщо профіль ще не створений
 
     if (!profile) {
       return;
     }
 
 
-    // -------------------------------
+    // ==================================
     // ІМ'Я
-    // -------------------------------
+    // ==================================
 
-    if (profile.display_name) {
+    if (
+      profile.display_name
+    ) {
 
-      displayName.value =
-        profile.display_name;
+      if (displayName) {
 
-      if (profileNamePreview) {
+        displayName.value =
+          profile.display_name;
+
+      }
+
+
+      if (
+        profileNamePreview
+      ) {
 
         profileNamePreview.textContent =
           profile.display_name;
@@ -144,11 +224,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    // -------------------------------
+    // ==================================
     // ДАТА НАРОДЖЕННЯ
-    // -------------------------------
+    // ==================================
 
-    if (profile.birth_date) {
+    if (
+      profile.birth_date &&
+      birthDate
+    ) {
 
       birthDate.value =
         profile.birth_date;
@@ -156,16 +239,25 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    // -------------------------------
+    // ==================================
     // АВАТАР
-    // -------------------------------
+    // ==================================
 
-    if (profile.avatar_url) {
+    if (
+      profile.avatar_url
+    ) {
 
-      avatarUrl.value =
-        profile.avatar_url;
+      if (avatarUrl) {
 
-      if (profileAvatar) {
+        avatarUrl.value =
+          profile.avatar_url;
+
+      }
+
+
+      if (
+        profileAvatar
+      ) {
 
         profileAvatar.src =
           profile.avatar_url;
@@ -175,11 +267,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    // -------------------------------
+    // ==================================
     // DISCORD USERNAME
-    // -------------------------------
+    // ==================================
 
-    if (profile.discord_username) {
+    if (
+      profile.discord_username &&
+      discordUsername
+    ) {
 
       discordUsername.value =
         profile.discord_username;
@@ -187,11 +282,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    // -------------------------------
+    // ==================================
     // DISCORD USER ID
-    // -------------------------------
+    // ==================================
 
-    if (profile.discord_user_id) {
+    if (
+      profile.discord_user_id &&
+      discordUserId
+    ) {
 
       discordUserId.value =
         profile.discord_user_id;
@@ -199,11 +297,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    // -------------------------------
+    // ==================================
     // STEAM ID
-    // -------------------------------
+    // ==================================
 
-    if (profile.steam_id) {
+    if (
+      profile.steam_id &&
+      steamId
+    ) {
 
       steamId.value =
         profile.steam_id;
@@ -211,11 +312,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    // -------------------------------
+    // ==================================
     // ІГРОВИЙ НІК
-    // -------------------------------
+    // ==================================
 
-    if (profile.game_nickname) {
+    if (
+      profile.game_nickname &&
+      gameNickname
+    ) {
 
       gameNickname.value =
         profile.game_nickname;
@@ -231,10 +335,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   async function loadDirections() {
 
-
-    // -------------------------------
+    // ==================================
     // ОТРИМУЄМО ВСІ НАПРЯМКИ
-    // -------------------------------
+    // ==================================
 
     const {
       data: allDirections,
@@ -253,41 +356,47 @@ document.addEventListener("DOMContentLoaded", async () => {
         directionsError
       );
 
+
       showMessage(
         "Не вдалося завантажити напрямки: " +
         directionsError.message,
         "error"
       );
 
+
       return;
+
     }
 
 
-    // -------------------------------
+    // ==================================
     // СТВОРЮЄМО КАРТУ
     // ID → SLUG
-    // -------------------------------
+    // ==================================
 
     const directionMap =
       new Map(
 
-        allDirections.map(
-          (direction) => [
+        (allDirections || [])
+          .map(
+            (direction) => [
 
-            String(direction.id),
+              String(
+                direction.id
+              ),
 
-            direction.slug
+              direction.slug
 
-          ]
-        )
+            ]
+          )
 
       );
 
 
-    // -------------------------------
+    // ==================================
     // ОТРИМУЄМО НАПРЯМКИ
     // ПОТОЧНОГО КОРИСТУВАЧА
-    // -------------------------------
+    // ==================================
 
     const {
       data: selectedRows,
@@ -310,18 +419,21 @@ document.addEventListener("DOMContentLoaded", async () => {
         selectedError
       );
 
+
       showMessage(
         selectedError.message,
         "error"
       );
 
+
       return;
+
     }
 
 
-    // -------------------------------
+    // ==================================
     // ОЧИЩАЄМО ЧЕКБОКСИ
-    // -------------------------------
+    // ==================================
 
     document
       .querySelectorAll(
@@ -337,46 +449,43 @@ document.addEventListener("DOMContentLoaded", async () => {
       );
 
 
-    // -------------------------------
+    // ==================================
     // ВІДМІЧАЄМО
     // ЗБЕРЕЖЕНІ НАПРЯМКИ
-    // -------------------------------
+    // ==================================
 
-    selectedRows.forEach(
-      (row) => {
+    (selectedRows || [])
+      .forEach(
+        (row) => {
 
-        const slug =
-          directionMap.get(
-
-            String(
-              row.direction_id
-            )
-
-          );
+          const slug =
+            directionMap.get(
+              String(
+                row.direction_id
+              )
+            );
 
 
-        if (!slug) {
-          return;
+          if (!slug) {
+            return;
+          }
+
+
+          const checkbox =
+            document.querySelector(
+              `input[name="direction"][value="${slug}"]`
+            );
+
+
+          if (checkbox) {
+
+            checkbox.checked =
+              true;
+
+          }
+
         }
-
-
-        const checkbox =
-          document.querySelector(
-
-            `input[name="direction"][value="${slug}"]`
-
-          );
-
-
-        if (checkbox) {
-
-          checkbox.checked =
-            true;
-
-        }
-
-      }
-    );
+      );
 
   }
 
@@ -385,225 +494,286 @@ document.addEventListener("DOMContentLoaded", async () => {
   // ЗАВАНТАЖЕННЯ РОЛЕЙ КОРИСТУВАЧА
   // ======================================
 
-async function loadUserRoles() {
+  async function loadUserRoles() {
 
-  const rolesList =
-    document.getElementById(
-      "rolesList"
-    );
-
-  const {
-    data,
-    error
-  } = await supabase
-    .from("user_roles")
-    .select(`
-      user_id,
-      role_id,
-      direction_id,
-
-      roles (
-        code,
-        name
-      ),
-
-      directions (
-        name,
-        slug
-      )
-    `)
-    .eq(
-      "user_id",
-      user.id
-    )
-    .order(
-      "direction_id",
-      {
-        ascending: true,
-        nullsFirst: true
-      }
-    );
-
-
-  if (error) {
-
-    console.error(
-      "Помилка завантаження ролей:",
-      error
-    );
-
-    if (rolesList) {
-
-      rolesList.innerHTML = `
-        <div class="roles-empty">
-          Не вдалося завантажити ролі.
-        </div>
-      `;
-
-    }
-
-    return;
-
-  }
-
-
-  window.currentUserRoles =
-    data || [];
-
-
-  console.log(
-    "Ролі користувача:",
-    window.currentUserRoles
-  );
-
-
-  renderUserRoles(
-    window.currentUserRoles
-  );
-
-}
-
-
-    // -------------------------------
-    // ВИВОДИМО РОЛІ В CONSOLE
-    // -------------------------------
-
-    console.log(
-      "Ролі користувача:",
-      data
-    );
-function renderUserRoles(roles) {
-
-  const rolesList =
-    document.getElementById(
-      "rolesList"
-    );
-
-  if (!rolesList) {
-    return;
-  }
-
-  rolesList.innerHTML = "";
-
-
-  if (
-    !roles ||
-    roles.length === 0
-  ) {
-
-    rolesList.innerHTML = `
-      <div class="roles-empty">
-        У вас поки немає призначених ролей.
-      </div>
-    `;
-
-    return;
-
-  }
-
-
-  roles.forEach(
-    function (item) {
-
-      const roleCard =
-        document.createElement(
-          "div"
-        );
-
-      roleCard.className =
-        "role-card";
-
-
-      const roleName =
-        item.roles?.name ||
-        "Невідома роль";
-
-
-      const roleCode =
-        item.roles?.code ||
-        "";
-
-
-      const isGlobal =
-        item.direction_id === null;
-
-
-      const directionName =
-        item.directions?.name ||
-        "Глобальна роль";
-
-
-      let roleIcon = "👤";
-
-
-      if (roleCode === "owner") {
-        roleIcon = "👑";
-      }
-
-      else if (
-        roleCode === "deputy_owner"
-      ) {
-        roleIcon = "🛡️";
-      }
-
-      else if (
-        roleCode === "top_manager"
-      ) {
-        roleIcon = "🏆";
-      }
-
-      else if (
-        roleCode === "hr_manager"
-      ) {
-        roleIcon = "👥";
-      }
-
-      else if (
-        roleCode === "logistics_manager"
-      ) {
-        roleIcon = "🚛";
-      }
-
-
-      if (isGlobal) {
-
-        roleCard.classList.add(
-          "global"
-        );
-
-      }
-
-
-      roleCard.innerHTML = `
-
-        <h3>
-          ${roleIcon}
-          ${roleName}
-        </h3>
-
-        <p>
-          ${directionName}
-        </p>
-
-      `;
-
-
-      rolesList.appendChild(
-        roleCard
+    const rolesList =
+      document.getElementById(
+        "rolesList"
       );
 
+
+    const {
+      data,
+      error
+    } = await supabase
+      .from("user_roles")
+      .select(`
+        user_id,
+        role_id,
+        direction_id,
+
+        roles (
+          code,
+          name
+        ),
+
+        directions (
+          name,
+          slug
+        )
+      `)
+      .eq(
+        "user_id",
+        user.id
+      )
+      .order(
+        "direction_id",
+        {
+          ascending: true,
+          nullsFirst: true
+        }
+      );
+
+
+    if (error) {
+
+      console.error(
+        "Помилка завантаження ролей:",
+        error
+      );
+
+
+      if (rolesList) {
+
+        rolesList.innerHTML = `
+          <div class="roles-empty">
+            Не вдалося завантажити ролі.
+          </div>
+        `;
+
+      }
+
+
+      return;
+
     }
-  );
 
-}
 
-    // -------------------------------
-    // ЗБЕРІГАЄМО РОЛІ
-    // ГЛОБАЛЬНО
-    // -------------------------------
+    // ==================================
+    // ЗБЕРІГАЄМО РОЛІ ГЛОБАЛЬНО
+    // ==================================
 
     window.currentUserRoles =
       data || [];
+
+
+    console.log(
+      "Ролі користувача:",
+      window.currentUserRoles
+    );
+
+
+    // ==================================
+    // ВІДОБРАЖАЄМО РОЛІ
+    // ==================================
+
+    renderUserRoles(
+      window.currentUserRoles
+    );
+
+  }
+
+
+  // ======================================
+  // ВІДОБРАЖЕННЯ РОЛЕЙ
+  // ======================================
+
+  function renderUserRoles(
+    roles
+  ) {
+
+    const rolesList =
+      document.getElementById(
+        "rolesList"
+      );
+
+
+    if (!rolesList) {
+      return;
+    }
+
+
+    // Очищаємо блок
+
+    rolesList.innerHTML =
+      "";
+
+
+    // ==================================
+    // ЯКЩО РОЛЕЙ НЕМАЄ
+    // ==================================
+
+    if (
+      !roles ||
+      roles.length === 0
+    ) {
+
+      rolesList.innerHTML = `
+        <div class="roles-empty">
+          У вас поки немає призначених ролей.
+        </div>
+      `;
+
+
+      return;
+
+    }
+
+
+    // ==================================
+    // ВИВОДИМО КОЖНУ РОЛЬ
+    // ==================================
+
+    roles.forEach(
+      (item) => {
+
+        const roleCard =
+          document.createElement(
+            "div"
+          );
+
+
+        roleCard.className =
+          "role-card";
+
+
+        // ==============================
+        // НАЗВА РОЛІ
+        // ==============================
+
+        const roleName =
+          item.roles?.name ||
+          "Невідома роль";
+
+
+        // ==============================
+        // КОД РОЛІ
+        // ==============================
+
+        const roleCode =
+          item.roles?.code ||
+          "";
+
+
+        // ==============================
+        // ГЛОБАЛЬНА РОЛЬ
+        // ==============================
+
+        const isGlobal =
+          item.direction_id === null;
+
+
+        // ==============================
+        // НАЗВА НАПРЯМКУ
+        // ==============================
+
+        const directionName =
+          item.directions?.name ||
+          "Глобальна роль";
+
+
+        // ==============================
+        // ІКОНКА РОЛІ
+        // ==============================
+
+        let roleIcon =
+          "👤";
+
+
+        if (
+          roleCode === "owner"
+        ) {
+
+          roleIcon =
+            "👑";
+
+        }
+
+        else if (
+          roleCode === "deputy_owner"
+        ) {
+
+          roleIcon =
+            "🛡️";
+
+        }
+
+        else if (
+          roleCode === "top_manager"
+        ) {
+
+          roleIcon =
+            "🏆";
+
+        }
+
+        else if (
+          roleCode === "hr_manager"
+        ) {
+
+          roleIcon =
+            "👥";
+
+        }
+
+        else if (
+          roleCode === "logistics_manager"
+        ) {
+
+          roleIcon =
+            "🚛";
+
+        }
+
+
+        // ==============================
+        // ВИДІЛЯЄМО
+        // ГЛОБАЛЬНУ РОЛЬ
+        // ==============================
+
+        if (isGlobal) {
+
+          roleCard.classList.add(
+            "global"
+          );
+
+        }
+
+
+        // ==============================
+        // ВМІСТ КАРТКИ
+        // ==============================
+
+        roleCard.innerHTML = `
+
+          <h3>
+            ${roleIcon}
+            ${roleName}
+          </h3>
+
+          <p>
+            ${directionName}
+          </p>
+
+        `;
+
+
+        rolesList.appendChild(
+          roleCard
+        );
+
+      }
+    );
 
   }
 
@@ -617,8 +787,9 @@ function renderUserRoles(roles) {
     profileForm.addEventListener(
       "submit",
 
-      async (event) => {
-
+      async (
+        event
+      ) => {
 
         event.preventDefault();
 
@@ -633,17 +804,16 @@ function renderUserRoles(roles) {
         // ==================================
 
         const selectedSlugs =
-          Array.from(
-
-            document.querySelectorAll(
-              'input[name="direction"]:checked'
+          Array
+            .from(
+              document.querySelectorAll(
+                'input[name="direction"]:checked'
+              )
             )
-
-          )
-          .map(
-            (checkbox) =>
-              checkbox.value
-          );
+            .map(
+              (checkbox) =>
+                checkbox.value
+            );
 
 
         // ==================================
@@ -663,49 +833,41 @@ function renderUserRoles(roles) {
 
 
               display_name:
-
-                displayName.value.trim()
-                  || null,
+                displayName?.value
+                  .trim() || null,
 
 
               birth_date:
-
-                birthDate.value
-                  || null,
+                birthDate?.value ||
+                null,
 
 
               avatar_url:
-
-                avatarUrl.value.trim()
-                  || null,
+                avatarUrl?.value
+                  .trim() || null,
 
 
               discord_username:
-
-                discordUsername.value.trim()
-                  || null,
+                discordUsername?.value
+                  .trim() || null,
 
 
               discord_user_id:
-
-                discordUserId.value.trim()
-                  || null,
+                discordUserId?.value
+                  .trim() || null,
 
 
               steam_id:
-
-                steamId.value.trim()
-                  || null,
+                steamId?.value
+                  .trim() || null,
 
 
               game_nickname:
-
-                gameNickname.value.trim()
-                  || null,
+                gameNickname?.value
+                  .trim() || null,
 
 
               updated_at:
-
                 new Date()
                   .toISOString()
 
@@ -788,13 +950,14 @@ function renderUserRoles(roles) {
 
 
           selectedDirections =
-            directions;
+            directions || [];
 
         }
 
 
         // ==================================
-        // ВИДАЛЯЄМО СТАРІ НАПРЯМКИ
+        // ВИДАЛЯЄМО
+        // СТАРІ НАПРЯМКИ
         // ==================================
 
         const {
@@ -837,7 +1000,6 @@ function renderUserRoles(roles) {
 
           const rowsToInsert =
             selectedDirections.map(
-
               (direction) => ({
 
                 profile_id:
@@ -847,7 +1009,6 @@ function renderUserRoles(roles) {
                   direction.id
 
               })
-
             );
 
 
@@ -886,13 +1047,8 @@ function renderUserRoles(roles) {
         // ==================================
 
         if (
-
-          avatarUrl.value.trim()
-
-          &&
-
+          avatarUrl?.value.trim() &&
           profileAvatar
-
         ) {
 
           profileAvatar.src =
@@ -906,20 +1062,12 @@ function renderUserRoles(roles) {
         // ==================================
 
         if (
-
-          displayName.value.trim()
-
-          &&
-
+          displayName?.value.trim() &&
           profileNamePreview
-
         ) {
 
           profileNamePreview.textContent =
-
-            displayName
-              .value
-              .trim();
+            displayName.value.trim();
 
         }
 
@@ -933,7 +1081,6 @@ function renderUserRoles(roles) {
           "success"
         );
 
-
       }
 
     );
@@ -942,7 +1089,7 @@ function renderUserRoles(roles) {
 
 
   // ======================================
-  // ВИХІД
+  // ВИХІД З АКАУНТА
   // ======================================
 
   if (logoutButton) {
@@ -952,9 +1099,30 @@ function renderUserRoles(roles) {
 
       async () => {
 
-        await supabase
+        const {
+          error
+        } = await supabase
           .auth
           .signOut();
+
+
+        if (error) {
+
+          console.error(
+            "Помилка виходу:",
+            error
+          );
+
+
+          showMessage(
+            error.message,
+            "error"
+          );
+
+
+          return;
+
+        }
 
 
         window.location.href =
@@ -976,6 +1144,5 @@ function renderUserRoles(roles) {
   await loadDirections();
 
   await loadUserRoles();
-
 
 });
