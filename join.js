@@ -24,12 +24,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     console.error("Supabase не підключений");
 
-    alert(
-      "Помилка підключення до сервера."
-    );
+    alert("Помилка підключення до сервера.");
 
     return;
-
   }
 
 
@@ -41,12 +38,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     data: {
       user
     },
-    error
+    error: userError
   } =
     await supabase.auth.getUser();
 
 
-  if (error || !user) {
+  if (userError || !user) {
 
     alert(
       "Щоб подати заявку, потрібно увійти до акаунта."
@@ -56,7 +53,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       "login.html";
 
     return;
-
   }
 
 
@@ -72,9 +68,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
       const submitButton =
-        form.querySelector(
-          ".submit-btn"
-        );
+        form.querySelector(".submit-btn");
 
 
       // ======================================
@@ -136,9 +130,15 @@ document.addEventListener("DOMContentLoaded", async () => {
           .trim();
 
 
-      const directionElement =
-        document.querySelector(
-          'input[name="direction"]:checked'
+      // Отримуємо всі вибрані напрямки
+
+      const directions =
+        Array.from(
+          document.querySelectorAll(
+            'input[name="direction"]:checked'
+          )
+        ).map(
+          input => input.value
         );
 
 
@@ -165,7 +165,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         !discordNick ||
         !discordId ||
         !gameNick ||
-        !directionElement ||
+        directions.length === 0 ||
         !sourceElement
       ) {
 
@@ -178,10 +178,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
 
 
-      const direction =
-        directionElement.value;
-
-
       const source =
         sourceElement.value;
 
@@ -190,9 +186,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       // БЛОКУЄМО КНОПКУ
       // ======================================
 
-      submitButton.disabled =
-        true;
-
+      submitButton.disabled = true;
 
       submitButton.textContent =
         "НАДСИЛАЄМО...";
@@ -210,20 +204,23 @@ document.addEventListener("DOMContentLoaded", async () => {
           .from("applications")
           .insert({
 
-            user_id:
-              user.id,
+            user_id: user.id,
 
-            name:
-              name,
+            name: name,
 
-            age:
-              Number(age),
+            age: Number(age),
 
             discord_nickname:
               discordNick,
 
             discord_id:
               discordId,
+
+            truckersmp_nickname:
+              truckersmpNick || null,
+
+            truckersmp_id:
+              truckersmpId || null,
 
             steam_id:
               steamId || null,
@@ -232,9 +229,13 @@ document.addEventListener("DOMContentLoaded", async () => {
               gameNick,
 
             directions:
-              [
-                direction
-              ],
+              directions,
+
+            source:
+              source,
+
+            about:
+              about || null,
 
             status:
               "new"
@@ -250,7 +251,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       if (error) {
 
-        console.error(error);
+        console.error(
+          "Помилка Supabase:",
+          error
+        );
 
 
         alert(
@@ -262,10 +266,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         submitButton.disabled =
           false;
 
-
         submitButton.textContent =
           "НАДІСЛАТИ ЗАЯВКУ";
-
 
         return;
 
@@ -286,10 +288,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         "Заявку успішно надіслано!"
       );
 
-
-      // ======================================
-      // ПЕРЕХІД У КАБІНЕТ
-      // ======================================
 
       window.location.href =
         "profile.html";
