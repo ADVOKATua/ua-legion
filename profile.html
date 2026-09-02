@@ -12,12 +12,13 @@
 
   <meta name="theme-color" content="#05070b">
 
-  <title>Мій профіль — UA LEGION</title>
+  <title>Мій кабінет — UA LEGION</title>
 
   <link
     rel="stylesheet"
     href="style.css"
   >
+
 
   <style>
 
@@ -39,8 +40,7 @@
 
       justify-content: center;
 
-      padding:
-        50px 20px;
+      padding: 50px 20px;
 
       box-sizing: border-box;
 
@@ -55,6 +55,10 @@
     }
 
 
+    /* =========================================
+       ЗАГОЛОВОК
+       ========================================= */
+
     .profile-header {
 
       margin-bottom: 30px;
@@ -66,12 +70,11 @@
 
       margin-bottom: 10px;
 
-      font-size:
-        clamp(
-          32px,
-          5vw,
-          52px
-        );
+      font-size: clamp(
+        32px,
+        5vw,
+        52px
+      );
 
     }
 
@@ -82,6 +85,10 @@
 
     }
 
+
+    /* =========================================
+       КАРТКА ПРОФІЛЮ
+       ========================================= */
 
     .profile-card {
 
@@ -172,8 +179,7 @@
 
     .avatar-info h2 {
 
-      margin:
-        0 0 8px;
+      margin: 0 0 8px;
 
     }
 
@@ -198,7 +204,10 @@
       grid-template-columns:
         repeat(
           2,
-          minmax(0, 1fr)
+          minmax(
+            0,
+            1fr
+          )
         );
 
       gap: 20px;
@@ -394,7 +403,8 @@
     }
 
 
-    .profile-actions button {
+    .profile-actions button,
+    .join-application-button {
 
       padding:
         14px 25px;
@@ -419,6 +429,45 @@
 
       color:
         #111;
+
+    }
+
+
+    /* =========================================
+       ПОДАТИ ЗАЯВКУ
+       ========================================= */
+
+    .join-application-button {
+
+      display: inline-flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      box-sizing: border-box;
+
+      text-decoration: none;
+
+      background:
+        #f5b400;
+
+      color:
+        #111;
+
+      transition:
+        0.2s;
+
+    }
+
+
+    .join-application-button:hover {
+
+      transform:
+        translateY(-2px);
+
+      filter:
+        brightness(1.08);
 
     }
 
@@ -478,6 +527,14 @@
       max-width: 700px
     ) {
 
+      .profile-page {
+
+        padding:
+          30px 15px;
+
+      }
+
+
       .profile-grid {
 
         grid-template-columns:
@@ -504,6 +561,23 @@
 
       }
 
+
+      .profile-actions {
+
+        flex-direction:
+          column;
+
+      }
+
+
+      .profile-actions button,
+      .join-application-button {
+
+        width:
+          100%;
+
+      }
+
     }
 
   </style>
@@ -523,6 +597,7 @@
 
   <header class="topbar">
 
+
     <a
       class="brand"
       href="index.html"
@@ -540,32 +615,86 @@
     </a>
 
 
+    <!-- МОБІЛЬНЕ МЕНЮ -->
+
+    <button
+      class="menu-btn"
+      aria-label="Відкрити меню"
+    >
+      ☰
+    </button>
+
+
+    <!-- НАВІГАЦІЯ -->
+
     <nav class="nav">
+
 
       <a href="index.html">
         Головна
       </a>
 
+
+      <a href="about.html">
+        Про нас
+      </a>
+
+
       <a href="games.html">
         Ігри
       </a>
+
 
       <a href="events.html">
         Події
       </a>
 
+
       <a href="media.html">
         Медіа
       </a>
 
-      <a
-        href="profile.html"
-        class="nav-cta"
-      >
-        Мій профіль
+
+      <a href="gallery.html">
+        Галерея
       </a>
 
+
+      <!-- TIKTOK -->
+
+      <a
+        href="https://www.tiktok.com/@ua_legion_"
+        target="_blank"
+        rel="noopener"
+      >
+        TikTok
+      </a>
+
+
+      <!-- DISCORD -->
+
+      <a
+        href="https://discord.gg/gfunf3yq7"
+        target="_blank"
+        rel="noopener"
+        class="nav-cta"
+      >
+        Discord
+      </a>
+
+
+      <!-- ОСОБИСТИЙ КАБІНЕТ -->
+
+      <a
+        href="profile.html"
+        id="authButton"
+      >
+        Мій кабінет
+      </a>
+
+
     </nav>
+
 
   </header>
 
@@ -580,10 +709,12 @@
     <div class="profile-container">
 
 
+      <!-- ЗАГОЛОВОК -->
+
       <div class="profile-header">
 
         <h1>
-          👤 Мій профіль
+          👤 Мій кабінет
         </h1>
 
         <p>
@@ -593,12 +724,17 @@
       </div>
 
 
+      <!-- КАРТКА -->
+
       <div class="profile-card">
 
 
-        <!-- АВАТАР -->
+        <!-- =====================================
+             АВАТАР
+             ===================================== -->
 
         <div class="avatar-section">
+
 
           <img
             id="profileAvatar"
@@ -609,6 +745,7 @@
 
 
           <div class="avatar-info">
+
 
             <h2
               id="profileNamePreview"
@@ -621,12 +758,16 @@
               Особистий профіль
             </p>
 
+
           </div>
+
 
         </div>
 
 
-        <!-- ФОРМА -->
+        <!-- =====================================
+             ФОРМА ПРОФІЛЮ
+             ===================================== -->
 
         <form
           id="profileForm"
@@ -669,7 +810,7 @@
             </div>
 
 
-            <!-- AVATAR URL -->
+            <!-- АВАТАР -->
 
             <div class="profile-field full">
 
@@ -757,11 +898,14 @@
           </div>
 
 
-          <!-- НАПРЯМКИ -->
+          <!-- =====================================
+               НАПРЯМКИ
+               ===================================== -->
 
           <section
             class="directions"
           >
+
 
             <h2>
               📍 Напрямки UA LEGION
@@ -771,10 +915,7 @@
             <p
               class="directions-description"
             >
-
-              Можна вибрати
-              один або декілька напрямків.
-
+              Можна вибрати один або декілька напрямків.
             </p>
 
 
@@ -845,14 +986,20 @@
 
             </div>
 
+
           </section>
 
 
-          <!-- КНОПКИ -->
+          <!-- =====================================
+               КНОПКИ
+               ===================================== -->
 
           <div
             class="profile-actions"
           >
+
+
+            <!-- ЗБЕРЕГТИ -->
 
             <button
               type="submit"
@@ -862,6 +1009,19 @@
             </button>
 
 
+            <!-- ПОДАТИ ЗАЯВКУ -->
+
+            <a
+              href="join.html"
+              class="join-application-button"
+              id="joinButton"
+            >
+              📝 ПОДАТИ ЗАЯВКУ
+            </a>
+
+
+            <!-- ВИЙТИ -->
+
             <button
               type="button"
               id="logoutButton"
@@ -869,8 +1029,11 @@
               🚪 ВИЙТИ
             </button>
 
+
           </div>
 
+
+          <!-- ПОВІДОМЛЕННЯ -->
 
           <div
             id="profileMessage"
@@ -894,11 +1057,29 @@
        JAVASCRIPT
        ========================================= -->
 
+  <!-- SUPABASE -->
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+  <!-- ПІДКЛЮЧЕННЯ SUPABASE -->
 
   <script src="supabase.js"></script>
 
+
+  <!-- АВТОРИЗАЦІЯ В МЕНЮ -->
+
+  <script src="auth-menu.js"></script>
+
+
+  <!-- ОСОБИСТИЙ ПРОФІЛЬ -->
+
   <script src="profile.js"></script>
+
+
+  <!-- МОБІЛЬНЕ МЕНЮ -->
+
+  <script src="script.js"></script>
 
 
 </body>
