@@ -385,51 +385,83 @@ document.addEventListener("DOMContentLoaded", async () => {
   // ЗАВАНТАЖЕННЯ РОЛЕЙ КОРИСТУВАЧА
   // ======================================
 
-  async function loadUserRoles() {
+async function loadUserRoles() {
 
-    const {
-      data,
-      error
-    } = await supabase
-      .from("user_roles")
-      .select(`
-        user_id,
-        role_id,
-        direction_id,
+  const rolesList =
+    document.getElementById(
+      "rolesList"
+    );
 
-        roles (
-          code,
-          name
-        ),
+  const {
+    data,
+    error
+  } = await supabase
+    .from("user_roles")
+    .select(`
+      user_id,
+      role_id,
+      direction_id,
 
-        directions (
-          name,
-          slug
-        )
-      `)
-      .eq(
-        "user_id",
-        user.id
+      roles (
+        code,
+        name
+      ),
+
+      directions (
+        name,
+        slug
       )
-      .order(
-        "direction_id",
-        {
-          ascending: true,
-          nullsFirst: true
-        }
-      );
+    `)
+    .eq(
+      "user_id",
+      user.id
+    )
+    .order(
+      "direction_id",
+      {
+        ascending: true,
+        nullsFirst: true
+      }
+    );
 
 
-    if (error) {
+  if (error) {
 
-      console.error(
-        "Помилка завантаження ролей:",
-        error
-      );
+    console.error(
+      "Помилка завантаження ролей:",
+      error
+    );
 
-      return;
+    if (rolesList) {
+
+      rolesList.innerHTML = `
+        <div class="roles-empty">
+          Не вдалося завантажити ролі.
+        </div>
+      `;
 
     }
+
+    return;
+
+  }
+
+
+  window.currentUserRoles =
+    data || [];
+
+
+  console.log(
+    "Ролі користувача:",
+    window.currentUserRoles
+  );
+
+
+  renderUserRoles(
+    window.currentUserRoles
+  );
+
+}
 
 
     // -------------------------------
@@ -440,7 +472,130 @@ document.addEventListener("DOMContentLoaded", async () => {
       "Ролі користувача:",
       data
     );
+function renderUserRoles(roles) {
 
+  const rolesList =
+    document.getElementById(
+      "rolesList"
+    );
+
+  if (!rolesList) {
+    return;
+  }
+
+  rolesList.innerHTML = "";
+
+
+  if (
+    !roles ||
+    roles.length === 0
+  ) {
+
+    rolesList.innerHTML = `
+      <div class="roles-empty">
+        У вас поки немає призначених ролей.
+      </div>
+    `;
+
+    return;
+
+  }
+
+
+  roles.forEach(
+    function (item) {
+
+      const roleCard =
+        document.createElement(
+          "div"
+        );
+
+      roleCard.className =
+        "role-card";
+
+
+      const roleName =
+        item.roles?.name ||
+        "Невідома роль";
+
+
+      const roleCode =
+        item.roles?.code ||
+        "";
+
+
+      const isGlobal =
+        item.direction_id === null;
+
+
+      const directionName =
+        item.directions?.name ||
+        "Глобальна роль";
+
+
+      let roleIcon = "👤";
+
+
+      if (roleCode === "owner") {
+        roleIcon = "👑";
+      }
+
+      else if (
+        roleCode === "deputy_owner"
+      ) {
+        roleIcon = "🛡️";
+      }
+
+      else if (
+        roleCode === "top_manager"
+      ) {
+        roleIcon = "🏆";
+      }
+
+      else if (
+        roleCode === "hr_manager"
+      ) {
+        roleIcon = "👥";
+      }
+
+      else if (
+        roleCode === "logistics_manager"
+      ) {
+        roleIcon = "🚛";
+      }
+
+
+      if (isGlobal) {
+
+        roleCard.classList.add(
+          "global"
+        );
+
+      }
+
+
+      roleCard.innerHTML = `
+
+        <h3>
+          ${roleIcon}
+          ${roleName}
+        </h3>
+
+        <p>
+          ${directionName}
+        </p>
+
+      `;
+
+
+      rolesList.appendChild(
+        roleCard
+      );
+
+    }
+  );
+
+}
 
     // -------------------------------
     // ЗБЕРІГАЄМО РОЛІ
