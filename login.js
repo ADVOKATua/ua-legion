@@ -52,9 +52,7 @@ function showMessage(text, type = "success") {
   }
 
   messageBox.textContent = text;
-
-  messageBox.className =
-    "message " + type;
+  messageBox.className = "message " + type;
 
 }
 
@@ -65,9 +63,7 @@ function showMessage(text, type = "success") {
 
 if (!window.supabaseClient) {
 
-  console.error(
-    "Supabase не підключений"
-  );
+  console.error("Supabase не підключений");
 
   showMessage(
     "Помилка підключення до сервера",
@@ -88,8 +84,7 @@ if (switchModeButton) {
     "click",
     function () {
 
-      isRegistration =
-        !isRegistration;
+      isRegistration = !isRegistration;
 
 
       if (isRegistration) {
@@ -97,33 +92,25 @@ if (switchModeButton) {
         formTitle.textContent =
           "Реєстрація UA LEGION";
 
-
         submitButton.textContent =
           "СТВОРИТИ АКАУНТ";
-
 
         switchText.textContent =
           "Вже маєте акаунт?";
 
-
         switchModeButton.textContent =
           "Увійти";
 
-      }
-
-      else {
+      } else {
 
         formTitle.textContent =
           "Вхід до UA LEGION";
 
-
         submitButton.textContent =
           "УВІЙТИ";
 
-
         switchText.textContent =
           "Ще немає акаунта?";
-
 
         switchModeButton.textContent =
           "Реєстрація";
@@ -131,11 +118,8 @@ if (switchModeButton) {
       }
 
 
-      messageBox.className =
-        "message";
-
-      messageBox.textContent =
-        "";
+      messageBox.className = "message";
+      messageBox.textContent = "";
 
     }
   );
@@ -164,7 +148,6 @@ if (authForm) {
       const email =
         emailInput.value.trim();
 
-
       const password =
         passwordInput.value;
 
@@ -181,8 +164,7 @@ if (authForm) {
       }
 
 
-      submitButton.disabled =
-        true;
+      submitButton.disabled = true;
 
 
       // ======================================
@@ -198,14 +180,12 @@ if (authForm) {
           await window.supabaseClient.auth.signUp({
 
             email: email,
-
             password: password
 
           });
 
 
-        submitButton.disabled =
-          false;
+        submitButton.disabled = false;
 
 
         if (error) {
@@ -220,8 +200,34 @@ if (authForm) {
         }
 
 
+        // Якщо після реєстрації Supabase
+        // одразу створив сесію
+
+        if (data.user && data.session) {
+
+          showMessage(
+            "Акаунт створено! Ласкаво просимо до UA LEGION.",
+            "success"
+          );
+
+
+          setTimeout(() => {
+
+            window.location.href =
+              "index.html";
+
+          }, 500);
+
+
+          return;
+
+        }
+
+
+        // Якщо потрібне підтвердження email
+
         showMessage(
-          "Акаунт створено! Перевірте свою електронну пошту.",
+          "Акаунт створено! Перевірте свою електронну пошту та підтвердіть акаунт.",
           "success"
         );
 
@@ -242,14 +248,12 @@ if (authForm) {
         await window.supabaseClient.auth.signInWithPassword({
 
           email: email,
-
           password: password
 
         });
 
 
-      submitButton.disabled =
-        false;
+      submitButton.disabled = false;
 
 
       if (error) {
@@ -270,12 +274,14 @@ if (authForm) {
       );
 
 
-      // Перехід у профіль
+      // ======================================
+      // ПІСЛЯ ВХОДУ → ГОЛОВНА СТОРІНКА
+      // ======================================
 
       setTimeout(() => {
 
         window.location.href =
-          "profile.html";
+          "index.html";
 
       }, 500);
 
@@ -306,14 +312,16 @@ if (googleLoginButton) {
       } =
         await window.supabaseClient.auth.signInWithOAuth({
 
-          provider:
-            "google",
+          provider: "google",
 
           options: {
 
+            // Після входу через Google
+            // повертаємо на головну
+
             redirectTo:
               window.location.origin +
-              "/ua-legion/profile.html"
+              "/ua-legion/index.html"
 
           }
 
@@ -356,14 +364,16 @@ if (discordLoginButton) {
       } =
         await window.supabaseClient.auth.signInWithOAuth({
 
-          provider:
-            "discord",
+          provider: "discord",
 
           options: {
 
+            // Після входу через Discord
+            // повертаємо на головну
+
             redirectTo:
               window.location.origin +
-              "/ua-legion/profile.html"
+              "/ua-legion/index.html"
 
           }
 
