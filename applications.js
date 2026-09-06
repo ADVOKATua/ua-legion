@@ -58,6 +58,7 @@ document.addEventListener(
       window.location.href =
         "login.html";
 
+
       return;
 
     }
@@ -228,6 +229,7 @@ document.addEventListener(
           error
         );
 
+
         return false;
 
       }
@@ -254,7 +256,7 @@ document.addEventListener(
             "id, code, name"
           )
           .order(
-            "id",
+            "name",
             {
               ascending: true
             }
@@ -267,6 +269,13 @@ document.addEventListener(
           "Помилка завантаження ролей:",
           error
         );
+
+
+        showMessage(
+          "Не вдалося завантажити ролі.",
+          "error"
+        );
+
 
         return;
 
@@ -309,6 +318,13 @@ document.addEventListener(
           error
         );
 
+
+        showMessage(
+          "Не вдалося завантажити напрямки.",
+          "error"
+        );
+
+
         return;
 
       }
@@ -345,7 +361,13 @@ document.addEventListener(
       let query =
         supabase
           .from("applications")
-          .select("*");
+          .select("*")
+          .order(
+            "created_at",
+            {
+              ascending: false
+            }
+          );
 
 
       // ====================================
@@ -399,6 +421,7 @@ document.addEventListener(
 
         `;
 
+
         return;
 
       }
@@ -413,7 +436,8 @@ document.addEventListener(
       // ====================================
 
       if (
-        !isStaff &&
+        !isStaff
+        &&
         allApplications.length === 0
       ) {
 
@@ -565,7 +589,9 @@ document.addEventListener(
 
           const statusMatch =
 
-            status === "all" ||
+            status === "all"
+
+            ||
 
             application.status ===
             status;
@@ -597,15 +623,21 @@ document.addEventListener(
 
           const searchMatch =
 
-            !search ||
+            !search
+
+            ||
 
             name.includes(
               search
-            ) ||
+            )
+
+            ||
 
             discord.includes(
               search
-            ) ||
+            )
+
+            ||
 
             gameNickname.includes(
               search
@@ -614,7 +646,9 @@ document.addEventListener(
 
           return (
 
-            statusMatch &&
+            statusMatch
+
+            &&
 
             searchMatch
 
@@ -711,10 +745,24 @@ document.addEventListener(
       }
 
 
-      return new Date(
-        dateString
-      )
-      .toLocaleString(
+      const date =
+        new Date(
+          dateString
+        );
+
+
+      if (
+        Number.isNaN(
+          date.getTime()
+        )
+      ) {
+
+        return "-";
+
+      }
+
+
+      return date.toLocaleString(
         "uk-UA"
       );
 
@@ -729,7 +777,11 @@ document.addEventListener(
       directions
     ) {
 
-      if (!directions) {
+      if (
+        directions === null ||
+        directions === undefined ||
+        directions === ""
+      ) {
 
         return "-";
 
@@ -742,14 +794,20 @@ document.addEventListener(
         )
       ) {
 
-        return directions.join(
-          ", "
-        );
+        return directions
+          .filter(
+            item => item
+          )
+          .join(
+            ", "
+          );
 
       }
 
 
-      return directions;
+      return String(
+        directions
+      );
 
     }
 
@@ -798,31 +856,6 @@ document.addEventListener(
       }
 
 
-      // Якщо в заявці вже UUID напрямку
-
-      const directDirection =
-        allDirections.find(
-
-          direction =>
-            String(
-              direction.id
-            ) ===
-            String(
-              applicationDirection
-            )
-
-        );
-
-
-      if (directDirection) {
-
-        return directDirection.id;
-
-      }
-
-
-      // Відповідність старих назв
-
       const directionMap = {
 
         "ETS2":
@@ -852,37 +885,38 @@ document.addEventListener(
         ];
 
 
-      if (!slug) {
+      if (slug) {
 
-        const foundByName =
+        const foundBySlug =
           allDirections.find(
 
             direction =>
-              direction.name ===
-              applicationDirection
+              direction.slug ===
+              slug
 
           );
 
 
         return (
-          foundByName?.id ||
+          foundBySlug?.id ||
           null
         );
 
       }
 
 
-      const direction =
+      const foundByName =
         allDirections.find(
 
-          item =>
-            item.slug === slug
+          direction =>
+            direction.name ===
+            applicationDirection
 
         );
 
 
       return (
-        direction?.id ||
+        foundByName?.id ||
         null
       );
 
@@ -913,9 +947,7 @@ document.addEventListener(
           html += `
 
             <option
-              value="${escapeHtml(
-                role.id
-              )}"
+              value="${escapeHtml(role.id)}"
             >
 
               ${escapeHtml(
@@ -982,9 +1014,7 @@ document.addEventListener(
           html += `
 
             <option
-              value="${escapeHtml(
-                direction.id
-              )}"
+              value="${escapeHtml(direction.id)}"
             >
 
               📍 ${escapeHtml(
@@ -1037,6 +1067,7 @@ document.addEventListener(
           </div>
 
         `;
+
 
         return;
 
@@ -1286,7 +1317,7 @@ document.addEventListener(
 
                 <select
                   class="application-role-select"
-                  data-id="${application.id}"
+                  data-id="${escapeHtml(application.id)}"
                   ${isNew ? "" : "disabled"}
                 >
 
@@ -1297,7 +1328,7 @@ document.addEventListener(
 
                 <select
                   class="application-direction-select"
-                  data-id="${application.id}"
+                  data-id="${escapeHtml(application.id)}"
                   ${isNew ? "" : "disabled"}
                 >
 
@@ -1323,7 +1354,7 @@ document.addEventListener(
 
                 <textarea
                   class="review-comment"
-                  data-id="${application.id}"
+                  data-id="${escapeHtml(application.id)}"
                   placeholder="Коментар для заявки..."
                   ${isNew ? "" : "readonly"}
                 >${escapeHtml(
@@ -1343,7 +1374,7 @@ document.addEventListener(
                     application-btn
                     approve-btn
                   "
-                  data-id="${application.id}"
+                  data-id="${escapeHtml(application.id)}"
                   ${isNew ? "" : "disabled"}
                 >
 
@@ -1357,7 +1388,7 @@ document.addEventListener(
                     application-btn
                     reject-btn
                   "
-                  data-id="${application.id}"
+                  data-id="${escapeHtml(application.id)}"
                   ${isNew ? "" : "disabled"}
                 >
 
@@ -1589,14 +1620,11 @@ document.addEventListener(
           "error"
         );
 
+
         return;
 
       }
 
-
-      // ====================================
-      // GET APPLICATION
-      // ====================================
 
       const application =
         allApplications.find(
@@ -1615,14 +1643,11 @@ document.addEventListener(
           "error"
         );
 
+
         return;
 
       }
 
-
-      // ====================================
-      // BUTTON LOADING
-      // ====================================
 
       if (button) {
 
@@ -1639,42 +1664,44 @@ document.addEventListener(
       // ====================================
       // NORMALIZE DIRECTION
       // ====================================
-      //
-      // ВАЖЛИВО:
-      // "global", "null", "", null
-      // НЕ повинні потрапити в UUID поле.
-      //
-      // Якщо напрямок глобальний —
-      // direction_id взагалі не передаємо.
-      //
-      // ====================================
 
       let finalDirectionId =
         null;
 
 
       if (
-
         directionId &&
-
         directionId !== "global" &&
-
         directionId !== "null" &&
-
-        directionId !== ""
-
+        directionId !== "undefined"
       ) {
 
         finalDirectionId =
-          String(
-            directionId
-          );
+          directionId;
 
       }
 
 
       console.log(
-        "Вибраний напрямок:",
+        "Схвалення заявки:",
+        applicationId
+      );
+
+
+      console.log(
+        "Користувач:",
+        application.user_id
+      );
+
+
+      console.log(
+        "Роль:",
+        roleId
+      );
+
+
+      console.log(
+        "Напрямок:",
         finalDirectionId
       );
 
@@ -1687,7 +1714,7 @@ document.addEventListener(
         supabase
           .from("user_roles")
           .select(
-            "user_id, role_id, direction_id"
+            "id, user_id, role_id, direction_id"
           )
           .eq(
             "user_id",
@@ -1695,32 +1722,17 @@ document.addEventListener(
           )
           .eq(
             "role_id",
-            Number(roleId)
+            roleId
           );
 
 
-      // ====================================
-      // GLOBAL ROLE
-      // ====================================
+      // ВАЖНО:
+      // direction_id добавляем только
+      // если реально выбрано направление
 
       if (
-        finalDirectionId === null
+        finalDirectionId !== null
       ) {
-
-        roleQuery =
-          roleQuery.is(
-            "direction_id",
-            null
-          );
-
-      }
-
-
-      // ====================================
-      // DIRECTION ROLE
-      // ====================================
-
-      else {
 
         roleQuery =
           roleQuery.eq(
@@ -1747,6 +1759,7 @@ document.addEventListener(
 
 
         showMessage(
+          "Помилка перевірки ролі: " +
           existingRoleError.message,
           "error"
         );
@@ -1774,13 +1787,9 @@ document.addEventListener(
       // ====================================
 
       if (
-
         !existingRoles ||
-
         existingRoles.length === 0
-
       ) {
-
 
         const roleData = {
 
@@ -1789,19 +1798,16 @@ document.addEventListener(
 
 
           role_id:
-            Number(roleId)
+            roleId
 
         };
 
 
-        // ==================================
-        // ADD DIRECTION ONLY IF SELECTED
-        // ==================================
+        // Направление добавляем только
+        // если выбрано реальное направление
 
         if (
-
           finalDirectionId !== null
-
         ) {
 
           roleData.direction_id =
@@ -1819,11 +1825,8 @@ document.addEventListener(
         const {
           error: roleError
         } =
-
           await supabase
-
             .from("user_roles")
-
             .insert(
               roleData
             );
@@ -1838,13 +1841,9 @@ document.addEventListener(
 
 
           showMessage(
-
             "Не вдалося призначити роль: " +
-
             roleError.message,
-
             "error"
-
           );
 
 
@@ -1884,8 +1883,8 @@ document.addEventListener(
       };
 
 
-      // Додаємо коментар тільки якщо поле існує
-      // і адміністратор ввів текст
+      // Добавляем комментарий только если
+      // в базе есть это поле
 
       if (
         reviewComment
@@ -1893,6 +1892,13 @@ document.addEventListener(
 
         updateData.review_comment =
           reviewComment;
+
+      }
+
+      else {
+
+        updateData.review_comment =
+          null;
 
       }
 
@@ -1926,6 +1932,7 @@ document.addEventListener(
 
 
         showMessage(
+          "Роль призначено, але не вдалося оновити заявку: " +
           applicationError.message,
           "error"
         );
@@ -1986,6 +1993,41 @@ document.addEventListener(
       }
 
 
+      const application =
+        allApplications.find(
+
+          item =>
+            String(item.id) ===
+            String(applicationId)
+
+        );
+
+
+      if (!application) {
+
+        showMessage(
+          "Заявку не знайдено.",
+          "error"
+        );
+
+
+        if (button) {
+
+          button.disabled =
+            false;
+
+
+          button.textContent =
+            "🔴 ВІДХИЛИТИ";
+
+        }
+
+
+        return;
+
+      }
+
+
       const updateData = {
 
         status:
@@ -1994,23 +2036,18 @@ document.addEventListener(
 
         reviewed_at:
           new Date()
-            .toISOString()
+            .toISOString(),
+
+
+        review_comment:
+          reviewComment ||
+          null
 
       };
 
 
-      if (
-        reviewComment
-      ) {
-
-        updateData.review_comment =
-          reviewComment;
-
-      }
-
-
       console.log(
-        "Оновлення заявки:",
+        "Відхилення заявки:",
         updateData
       );
 
@@ -2274,11 +2311,23 @@ document.addEventListener(
     // START
     // ======================================
 
+    console.log(
+      "Перевірка доступу UA LEGION..."
+    );
 
+
+    // ====================================
     // CHECK ACCESS
+    // ====================================
 
     isStaff =
       await checkStaffAccess();
+
+
+    console.log(
+      "Адміністративний доступ:",
+      isStaff
+    );
 
 
     // ====================================
@@ -2361,9 +2410,13 @@ document.addEventListener(
 
     if (isStaff) {
 
-      await loadRoles();
+      await Promise.all([
 
-      await loadDirections();
+        loadRoles(),
+
+        loadDirections()
+
+      ]);
 
     }
 
