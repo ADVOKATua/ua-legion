@@ -151,7 +151,13 @@ document.addEventListener(
     ) {
 
       if (!messageBox) {
+
+        console.log(
+          message
+        );
+
         return;
+
       }
 
 
@@ -252,7 +258,8 @@ document.addEventListener(
           .order(
             "id",
             {
-              ascending: true
+              ascending:
+                true
             }
           );
 
@@ -295,7 +302,8 @@ document.addEventListener(
           .order(
             "id",
             {
-              ascending: true
+              ascending:
+                true
             }
           );
 
@@ -325,7 +333,9 @@ document.addEventListener(
     async function loadApplications() {
 
       if (!applicationsList) {
+
         return;
+
       }
 
 
@@ -445,10 +455,6 @@ document.addEventListener(
 
       }
 
-
-      // ====================================
-      // ADMIN STATISTICS
-      // ====================================
 
       if (isStaff) {
 
@@ -576,7 +582,8 @@ document.addEventListener(
 
           const statusMatch =
 
-            status === "all"
+            status ===
+            "all"
 
             ||
 
@@ -691,6 +698,7 @@ document.addEventListener(
 
         }
 
+
       };
 
 
@@ -775,7 +783,7 @@ document.addEventListener(
 
 
     // ======================================
-    // GET APPLICATION DIRECTION
+    // GET APPLICATION DIRECTION ID
     // ======================================
 
     function getApplicationDirectionId(
@@ -955,9 +963,7 @@ document.addEventListener(
       `;
 
 
-      if (
-        applicationDirectionId
-      ) {
+      if (applicationDirectionId) {
 
         const direction =
           allDirections.find(
@@ -965,10 +971,7 @@ document.addEventListener(
             item =>
               String(
                 item.id
-              )
-
-              ===
-
+              ) ===
               String(
                 applicationDirectionId
               )
@@ -1009,7 +1012,9 @@ document.addEventListener(
     function renderApplications() {
 
       if (!applicationsList) {
+
         return;
+
       }
 
 
@@ -1075,13 +1080,16 @@ document.addEventListener(
 
             card.innerHTML = `
 
-              <div class="application-card-header">
+              <div
+                class="application-card-header"
+              >
 
                 <div>
 
                   <h2>
 
                     👤
+
                     ${escapeHtml(
                       application.name ||
                       "Без імені"
@@ -1093,6 +1101,7 @@ document.addEventListener(
                   <p>
 
                     🎮
+
                     ${escapeHtml(
                       application.game_nickname ||
                       "-"
@@ -1117,7 +1126,9 @@ document.addEventListener(
               </div>
 
 
-              <div class="application-grid">
+              <div
+                class="application-grid"
+              >
 
                 <div>
 
@@ -1193,14 +1204,13 @@ document.addEventListener(
               </div>
 
 
-              <div class="application-section">
+              <div
+                class="application-section"
+              >
 
                 <span>
-
                   📍 Напрямок
-
                 </span>
-
 
                 <strong>
 
@@ -1215,14 +1225,13 @@ document.addEventListener(
               </div>
 
 
-              <div class="application-section">
+              <div
+                class="application-section"
+              >
 
                 <span>
-
                   📝 Про користувача
-
                 </span>
-
 
                 <p>
 
@@ -1236,14 +1245,13 @@ document.addEventListener(
               </div>
 
 
-              <div class="application-section">
+              <div
+                class="application-section"
+              >
 
                 <span>
-
                   🔎 Звідки дізнався
-
                 </span>
-
 
                 <strong>
 
@@ -1257,7 +1265,9 @@ document.addEventListener(
               </div>
 
 
-              <div class="application-date">
+              <div
+                class="application-date"
+              >
 
                 📅 Подано:
 
@@ -1268,12 +1278,12 @@ document.addEventListener(
               </div>
 
 
-              <div class="application-section">
+              <div
+                class="application-section"
+              >
 
                 <span>
-
                   🎖️ Призначення ролі
-
                 </span>
 
 
@@ -1303,7 +1313,9 @@ document.addEventListener(
               </div>
 
 
-              <div class="admin-comment-block">
+              <div
+                class="admin-comment-block"
+              >
 
                 <label>
 
@@ -1325,7 +1337,9 @@ document.addEventListener(
               </div>
 
 
-              <div class="application-actions">
+              <div
+                class="application-actions"
+              >
 
                 <button
                   class="
@@ -1369,7 +1383,9 @@ document.addEventListener(
 
             card.innerHTML = `
 
-              <div class="application-card-header">
+              <div
+                class="application-card-header"
+              >
 
                 <div>
 
@@ -1383,6 +1399,7 @@ document.addEventListener(
                   <p>
 
                     🎮
+
                     ${escapeHtml(
                       application.game_nickname ||
                       "UA LEGION"
@@ -1407,14 +1424,13 @@ document.addEventListener(
               </div>
 
 
-              <div class="application-section">
+              <div
+                class="application-section"
+              >
 
                 <span>
-
                   📍 Обраний напрямок
-
                 </span>
-
 
                 <strong>
 
@@ -1429,7 +1445,9 @@ document.addEventListener(
               </div>
 
 
-              <div class="application-date">
+              <div
+                class="application-date"
+              >
 
                 📅 Заявку подано:
 
@@ -1535,10 +1553,6 @@ document.addEventListener(
       );
 
 
-      // ====================================
-      // ADMIN EVENTS
-      // ====================================
-
       if (isStaff) {
 
         attachApplicationEvents();
@@ -1555,13 +1569,9 @@ document.addEventListener(
     async function approveApplication(
 
       applicationId,
-
       roleId,
-
       directionId,
-
       reviewComment,
-
       button
 
     ) {
@@ -1585,10 +1595,7 @@ document.addEventListener(
           item =>
             String(
               item.id
-            )
-
-            ===
-
+            ) ===
             String(
               applicationId
             )
@@ -1620,9 +1627,14 @@ document.addEventListener(
       }
 
 
+      // ====================================
+      // DIRECTION
+      // ====================================
+
       const finalDirectionId =
 
-        directionId === "global"
+        directionId ===
+        "global"
 
           ?
 
@@ -1636,7 +1648,7 @@ document.addEventListener(
 
 
       // ====================================
-      // CHECK EXISTING ROLE
+      // CHECK ROLE
       // ====================================
 
       let roleQuery =
@@ -1660,7 +1672,8 @@ document.addEventListener(
 
 
       if (
-        finalDirectionId === null
+        finalDirectionId ===
+        null
       ) {
 
         roleQuery =
@@ -1690,6 +1703,12 @@ document.addEventListener(
 
 
       if (existingRoleError) {
+
+        console.error(
+          "Помилка перевірки ролі:",
+          existingRoleError
+        );
+
 
         showMessage(
           existingRoleError.message,
@@ -1723,6 +1742,40 @@ document.addEventListener(
         existingRoles.length === 0
       ) {
 
+        const roleData = {
+
+          user_id:
+            application.user_id,
+
+
+          role_id:
+            Number(
+              roleId
+            )
+
+        };
+
+
+        // ==================================
+        // ADD DIRECTION ONLY IF SELECTED
+        // ==================================
+
+        if (
+          finalDirectionId !== null
+        ) {
+
+          roleData.direction_id =
+            finalDirectionId;
+
+        }
+
+
+        console.log(
+          "Дані для призначення ролі:",
+          roleData
+        );
+
+
         const {
           error: roleError
         } =
@@ -1730,26 +1783,15 @@ document.addEventListener(
             .from(
               "user_roles"
             )
-            .insert({
-
-              user_id:
-                application.user_id,
-
-              role_id:
-                Number(
-                  roleId
-                ),
-
-              direction_id:
-                finalDirectionId
-
-            });
+            .insert(
+              roleData
+            );
 
 
         if (roleError) {
 
           console.error(
-            "Помилка призначення ролі:",
+            "Повна помилка призначення ролі:",
             roleError
           );
 
@@ -1796,8 +1838,10 @@ document.addEventListener(
             status:
               "approved",
 
+
             review_comment:
               reviewComment,
+
 
             reviewed_at:
               new Date()
@@ -1811,6 +1855,12 @@ document.addEventListener(
 
 
       if (applicationError) {
+
+        console.error(
+          "Помилка оновлення заявки:",
+          applicationError
+        );
+
 
         showMessage(
           applicationError.message,
@@ -1853,9 +1903,7 @@ document.addEventListener(
     async function rejectApplication(
 
       applicationId,
-
       reviewComment,
-
       button
 
     ) {
@@ -1885,8 +1933,10 @@ document.addEventListener(
             status:
               "rejected",
 
+
             review_comment:
               reviewComment,
+
 
             reviewed_at:
               new Date()
@@ -1900,6 +1950,12 @@ document.addEventListener(
 
 
       if (error) {
+
+        console.error(
+          "Помилка відхилення заявки:",
+          error
+        );
+
 
         showMessage(
           error.message,
@@ -1936,7 +1992,7 @@ document.addEventListener(
 
 
     // ======================================
-    // ATTACH APPLICATION EVENTS
+    // APPLICATION EVENTS
     // ======================================
 
     function attachApplicationEvents() {
@@ -2001,7 +2057,6 @@ document.addEventListener(
 
 
                 const reviewComment =
-
                   commentElement
                     ?.value
                     .trim()
@@ -2014,13 +2069,9 @@ document.addEventListener(
                 await approveApplication(
 
                   applicationId,
-
                   roleId,
-
                   directionId,
-
                   reviewComment,
-
                   button
 
                 );
@@ -2067,7 +2118,6 @@ document.addEventListener(
 
 
                 const reviewComment =
-
                   commentElement
                     ?.value
                     .trim()
@@ -2080,9 +2130,7 @@ document.addEventListener(
                 await rejectApplication(
 
                   applicationId,
-
                   reviewComment,
-
                   button
 
                 );
@@ -2140,21 +2188,8 @@ document.addEventListener(
     // START
     // ======================================
 
-    console.log(
-      "UA LEGION Applications запущено"
-    );
-
-
-    // CHECK STAFF ACCESS
-
     isStaff =
       await checkStaffAccess();
-
-
-    console.log(
-      "Staff access:",
-      isStaff
-    );
 
 
     // ====================================
@@ -2232,7 +2267,7 @@ document.addEventListener(
 
 
     // ====================================
-    // LOAD ADMIN DATA
+    // LOAD DATA
     // ====================================
 
     if (isStaff) {
@@ -2243,10 +2278,6 @@ document.addEventListener(
 
     }
 
-
-    // ====================================
-    // LOAD APPLICATIONS
-    // ====================================
 
     await loadApplications();
 
