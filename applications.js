@@ -4,12 +4,10 @@
 // applications.js
 // ==========================================
 
-
 document.addEventListener(
   "DOMContentLoaded",
 
   async () => {
-
 
     // ======================================
     // SUPABASE
@@ -94,6 +92,14 @@ document.addEventListener(
       [];
 
 
+    let allRoles =
+      [];
+
+
+    let allDirections =
+      [];
+
+
     // ======================================
     // MESSAGE
     // ======================================
@@ -120,11 +126,41 @@ document.addEventListener(
 
 
     // ======================================
-    // ROLE CHECK
+    // ESCAPE HTML
+    // ======================================
+
+    function escapeHtml(
+      value
+    ) {
+
+      if (
+        value === null ||
+        value === undefined
+      ) {
+        return "";
+      }
+
+
+      const div =
+        document.createElement(
+          "div"
+        );
+
+
+      div.textContent =
+        String(value);
+
+
+      return div.innerHTML;
+
+    }
+
+
+    // ======================================
+    // STAFF ACCESS CHECK
     // ======================================
 
     async function checkStaffAccess() {
-
 
       const {
         data,
@@ -157,35 +193,33 @@ document.addEventListener(
       }
 
 
-      const staffRoles =
-        [
+      const staffRoles = [
 
-          "owner",
+        "owner",
 
-          "deputy_owner",
+        "deputy_owner",
 
-          "top_manager",
+        "top_manager",
 
-          "hr_manager"
+        "hr_manager"
 
-        ];
-
-
-      const hasAccess =
-        data.some(
-
-          item =>
-
-            staffRoles.includes(
-
-              item.roles?.code
-
-            )
-
-        );
+      ];
 
 
-      return hasAccess;
+      return (
+        data || []
+      )
+      .some(
+
+        item =>
+
+          staffRoles.includes(
+
+            item.roles?.code
+
+          )
+
+      );
 
     }
 
@@ -226,11 +260,106 @@ document.addEventListener(
 
 
     // ======================================
+    // LOAD ROLES
+    // ======================================
+
+    async function loadRoles() {
+
+      const {
+        data,
+        error
+      } =
+        await supabase
+          .from("roles")
+          .select(
+            "id, code, name"
+          )
+          .order(
+            "id",
+            {
+              ascending: true
+            }
+          );
+
+
+      if (error) {
+
+        console.error(
+          "Помилка завантаження ролей:",
+          error
+        );
+
+
+        showMessage(
+          "Не вдалося завантажити ролі: " +
+          error.message,
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      allRoles =
+        data || [];
+
+    }
+
+
+    // ======================================
+    // LOAD DIRECTIONS
+    // ======================================
+
+    async function loadDirections() {
+
+      const {
+        data,
+        error
+      } =
+        await supabase
+          .from("directions")
+          .select(
+            "id, name, slug"
+          )
+          .order(
+            "id",
+            {
+              ascending: true
+            }
+          );
+
+
+      if (error) {
+
+        console.error(
+          "Помилка завантаження напрямків:",
+          error
+        );
+
+
+        showMessage(
+          "Не вдалося завантажити напрямки: " +
+          error.message,
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      allDirections =
+        data || [];
+
+    }
+
+
+    // ======================================
     // LOAD APPLICATIONS
     // ======================================
 
     async function loadApplications() {
-
 
       if (!applicationsList) {
         return;
@@ -304,7 +433,6 @@ document.addEventListener(
 
     function updateStatistics() {
 
-
       const newCount =
         allApplications.filter(
 
@@ -332,32 +460,55 @@ document.addEventListener(
         ).length;
 
 
-      document.getElementById(
-        "newApplicationsCount"
-      ).textContent =
-        newCount;
+      const newElement =
+        document.getElementById(
+          "newApplicationsCount"
+        );
 
 
-      document.getElementById(
-        "approvedApplicationsCount"
-      ).textContent =
-        approvedCount;
+      const approvedElement =
+        document.getElementById(
+          "approvedApplicationsCount"
+        );
 
 
-      document.getElementById(
-        "rejectedApplicationsCount"
-      ).textContent =
-        rejectedCount;
+      const rejectedElement =
+        document.getElementById(
+          "rejectedApplicationsCount"
+        );
+
+
+      if (newElement) {
+
+        newElement.textContent =
+          newCount;
+
+      }
+
+
+      if (approvedElement) {
+
+        approvedElement.textContent =
+          approvedCount;
+
+      }
+
+
+      if (rejectedElement) {
+
+        rejectedElement.textContent =
+          rejectedCount;
+
+      }
 
     }
 
 
     // ======================================
-    // FILTER APPLICATIONS
+    // FILTER
     // ======================================
 
     function getFilteredApplications() {
-
 
       const status =
         statusFilter?.value ||
@@ -377,10 +528,8 @@ document.addEventListener(
 
         application => {
 
-
-          // STATUS
-
           const statusMatch =
+
             status === "all"
 
             ||
@@ -388,8 +537,6 @@ document.addEventListener(
             application.status ===
             status;
 
-
-          // SEARCH
 
           const name =
             (
@@ -416,30 +563,30 @@ document.addEventListener(
 
 
           const searchMatch =
+
             !search
 
             ||
 
-            name.includes(
-              search
-            )
+            name.includes(search)
 
             ||
 
-            discord.includes(
-              search
-            )
+            discord.includes(search)
 
             ||
 
-            gameNickname.includes(
-              search
-            );
+            gameNickname.includes(search);
 
 
           return (
-            statusMatch &&
+
+            statusMatch
+
+            &&
+
             searchMatch
+
           );
 
         }
@@ -450,7 +597,7 @@ document.addEventListener(
 
 
     // ======================================
-    // STATUS LABEL
+    // STATUS
     // ======================================
 
     function getStatusLabel(
@@ -458,7 +605,6 @@ document.addEventListener(
     ) {
 
       const statuses = {
-
 
         new: {
 
@@ -492,7 +638,6 @@ document.addEventListener(
 
         }
 
-
       };
 
 
@@ -518,7 +663,7 @@ document.addEventListener(
 
 
     // ======================================
-    // DATE FORMAT
+    // DATE
     // ======================================
 
     function formatDate(
@@ -526,9 +671,7 @@ document.addEventListener(
     ) {
 
       if (!dateString) {
-
         return "-";
-
       }
 
 
@@ -543,19 +686,15 @@ document.addEventListener(
 
 
     // ======================================
-    // DIRECTIONS
+    // DIRECTIONS FORMAT
     // ======================================
 
     function formatDirections(
       directions
     ) {
 
-      if (
-        !directions
-      ) {
-
+      if (!directions) {
         return "-";
-
       }
 
 
@@ -578,10 +717,229 @@ document.addEventListener(
 
 
     // ======================================
+    // FIND DIRECTION
+    // FROM APPLICATION
+    // ======================================
+
+    function getApplicationDirectionId(
+      application
+    ) {
+
+      if (
+        !application.directions
+      ) {
+        return null;
+      }
+
+
+      const directions =
+        Array.isArray(
+          application.directions
+        )
+
+          ?
+
+          application.directions
+
+          :
+
+          [
+            application.directions
+          ];
+
+
+      const applicationDirection =
+        directions[0];
+
+
+      if (!applicationDirection) {
+        return null;
+      }
+
+
+      const directionMap = {
+
+        "ETS2":
+          "ets2",
+
+        "ETS2 / TruckersMP":
+          "ets2",
+
+        "World of Tanks":
+          "wot",
+
+        "Dota 2":
+          "dota2",
+
+        "World of Warcraft":
+          "wow",
+
+        "Streaming":
+          "streaming"
+
+      };
+
+
+      const slug =
+        directionMap[
+          applicationDirection
+        ];
+
+
+      if (!slug) {
+
+        const foundByName =
+          allDirections.find(
+
+            direction =>
+              direction.name ===
+              applicationDirection
+
+          );
+
+
+        return foundByName?.id ||
+          null;
+
+      }
+
+
+      const direction =
+        allDirections.find(
+
+          item =>
+            item.slug === slug
+
+        );
+
+
+      return direction?.id ||
+        null;
+
+    }
+
+
+    // ======================================
+    // ROLE OPTIONS
+    // ======================================
+
+    function createRoleOptions() {
+
+      let html = `
+
+        <option value="">
+
+          Оберіть роль...
+
+        </option>
+
+      `;
+
+
+      allRoles.forEach(
+
+        role => {
+
+          html += `
+
+            <option
+              value="${role.id}"
+            >
+
+              ${escapeHtml(
+                role.name
+              )}
+
+            </option>
+
+          `;
+
+        }
+
+      );
+
+
+      return html;
+
+    }
+
+
+    // ======================================
+    // DIRECTION OPTIONS
+    // ======================================
+
+    function createDirectionOptions(
+      application
+    ) {
+
+      const applicationDirectionId =
+        getApplicationDirectionId(
+          application
+        );
+
+
+      let html = `
+
+        <option value="global">
+
+          🌐 Глобальна роль
+
+        </option>
+
+      `;
+
+
+      if (
+        applicationDirectionId
+      ) {
+
+        const direction =
+          allDirections.find(
+
+            item =>
+              String(item.id) ===
+              String(
+                applicationDirectionId
+              )
+
+          );
+
+
+        if (direction) {
+
+          html += `
+
+            <option
+              value="${direction.id}"
+            >
+
+              📍 ${escapeHtml(
+                direction.name
+              )}
+
+            </option>
+
+          `;
+
+        }
+
+      }
+
+
+      return html;
+
+    }
+
+
+    // ======================================
     // RENDER
     // ======================================
 
     function renderApplications() {
+
+      if (!applicationsList) {
+        return;
+      }
 
 
       const applications =
@@ -616,7 +974,6 @@ document.addEventListener(
 
         application => {
 
-
           const card =
             document.createElement(
               "div"
@@ -633,8 +990,12 @@ document.addEventListener(
             );
 
 
-          card.innerHTML = `
+          const isNew =
+            application.status ===
+            "new";
 
+
+          card.innerHTML = `
 
             <!-- HEADER -->
 
@@ -642,14 +1003,16 @@ document.addEventListener(
               class="application-card-header"
             >
 
-
               <div>
-
 
                 <h2>
 
                   👤
-                  ${application.name || "Без імені"}
+
+                  ${escapeHtml(
+                    application.name ||
+                    "Без імені"
+                  )}
 
                 </h2>
 
@@ -657,10 +1020,13 @@ document.addEventListener(
                 <p>
 
                   🎮
-                  ${application.game_nickname || "-"}
+
+                  ${escapeHtml(
+                    application.game_nickname ||
+                    "-"
+                  )}
 
                 </p>
-
 
               </div>
 
@@ -676,9 +1042,7 @@ document.addEventListener(
 
               </span>
 
-
             </div>
-
 
 
             <!-- INFO -->
@@ -687,84 +1051,78 @@ document.addEventListener(
               class="application-grid"
             >
 
-
               <div>
 
                 <span>
-
                   🎂 Вік
-
                 </span>
-
 
                 <strong>
 
-                  ${application.age || "-"}
+                  ${escapeHtml(
+                    application.age ||
+                    "-"
+                  )}
 
                 </strong>
 
               </div>
 
 
-
               <div>
 
                 <span>
-
                   💬 Discord
-
                 </span>
-
 
                 <strong>
 
-                  ${application.discord_nickname || "-"}
+                  ${escapeHtml(
+                    application.discord_nickname ||
+                    "-"
+                  )}
 
                 </strong>
 
               </div>
 
 
-
               <div>
 
                 <span>
-
                   🆔 Discord ID
-
                 </span>
-
 
                 <strong>
 
-                  ${application.discord_id || "-"}
+                  ${escapeHtml(
+                    application.discord_id ||
+                    "-"
+                  )}
 
                 </strong>
 
               </div>
-
 
 
               <div>
 
                 <span>
-
                   🎮 Steam
-
                 </span>
-
 
                 <strong>
 
-                  ${application.steam_id || "-"}
+                  ${escapeHtml(
+                    application.steam_id ||
+                    "-"
+                  )}
 
                 </strong>
 
               </div>
-
 
             </div>
-
 
 
             <!-- DIRECTION -->
@@ -773,25 +1131,21 @@ document.addEventListener(
               class="application-section"
             >
 
-
               <span>
-
                 📍 Напрямок
-
               </span>
-
 
               <strong>
 
-                ${formatDirections(
-                  application.directions
+                ${escapeHtml(
+                  formatDirections(
+                    application.directions
+                  )
                 )}
 
               </strong>
 
-
             </div>
-
 
 
             <!-- ABOUT -->
@@ -800,23 +1154,20 @@ document.addEventListener(
               class="application-section"
             >
 
-
               <span>
-
                 📝 Про користувача
-
               </span>
-
 
               <p>
 
-                ${application.about || "Не вказано"}
+                ${escapeHtml(
+                  application.about ||
+                  "Не вказано"
+                )}
 
               </p>
 
-
             </div>
-
 
 
             <!-- SOURCE -->
@@ -825,23 +1176,20 @@ document.addEventListener(
               class="application-section"
             >
 
-
               <span>
-
                 🔎 Звідки дізнався
-
               </span>
-
 
               <strong>
 
-                ${application.source || "-"}
+                ${escapeHtml(
+                  application.source ||
+                  "-"
+                )}
 
               </strong>
 
-
             </div>
-
 
 
             <!-- DATE -->
@@ -859,13 +1207,48 @@ document.addEventListener(
             </div>
 
 
+            <!-- ROLE ASSIGNMENT -->
+
+            <div
+              class="application-section"
+            >
+
+              <span>
+                🎖️ Призначення ролі
+              </span>
+
+
+              <select
+                class="application-role-select"
+                data-id="${application.id}"
+                ${isNew ? "" : "disabled"}
+              >
+
+                ${createRoleOptions()}
+
+              </select>
+
+
+              <select
+                class="application-direction-select"
+                data-id="${application.id}"
+                ${isNew ? "" : "disabled"}
+              >
+
+                ${createDirectionOptions(
+                  application
+                )}
+
+              </select>
+
+            </div>
+
 
             <!-- ADMIN COMMENT -->
 
             <div
               class="admin-comment-block"
             >
-
 
               <label>
 
@@ -878,11 +1261,13 @@ document.addEventListener(
                 class="review-comment"
                 data-id="${application.id}"
                 placeholder="Коментар для заявки..."
-              >${application.review_comment || ""}</textarea>
-
+                ${isNew ? "" : "readonly"}
+              >${escapeHtml(
+                application.review_comment ||
+                ""
+              )}</textarea>
 
             </div>
-
 
 
             <!-- ACTIONS -->
@@ -890,7 +1275,6 @@ document.addEventListener(
             <div
               class="application-actions"
             >
-
 
               <button
 
@@ -901,12 +1285,13 @@ document.addEventListener(
 
                 data-id="${application.id}"
 
+                ${isNew ? "" : "disabled"}
+
               >
 
                 🟢 СХВАЛИТИ
 
               </button>
-
 
 
               <button
@@ -918,15 +1303,15 @@ document.addEventListener(
 
                 data-id="${application.id}"
 
+                ${isNew ? "" : "disabled"}
+
               >
 
                 🔴 ВІДХИЛИТИ
 
               </button>
 
-
             </div>
-
 
           `;
 
@@ -946,11 +1331,394 @@ document.addEventListener(
 
 
     // ======================================
+    // APPROVE APPLICATION
+    // ======================================
+
+    async function approveApplication(
+      applicationId,
+      roleId,
+      directionId,
+      reviewComment,
+      button
+    ) {
+
+      if (!roleId) {
+
+        showMessage(
+          "Перед схваленням потрібно вибрати роль.",
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      const application =
+        allApplications.find(
+
+          item =>
+            String(item.id) ===
+            String(applicationId)
+
+        );
+
+
+      if (!application) {
+
+        showMessage(
+          "Заявку не знайдено.",
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      if (button) {
+
+        button.disabled =
+          true;
+
+
+        button.textContent =
+          "СХВАЛЕННЯ...";
+
+      }
+
+
+      // ================================
+      // DIRECTION
+      // ================================
+
+      const finalDirectionId =
+
+        directionId === "global"
+
+          ?
+
+          null
+
+          :
+
+          Number(
+            directionId
+          );
+
+
+      // ================================
+      // CHECK EXISTING ROLE
+      // ================================
+
+      let roleQuery =
+        supabase
+          .from("user_roles")
+          .select(
+            "user_id, role_id, direction_id"
+          )
+          .eq(
+            "user_id",
+            application.user_id
+          )
+          .eq(
+            "role_id",
+            Number(roleId)
+          );
+
+
+      if (
+        finalDirectionId === null
+      ) {
+
+        roleQuery =
+          roleQuery.is(
+            "direction_id",
+            null
+          );
+
+      }
+
+      else {
+
+        roleQuery =
+          roleQuery.eq(
+            "direction_id",
+            finalDirectionId
+          );
+
+      }
+
+
+      const {
+        data: existingRoles,
+        error: existingRoleError
+      } =
+        await roleQuery;
+
+
+      if (existingRoleError) {
+
+        console.error(
+          "Помилка перевірки ролі:",
+          existingRoleError
+        );
+
+
+        showMessage(
+          existingRoleError.message,
+          "error"
+        );
+
+
+        if (button) {
+
+          button.disabled =
+            false;
+
+
+          button.textContent =
+            "🟢 СХВАЛИТИ";
+
+        }
+
+
+        return;
+
+      }
+
+
+      // ================================
+      // INSERT ROLE
+      // ================================
+
+      if (
+        !existingRoles ||
+        existingRoles.length === 0
+      ) {
+
+        const {
+          error: roleError
+        } =
+          await supabase
+            .from("user_roles")
+            .insert({
+
+              user_id:
+                application.user_id,
+
+
+              role_id:
+                Number(roleId),
+
+
+              direction_id:
+                finalDirectionId
+
+            });
+
+
+        if (roleError) {
+
+          console.error(
+            "Помилка призначення ролі:",
+            roleError
+          );
+
+
+          showMessage(
+            "Не вдалося призначити роль: " +
+            roleError.message,
+            "error"
+          );
+
+
+          if (button) {
+
+            button.disabled =
+              false;
+
+
+            button.textContent =
+              "🟢 СХВАЛИТИ";
+
+          }
+
+
+          return;
+
+        }
+
+      }
+
+
+      // ================================
+      // APPROVE APPLICATION
+      // ================================
+
+      const {
+        error: applicationError
+      } =
+        await supabase
+          .from("applications")
+          .update({
+
+            status:
+              "approved",
+
+
+            review_comment:
+              reviewComment,
+
+
+            reviewed_at:
+              new Date()
+                .toISOString()
+
+          })
+          .eq(
+            "id",
+            applicationId
+          );
+
+
+      if (applicationError) {
+
+        console.error(
+          "Помилка схвалення заявки:",
+          applicationError
+        );
+
+
+        showMessage(
+          applicationError.message,
+          "error"
+        );
+
+
+        if (button) {
+
+          button.disabled =
+            false;
+
+
+          button.textContent =
+            "🟢 СХВАЛИТИ";
+
+        }
+
+
+        return;
+
+      }
+
+
+      showMessage(
+        "🎉 Заявку схвалено. Роль успішно призначено користувачу.",
+        "success"
+      );
+
+
+      await loadApplications();
+
+    }
+
+
+    // ======================================
+    // REJECT APPLICATION
+    // ======================================
+
+    async function rejectApplication(
+      applicationId,
+      reviewComment,
+      button
+    ) {
+
+      if (button) {
+
+        button.disabled =
+          true;
+
+
+        button.textContent =
+          "ВІДХИЛЕННЯ...";
+
+      }
+
+
+      const {
+        error
+      } =
+        await supabase
+          .from("applications")
+          .update({
+
+            status:
+              "rejected",
+
+
+            review_comment:
+              reviewComment,
+
+
+            reviewed_at:
+              new Date()
+                .toISOString()
+
+          })
+          .eq(
+            "id",
+            applicationId
+          );
+
+
+      if (error) {
+
+        console.error(
+          "Помилка відхилення заявки:",
+          error
+        );
+
+
+        showMessage(
+          error.message,
+          "error"
+        );
+
+
+        if (button) {
+
+          button.disabled =
+            false;
+
+
+          button.textContent =
+            "🔴 ВІДХИЛИТИ";
+
+        }
+
+
+        return;
+
+      }
+
+
+      showMessage(
+        "Заявку відхилено.",
+        "success"
+      );
+
+
+      await loadApplications();
+
+    }
+
+
+    // ======================================
     // EVENTS
     // ======================================
 
     function attachApplicationEvents() {
-
 
       // APPROVE
 
@@ -962,16 +1730,30 @@ document.addEventListener(
 
           button => {
 
-
             button.addEventListener(
 
               "click",
 
               async () => {
 
-
                 const applicationId =
                   button.dataset.id;
+
+
+                const roleSelect =
+                  document.querySelector(
+
+                    `.application-role-select[data-id="${applicationId}"]`
+
+                  );
+
+
+                const directionSelect =
+                  document.querySelector(
+
+                    `.application-direction-select[data-id="${applicationId}"]`
+
+                  );
 
 
                 const commentElement =
@@ -982,24 +1764,37 @@ document.addEventListener(
                   );
 
 
+                const roleId =
+                  roleSelect?.value ||
+                  "";
+
+
+                const directionId =
+                  directionSelect?.value ||
+                  "global";
+
+
                 const reviewComment =
                   commentElement
                     ?.value
                     .trim()
-
 
                   ||
 
                   null;
 
 
-                await updateApplicationStatus(
+                await approveApplication(
 
                   applicationId,
 
-                  "approved",
+                  roleId,
 
-                  reviewComment
+                  directionId,
+
+                  reviewComment,
+
+                  button
 
                 );
 
@@ -1022,13 +1817,11 @@ document.addEventListener(
 
           button => {
 
-
             button.addEventListener(
 
               "click",
 
               async () => {
-
 
                 const applicationId =
                   button.dataset.id;
@@ -1047,19 +1840,18 @@ document.addEventListener(
                     ?.value
                     .trim()
 
-
                   ||
 
                   null;
 
 
-                await updateApplicationStatus(
+                await rejectApplication(
 
                   applicationId,
 
-                  "rejected",
+                  reviewComment,
 
-                  reviewComment
+                  button
 
                 );
 
@@ -1070,91 +1862,6 @@ document.addEventListener(
           }
 
         );
-
-    }
-
-
-    // ======================================
-    // UPDATE STATUS
-    // ======================================
-
-    async function updateApplicationStatus(
-
-      applicationId,
-
-      status,
-
-      reviewComment
-
-    ) {
-
-
-      const {
-        error
-      } =
-        await supabase
-          .from("applications")
-          .update({
-
-            status:
-              status,
-
-
-            review_comment:
-              reviewComment,
-
-
-            reviewed_at:
-              new Date()
-                .toISOString(),
-
-          })
-          .eq(
-            "id",
-            applicationId
-          );
-
-
-      if (error) {
-
-        console.error(
-          "Помилка оновлення заявки:",
-          error
-        );
-
-
-        showMessage(
-
-          error.message,
-
-          "error"
-
-        );
-
-
-        return;
-
-      }
-
-
-      showMessage(
-
-        status === "approved"
-
-          ?
-
-          "Заявку схвалено."
-
-          :
-
-          "Заявку відхилено.",
-
-        "success"
-
-      );
-
-
-      await loadApplications();
 
     }
 
@@ -1185,8 +1892,11 @@ document.addEventListener(
     // START
     // ======================================
 
-    await loadApplications();
+    await loadRoles();
 
+    await loadDirections();
+
+    await loadApplications();
 
   }
 
