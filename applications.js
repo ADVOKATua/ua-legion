@@ -4,6 +4,7 @@
 // applications.js
 // ==========================================
 
+
 document.addEventListener(
   "DOMContentLoaded",
 
@@ -151,13 +152,7 @@ document.addEventListener(
     ) {
 
       if (!messageBox) {
-
-        console.log(
-          message
-        );
-
         return;
-
       }
 
 
@@ -197,7 +192,9 @@ document.addEventListener(
 
 
       div.textContent =
-        String(value);
+        String(
+          value
+        );
 
 
       return div.innerHTML;
@@ -210,6 +207,7 @@ document.addEventListener(
     // ======================================
 
     async function checkStaffAccess() {
+
 
       const {
         data,
@@ -228,6 +226,7 @@ document.addEventListener(
           error
         );
 
+
         return false;
 
       }
@@ -243,6 +242,7 @@ document.addEventListener(
     // ======================================
 
     async function loadRoles() {
+
 
       const {
         data,
@@ -271,6 +271,7 @@ document.addEventListener(
           error
         );
 
+
         return;
 
       }
@@ -287,6 +288,7 @@ document.addEventListener(
     // ======================================
 
     async function loadDirections() {
+
 
       const {
         data,
@@ -315,6 +317,7 @@ document.addEventListener(
           error
         );
 
+
         return;
 
       }
@@ -332,10 +335,9 @@ document.addEventListener(
 
     async function loadApplications() {
 
+
       if (!applicationsList) {
-
         return;
-
       }
 
 
@@ -422,7 +424,7 @@ document.addEventListener(
 
 
       // ====================================
-      // USER HAS NO APPLICATIONS
+      // NO APPLICATIONS FOR USER
       // ====================================
 
       if (
@@ -473,6 +475,7 @@ document.addEventListener(
     // ======================================
 
     function updateStatistics() {
+
 
       const newCount =
         allApplications.filter(
@@ -554,6 +557,7 @@ document.addEventListener(
 
     function getFilteredApplications() {
 
+
       if (!isStaff) {
 
         return allApplications;
@@ -582,8 +586,7 @@ document.addEventListener(
 
           const statusMatch =
 
-            status ===
-            "all"
+            status === "all"
 
             ||
 
@@ -663,6 +666,7 @@ document.addEventListener(
       status
     ) {
 
+
       const statuses = {
 
 
@@ -698,13 +702,14 @@ document.addEventListener(
 
         }
 
-
       };
 
 
       return (
 
-        statuses[status]
+        statuses[
+          status
+        ]
 
         ||
 
@@ -732,6 +737,7 @@ document.addEventListener(
       dateString
     ) {
 
+
       if (!dateString) {
 
         return "-";
@@ -739,12 +745,22 @@ document.addEventListener(
       }
 
 
-      return new Date(
-        dateString
-      )
-      .toLocaleString(
-        "uk-UA"
-      );
+      try {
+
+        return new Date(
+          dateString
+        )
+        .toLocaleString(
+          "uk-UA"
+        );
+
+      }
+
+      catch {
+
+        return "-";
+
+      }
 
     }
 
@@ -756,6 +772,7 @@ document.addEventListener(
     function formatDirections(
       directions
     ) {
+
 
       if (!directions) {
 
@@ -789,6 +806,7 @@ document.addEventListener(
     function getApplicationDirectionId(
       application
     ) {
+
 
       if (
         !application.directions
@@ -828,20 +846,26 @@ document.addEventListener(
 
       const directionMap = {
 
+
         "ETS2":
           "ets2",
+
 
         "ETS2 / TruckersMP":
           "ets2",
 
+
         "World of Tanks":
           "wot",
+
 
         "Dota 2":
           "dota2",
 
+
         "World of Warcraft":
           "wow",
+
 
         "Streaming":
           "streaming"
@@ -857,10 +881,12 @@ document.addEventListener(
 
       if (!slug) {
 
+
         const foundByName =
           allDirections.find(
 
             direction =>
+
               direction.name ===
               applicationDirection
 
@@ -879,6 +905,7 @@ document.addEventListener(
         allDirections.find(
 
           item =>
+
             item.slug ===
             slug
 
@@ -899,6 +926,7 @@ document.addEventListener(
 
     function createRoleOptions() {
 
+
       let html = `
 
         <option value="">
@@ -914,10 +942,11 @@ document.addEventListener(
 
         role => {
 
+
           html += `
 
             <option
-              value="${role.id}"
+              value="${escapeHtml(role.id)}"
             >
 
               ${escapeHtml(
@@ -946,6 +975,7 @@ document.addEventListener(
       application
     ) {
 
+
       const applicationDirectionId =
         getApplicationDirectionId(
           application
@@ -963,15 +993,22 @@ document.addEventListener(
       `;
 
 
-      if (applicationDirectionId) {
+      if (
+        applicationDirectionId
+      ) {
+
 
         const direction =
           allDirections.find(
 
             item =>
+
               String(
                 item.id
-              ) ===
+              )
+
+              ===
+
               String(
                 applicationDirectionId
               )
@@ -981,10 +1018,11 @@ document.addEventListener(
 
         if (direction) {
 
+
           html += `
 
             <option
-              value="${direction.id}"
+              value="${escapeHtml(direction.id)}"
             >
 
               📍 ${escapeHtml(
@@ -1011,10 +1049,9 @@ document.addEventListener(
 
     function renderApplications() {
 
+
       if (!applicationsList) {
-
         return;
-
       }
 
 
@@ -1029,6 +1066,7 @@ document.addEventListener(
       if (
         applications.length === 0
       ) {
+
 
         applicationsList.innerHTML = `
 
@@ -1077,6 +1115,7 @@ document.addEventListener(
           // ==================================
 
           if (isStaff) {
+
 
             card.innerHTML = `
 
@@ -1129,6 +1168,7 @@ document.addEventListener(
               <div
                 class="application-grid"
               >
+
 
                 <div>
 
@@ -1200,6 +1240,7 @@ document.addEventListener(
                   </strong>
 
                 </div>
+
 
               </div>
 
@@ -1289,7 +1330,7 @@ document.addEventListener(
 
                 <select
                   class="application-role-select"
-                  data-id="${application.id}"
+                  data-id="${escapeHtml(application.id)}"
                   ${isNew ? "" : "disabled"}
                 >
 
@@ -1300,7 +1341,7 @@ document.addEventListener(
 
                 <select
                   class="application-direction-select"
-                  data-id="${application.id}"
+                  data-id="${escapeHtml(application.id)}"
                   ${isNew ? "" : "disabled"}
                 >
 
@@ -1309,6 +1350,7 @@ document.addEventListener(
                   )}
 
                 </select>
+
 
               </div>
 
@@ -1326,7 +1368,7 @@ document.addEventListener(
 
                 <textarea
                   class="review-comment"
-                  data-id="${application.id}"
+                  data-id="${escapeHtml(application.id)}"
                   placeholder="Коментар для заявки..."
                   ${isNew ? "" : "readonly"}
                 >${escapeHtml(
@@ -1341,12 +1383,13 @@ document.addEventListener(
                 class="application-actions"
               >
 
+
                 <button
                   class="
                     application-btn
                     approve-btn
                   "
-                  data-id="${application.id}"
+                  data-id="${escapeHtml(application.id)}"
                   ${isNew ? "" : "disabled"}
                 >
 
@@ -1360,13 +1403,14 @@ document.addEventListener(
                     application-btn
                     reject-btn
                   "
-                  data-id="${application.id}"
+                  data-id="${escapeHtml(application.id)}"
                   ${isNew ? "" : "disabled"}
                 >
 
                   🔴 ВІДХИЛИТИ
 
                 </button>
+
 
               </div>
 
@@ -1380,6 +1424,7 @@ document.addEventListener(
           // ==================================
 
           else {
+
 
             card.innerHTML = `
 
@@ -1553,11 +1598,132 @@ document.addEventListener(
       );
 
 
+      // ====================================
+      // ADMIN EVENTS
+      // ====================================
+
       if (isStaff) {
 
         attachApplicationEvents();
 
       }
+
+    }
+
+
+    // ======================================
+    // UPDATE APPLICATION STATUS
+    // ======================================
+
+    async function updateApplicationStatus(
+
+      applicationId,
+
+      status,
+
+      reviewComment
+
+    ) {
+
+
+      // ====================================
+      // FIRST TRY WITH COMMENT
+      // ====================================
+
+      const updateData = {
+
+        status:
+          status,
+
+        reviewed_at:
+          new Date()
+            .toISOString()
+
+      };
+
+
+      if (
+        reviewComment
+      ) {
+
+        updateData.review_comment =
+          reviewComment;
+
+      }
+
+
+      console.log(
+        "Оновлення заявки:",
+        updateData
+      );
+
+
+      let {
+        error
+      } =
+        await supabase
+          .from(
+            "applications"
+          )
+          .update(
+            updateData
+          )
+          .eq(
+            "id",
+            applicationId
+          );
+
+
+      // ====================================
+      // FALLBACK
+      // IF review_comment COLUMN DOES NOT EXIST
+      // ====================================
+
+      if (
+        error
+        &&
+        String(
+          error.message
+        )
+        .includes(
+          "review_comment"
+        )
+      ) {
+
+
+        console.warn(
+          "Колонка review_comment відсутня. Оновлюємо без коментаря."
+        );
+
+
+        const fallback =
+          await supabase
+            .from(
+              "applications"
+            )
+            .update({
+
+              status:
+                status,
+
+              reviewed_at:
+                new Date()
+                  .toISOString()
+
+            })
+            .eq(
+              "id",
+              applicationId
+            );
+
+
+        error =
+          fallback.error;
+
+      }
+
+
+      return error;
 
     }
 
@@ -1569,9 +1735,13 @@ document.addEventListener(
     async function approveApplication(
 
       applicationId,
+
       roleId,
+
       directionId,
+
       reviewComment,
+
       button
 
     ) {
@@ -1579,10 +1749,12 @@ document.addEventListener(
 
       if (!roleId) {
 
+
         showMessage(
           "Перед схваленням потрібно вибрати роль.",
           "error"
         );
+
 
         return;
 
@@ -1593,9 +1765,13 @@ document.addEventListener(
         allApplications.find(
 
           item =>
+
             String(
               item.id
-            ) ===
+            )
+
+            ===
+
             String(
               applicationId
             )
@@ -1605,10 +1781,12 @@ document.addEventListener(
 
       if (!application) {
 
+
         showMessage(
           "Заявку не знайдено.",
           "error"
         );
+
 
         return;
 
@@ -1616,6 +1794,7 @@ document.addEventListener(
 
 
       if (button) {
+
 
         button.disabled =
           true;
@@ -1629,12 +1808,12 @@ document.addEventListener(
 
       // ====================================
       // DIRECTION
+      // UUID НЕ ПЕРЕТВОРЮЄМО В NUMBER
       // ====================================
 
       const finalDirectionId =
 
-        directionId ===
-        "global"
+        directionId === "global"
 
           ?
 
@@ -1642,9 +1821,19 @@ document.addEventListener(
 
           :
 
-          Number(
-            directionId
-          );
+          directionId;
+
+
+      console.log(
+        "Вибрана роль:",
+        roleId
+      );
+
+
+      console.log(
+        "Вибраний напрямок:",
+        finalDirectionId
+      );
 
 
       // ====================================
@@ -1665,16 +1854,14 @@ document.addEventListener(
           )
           .eq(
             "role_id",
-            Number(
-              roleId
-            )
+            roleId
           );
 
 
       if (
-        finalDirectionId ===
-        null
+        finalDirectionId === null
       ) {
+
 
         roleQuery =
           roleQuery.is(
@@ -1684,7 +1871,9 @@ document.addEventListener(
 
       }
 
+
       else {
+
 
         roleQuery =
           roleQuery.eq(
@@ -1703,6 +1892,7 @@ document.addEventListener(
 
 
       if (existingRoleError) {
+
 
         console.error(
           "Помилка перевірки ролі:",
@@ -1742,27 +1932,30 @@ document.addEventListener(
         existingRoles.length === 0
       ) {
 
+
         const roleData = {
+
 
           user_id:
             application.user_id,
 
 
+          // UUID залишаємо рядком
+
           role_id:
-            Number(
-              roleId
-            )
+            roleId
 
         };
 
 
         // ==================================
-        // ADD DIRECTION ONLY IF SELECTED
+        // ADD DIRECTION ONLY IF NOT GLOBAL
         // ==================================
 
         if (
           finalDirectionId !== null
         ) {
+
 
           roleData.direction_id =
             finalDirectionId;
@@ -1790,6 +1983,7 @@ document.addEventListener(
 
         if (roleError) {
 
+
           console.error(
             "Повна помилка призначення ролі:",
             roleError
@@ -1804,6 +1998,7 @@ document.addEventListener(
 
 
           if (button) {
+
 
             button.disabled =
               false;
@@ -1826,35 +2021,20 @@ document.addEventListener(
       // UPDATE APPLICATION
       // ====================================
 
-      const {
-        error: applicationError
-      } =
-        await supabase
-          .from(
-            "applications"
-          )
-          .update({
+      const applicationError =
+        await updateApplicationStatus(
 
-            status:
-              "approved",
+          applicationId,
 
+          "approved",
 
-            review_comment:
-              reviewComment,
+          reviewComment
 
-
-            reviewed_at:
-              new Date()
-                .toISOString()
-
-          })
-          .eq(
-            "id",
-            applicationId
-          );
+        );
 
 
       if (applicationError) {
+
 
         console.error(
           "Помилка оновлення заявки:",
@@ -1869,6 +2049,7 @@ document.addEventListener(
 
 
         if (button) {
+
 
           button.disabled =
             false;
@@ -1903,13 +2084,16 @@ document.addEventListener(
     async function rejectApplication(
 
       applicationId,
+
       reviewComment,
+
       button
 
     ) {
 
 
       if (button) {
+
 
         button.disabled =
           true;
@@ -1921,35 +2105,20 @@ document.addEventListener(
       }
 
 
-      const {
-        error
-      } =
-        await supabase
-          .from(
-            "applications"
-          )
-          .update({
+      const error =
+        await updateApplicationStatus(
 
-            status:
-              "rejected",
+          applicationId,
 
+          "rejected",
 
-            review_comment:
-              reviewComment,
+          reviewComment
 
-
-            reviewed_at:
-              new Date()
-                .toISOString()
-
-          })
-          .eq(
-            "id",
-            applicationId
-          );
+        );
 
 
       if (error) {
+
 
         console.error(
           "Помилка відхилення заявки:",
@@ -1964,6 +2133,7 @@ document.addEventListener(
 
 
         if (button) {
+
 
           button.disabled =
             false;
@@ -1992,7 +2162,7 @@ document.addEventListener(
 
 
     // ======================================
-    // APPLICATION EVENTS
+    // EVENTS
     // ======================================
 
     function attachApplicationEvents() {
@@ -2069,9 +2239,13 @@ document.addEventListener(
                 await approveApplication(
 
                   applicationId,
+
                   roleId,
+
                   directionId,
+
                   reviewComment,
+
                   button
 
                 );
@@ -2130,7 +2304,9 @@ document.addEventListener(
                 await rejectApplication(
 
                   applicationId,
+
                   reviewComment,
+
                   button
 
                 );
@@ -2156,6 +2332,7 @@ document.addEventListener(
 
       () => {
 
+
         if (isStaff) {
 
           renderApplications();
@@ -2173,6 +2350,7 @@ document.addEventListener(
 
       () => {
 
+
         if (isStaff) {
 
           renderApplications();
@@ -2187,6 +2365,11 @@ document.addEventListener(
     // ======================================
     // START
     // ======================================
+
+
+    // ====================================
+    // CHECK ACCESS
+    // ====================================
 
     isStaff =
       await checkStaffAccess();
@@ -2272,7 +2455,9 @@ document.addEventListener(
 
     if (isStaff) {
 
+
       await loadRoles();
+
 
       await loadDirections();
 
