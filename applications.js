@@ -49,15 +49,8 @@ document.addEventListener(
       !user
     ) {
 
-      console.error(
-        "Користувач не авторизований:",
-        userError
-      );
-
-
       window.location.href =
         "login.html";
-
 
       return;
 
@@ -212,6 +205,11 @@ document.addEventListener(
 
     async function checkStaffAccess() {
 
+      console.log(
+        "Перевірка доступу UA LEGION..."
+      );
+
+
       const {
         data,
         error
@@ -229,10 +227,15 @@ document.addEventListener(
           error
         );
 
-
         return false;
 
       }
+
+
+      console.log(
+        "Адміністративний доступ:",
+        data === true
+      );
 
 
       return data === true;
@@ -256,7 +259,7 @@ document.addEventListener(
             "id, code, name"
           )
           .order(
-            "name",
+            "id",
             {
               ascending: true
             }
@@ -270,13 +273,6 @@ document.addEventListener(
           error
         );
 
-
-        showMessage(
-          "Не вдалося завантажити ролі.",
-          "error"
-        );
-
-
         return;
 
       }
@@ -284,6 +280,12 @@ document.addEventListener(
 
       allRoles =
         data || [];
+
+
+      console.log(
+        "Завантажені ролі:",
+        allRoles
+      );
 
     }
 
@@ -304,7 +306,7 @@ document.addEventListener(
             "id, name, slug"
           )
           .order(
-            "name",
+            "id",
             {
               ascending: true
             }
@@ -318,13 +320,6 @@ document.addEventListener(
           error
         );
 
-
-        showMessage(
-          "Не вдалося завантажити напрямки.",
-          "error"
-        );
-
-
         return;
 
       }
@@ -332,6 +327,12 @@ document.addEventListener(
 
       allDirections =
         data || [];
+
+
+      console.log(
+        "Завантажені напрямки:",
+        allDirections
+      );
 
     }
 
@@ -361,13 +362,7 @@ document.addEventListener(
       let query =
         supabase
           .from("applications")
-          .select("*")
-          .order(
-            "created_at",
-            {
-              ascending: false
-            }
-          );
+          .select("*");
 
 
       // ====================================
@@ -671,7 +666,6 @@ document.addEventListener(
 
       const statuses = {
 
-
         new: {
 
           label:
@@ -703,7 +697,6 @@ document.addEventListener(
             "status-rejected"
 
         }
-
 
       };
 
@@ -745,24 +738,10 @@ document.addEventListener(
       }
 
 
-      const date =
-        new Date(
-          dateString
-        );
-
-
-      if (
-        Number.isNaN(
-          date.getTime()
-        )
-      ) {
-
-        return "-";
-
-      }
-
-
-      return date.toLocaleString(
+      return new Date(
+        dateString
+      )
+      .toLocaleString(
         "uk-UA"
       );
 
@@ -777,11 +756,7 @@ document.addEventListener(
       directions
     ) {
 
-      if (
-        directions === null ||
-        directions === undefined ||
-        directions === ""
-      ) {
+      if (!directions) {
 
         return "-";
 
@@ -794,20 +769,14 @@ document.addEventListener(
         )
       ) {
 
-        return directions
-          .filter(
-            item => item
-          )
-          .join(
-            ", "
-          );
+        return directions.join(
+          ", "
+        );
 
       }
 
 
-      return String(
-        directions
-      );
+      return directions;
 
     }
 
@@ -885,38 +854,37 @@ document.addEventListener(
         ];
 
 
-      if (slug) {
+      if (!slug) {
 
-        const foundBySlug =
+        const foundByName =
           allDirections.find(
 
             direction =>
-              direction.slug ===
-              slug
+              direction.name ===
+              applicationDirection
 
           );
 
 
         return (
-          foundBySlug?.id ||
+          foundByName?.id ||
           null
         );
 
       }
 
 
-      const foundByName =
+      const direction =
         allDirections.find(
 
-          direction =>
-            direction.name ===
-            applicationDirection
+          item =>
+            item.slug === slug
 
         );
 
 
       return (
-        foundByName?.id ||
+        direction?.id ||
         null
       );
 
@@ -947,7 +915,7 @@ document.addEventListener(
           html += `
 
             <option
-              value="${escapeHtml(role.id)}"
+              value="${role.id}"
             >
 
               ${escapeHtml(
@@ -1014,7 +982,7 @@ document.addEventListener(
           html += `
 
             <option
-              value="${escapeHtml(direction.id)}"
+              value="${direction.id}"
             >
 
               📍 ${escapeHtml(
@@ -1317,7 +1285,7 @@ document.addEventListener(
 
                 <select
                   class="application-role-select"
-                  data-id="${escapeHtml(application.id)}"
+                  data-id="${application.id}"
                   ${isNew ? "" : "disabled"}
                 >
 
@@ -1328,7 +1296,7 @@ document.addEventListener(
 
                 <select
                   class="application-direction-select"
-                  data-id="${escapeHtml(application.id)}"
+                  data-id="${application.id}"
                   ${isNew ? "" : "disabled"}
                 >
 
@@ -1354,7 +1322,7 @@ document.addEventListener(
 
                 <textarea
                   class="review-comment"
-                  data-id="${escapeHtml(application.id)}"
+                  data-id="${application.id}"
                   placeholder="Коментар для заявки..."
                   ${isNew ? "" : "readonly"}
                 >${escapeHtml(
@@ -1374,7 +1342,7 @@ document.addEventListener(
                     application-btn
                     approve-btn
                   "
-                  data-id="${escapeHtml(application.id)}"
+                  data-id="${application.id}"
                   ${isNew ? "" : "disabled"}
                 >
 
@@ -1388,7 +1356,7 @@ document.addEventListener(
                     application-btn
                     reject-btn
                   "
-                  data-id="${escapeHtml(application.id)}"
+                  data-id="${application.id}"
                   ${isNew ? "" : "disabled"}
                 >
 
@@ -1609,17 +1577,12 @@ document.addEventListener(
     ) {
 
 
-      // ====================================
-      // CHECK ROLE
-      // ====================================
-
       if (!roleId) {
 
         showMessage(
           "Перед схваленням потрібно вибрати роль.",
           "error"
         );
-
 
         return;
 
@@ -1643,7 +1606,6 @@ document.addEventListener(
           "error"
         );
 
-
         return;
 
       }
@@ -1662,30 +1624,22 @@ document.addEventListener(
 
 
       // ====================================
-      // NORMALIZE DIRECTION
+      // FINAL DIRECTION ID
       // ====================================
 
-      let finalDirectionId =
-        null;
+      const finalDirectionId =
 
+        directionId === "global"
 
-      if (
-        directionId &&
-        directionId !== "global" &&
-        directionId !== "null" &&
-        directionId !== "undefined"
-      ) {
+          ?
 
-        finalDirectionId =
-          directionId;
+          null
 
-      }
+          :
 
-
-      console.log(
-        "Схвалення заявки:",
-        applicationId
-      );
+          Number(
+            directionId
+          );
 
 
       console.log(
@@ -1707,6 +1661,45 @@ document.addEventListener(
 
 
       // ====================================
+      // GET SELECTED ROLE
+      // ====================================
+
+      const selectedRole =
+        allRoles.find(
+
+          role =>
+            String(role.id) ===
+            String(roleId)
+
+        );
+
+
+      if (!selectedRole) {
+
+        showMessage(
+          "Вибрану роль не знайдено.",
+          "error"
+        );
+
+
+        if (button) {
+
+          button.disabled =
+            false;
+
+
+          button.textContent =
+            "🟢 СХВАЛИТИ";
+
+        }
+
+
+        return;
+
+      }
+
+
+      // ====================================
       // CHECK EXISTING ROLE
       // ====================================
 
@@ -1722,17 +1715,23 @@ document.addEventListener(
           )
           .eq(
             "role_id",
-            roleId
+            Number(roleId)
           );
 
 
-      // ВАЖНО:
-      // direction_id добавляем только
-      // если реально выбрано направление
-
       if (
-        finalDirectionId !== null
+        finalDirectionId === null
       ) {
+
+        roleQuery =
+          roleQuery.is(
+            "direction_id",
+            null
+          );
+
+      }
+
+      else {
 
         roleQuery =
           roleQuery.eq(
@@ -1759,7 +1758,6 @@ document.addEventListener(
 
 
         showMessage(
-          "Помилка перевірки ролі: " +
           existingRoleError.message,
           "error"
         );
@@ -1791,6 +1789,7 @@ document.addEventListener(
         existingRoles.length === 0
       ) {
 
+
         const roleData = {
 
           user_id:
@@ -1798,13 +1797,18 @@ document.addEventListener(
 
 
           role_id:
-            roleId
+            Number(roleId),
+
+
+          role:
+            selectedRole.code
 
         };
 
 
-        // Направление добавляем только
-        // если выбрано реальное направление
+        // ==================================
+        // ADD DIRECTION ONLY IF SELECTED
+        // ==================================
 
         if (
           finalDirectionId !== null
@@ -1863,6 +1867,11 @@ document.addEventListener(
 
         }
 
+
+        console.log(
+          "Роль успішно призначена."
+        );
+
       }
 
 
@@ -1870,53 +1879,26 @@ document.addEventListener(
       // UPDATE APPLICATION
       // ====================================
 
-      const updateData = {
-
-        status:
-          "approved",
-
-
-        reviewed_at:
-          new Date()
-            .toISOString()
-
-      };
-
-
-      // Добавляем комментарий только если
-      // в базе есть это поле
-
-      if (
-        reviewComment
-      ) {
-
-        updateData.review_comment =
-          reviewComment;
-
-      }
-
-      else {
-
-        updateData.review_comment =
-          null;
-
-      }
-
-
-      console.log(
-        "Оновлення заявки:",
-        updateData
-      );
-
-
       const {
         error: applicationError
       } =
         await supabase
           .from("applications")
-          .update(
-            updateData
-          )
+          .update({
+
+            status:
+              "approved",
+
+
+            review_comment:
+              reviewComment,
+
+
+            reviewed_at:
+              new Date()
+                .toISOString()
+
+          })
           .eq(
             "id",
             applicationId
@@ -1932,7 +1914,6 @@ document.addEventListener(
 
 
         showMessage(
-          "Роль призначено, але не вдалося оновити заявку: " +
           applicationError.message,
           "error"
         );
@@ -1993,73 +1974,26 @@ document.addEventListener(
       }
 
 
-      const application =
-        allApplications.find(
-
-          item =>
-            String(item.id) ===
-            String(applicationId)
-
-        );
-
-
-      if (!application) {
-
-        showMessage(
-          "Заявку не знайдено.",
-          "error"
-        );
-
-
-        if (button) {
-
-          button.disabled =
-            false;
-
-
-          button.textContent =
-            "🔴 ВІДХИЛИТИ";
-
-        }
-
-
-        return;
-
-      }
-
-
-      const updateData = {
-
-        status:
-          "rejected",
-
-
-        reviewed_at:
-          new Date()
-            .toISOString(),
-
-
-        review_comment:
-          reviewComment ||
-          null
-
-      };
-
-
-      console.log(
-        "Відхилення заявки:",
-        updateData
-      );
-
-
       const {
         error
       } =
         await supabase
           .from("applications")
-          .update(
-            updateData
-          )
+          .update({
+
+            status:
+              "rejected",
+
+
+            review_comment:
+              reviewComment,
+
+
+            reviewed_at:
+              new Date()
+                .toISOString()
+
+          })
           .eq(
             "id",
             applicationId
@@ -2311,23 +2245,8 @@ document.addEventListener(
     // START
     // ======================================
 
-    console.log(
-      "Перевірка доступу UA LEGION..."
-    );
-
-
-    // ====================================
-    // CHECK ACCESS
-    // ====================================
-
     isStaff =
       await checkStaffAccess();
-
-
-    console.log(
-      "Адміністративний доступ:",
-      isStaff
-    );
 
 
     // ====================================
@@ -2410,13 +2329,9 @@ document.addEventListener(
 
     if (isStaff) {
 
-      await Promise.all([
+      await loadRoles();
 
-        loadRoles(),
-
-        loadDirections()
-
-      ]);
+      await loadDirections();
 
     }
 
