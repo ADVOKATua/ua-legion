@@ -9,6 +9,7 @@ document.addEventListener(
 
   async () => {
 
+
     // ======================================
     // SUPABASE
     // ======================================
@@ -84,6 +85,42 @@ document.addEventListener(
       );
 
 
+    const adminApplicationsPanel =
+      document.getElementById(
+        "adminApplicationsPanel"
+      );
+
+
+    const userApplicationsInfo =
+      document.getElementById(
+        "userApplicationsInfo"
+      );
+
+
+    const createApplicationBlock =
+      document.getElementById(
+        "createApplicationBlock"
+      );
+
+
+    const applicationsKicker =
+      document.getElementById(
+        "applicationsKicker"
+      );
+
+
+    const applicationsTitle =
+      document.getElementById(
+        "applicationsTitle"
+      );
+
+
+    const applicationsSubtitle =
+      document.getElementById(
+        "applicationsSubtitle"
+      );
+
+
     // ======================================
     // DATA
     // ======================================
@@ -100,7 +137,7 @@ document.addEventListener(
       [];
 
 
-    let isAdmin =
+    let isStaff =
       false;
 
 
@@ -190,7 +227,7 @@ document.addEventListener(
       if (error) {
 
         console.error(
-          "Помилка перевірки ролі:",
+          "Помилка перевірки ролей:",
           error
         );
 
@@ -229,23 +266,10 @@ document.addEventListener(
 
 
     // ======================================
-    // CHECK ACCESS
-    // ======================================
-
-    isAdmin =
-      await checkStaffAccess();
-
-
-    // ======================================
     // LOAD ROLES
     // ======================================
 
     async function loadRoles() {
-
-      if (!isAdmin) {
-        return;
-      }
-
 
       const {
         data,
@@ -287,11 +311,6 @@ document.addEventListener(
     // ======================================
 
     async function loadDirections() {
-
-      if (!isAdmin) {
-        return;
-      }
-
 
       const {
         data,
@@ -343,7 +362,7 @@ document.addEventListener(
 
         <div class="applications-loading">
 
-          Завантаження заявок...
+          ⏳ Завантаження заявок...
 
         </div>
 
@@ -353,21 +372,15 @@ document.addEventListener(
       let query =
         supabase
           .from("applications")
-          .select("*")
-          .order(
-            "created_at",
-            {
-              ascending: false
-            }
-          );
+          .select("*");
 
 
-      // ==================================
-      // ORDINARY USER
-      // ONLY OWN APPLICATIONS
-      // ==================================
+      // ====================================
+      // ADMIN SEES ALL
+      // USER SEES ONLY OWN
+      // ====================================
 
-      if (!isAdmin) {
+      if (!isStaff) {
 
         query =
           query.eq(
@@ -382,7 +395,13 @@ document.addEventListener(
         data,
         error
       } =
-        await query;
+        await query
+          .order(
+            "created_at",
+            {
+              ascending: false
+            }
+          );
 
 
       if (error) {
@@ -397,7 +416,7 @@ document.addEventListener(
 
           <div class="applications-empty">
 
-            Не вдалося завантажити заявки.
+            ❌ Не вдалося завантажити заявки.
 
           </div>
 
@@ -413,7 +432,47 @@ document.addEventListener(
         data || [];
 
 
-      updateStatistics();
+      // ====================================
+      // NO APPLICATIONS FOR USER
+      // ====================================
+
+      if (
+        !isStaff
+        &&
+        allApplications.length === 0
+      ) {
+
+        applicationsList.innerHTML =
+          "";
+
+
+        if (createApplicationBlock) {
+
+          createApplicationBlock.style.display =
+            "block";
+
+        }
+
+
+        return;
+
+      }
+
+
+      if (createApplicationBlock) {
+
+        createApplicationBlock.style.display =
+          "none";
+
+      }
+
+
+      if (isStaff) {
+
+        updateStatistics();
+
+      }
+
 
       renderApplications();
 
@@ -498,10 +557,21 @@ document.addEventListener(
 
 
     // ======================================
-    // FILTER
+    // FILTER APPLICATIONS
     // ======================================
 
     function getFilteredApplications() {
+
+      // ====================================
+      // USER DOES NOT USE FILTER
+      // ====================================
+
+      if (!isStaff) {
+
+        return allApplications;
+
+      }
+
 
       const status =
         statusFilter?.value ||
@@ -521,6 +591,7 @@ document.addEventListener(
 
         application => {
 
+
           const statusMatch =
 
             status === "all"
@@ -530,10 +601,6 @@ document.addEventListener(
             application.status ===
             status;
 
-
-          // Звичайному користувачу
-          // пошук фактично не потрібен,
-          // але залишаємо універсальну логіку
 
           const name =
             (
@@ -565,15 +632,21 @@ document.addEventListener(
 
             ||
 
-            name.includes(search)
+            name.includes(
+              search
+            )
 
             ||
 
-            discord.includes(search)
+            discord.includes(
+              search
+            )
 
             ||
 
-            gameNickname.includes(search);
+            gameNickname.includes(
+              search
+            );
 
 
           return (
@@ -602,6 +675,7 @@ document.addEventListener(
     ) {
 
       const statuses = {
+
 
         new: {
 
@@ -635,6 +709,7 @@ document.addEventListener(
 
         }
 
+
       };
 
 
@@ -647,7 +722,8 @@ document.addEventListener(
         {
 
           label:
-            status,
+            status ||
+            "Невідомо",
 
           className:
             ""
@@ -660,7 +736,7 @@ document.addEventListener(
 
 
     // ======================================
-    // DATE
+    // FORMAT DATE
     // ======================================
 
     function formatDate(
@@ -668,7 +744,9 @@ document.addEventListener(
     ) {
 
       if (!dateString) {
+
         return "-";
+
       }
 
 
@@ -683,7 +761,7 @@ document.addEventListener(
 
 
     // ======================================
-    // DIRECTIONS FORMAT
+    // FORMAT DIRECTIONS
     // ======================================
 
     function formatDirections(
@@ -691,7 +769,9 @@ document.addEventListener(
     ) {
 
       if (!directions) {
+
         return "-";
+
       }
 
 
@@ -714,7 +794,7 @@ document.addEventListener(
 
 
     // ======================================
-    // FIND APPLICATION DIRECTION
+    // GET APPLICATION DIRECTION ID
     // ======================================
 
     function getApplicationDirectionId(
@@ -798,8 +878,10 @@ document.addEventListener(
           );
 
 
-        return foundByName?.id ||
-          null;
+        return (
+          foundByName?.id ||
+          null
+        );
 
       }
 
@@ -813,8 +895,10 @@ document.addEventListener(
         );
 
 
-      return direction?.id ||
-        null;
+      return (
+        direction?.id ||
+        null
+      );
 
     }
 
@@ -842,7 +926,9 @@ document.addEventListener(
 
           html += `
 
-            <option value="${role.id}">
+            <option
+              value="${role.id}"
+            >
 
               ${escapeHtml(
                 role.name
@@ -907,7 +993,9 @@ document.addEventListener(
 
           html += `
 
-            <option value="${direction.id}">
+            <option
+              value="${direction.id}"
+            >
 
               📍 ${escapeHtml(
                 direction.name
@@ -954,7 +1042,7 @@ document.addEventListener(
 
           <div class="applications-empty">
 
-            📭 У вас поки немає заявок.
+            📭 Заявок не знайдено.
 
           </div>
 
@@ -969,6 +1057,7 @@ document.addEventListener(
       applications.forEach(
 
         application => {
+
 
           const card =
             document.createElement(
@@ -992,17 +1081,214 @@ document.addEventListener(
 
 
           // ==================================
-          // ADMIN CONTROLS
+          // ADMIN CARD
           // ==================================
 
-          const adminControls =
-            isAdmin
+          if (isStaff) {
 
-              ?
+            card.innerHTML = `
 
-              `
+              <div
+                class="application-card-header"
+              >
 
-              <div class="application-section">
+                <div>
+
+                  <h2>
+
+                    👤
+
+                    ${escapeHtml(
+                      application.name ||
+                      "Без імені"
+                    )}
+
+                  </h2>
+
+
+                  <p>
+
+                    🎮
+
+                    ${escapeHtml(
+                      application.game_nickname ||
+                      "-"
+                    )}
+
+                  </p>
+
+                </div>
+
+
+                <span
+                  class="
+                    application-status
+                    ${status.className}
+                  "
+                >
+
+                  ${status.label}
+
+                </span>
+
+              </div>
+
+
+              <div
+                class="application-grid"
+              >
+
+                <div>
+
+                  <span>
+                    🎂 Вік
+                  </span>
+
+                  <strong>
+
+                    ${escapeHtml(
+                      application.age ||
+                      "-"
+                    )}
+
+                  </strong>
+
+                </div>
+
+
+                <div>
+
+                  <span>
+                    💬 Discord
+                  </span>
+
+                  <strong>
+
+                    ${escapeHtml(
+                      application.discord_nickname ||
+                      "-"
+                    )}
+
+                  </strong>
+
+                </div>
+
+
+                <div>
+
+                  <span>
+                    🆔 Discord ID
+                  </span>
+
+                  <strong>
+
+                    ${escapeHtml(
+                      application.discord_id ||
+                      "-"
+                    )}
+
+                  </strong>
+
+                </div>
+
+
+                <div>
+
+                  <span>
+                    🎮 Steam
+                  </span>
+
+                  <strong>
+
+                    ${escapeHtml(
+                      application.steam_id ||
+                      "-"
+                    )}
+
+                  </strong>
+
+                </div>
+
+              </div>
+
+
+              <div
+                class="application-section"
+              >
+
+                <span>
+                  📍 Напрямок
+                </span>
+
+                <strong>
+
+                  ${escapeHtml(
+                    formatDirections(
+                      application.directions
+                    )
+                  )}
+
+                </strong>
+
+              </div>
+
+
+              <div
+                class="application-section"
+              >
+
+                <span>
+                  📝 Про користувача
+                </span>
+
+                <p>
+
+                  ${escapeHtml(
+                    application.about ||
+                    "Не вказано"
+                  )}
+
+                </p>
+
+              </div>
+
+
+              <div
+                class="application-section"
+              >
+
+                <span>
+                  🔎 Звідки дізнався
+                </span>
+
+                <strong>
+
+                  ${escapeHtml(
+                    application.source ||
+                    "-"
+                  )}
+
+                </strong>
+
+              </div>
+
+
+              <div
+                class="application-date"
+              >
+
+                📅 Подано:
+
+                ${formatDate(
+                  application.created_at
+                )}
+
+              </div>
+
+
+              <div
+                class="application-section"
+              >
 
                 <span>
                   🎖️ Призначення ролі
@@ -1035,7 +1321,9 @@ document.addEventListener(
               </div>
 
 
-              <div class="admin-comment-block">
+              <div
+                class="admin-comment-block"
+              >
 
                 <label>
 
@@ -1057,7 +1345,9 @@ document.addEventListener(
               </div>
 
 
-              <div class="application-actions">
+              <div
+                class="application-actions"
+              >
 
                 <button
                   class="
@@ -1088,282 +1378,178 @@ document.addEventListener(
 
               </div>
 
-              `
+            `;
 
-              :
-
-              `
-
-              <div class="application-section">
-
-                <span>
-
-                  📌 Статус розгляду
-
-                </span>
+          }
 
 
-                <strong>
+          // ==================================
+          // NORMAL USER CARD
+          // ==================================
 
-                  ${status.label}
+          else {
 
-                </strong>
+            card.innerHTML = `
 
-              </div>
+              <div
+                class="application-card-header"
+              >
 
+                <div>
 
-              ${application.review_comment
+                  <h2>
 
-                ?
+                    📄 Моя заявка
 
-                `
-
-                <div class="application-section">
-
-                  <span>
-
-                    💬 Коментар адміністрації
-
-                  </span>
+                  </h2>
 
 
                   <p>
 
+                    🎮
+
                     ${escapeHtml(
-                      application.review_comment
+                      application.game_nickname ||
+                      "UA LEGION"
                     )}
 
                   </p>
 
                 </div>
 
-                `
 
-                :
+                <span
+                  class="
+                    application-status
+                    ${status.className}
+                  "
+                >
 
-                ""
+                  ${status.label}
+
+                </span>
+
+              </div>
+
+
+              <div
+                class="application-section"
+              >
+
+                <span>
+                  📍 Обраний напрямок
+                </span>
+
+                <strong>
+
+                  ${escapeHtml(
+                    formatDirections(
+                      application.directions
+                    )
+                  )}
+
+                </strong>
+
+              </div>
+
+
+              <div
+                class="application-date"
+              >
+
+                📅 Заявку подано:
+
+                ${formatDate(
+                  application.created_at
+                )}
+
+              </div>
+
+
+              ${
+
+                application.review_comment
+
+                  ?
+
+                  `
+
+                    <div
+                      class="admin-comment-block"
+                    >
+
+                      <label>
+
+                        💬 Відповідь адміністрації
+
+                      </label>
+
+
+                      <p>
+
+                        ${escapeHtml(
+                          application.review_comment
+                        )}
+
+                      </p>
+
+                    </div>
+
+                  `
+
+                  :
+
+                  `
+
+                    <div
+                      class="application-section"
+                    >
+
+                      <p>
+
+                        ⏳ Ваша заявка очікує
+                        на розгляд адміністрації.
+
+                      </p>
+
+                    </div>
+
+                  `
 
               }
 
-              `;
 
+              ${
 
-          card.innerHTML = `
+                application.reviewed_at
 
-            <!-- HEADER -->
+                  ?
 
-            <div class="application-card-header">
+                  `
 
-              <div>
+                    <div
+                      class="application-date"
+                    >
 
-                <h2>
+                      🕒 Розглянуто:
 
-                  👤
+                      ${formatDate(
+                        application.reviewed_at
+                      )}
 
-                  ${escapeHtml(
-                    application.name ||
-                    "Без імені"
-                  )}
+                    </div>
 
-                </h2>
+                  `
 
+                  :
 
-                <p>
+                  ""
 
-                  🎮
+              }
 
-                  ${escapeHtml(
-                    application.game_nickname ||
-                    "-"
-                  )}
+            `;
 
-                </p>
-
-              </div>
-
-
-              <span
-                class="
-                  application-status
-                  ${status.className}
-                "
-              >
-
-                ${status.label}
-
-              </span>
-
-            </div>
-
-
-            <!-- INFO -->
-
-            <div class="application-grid">
-
-
-              <div>
-
-                <span>
-                  🎂 Вік
-                </span>
-
-                <strong>
-
-                  ${escapeHtml(
-                    application.age ||
-                    "-"
-                  )}
-
-                </strong>
-
-              </div>
-
-
-              <div>
-
-                <span>
-                  💬 Discord
-                </span>
-
-                <strong>
-
-                  ${escapeHtml(
-                    application.discord_nickname ||
-                    "-"
-                  )}
-
-                </strong>
-
-              </div>
-
-
-              <div>
-
-                <span>
-                  🆔 Discord ID
-                </span>
-
-                <strong>
-
-                  ${escapeHtml(
-                    application.discord_id ||
-                    "-"
-                  )}
-
-                </strong>
-
-              </div>
-
-
-              <div>
-
-                <span>
-                  🎮 Steam
-                </span>
-
-                <strong>
-
-                  ${escapeHtml(
-                    application.steam_id ||
-                    "-"
-                  )}
-
-                </strong>
-
-              </div>
-
-
-            </div>
-
-
-            <!-- DIRECTION -->
-
-            <div class="application-section">
-
-              <span>
-
-                📍 Напрямок
-
-              </span>
-
-
-              <strong>
-
-                ${escapeHtml(
-                  formatDirections(
-                    application.directions
-                  )
-                )}
-
-              </strong>
-
-            </div>
-
-
-            <!-- ABOUT -->
-
-            <div class="application-section">
-
-              <span>
-
-                📝 Про користувача
-
-              </span>
-
-
-              <p>
-
-                ${escapeHtml(
-                  application.about ||
-                  "Не вказано"
-                )}
-
-              </p>
-
-            </div>
-
-
-            <!-- SOURCE -->
-
-            <div class="application-section">
-
-              <span>
-
-                🔎 Звідки дізнався
-
-              </span>
-
-
-              <strong>
-
-                ${escapeHtml(
-                  application.source ||
-                  "-"
-                )}
-
-              </strong>
-
-            </div>
-
-
-            <!-- DATE -->
-
-            <div class="application-date">
-
-              Подано:
-
-              ${formatDate(
-                application.created_at
-              )}
-
-            </div>
-
-
-            <!-- CONTROLS -->
-
-            ${adminControls}
-
-          `;
+          }
 
 
           applicationsList.appendChild(
@@ -1375,7 +1561,11 @@ document.addEventListener(
       );
 
 
-      if (isAdmin) {
+      // ====================================
+      // ADMIN EVENTS ONLY
+      // ====================================
+
+      if (isStaff) {
 
         attachApplicationEvents();
 
@@ -1389,12 +1579,19 @@ document.addEventListener(
     // ======================================
 
     async function approveApplication(
+
       applicationId,
+
       roleId,
+
       directionId,
+
       reviewComment,
+
       button
+
     ) {
+
 
       if (!roleId) {
 
@@ -1442,6 +1639,10 @@ document.addEventListener(
       }
 
 
+      // ====================================
+      // DIRECTION
+      // ====================================
+
       const finalDirectionId =
 
         directionId === "global"
@@ -1457,9 +1658,9 @@ document.addEventListener(
           );
 
 
-      // ==================================
-      // CHECK EXISTING ROLE
-      // ==================================
+      // ====================================
+      // CHECK ROLE
+      // ====================================
 
       let roleQuery =
         supabase
@@ -1522,14 +1723,15 @@ document.addEventListener(
         button.textContent =
           "🟢 СХВАЛИТИ";
 
+
         return;
 
       }
 
 
-      // ==================================
-      // INSERT ROLE
-      // ==================================
+      // ====================================
+      // ADD ROLE
+      // ====================================
 
       if (
         !existingRoles ||
@@ -1559,6 +1761,12 @@ document.addEventListener(
 
         if (roleError) {
 
+          console.error(
+            "Помилка призначення ролі:",
+            roleError
+          );
+
+
           showMessage(
             "Не вдалося призначити роль: " +
             roleError.message,
@@ -1573,6 +1781,7 @@ document.addEventListener(
           button.textContent =
             "🟢 СХВАЛИТИ";
 
+
           return;
 
         }
@@ -1580,9 +1789,9 @@ document.addEventListener(
       }
 
 
-      // ==================================
-      // APPROVE APPLICATION
-      // ==================================
+      // ====================================
+      // UPDATE APPLICATION
+      // ====================================
 
       const {
         error: applicationError
@@ -1594,8 +1803,10 @@ document.addEventListener(
             status:
               "approved",
 
+
             review_comment:
               reviewComment,
+
 
             reviewed_at:
               new Date()
@@ -1623,13 +1834,14 @@ document.addEventListener(
         button.textContent =
           "🟢 СХВАЛИТИ";
 
+
         return;
 
       }
 
 
       showMessage(
-        "🎉 Заявку схвалено. Роль призначено.",
+        "🎉 Заявку схвалено. Роль призначено користувачу.",
         "success"
       );
 
@@ -1644,17 +1856,26 @@ document.addEventListener(
     // ======================================
 
     async function rejectApplication(
+
       applicationId,
+
       reviewComment,
+
       button
+
     ) {
 
-      button.disabled =
-        true;
+
+      if (button) {
+
+        button.disabled =
+          true;
 
 
-      button.textContent =
-        "ВІДХИЛЕННЯ...";
+        button.textContent =
+          "ВІДХИЛЕННЯ...";
+
+      }
 
 
       const {
@@ -1667,8 +1888,10 @@ document.addEventListener(
             status:
               "rejected",
 
+
             review_comment:
               reviewComment,
+
 
             reviewed_at:
               new Date()
@@ -1696,13 +1919,14 @@ document.addEventListener(
         button.textContent =
           "🔴 ВІДХИЛИТИ";
 
+
         return;
 
       }
 
 
       showMessage(
-        "Заявку відхилено.",
+        "🔴 Заявку відхилено.",
         "success"
       );
 
@@ -1718,7 +1942,10 @@ document.addEventListener(
 
     function attachApplicationEvents() {
 
+
+      // ====================================
       // APPROVE
+      // ====================================
 
       document
         .querySelectorAll(
@@ -1728,11 +1955,13 @@ document.addEventListener(
 
           button => {
 
+
             button.addEventListener(
 
               "click",
 
               async () => {
+
 
                 const applicationId =
                   button.dataset.id;
@@ -1762,21 +1991,35 @@ document.addEventListener(
                   );
 
 
+                const roleId =
+                  roleSelect?.value ||
+                  "";
+
+
+                const directionId =
+                  directionSelect?.value ||
+                  "global";
+
+
+                const reviewComment =
+                  commentElement
+                    ?.value
+                    .trim()
+
+                  ||
+
+                  null;
+
+
                 await approveApplication(
 
                   applicationId,
 
-                  roleSelect?.value ||
-                  "",
+                  roleId,
 
-                  directionSelect?.value ||
-                  "global",
+                  directionId,
 
-                  commentElement
-                    ?.value
-                    .trim()
-                  ||
-                  null,
+                  reviewComment,
 
                   button
 
@@ -1791,7 +2034,9 @@ document.addEventListener(
         );
 
 
+      // ====================================
       // REJECT
+      // ====================================
 
       document
         .querySelectorAll(
@@ -1801,11 +2046,13 @@ document.addEventListener(
 
           button => {
 
+
             button.addEventListener(
 
               "click",
 
               async () => {
+
 
                 const applicationId =
                   button.dataset.id;
@@ -1819,15 +2066,21 @@ document.addEventListener(
                   );
 
 
+                const reviewComment =
+                  commentElement
+                    ?.value
+                    .trim()
+
+                  ||
+
+                  null;
+
+
                 await rejectApplication(
 
                   applicationId,
 
-                  commentElement
-                    ?.value
-                    .trim()
-                  ||
-                  null,
+                  reviewComment,
 
                   button
 
@@ -1852,7 +2105,15 @@ document.addEventListener(
 
       "change",
 
-      renderApplications
+      () => {
+
+        if (isStaff) {
+
+          renderApplications();
+
+        }
+
+      }
 
     );
 
@@ -1861,7 +2122,15 @@ document.addEventListener(
 
       "input",
 
-      renderApplications
+      () => {
+
+        if (isStaff) {
+
+          renderApplications();
+
+        }
+
+      }
 
     );
 
@@ -1870,11 +2139,102 @@ document.addEventListener(
     // START
     // ======================================
 
-    await loadRoles();
 
-    await loadDirections();
+    // CHECK ACCESS
+
+    isStaff =
+      await checkStaffAccess();
+
+
+    // ====================================
+    // ADMIN MODE
+    // ====================================
+
+    if (isStaff) {
+
+
+      if (applicationsKicker) {
+
+        applicationsKicker.textContent =
+          "UA LEGION ADMIN";
+
+      }
+
+
+      if (applicationsTitle) {
+
+        applicationsTitle.textContent =
+          "📋 Заявки користувачів";
+
+      }
+
+
+      if (applicationsSubtitle) {
+
+        applicationsSubtitle.textContent =
+          "Перегляд та розгляд заявок до UA LEGION.";
+
+      }
+
+
+      if (adminApplicationsPanel) {
+
+        adminApplicationsPanel.style.display =
+          "block";
+
+      }
+
+
+      if (userApplicationsInfo) {
+
+        userApplicationsInfo.style.display =
+          "none";
+
+      }
+
+    }
+
+
+    // ====================================
+    // USER MODE
+    // ====================================
+
+    else {
+
+
+      if (adminApplicationsPanel) {
+
+        adminApplicationsPanel.style.display =
+          "none";
+
+      }
+
+
+      if (userApplicationsInfo) {
+
+        userApplicationsInfo.style.display =
+          "block";
+
+      }
+
+    }
+
+
+    // ====================================
+    // LOAD DATA
+    // ====================================
+
+    if (isStaff) {
+
+      await loadRoles();
+
+      await loadDirections();
+
+    }
+
 
     await loadApplications();
+
 
   }
 
