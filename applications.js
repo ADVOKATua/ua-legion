@@ -1,6 +1,6 @@
 // ==========================================
 // UA LEGION
-// ADMIN APPLICATIONS SYSTEM
+// APPLICATIONS SYSTEM
 // applications.js
 // ==========================================
 
@@ -100,6 +100,10 @@ document.addEventListener(
       [];
 
 
+    let isAdmin =
+      false;
+
+
     // ======================================
     // MESSAGE
     // ======================================
@@ -137,7 +141,9 @@ document.addEventListener(
         value === null ||
         value === undefined
       ) {
+
         return "";
+
       }
 
 
@@ -214,9 +220,7 @@ document.addEventListener(
         item =>
 
           staffRoles.includes(
-
             item.roles?.code
-
           )
 
       );
@@ -225,38 +229,11 @@ document.addEventListener(
 
 
     // ======================================
-    // ACCESS CHECK
+    // CHECK ACCESS
     // ======================================
 
-    const hasStaffAccess =
+    isAdmin =
       await checkStaffAccess();
-
-
-    if (!hasStaffAccess) {
-
-      showMessage(
-        "У вас немає доступу до розділу заявок.",
-        "error"
-      );
-
-
-      setTimeout(
-
-        () => {
-
-          window.location.href =
-            "profile.html";
-
-        },
-
-        1500
-
-      );
-
-
-      return;
-
-    }
 
 
     // ======================================
@@ -264,6 +241,11 @@ document.addEventListener(
     // ======================================
 
     async function loadRoles() {
+
+      if (!isAdmin) {
+        return;
+      }
+
 
       const {
         data,
@@ -289,13 +271,6 @@ document.addEventListener(
           error
         );
 
-
-        showMessage(
-          "Не вдалося завантажити ролі: " +
-          error.message,
-          "error"
-        );
-
         return;
 
       }
@@ -312,6 +287,11 @@ document.addEventListener(
     // ======================================
 
     async function loadDirections() {
+
+      if (!isAdmin) {
+        return;
+      }
+
 
       const {
         data,
@@ -335,13 +315,6 @@ document.addEventListener(
         console.error(
           "Помилка завантаження напрямків:",
           error
-        );
-
-
-        showMessage(
-          "Не вдалося завантажити напрямки: " +
-          error.message,
-          "error"
         );
 
         return;
@@ -377,11 +350,8 @@ document.addEventListener(
       `;
 
 
-      const {
-        data,
-        error
-      } =
-        await supabase
+      let query =
+        supabase
           .from("applications")
           .select("*")
           .order(
@@ -390,6 +360,29 @@ document.addEventListener(
               ascending: false
             }
           );
+
+
+      // ==================================
+      // ORDINARY USER
+      // ONLY OWN APPLICATIONS
+      // ==================================
+
+      if (!isAdmin) {
+
+        query =
+          query.eq(
+            "user_id",
+            user.id
+          );
+
+      }
+
+
+      const {
+        data,
+        error
+      } =
+        await query;
 
 
       if (error) {
@@ -537,6 +530,10 @@ document.addEventListener(
             application.status ===
             status;
 
+
+          // Звичайному користувачу
+          // пошук фактично не потрібен,
+          // але залишаємо універсальну логіку
 
           const name =
             (
@@ -717,8 +714,7 @@ document.addEventListener(
 
 
     // ======================================
-    // FIND DIRECTION
-    // FROM APPLICATION
+    // FIND APPLICATION DIRECTION
     // ======================================
 
     function getApplicationDirectionId(
@@ -728,7 +724,9 @@ document.addEventListener(
       if (
         !application.directions
       ) {
+
         return null;
+
       }
 
 
@@ -753,7 +751,9 @@ document.addEventListener(
 
 
       if (!applicationDirection) {
+
         return null;
+
       }
 
 
@@ -842,9 +842,7 @@ document.addEventListener(
 
           html += `
 
-            <option
-              value="${role.id}"
-            >
+            <option value="${role.id}">
 
               ${escapeHtml(
                 role.name
@@ -909,9 +907,7 @@ document.addEventListener(
 
           html += `
 
-            <option
-              value="${direction.id}"
-            >
+            <option value="${direction.id}">
 
               📍 ${escapeHtml(
                 direction.name
@@ -932,7 +928,7 @@ document.addEventListener(
 
 
     // ======================================
-    // RENDER
+    // RENDER APPLICATIONS
     // ======================================
 
     function renderApplications() {
@@ -958,7 +954,7 @@ document.addEventListener(
 
           <div class="applications-empty">
 
-            📭 Заявок не знайдено.
+            📭 У вас поки немає заявок.
 
           </div>
 
@@ -995,13 +991,168 @@ document.addEventListener(
             "new";
 
 
+          // ==================================
+          // ADMIN CONTROLS
+          // ==================================
+
+          const adminControls =
+            isAdmin
+
+              ?
+
+              `
+
+              <div class="application-section">
+
+                <span>
+                  🎖️ Призначення ролі
+                </span>
+
+
+                <select
+                  class="application-role-select"
+                  data-id="${application.id}"
+                  ${isNew ? "" : "disabled"}
+                >
+
+                  ${createRoleOptions()}
+
+                </select>
+
+
+                <select
+                  class="application-direction-select"
+                  data-id="${application.id}"
+                  ${isNew ? "" : "disabled"}
+                >
+
+                  ${createDirectionOptions(
+                    application
+                  )}
+
+                </select>
+
+              </div>
+
+
+              <div class="admin-comment-block">
+
+                <label>
+
+                  💬 Коментар адміністратора
+
+                </label>
+
+
+                <textarea
+                  class="review-comment"
+                  data-id="${application.id}"
+                  placeholder="Коментар для заявки..."
+                  ${isNew ? "" : "readonly"}
+                >${escapeHtml(
+                  application.review_comment ||
+                  ""
+                )}</textarea>
+
+              </div>
+
+
+              <div class="application-actions">
+
+                <button
+                  class="
+                    application-btn
+                    approve-btn
+                  "
+                  data-id="${application.id}"
+                  ${isNew ? "" : "disabled"}
+                >
+
+                  🟢 СХВАЛИТИ
+
+                </button>
+
+
+                <button
+                  class="
+                    application-btn
+                    reject-btn
+                  "
+                  data-id="${application.id}"
+                  ${isNew ? "" : "disabled"}
+                >
+
+                  🔴 ВІДХИЛИТИ
+
+                </button>
+
+              </div>
+
+              `
+
+              :
+
+              `
+
+              <div class="application-section">
+
+                <span>
+
+                  📌 Статус розгляду
+
+                </span>
+
+
+                <strong>
+
+                  ${status.label}
+
+                </strong>
+
+              </div>
+
+
+              ${application.review_comment
+
+                ?
+
+                `
+
+                <div class="application-section">
+
+                  <span>
+
+                    💬 Коментар адміністрації
+
+                  </span>
+
+
+                  <p>
+
+                    ${escapeHtml(
+                      application.review_comment
+                    )}
+
+                  </p>
+
+                </div>
+
+                `
+
+                :
+
+                ""
+
+              }
+
+              `;
+
+
           card.innerHTML = `
 
             <!-- HEADER -->
 
-            <div
-              class="application-card-header"
-            >
+            <div class="application-card-header">
 
               <div>
 
@@ -1047,9 +1198,8 @@ document.addEventListener(
 
             <!-- INFO -->
 
-            <div
-              class="application-grid"
-            >
+            <div class="application-grid">
+
 
               <div>
 
@@ -1122,18 +1272,20 @@ document.addEventListener(
 
               </div>
 
+
             </div>
 
 
             <!-- DIRECTION -->
 
-            <div
-              class="application-section"
-            >
+            <div class="application-section">
 
               <span>
+
                 📍 Напрямок
+
               </span>
+
 
               <strong>
 
@@ -1150,13 +1302,14 @@ document.addEventListener(
 
             <!-- ABOUT -->
 
-            <div
-              class="application-section"
-            >
+            <div class="application-section">
 
               <span>
+
                 📝 Про користувача
+
               </span>
+
 
               <p>
 
@@ -1172,13 +1325,14 @@ document.addEventListener(
 
             <!-- SOURCE -->
 
-            <div
-              class="application-section"
-            >
+            <div class="application-section">
 
               <span>
+
                 🔎 Звідки дізнався
+
               </span>
+
 
               <strong>
 
@@ -1194,9 +1348,7 @@ document.addEventListener(
 
             <!-- DATE -->
 
-            <div
-              class="application-date"
-            >
+            <div class="application-date">
 
               Подано:
 
@@ -1207,111 +1359,9 @@ document.addEventListener(
             </div>
 
 
-            <!-- ROLE ASSIGNMENT -->
+            <!-- CONTROLS -->
 
-            <div
-              class="application-section"
-            >
-
-              <span>
-                🎖️ Призначення ролі
-              </span>
-
-
-              <select
-                class="application-role-select"
-                data-id="${application.id}"
-                ${isNew ? "" : "disabled"}
-              >
-
-                ${createRoleOptions()}
-
-              </select>
-
-
-              <select
-                class="application-direction-select"
-                data-id="${application.id}"
-                ${isNew ? "" : "disabled"}
-              >
-
-                ${createDirectionOptions(
-                  application
-                )}
-
-              </select>
-
-            </div>
-
-
-            <!-- ADMIN COMMENT -->
-
-            <div
-              class="admin-comment-block"
-            >
-
-              <label>
-
-                💬 Коментар адміністратора
-
-              </label>
-
-
-              <textarea
-                class="review-comment"
-                data-id="${application.id}"
-                placeholder="Коментар для заявки..."
-                ${isNew ? "" : "readonly"}
-              >${escapeHtml(
-                application.review_comment ||
-                ""
-              )}</textarea>
-
-            </div>
-
-
-            <!-- ACTIONS -->
-
-            <div
-              class="application-actions"
-            >
-
-              <button
-
-                class="
-                  application-btn
-                  approve-btn
-                "
-
-                data-id="${application.id}"
-
-                ${isNew ? "" : "disabled"}
-
-              >
-
-                🟢 СХВАЛИТИ
-
-              </button>
-
-
-              <button
-
-                class="
-                  application-btn
-                  reject-btn
-                "
-
-                data-id="${application.id}"
-
-                ${isNew ? "" : "disabled"}
-
-              >
-
-                🔴 ВІДХИЛИТИ
-
-              </button>
-
-            </div>
+            ${adminControls}
 
           `;
 
@@ -1325,7 +1375,11 @@ document.addEventListener(
       );
 
 
-      attachApplicationEvents();
+      if (isAdmin) {
+
+        attachApplicationEvents();
+
+      }
 
     }
 
@@ -1388,10 +1442,6 @@ document.addEventListener(
       }
 
 
-      // ================================
-      // DIRECTION
-      // ================================
-
       const finalDirectionId =
 
         directionId === "global"
@@ -1407,9 +1457,9 @@ document.addEventListener(
           );
 
 
-      // ================================
+      // ==================================
       // CHECK EXISTING ROLE
-      // ================================
+      // ==================================
 
       let roleQuery =
         supabase
@@ -1459,38 +1509,27 @@ document.addEventListener(
 
       if (existingRoleError) {
 
-        console.error(
-          "Помилка перевірки ролі:",
-          existingRoleError
-        );
-
-
         showMessage(
           existingRoleError.message,
           "error"
         );
 
 
-        if (button) {
-
-          button.disabled =
-            false;
+        button.disabled =
+          false;
 
 
-          button.textContent =
-            "🟢 СХВАЛИТИ";
-
-        }
-
+        button.textContent =
+          "🟢 СХВАЛИТИ";
 
         return;
 
       }
 
 
-      // ================================
+      // ==================================
       // INSERT ROLE
-      // ================================
+      // ==================================
 
       if (
         !existingRoles ||
@@ -1520,12 +1559,6 @@ document.addEventListener(
 
         if (roleError) {
 
-          console.error(
-            "Помилка призначення ролі:",
-            roleError
-          );
-
-
           showMessage(
             "Не вдалося призначити роль: " +
             roleError.message,
@@ -1533,17 +1566,12 @@ document.addEventListener(
           );
 
 
-          if (button) {
-
-            button.disabled =
-              false;
+          button.disabled =
+            false;
 
 
-            button.textContent =
-              "🟢 СХВАЛИТИ";
-
-          }
-
+          button.textContent =
+            "🟢 СХВАЛИТИ";
 
           return;
 
@@ -1552,9 +1580,9 @@ document.addEventListener(
       }
 
 
-      // ================================
+      // ==================================
       // APPROVE APPLICATION
-      // ================================
+      // ==================================
 
       const {
         error: applicationError
@@ -1566,10 +1594,8 @@ document.addEventListener(
             status:
               "approved",
 
-
             review_comment:
               reviewComment,
-
 
             reviewed_at:
               new Date()
@@ -1584,29 +1610,18 @@ document.addEventListener(
 
       if (applicationError) {
 
-        console.error(
-          "Помилка схвалення заявки:",
-          applicationError
-        );
-
-
         showMessage(
           applicationError.message,
           "error"
         );
 
 
-        if (button) {
-
-          button.disabled =
-            false;
+        button.disabled =
+          false;
 
 
-          button.textContent =
-            "🟢 СХВАЛИТИ";
-
-        }
-
+        button.textContent =
+          "🟢 СХВАЛИТИ";
 
         return;
 
@@ -1614,7 +1629,7 @@ document.addEventListener(
 
 
       showMessage(
-        "🎉 Заявку схвалено. Роль успішно призначено користувачу.",
+        "🎉 Заявку схвалено. Роль призначено.",
         "success"
       );
 
@@ -1634,16 +1649,12 @@ document.addEventListener(
       button
     ) {
 
-      if (button) {
-
-        button.disabled =
-          true;
+      button.disabled =
+        true;
 
 
-        button.textContent =
-          "ВІДХИЛЕННЯ...";
-
-      }
+      button.textContent =
+        "ВІДХИЛЕННЯ...";
 
 
       const {
@@ -1656,10 +1667,8 @@ document.addEventListener(
             status:
               "rejected",
 
-
             review_comment:
               reviewComment,
-
 
             reviewed_at:
               new Date()
@@ -1674,29 +1683,18 @@ document.addEventListener(
 
       if (error) {
 
-        console.error(
-          "Помилка відхилення заявки:",
-          error
-        );
-
-
         showMessage(
           error.message,
           "error"
         );
 
 
-        if (button) {
-
-          button.disabled =
-            false;
+        button.disabled =
+          false;
 
 
-          button.textContent =
-            "🔴 ВІДХИЛИТИ";
-
-        }
-
+        button.textContent =
+          "🔴 ВІДХИЛИТИ";
 
         return;
 
@@ -1764,35 +1762,21 @@ document.addEventListener(
                   );
 
 
-                const roleId =
-                  roleSelect?.value ||
-                  "";
-
-
-                const directionId =
-                  directionSelect?.value ||
-                  "global";
-
-
-                const reviewComment =
-                  commentElement
-                    ?.value
-                    .trim()
-
-                  ||
-
-                  null;
-
-
                 await approveApplication(
 
                   applicationId,
 
-                  roleId,
+                  roleSelect?.value ||
+                  "",
 
-                  directionId,
+                  directionSelect?.value ||
+                  "global",
 
-                  reviewComment,
+                  commentElement
+                    ?.value
+                    .trim()
+                  ||
+                  null,
 
                   button
 
@@ -1835,21 +1819,15 @@ document.addEventListener(
                   );
 
 
-                const reviewComment =
-                  commentElement
-                    ?.value
-                    .trim()
-
-                  ||
-
-                  null;
-
-
                 await rejectApplication(
 
                   applicationId,
 
-                  reviewComment,
+                  commentElement
+                    ?.value
+                    .trim()
+                  ||
+                  null,
 
                   button
 
