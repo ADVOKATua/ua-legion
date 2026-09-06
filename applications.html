@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+
+<html lang="uk">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    Заявки — UA LEGION
+  </title>
+
+
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
+
+
+  <link
+    rel="stylesheet"
+    href="applications.css"
+  >
+
+</head>
+
+
+<body>
+
+
+  <!-- ================================= -->
+  <!-- HEADER -->
+  <!-- ================================= -->
+
+  <header class="header">
+
+    <div class="header-container">
+
+      <a
+        href="index.html"
+        class="logo"
+      >
+
+        UA LEGION
+
+      </a>
+
+
+      <nav class="nav">
+
+        <a href="index.html">
+          Головна
+        </a>
+
+
+        <a href="profile.html">
+          Мій кабінет
+        </a>
+
+
+        <a
+          href="applications.html"
+          class="active"
+        >
+          Заявки
+        </a>
+
+      </nav>
+
+    </div>
+
+  </header>
+
+
+
+  <!-- ================================= -->
+  <!-- MAIN -->
+  <!-- ================================= -->
+
+  <main class="applications-page">
+
+
+    <div class="applications-container">
+
+
+      <!-- TITLE -->
+
+      <div class="applications-header">
+
+        <div>
+
+          <span
+            class="applications-kicker"
+          >
+
+            UA LEGION ADMIN
+
+          </span>
+
+
+          <h1>
+
+            📋 Заявки користувачів
+
+          </h1>
+
+
+          <p>
+
+            Перегляд та розгляд заявок
+            до UA LEGION.
+
+          </p>
+
+        </div>
+
+
+        <a
+          href="profile.html"
+          class="back-profile-btn"
+        >
+
+          ← МІЙ КАБІНЕТ
+
+        </a>
+
+      </div>
+
+
+
+      <!-- ================================= -->
+      <!-- STATS -->
+      <!-- ================================= -->
+
+      <div
+        class="applications-stats"
+      >
+
+
+        <div
+          class="stat-card"
+        >
+
+          <span>
+            🟡
+          </span>
+
+
+          <strong
+            id="newApplicationsCount"
+          >
+            0
+          </strong>
+
+
+          <p>
+            Нові
+          </p>
+
+        </div>
+
+
+
+        <div
+          class="stat-card"
+        >
+
+          <span>
+            🟢
+          </span>
+
+
+          <strong
+            id="approvedApplicationsCount"
+          >
+            0
+          </strong>
+
+
+          <p>
+            Схвалені
+          </p>
+
+        </div>
+
+
+
+        <div
+          class="stat-card"
+        >
+
+          <span>
+            🔴
+          </span>
+
+
+          <strong
+            id="rejectedApplicationsCount"
+          >
+            0
+          </strong>
+
+
+          <p>
+            Відхилені
+          </p>
+
+        </div>
+
+
+      </div>
+
+
+
+      <!-- ================================= -->
+      <!-- FILTERS -->
+      <!-- ================================= -->
+
+      <div
+        class="applications-filters"
+      >
+
+
+        <select
+          id="statusFilter"
+        >
+
+          <option value="all">
+
+            Усі заявки
+
+          </option>
+
+
+          <option value="new">
+
+            Нові
+
+          </option>
+
+
+          <option value="approved">
+
+            Схвалені
+
+          </option>
+
+
+          <option value="rejected">
+
+            Відхилені
+
+          </option>
+
+        </select>
+
+
+        <input
+
+          type="text"
+
+          id="applicationSearch"
+
+          placeholder="🔎 Пошук за ім'ям або Discord..."
+
+        >
+
+
+      </div>
+
+
+
+      <!-- ================================= -->
+      <!-- MESSAGE -->
+      <!-- ================================= -->
+
+      <div
+        id="applicationsMessage"
+        class="applications-message"
+      >
+
+      </div>
+
+
+
+      <!-- ================================= -->
+      <!-- APPLICATIONS -->
+      <!-- ================================= -->
+
+      <div
+        id="applicationsList"
+        class="applications-list"
+      >
+
+        <div
+          class="applications-loading"
+        >
+
+          Завантаження заявок...
+
+        </div>
+
+      </div>
+
+
+    </div>
+
+
+  </main>
+
+
+
+  <!-- ================================= -->
+  <!-- SUPABASE -->
+  <!-- ================================= -->
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+  <script src="supabase.js"></script>
+
+
+  <!-- APPLICATIONS JS -->
+
+  <script src="applications.js"></script>
+
+
+</body>
+
+</html>
