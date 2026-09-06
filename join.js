@@ -5,70 +5,8 @@
 
 document.addEventListener("DOMContentLoaded", async () => {
 
-  const supabase = window.supabaseClient;
-
-
-  // ==========================================
-  // ЕЛЕМЕНТИ ФОРМИ
-  // ==========================================
-
-  const form =
-    document.getElementById("applicationForm");
-
-
-  const submitButton =
-    form?.querySelector(".submit-btn");
-
-
-  const nameInput =
-    document.getElementById("name");
-
-
-  const ageInput =
-    document.getElementById("age");
-
-
-  const discordNickInput =
-    document.getElementById("discord_nick");
-
-
-  const discordIdInput =
-    document.getElementById("discord_id");
-
-
-  const truckersmpNickInput =
-    document.getElementById("truckersmp_nick");
-
-
-  const truckersmpIdInput =
-    document.getElementById("truckersmp_id");
-
-
-  const steamIdInput =
-    document.getElementById("steam_id");
-
-
-  const gameNickInput =
-    document.getElementById("game_nick");
-
-
-  const aboutInput =
-    document.getElementById("about");
-
-
-  // ==========================================
-  // ПЕРЕВІРКА ФОРМИ
-  // ==========================================
-
-  if (!form) {
-
-    console.error(
-      "Форма заявки не знайдена"
-    );
-
-    return;
-
-  }
+  const supabase =
+    window.supabaseClient;
 
 
   // ==========================================
@@ -91,7 +29,88 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
   // ==========================================
-  // СТВОРЮЄМО БЛОК ПОВІДОМЛЕНЬ
+  // ЕЛЕМЕНТИ ФОРМИ
+  // ==========================================
+
+  const form =
+    document.getElementById(
+      "applicationForm"
+    );
+
+
+  if (!form) {
+
+    console.error(
+      "Форма заявки не знайдена"
+    );
+
+    return;
+
+  }
+
+
+  const submitButton =
+    form.querySelector(
+      ".submit-btn"
+    );
+
+
+  const nameInput =
+    document.getElementById(
+      "name"
+    );
+
+
+  const ageInput =
+    document.getElementById(
+      "age"
+    );
+
+
+  const discordNickInput =
+    document.getElementById(
+      "discord_nick"
+    );
+
+
+  const discordIdInput =
+    document.getElementById(
+      "discord_id"
+    );
+
+
+  const truckersmpNickInput =
+    document.getElementById(
+      "truckersmp_nick"
+    );
+
+
+  const truckersmpIdInput =
+    document.getElementById(
+      "truckersmp_id"
+    );
+
+
+  const steamIdInput =
+    document.getElementById(
+      "steam_id"
+    );
+
+
+  const gameNickInput =
+    document.getElementById(
+      "game_nick"
+    );
+
+
+  const aboutInput =
+    document.getElementById(
+      "about"
+    );
+
+
+  // ==========================================
+  // БЛОК ПОВІДОМЛЕНЬ
   // ==========================================
 
   let messageBox =
@@ -103,7 +122,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (!messageBox) {
 
     messageBox =
-      document.createElement("div");
+      document.createElement(
+        "div"
+      );
 
 
     messageBox.id =
@@ -130,6 +151,10 @@ document.addEventListener("DOMContentLoaded", async () => {
       "600";
 
 
+    messageBox.style.lineHeight =
+      "1.5";
+
+
     form.prepend(
       messageBox
     );
@@ -138,7 +163,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
   // ==========================================
-  // ФУНКЦІЯ ПОВІДОМЛЕННЯ
+  // ПОКАЗ ПОВІДОМЛЕННЯ
   // ==========================================
 
   function showMessage(
@@ -205,7 +230,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
   // ==========================================
-  // ОТРИМУЄМО ПОТОЧНОГО КОРИСТУВАЧА
+  // АВТОРИЗОВАНИЙ КОРИСТУВАЧ
   // ==========================================
 
   const {
@@ -218,10 +243,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       .auth
       .getUser();
 
-
-  // ==========================================
-  // ПЕРЕВІРКА АВТОРИЗАЦІЇ
-  // ==========================================
 
   if (
     userError ||
@@ -257,12 +278,16 @@ document.addEventListener("DOMContentLoaded", async () => {
   ) {
 
     if (!birthDate) {
+
       return null;
+
     }
 
 
     const birth =
-      new Date(birthDate);
+      new Date(
+        birthDate
+      );
 
 
     const today =
@@ -280,12 +305,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
     if (
+
       monthDifference < 0 ||
+
       (
         monthDifference === 0 &&
         today.getDate() <
           birth.getDate()
       )
+
     ) {
 
       age--;
@@ -299,7 +327,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
   // ==========================================
-  // ЗАВАНТАЖЕННЯ ПРОФІЛЮ
+  // ЗАВАНТАЖЕННЯ ДАНИХ ПРОФІЛЮ
   // ==========================================
 
   async function loadProfileData() {
@@ -337,9 +365,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    // ----------------------------------------
     // ІМ'Я
-    // ----------------------------------------
 
     if (
       profile.display_name &&
@@ -352,9 +378,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    // ----------------------------------------
-    // ВІК З ДАТИ НАРОДЖЕННЯ
-    // ----------------------------------------
+    // ВІК
 
     if (
       profile.birth_date &&
@@ -380,9 +404,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    // ----------------------------------------
     // DISCORD USERNAME
-    // ----------------------------------------
 
     if (
       profile.discord_username &&
@@ -395,9 +417,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    // ----------------------------------------
     // DISCORD ID
-    // ----------------------------------------
 
     if (
       profile.discord_user_id &&
@@ -410,9 +430,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    // ----------------------------------------
     // STEAM ID
-    // ----------------------------------------
 
     if (
       profile.steam_id &&
@@ -425,9 +443,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    // ----------------------------------------
     // ІГРОВИЙ НІК
-    // ----------------------------------------
 
     if (
       profile.game_nickname &&
@@ -438,7 +454,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         profile.game_nickname;
 
     }
-
 
   }
 
@@ -491,6 +506,11 @@ document.addEventListener("DOMContentLoaded", async () => {
       !directions
     ) {
 
+      console.error(
+        "Помилка завантаження напрямків:",
+        directionsError
+      );
+
       return;
 
     }
@@ -498,6 +518,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const directionMap =
       new Map(
+
         directions.map(
           direction => [
 
@@ -509,6 +530,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
           ]
         )
+
       );
 
 
@@ -532,58 +554,67 @@ document.addEventListener("DOMContentLoaded", async () => {
     };
 
 
-    selectedRows.forEach(
-      row => {
+    // JOIN.HTML дозволяє вибрати
+    // тільки один напрямок.
+    // Якщо у профілі кілька —
+    // вибираємо перший знайдений.
 
-        const slug =
-          directionMap.get(
-            String(
-              row.direction_id
-            )
-          );
+    for (
+      const row of selectedRows
+    ) {
 
-
-        if (!slug) {
-
-          return;
-
-        }
-
-
-        const applicationValue =
-          slugToApplicationValue[
-            slug
-          ];
+      const slug =
+        directionMap.get(
+          String(
+            row.direction_id
+          )
+        );
 
 
-        if (!applicationValue) {
+      if (!slug) {
 
-          return;
-
-        }
-
-
-        const radio =
-          document.querySelector(
-            `input[name="direction"][value="${applicationValue}"]`
-          );
-
-
-        if (radio) {
-
-          radio.checked =
-            true;
-
-        }
+        continue;
 
       }
-    );
+
+
+      const applicationValue =
+        slugToApplicationValue[
+          slug
+        ];
+
+
+      if (!applicationValue) {
+
+        continue;
+
+      }
+
+
+      const radio =
+        document.querySelector(
+
+          `input[name="direction"][value="${applicationValue}"]`
+
+        );
+
+
+      if (radio) {
+
+        radio.checked =
+          true;
+
+        break;
+
+      }
+
+    }
 
   }
 
 
   // ==========================================
-  // ПЕРЕВІРКА ІСНУЮЧОЇ АКТИВНОЇ ЗАЯВКИ
+  // ПЕРЕВІРКА ОСТАННЬОЇ ЗАЯВКИ
   // ==========================================
 
   async function checkExistingApplication() {
@@ -604,7 +635,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         .order(
           "created_at",
           {
-            ascending: false
+            ascending:
+              false
           }
         )
         .limit(1);
@@ -638,7 +670,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
   // ==========================================
-  // БЛОКУЄМО ПОВТОРНУ АКТИВНУ ЗАЯВКУ
+  // ПЕРЕВІРКА СТАТУСУ ЗАЯВКИ
   // ==========================================
 
   async function checkApplicationStatus() {
@@ -654,13 +686,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    const activeStatuses =
-      [
-        "new",
-        "pending",
-        "review"
-      ];
+    const activeStatuses = [
 
+      "new",
+
+      "pending",
+
+      "review"
+
+    ];
+
+
+    // ЗАЯВКА НА РОЗГЛЯДІ
 
     if (
       activeStatuses.includes(
@@ -669,7 +706,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     ) {
 
       showMessage(
-        "У вас вже є заявка, яка знаходиться на розгляді.",
+        "У вас вже є заявка, яка знаходиться на розгляді адміністрації UA LEGION.",
         "info"
       );
 
@@ -688,13 +725,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
+    // ЗАЯВКА СХВАЛЕНА
+
     else if (
       application.status ===
       "approved"
     ) {
 
       showMessage(
-        "Ваша заявка вже була схвалена. Ласкаво просимо до UA LEGION!",
+        "🎉 Ваша заявка вже була схвалена. Ласкаво просимо до UA LEGION!",
         "success"
       );
 
@@ -709,6 +748,21 @@ document.addEventListener("DOMContentLoaded", async () => {
           "ЗАЯВКУ СХВАЛЕНО";
 
       }
+
+    }
+
+
+    // ВІДХИЛЕНА ЗАЯВКА
+
+    else if (
+      application.status ===
+      "rejected"
+    ) {
+
+      showMessage(
+        "Попередня заявка була завершена. Ви можете подати нову заявку.",
+        "info"
+      );
 
     }
 
@@ -740,23 +794,33 @@ document.addEventListener("DOMContentLoaded", async () => {
       event.preventDefault();
 
 
-      // ----------------------------------------
-      // ПЕРЕВІРКА ПОВТОРНОЇ ЗАЯВКИ
-      // ----------------------------------------
+      // ======================================
+      // ПЕРЕВІРКА ІСНУЮЧОЇ ЗАЯВКИ
+      // ======================================
 
       const existingApplication =
         await checkExistingApplication();
 
 
+      const activeStatuses = [
+
+        "new",
+
+        "pending",
+
+        "review"
+
+      ];
+
+
       if (
+
         existingApplication &&
-        [
-          "new",
-          "pending",
-          "review"
-        ].includes(
+
+        activeStatuses.includes(
           existingApplication.status
         )
+
       ) {
 
         showMessage(
@@ -764,15 +828,14 @@ document.addEventListener("DOMContentLoaded", async () => {
           "error"
         );
 
-
         return;
 
       }
 
 
-      // ----------------------------------------
+      // ======================================
       // ОТРИМУЄМО ДАНІ
-      // ----------------------------------------
+      // ======================================
 
       const name =
         nameInput
@@ -839,18 +902,26 @@ document.addEventListener("DOMContentLoaded", async () => {
           .trim();
 
 
-      // ----------------------------------------
-      // ПЕРЕВІРКА
-      // ----------------------------------------
+      // ======================================
+      // ПЕРЕВІРКА ОБОВ'ЯЗКОВИХ ПОЛІВ
+      // ======================================
 
       if (
+
         !name ||
+
         !age ||
+
         !discordNick ||
+
         !discordId ||
+
         !gameNick ||
+
         !directionElement ||
+
         !sourceElement
+
       ) {
 
         showMessage(
@@ -858,25 +929,55 @@ document.addEventListener("DOMContentLoaded", async () => {
           "error"
         );
 
+        return;
+
+      }
+
+
+      // ======================================
+      // ПЕРЕВІРКА ВІКУ
+      // ======================================
+
+      if (
+
+        Number(age) < 1 ||
+
+        Number(age) > 100
+
+      ) {
+
+        showMessage(
+          "Будь ласка, вкажіть коректний вік.",
+          "error"
+        );
 
         return;
 
       }
 
 
-      const directions =
-        [
-          directionElement.value
-        ];
+      // ======================================
+      // НАПРЯМОК
+      // ======================================
 
+      const directions = [
+
+        directionElement.value
+
+      ];
+
+
+      // ======================================
+      // ДЖЕРЕЛО
+      // ======================================
 
       const source =
         sourceElement.value;
 
 
-      // ----------------------------------------
+      // ======================================
       // БЛОКУЄМО КНОПКУ
-      // ----------------------------------------
+      // ======================================
 
       if (submitButton) {
 
@@ -896,9 +997,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       );
 
 
-      // ========================================
+      // ======================================
       // ЗБЕРЕЖЕННЯ ЗАЯВКИ
-      // ========================================
+      // ======================================
 
       const {
         data,
@@ -968,9 +1069,9 @@ document.addEventListener("DOMContentLoaded", async () => {
           .single();
 
 
-      // ========================================
+      // ======================================
       // ПОМИЛКА
-      // ========================================
+      // ======================================
 
       if (error) {
 
@@ -1004,9 +1105,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
 
 
-      // ========================================
+      // ======================================
       // УСПІХ
-      // ========================================
+      // ======================================
 
       console.log(
         "Заявка створена:",
@@ -1032,9 +1133,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
 
 
-      // ========================================
+      // ======================================
       // ПЕРЕНАПРАВЛЕННЯ В ПРОФІЛЬ
-      // ========================================
+      // ======================================
 
       setTimeout(
         function () {
