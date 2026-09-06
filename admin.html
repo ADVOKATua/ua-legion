@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+
+<html lang="uk">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    Адміністрація — UA LEGION
+  </title>
+
+
+  <!-- CSS -->
+
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
+
+  <link
+    rel="stylesheet"
+    href="admin.css"
+  >
+
+
+  <!-- SUPABASE -->
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+  ></script>
+
+
+  <script
+    src="supabase.js"
+  ></script>
+
+
+</head>
+
+
+<body>
+
+
+  <!-- ============================== -->
+  <!-- HEADER -->
+  <!-- ============================== -->
+
+  <header
+    class="admin-header"
+  >
+
+    <div
+      class="admin-header-inner"
+    >
+
+      <div>
+
+        <div
+          class="admin-logo"
+        >
+
+          🇺🇦 UA LEGION
+
+        </div>
+
+
+        <div
+          class="admin-subtitle"
+        >
+
+          Адміністративна панель
+
+        </div>
+
+      </div>
+
+
+      <div
+        class="admin-user"
+      >
+
+        <span
+          id="adminUserName"
+        >
+
+          Завантаження...
+
+        </span>
+
+
+        <a
+          href="profile.html"
+          class="admin-profile-link"
+        >
+
+          👤 Мій кабінет
+
+        </a>
+
+      </div>
+
+    </div>
+
+  </header>
+
+
+
+  <!-- ============================== -->
+  <!-- MAIN -->
+  <!-- ============================== -->
+
+  <main
+    class="admin-container"
+  >
+
+
+    <!-- TITLE -->
+
+    <section
+      class="admin-title-section"
+    >
+
+      <div>
+
+        <div
+          class="admin-eyebrow"
+        >
+
+          UA LEGION MANAGEMENT
+
+        </div>
+
+
+        <h1>
+
+          📄 Заявки до UA LEGION
+
+        </h1>
+
+
+        <p>
+
+          Перегляд, розгляд та управління заявками нових учасників.
+
+        </p>
+
+      </div>
+
+
+      <button
+        id="refreshApplications"
+        class="admin-refresh-btn"
+        type="button"
+      >
+
+        🔄 ОНОВИТИ
+
+      </button>
+
+    </section>
+
+
+
+    <!-- ============================== -->
+    <!-- STATISTICS -->
+    <!-- ============================== -->
+
+    <section
+      class="admin-stats"
+    >
+
+
+      <div
+        class="admin-stat-card"
+      >
+
+        <span>
+
+          📄
+
+        </span>
+
+
+        <div>
+
+          <small>
+
+            Усього
+
+          </small>
+
+
+          <strong
+            id="totalCount"
+          >
+
+            0
+
+          </strong>
+
+        </div>
+
+      </div>
+
+
+
+      <div
+        class="admin-stat-card pending"
+      >
+
+        <span>
+
+          ⏳
+
+        </span>
+
+
+        <div>
+
+          <small>
+
+            Нові / На розгляді
+
+          </small>
+
+
+          <strong
+            id="pendingCount"
+          >
+
+            0
+
+          </strong>
+
+        </div>
+
+      </div>
+
+
+
+      <div
+        class="admin-stat-card approved"
+      >
+
+        <span>
+
+          ✅
+
+        </span>
+
+
+        <div>
+
+          <small>
+
+            Схвалено
+
+          </small>
+
+
+          <strong
+            id="approvedCount"
+          >
+
+            0
+
+          </strong>
+
+        </div>
+
+      </div>
+
+
+
+      <div
+        class="admin-stat-card rejected"
+      >
+
+        <span>
+
+          ❌
+
+        </span>
+
+
+        <div>
+
+          <small>
+
+            Відхилено
+
+          </small>
+
+
+          <strong
+            id="rejectedCount"
+          >
+
+            0
+
+          </strong>
+
+        </div>
+
+      </div>
+
+
+    </section>
+
+
+
+    <!-- ============================== -->
+    <!-- FILTERS -->
+    <!-- ============================== -->
+
+    <section
+      class="admin-filters"
+    >
+
+
+      <input
+        id="searchApplications"
+        type="text"
+        placeholder="🔍 Пошук за ім'ям або Discord..."
+      >
+
+
+      <select
+        id="statusFilter"
+      >
+
+        <option value="all">
+
+          Усі заявки
+
+        </option>
+
+
+        <option value="new">
+
+          🆕 Нові
+
+        </option>
+
+
+        <option value="pending">
+
+          ⏳ На розгляді
+
+        </option>
+
+
+        <option value="approved">
+
+          ✅ Схвалені
+
+        </option>
+
+
+        <option value="rejected">
+
+          ❌ Відхилені
+
+        </option>
+
+      </select>
+
+
+    </section>
+
+
+
+    <!-- ============================== -->
+    <!-- MESSAGE -->
+    <!-- ============================== -->
+
+    <div
+      id="adminMessage"
+      class="admin-message"
+    ></div>
+
+
+
+    <!-- ============================== -->
+    <!-- APPLICATIONS -->
+    <!-- ============================== -->
+
+    <section
+      class="applications-panel"
+    >
+
+      <div
+        class="applications-panel-header"
+      >
+
+        <h2>
+
+          📋 Список заявок
+
+        </h2>
+
+
+        <span
+          id="applicationsCountLabel"
+        >
+
+          0 заявок
+
+        </span>
+
+      </div>
+
+
+      <div
+        id="applicationsList"
+        class="applications-list"
+      >
+
+        <div
+          class="applications-loading"
+        >
+
+          Завантаження заявок...
+
+        </div>
+
+      </div>
+
+
+    </section>
+
+
+  </main>
+
+
+
+  <!-- ============================== -->
+  <!-- MODAL -->
+  <!-- ============================== -->
+
+  <div
+    id="applicationModal"
+    class="application-modal"
+  >
+
+    <div
+      class="application-modal-content"
+    >
+
+
+      <!-- HEADER -->
+
+      <div
+        class="application-modal-header"
+      >
+
+        <div>
+
+          <div
+            class="admin-eyebrow"
+          >
+
+            APPLICATION REVIEW
+
+          </div>
+
+
+          <h2
+            id="modalApplicationName"
+          >
+
+            Заявка
+
+          </h2>
+
+        </div>
+
+
+        <button
+          id="closeModal"
+          class="modal-close"
+          type="button"
+        >
+
+          ✕
+
+        </button>
+
+      </div>
+
+
+
+      <!-- INFO -->
+
+      <div
+        id="modalApplicationInfo"
+        class="application-details"
+      ></div>
+
+
+
+      <!-- REVIEW -->
+
+      <div
+        class="application-review"
+      >
+
+        <h3>
+
+          🛡️ Рішення адміністрації
+
+        </h3>
+
+
+        <!-- ROLE -->
+
+        <div
+          class="admin-form-group"
+        >
+
+          <label>
+
+            Призначити роль
+
+          </label>
+
+
+          <select
+            id="assignRole"
+          >
+
+            <option value="">
+
+              Без призначення ролі
+
+            </option>
+
+          </select>
+
+        </div>
+
+
+
+        <!-- DIRECTION -->
+
+        <div
+          class="admin-form-group"
+        >
+
+          <label>
+
+            Напрямок ролі
+
+          </label>
+
+
+          <select
+            id="assignDirection"
+          >
+
+            <option value="">
+
+              Глобальна роль
+
+            </option>
+
+          </select>
+
+        </div>
+
+
+
+        <!-- COMMENT -->
+
+        <div
+          class="admin-form-group"
+        >
+
+          <label>
+
+            Коментар адміністратора
+
+          </label>
+
+
+          <textarea
+            id="reviewComment"
+            rows="4"
+            placeholder="За потреби залиште коментар..."
+          ></textarea>
+
+        </div>
+
+
+
+        <!-- ACTIONS -->
+
+        <div
+          class="application-actions"
+        >
+
+          <button
+            id="markPending"
+            class="admin-action pending"
+            type="button"
+          >
+
+            ⏳ НА РОЗГЛЯД
+
+          </button>
+
+
+          <button
+            id="approveApplication"
+            class="admin-action approve"
+            type="button"
+          >
+
+            ✅ СХВАЛИТИ
+
+          </button>
+
+
+          <button
+            id="rejectApplication"
+            class="admin-action reject"
+            type="button"
+          >
+
+            ❌ ВІДХИЛИТИ
+
+          </button>
+
+        </div>
+
+
+      </div>
+
+
+    </div>
+
+  </div>
+
+
+
+  <!-- ============================== -->
+  <!-- JAVASCRIPT -->
+  <!-- ============================== -->
+
+  <script
+    src="admin.js"
+  ></script>
+
+
+</body>
+
+</html>
