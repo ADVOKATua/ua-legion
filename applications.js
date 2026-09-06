@@ -203,25 +203,37 @@ document.addEventListener(
     // STAFF ACCESS CHECK
     // ======================================
 
-    async function checkStaffAccess() {
+// ======================================
+// STAFF ACCESS CHECK
+// ======================================
 
-      const {
-        data,
-        error
-      } =
-        await supabase
-          .from("user_roles")
-          .select(`
-            role_id,
+async function checkStaffAccess() {
 
-            roles (
-              code
-            )
-          `)
-          .eq(
-            "user_id",
-            user.id
-          );
+  const {
+    data,
+    error
+  } =
+    await supabase
+      .rpc(
+        "is_ua_legion_staff"
+      );
+
+
+  if (error) {
+
+    console.error(
+      "Помилка перевірки адміністрації:",
+      error
+    );
+
+    return false;
+
+  }
+
+
+  return data === true;
+
+}
 
 
       if (error) {
