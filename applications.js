@@ -403,17 +403,11 @@ async function checkStaffAccess() {
       }
 
 
-      const {
-        data,
-        error
-      } =
-        await query
-          .order(
-            "created_at",
-            {
-              ascending: false
-            }
-          );
+    const {
+  data,
+  error
+} =
+  await query;
 
 
 if (error) {
