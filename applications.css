@@ -1,0 +1,603 @@
+/* ==========================================
+   UA LEGION
+   APPLICATIONS ADMIN
+========================================== */
+
+
+.applications-page {
+
+  min-height: 100vh;
+
+  padding: 120px 20px 80px;
+
+}
+
+
+.applications-container {
+
+  max-width: 1100px;
+
+  margin: 0 auto;
+
+}
+
+
+.applications-header {
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  gap: 30px;
+
+  margin-bottom: 35px;
+
+}
+
+
+.applications-kicker {
+
+  display: block;
+
+  margin-bottom: 8px;
+
+  color: #f0b90b;
+
+  font-size: 12px;
+
+  font-weight: 800;
+
+  letter-spacing: 2px;
+
+}
+
+
+.applications-header h1 {
+
+  margin: 0;
+
+  font-size: 32px;
+
+}
+
+
+.applications-header p {
+
+  margin-top: 10px;
+
+  color: #9ca3af;
+
+}
+
+
+.back-profile-btn {
+
+  padding: 12px 18px;
+
+  border-radius: 10px;
+
+  background: #222831;
+
+  color: white;
+
+  text-decoration: none;
+
+  font-weight: 700;
+
+}
+
+
+.applications-stats {
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      3,
+      1fr
+    );
+
+  gap: 15px;
+
+  margin-bottom: 25px;
+
+}
+
+
+.stat-card {
+
+  padding: 22px;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.03
+    );
+
+  border:
+    1px solid
+    rgba(
+      255,
+      255,
+      255,
+      0.08
+    );
+
+  border-radius: 14px;
+
+}
+
+
+.stat-card span {
+
+  font-size: 24px;
+
+}
+
+
+.stat-card strong {
+
+  display: block;
+
+  margin-top: 10px;
+
+  font-size: 28px;
+
+}
+
+
+.stat-card p {
+
+  margin-bottom: 0;
+
+  color: #9ca3af;
+
+}
+
+
+.applications-filters {
+
+  display: flex;
+
+  gap: 15px;
+
+  margin-bottom: 25px;
+
+}
+
+
+.applications-filters select,
+
+.applications-filters input {
+
+  padding: 13px 15px;
+
+  border-radius: 10px;
+
+  border:
+    1px solid
+    rgba(
+      255,
+      255,
+      255,
+      0.12
+    );
+
+  background: #161b22;
+
+  color: white;
+
+}
+
+
+.applications-filters input {
+
+  flex: 1;
+
+}
+
+
+.application-card {
+
+  margin-bottom: 20px;
+
+  padding: 25px;
+
+  border-radius: 16px;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.025
+    );
+
+  border:
+    1px solid
+    rgba(
+      255,
+      255,
+      255,
+      0.08
+    );
+
+}
+
+
+.application-card-header {
+
+  display: flex;
+
+  justify-content: space-between;
+
+  gap: 20px;
+
+  align-items: flex-start;
+
+  margin-bottom: 25px;
+
+}
+
+
+.application-card h2 {
+
+  margin: 0;
+
+}
+
+
+.application-card-header p {
+
+  margin: 8px 0 0;
+
+  color: #9ca3af;
+
+}
+
+
+.application-status {
+
+  padding: 8px 12px;
+
+  border-radius: 20px;
+
+  font-size: 13px;
+
+  font-weight: 700;
+
+}
+
+
+.status-new {
+
+  background:
+    rgba(
+      240,
+      185,
+      11,
+      0.15
+    );
+
+  color: #f0b90b;
+
+}
+
+
+.status-approved {
+
+  background:
+    rgba(
+      40,
+      167,
+      69,
+      0.15
+    );
+
+  color: #69db7c;
+
+}
+
+
+.status-rejected {
+
+  background:
+    rgba(
+      220,
+      53,
+      69,
+      0.15
+    );
+
+  color: #ff6b6b;
+
+}
+
+
+.application-grid {
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      1fr
+    );
+
+  gap: 15px;
+
+  margin-bottom: 20px;
+
+}
+
+
+.application-grid div {
+
+  padding: 14px;
+
+  background:
+    rgba(
+      0,
+      0,
+      0,
+      0.18
+    );
+
+  border-radius: 10px;
+
+}
+
+
+.application-grid span,
+
+.application-section span {
+
+  display: block;
+
+  margin-bottom: 6px;
+
+  color: #8b949e;
+
+  font-size: 13px;
+
+}
+
+
+.application-section {
+
+  margin-bottom: 18px;
+
+}
+
+
+.application-section p {
+
+  line-height: 1.6;
+
+  color: #d1d5db;
+
+}
+
+
+.application-date {
+
+  margin-top: 20px;
+
+  color: #6b7280;
+
+  font-size: 13px;
+
+}
+
+
+.admin-comment-block {
+
+  margin-top: 25px;
+
+}
+
+
+.admin-comment-block label {
+
+  display: block;
+
+  margin-bottom: 10px;
+
+  font-weight: 700;
+
+}
+
+
+.review-comment {
+
+  width: 100%;
+
+  min-height: 90px;
+
+  padding: 14px;
+
+  box-sizing: border-box;
+
+  border-radius: 10px;
+
+  border:
+    1px solid
+    rgba(
+      255,
+      255,
+      255,
+      0.1
+    );
+
+  background: #11161d;
+
+  color: white;
+
+  resize: vertical;
+
+}
+
+
+.application-actions {
+
+  display: flex;
+
+  gap: 12px;
+
+  margin-top: 20px;
+
+}
+
+
+.application-btn {
+
+  padding: 12px 18px;
+
+  border: none;
+
+  border-radius: 9px;
+
+  cursor: pointer;
+
+  font-weight: 800;
+
+}
+
+
+.approve-btn {
+
+  background: #198754;
+
+  color: white;
+
+}
+
+
+.reject-btn {
+
+  background: #842029;
+
+  color: white;
+
+}
+
+
+.applications-empty,
+
+.applications-loading {
+
+  padding: 40px;
+
+  text-align: center;
+
+  border-radius: 14px;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.03
+    );
+
+  color: #9ca3af;
+
+}
+
+
+.applications-message {
+
+  display: none;
+
+  margin-bottom: 20px;
+
+  padding: 14px;
+
+  border-radius: 10px;
+
+}
+
+
+.applications-message.success {
+
+  display: block;
+
+  background:
+    rgba(
+      25,
+      135,
+      84,
+      0.15
+    );
+
+  color: #69db7c;
+
+}
+
+
+.applications-message.error {
+
+  display: block;
+
+  background:
+    rgba(
+      220,
+      53,
+      69,
+      0.15
+    );
+
+  color: #ff8b94;
+
+}
+
+
+@media (
+  max-width: 700px
+) {
+
+
+  .applications-header {
+
+    flex-direction: column;
+
+    align-items: flex-start;
+
+  }
+
+
+  .applications-stats {
+
+    grid-template-columns:
+      1fr;
+
+  }
+
+
+  .applications-filters {
+
+    flex-direction: column;
+
+  }
+
+
+  .application-grid {
+
+    grid-template-columns:
+      1fr;
+
+  }
+
+
+  .application-card-header {
+
+    flex-direction: column;
+
+  }
+
+
+}
