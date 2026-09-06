@@ -404,28 +404,32 @@ document.addEventListener(
           );
 
 
-      if (error) {
+if (error) {
 
-        console.error(
-          "Помилка завантаження заявок:",
-          error
-        );
+  console.error(
+    "Помилка завантаження заявок:",
+    error
+  );
 
+  applicationsList.innerHTML = `
 
-        applicationsList.innerHTML = `
+    <div class="applications-empty">
 
-          <div class="applications-empty">
+      ❌ Не вдалося завантажити заявки.
 
-            ❌ Не вдалося завантажити заявки.
+      <br><br>
 
-          </div>
+      <small>
+        ${escapeHtml(error.message)}
+      </small>
 
-        `;
+    </div>
 
+  `;
 
-        return;
+  return;
 
-      }
+}
 
 
       allApplications =
