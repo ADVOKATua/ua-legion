@@ -16,11 +16,15 @@
   </title>
 
 
+  <!-- ОСНОВНИЙ СТИЛЬ САЙТУ -->
+
   <link
     rel="stylesheet"
     href="style.css"
   >
 
+
+  <!-- СТИЛЬ СТОРІНКИ ЗАЯВОК -->
 
   <link
     rel="stylesheet"
@@ -41,6 +45,9 @@
 
     <div class="header-container">
 
+
+      <!-- LOGO -->
+
       <a
         href="index.html"
         class="logo"
@@ -51,26 +58,53 @@
       </a>
 
 
-      <nav class="nav">
+      <!-- NAVIGATION -->
 
-        <a href="index.html">
+      <nav
+        class="nav"
+        id="mainNavigation"
+      >
+
+        <a
+          href="index.html"
+        >
           Головна
         </a>
 
 
-        <a href="profile.html">
+        <a
+          href="profile.html"
+        >
           Мій кабінет
         </a>
 
 
+        <!--
+          ЗАЯВКИ
+
+          Цей пункт доступний
+          зареєстрованим користувачам.
+
+          Для звичайного користувача:
+          показуються його власні заявки.
+
+          Для адміністрації:
+          показуються всі заявки.
+        -->
+
         <a
           href="applications.html"
           class="active"
+          id="applicationsNavLink"
         >
-          Заявки
+
+          📋 Заявки
+
         </a>
 
+
       </nav>
+
 
     </div>
 
@@ -82,40 +116,56 @@
   <!-- MAIN -->
   <!-- ================================= -->
 
-  <main class="applications-page">
+  <main
+    class="applications-page"
+  >
 
 
-    <div class="applications-container">
+    <div
+      class="applications-container"
+    >
 
 
-      <!-- TITLE -->
+      <!-- ================================= -->
+      <!-- PAGE HEADER -->
+      <!-- ================================= -->
 
-      <div class="applications-header">
+      <div
+        class="applications-header"
+      >
+
 
         <div>
 
+
           <span
             class="applications-kicker"
+            id="applicationsKicker"
           >
 
-            UA LEGION ADMIN
+            UA LEGION
 
           </span>
 
 
-          <h1>
+          <h1
+            id="applicationsTitle"
+          >
 
-            📋 Заявки користувачів
+            📋 Мої заявки
 
           </h1>
 
 
-          <p>
+          <p
+            id="applicationsSubtitle"
+          >
 
-            Перегляд та розгляд заявок
-            до UA LEGION.
+            Тут ви можете переглядати
+            статус своїх заявок до UA LEGION.
 
           </p>
+
 
         </div>
 
@@ -129,85 +179,34 @@
 
         </a>
 
+
       </div>
 
 
 
       <!-- ================================= -->
-      <!-- STATS -->
+      <!-- USER INFO -->
       <!-- ================================= -->
 
       <div
-        class="applications-stats"
+        id="userApplicationsInfo"
+        class="user-applications-info"
       >
 
-
-        <div
-          class="stat-card"
-        >
+        <div>
 
           <span>
-            🟡
+
+            👤 Ваші заявки
+
           </span>
 
 
-          <strong
-            id="newApplicationsCount"
-          >
-            0
-          </strong>
-
-
           <p>
-            Нові
-          </p>
 
-        </div>
+            Тут відображається
+            поточний статус ваших заявок.
 
-
-
-        <div
-          class="stat-card"
-        >
-
-          <span>
-            🟢
-          </span>
-
-
-          <strong
-            id="approvedApplicationsCount"
-          >
-            0
-          </strong>
-
-
-          <p>
-            Схвалені
-          </p>
-
-        </div>
-
-
-
-        <div
-          class="stat-card"
-        >
-
-          <span>
-            🔴
-          </span>
-
-
-          <strong
-            id="rejectedApplicationsCount"
-          >
-            0
-          </strong>
-
-
-          <p>
-            Відхилені
           </p>
 
         </div>
@@ -218,57 +217,204 @@
 
 
       <!-- ================================= -->
-      <!-- FILTERS -->
+      <!-- ADMIN PANEL -->
       <!-- ================================= -->
 
       <div
-        class="applications-filters"
+        id="adminApplicationsPanel"
+        class="admin-applications-panel"
+        style="display: none;"
       >
 
 
-        <select
-          id="statusFilter"
+        <!-- ADMIN TITLE -->
+
+        <div
+          class="admin-panel-title"
         >
 
-          <option value="all">
+          🛡️ Панель адміністрації
 
-            Усі заявки
-
-          </option>
+        </div>
 
 
-          <option value="new">
+        <!-- ============================= -->
+        <!-- STATISTICS -->
+        <!-- ============================= -->
 
-            Нові
-
-          </option>
-
-
-          <option value="approved">
-
-            Схвалені
-
-          </option>
-
-
-          <option value="rejected">
-
-            Відхилені
-
-          </option>
-
-        </select>
-
-
-        <input
-
-          type="text"
-
-          id="applicationSearch"
-
-          placeholder="🔎 Пошук за ім'ям або Discord..."
-
+        <div
+          class="applications-stats"
         >
+
+
+          <!-- NEW -->
+
+          <div
+            class="stat-card"
+          >
+
+            <span>
+
+              🟡
+
+            </span>
+
+
+            <strong
+              id="newApplicationsCount"
+            >
+
+              0
+
+            </strong>
+
+
+            <p>
+
+              Нові
+
+            </p>
+
+          </div>
+
+
+
+          <!-- APPROVED -->
+
+          <div
+            class="stat-card"
+          >
+
+            <span>
+
+              🟢
+
+            </span>
+
+
+            <strong
+              id="approvedApplicationsCount"
+            >
+
+              0
+
+            </strong>
+
+
+            <p>
+
+              Схвалені
+
+            </p>
+
+          </div>
+
+
+
+          <!-- REJECTED -->
+
+          <div
+            class="stat-card"
+          >
+
+            <span>
+
+              🔴
+
+            </span>
+
+
+            <strong
+              id="rejectedApplicationsCount"
+            >
+
+              0
+
+            </strong>
+
+
+            <p>
+
+              Відхилені
+
+            </p>
+
+          </div>
+
+
+        </div>
+
+
+
+        <!-- ============================= -->
+        <!-- FILTERS -->
+        <!-- ============================= -->
+
+        <div
+          class="applications-filters"
+        >
+
+
+          <!-- STATUS FILTER -->
+
+          <select
+            id="statusFilter"
+          >
+
+            <option
+              value="all"
+            >
+
+              Усі заявки
+
+            </option>
+
+
+            <option
+              value="new"
+            >
+
+              🟡 Нові
+
+            </option>
+
+
+            <option
+              value="approved"
+            >
+
+              🟢 Схвалені
+
+            </option>
+
+
+            <option
+              value="rejected"
+            >
+
+              🔴 Відхилені
+
+            </option>
+
+
+          </select>
+
+
+
+          <!-- SEARCH -->
+
+          <input
+
+            type="text"
+
+            id="applicationSearch"
+
+            placeholder="🔎 Пошук за ім'ям, Discord або ігровим ніком..."
+
+          >
+
+
+        </div>
 
 
       </div>
@@ -289,7 +435,7 @@
 
 
       <!-- ================================= -->
-      <!-- APPLICATIONS -->
+      <!-- APPLICATIONS LIST -->
       <!-- ================================= -->
 
       <div
@@ -297,13 +443,57 @@
         class="applications-list"
       >
 
+
+        <!-- LOADING -->
+
         <div
           class="applications-loading"
         >
 
-          Завантаження заявок...
+          ⏳ Завантаження заявок...
 
         </div>
+
+
+      </div>
+
+
+
+      <!-- ================================= -->
+      <!-- EMPTY USER APPLICATION -->
+      <!-- ================================= -->
+
+      <div
+        id="createApplicationBlock"
+        class="create-application-block"
+        style="display: none;"
+      >
+
+
+        <h2>
+
+          📭 У вас поки немає заявок
+
+        </h2>
+
+
+        <p>
+
+          Ви ще не подавали заявку
+          на вступ до UA LEGION.
+
+        </p>
+
+
+        <a
+          href="join.html"
+          class="create-application-btn"
+        >
+
+          📄 ПОДАТИ ЗАЯВКУ
+
+        </a>
+
 
       </div>
 
@@ -319,15 +509,23 @@
   <!-- SUPABASE -->
   <!-- ================================= -->
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+  ></script>
 
 
-  <script src="supabase.js"></script>
+  <!-- SUPABASE CONFIG -->
+
+  <script
+    src="supabase.js"
+  ></script>
 
 
-  <!-- APPLICATIONS JS -->
+  <!-- APPLICATIONS SYSTEM -->
 
-  <script src="applications.js"></script>
+  <script
+    src="applications.js"
+  ></script>
 
 
 </body>
