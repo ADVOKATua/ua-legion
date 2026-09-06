@@ -236,47 +236,6 @@ async function checkStaffAccess() {
 }
 
 
-      if (error) {
-
-        console.error(
-          "Помилка перевірки ролей:",
-          error
-        );
-
-        return false;
-
-      }
-
-
-      const staffRoles = [
-
-        "owner",
-
-        "deputy_owner",
-
-        "top_manager",
-
-        "hr_manager"
-
-      ];
-
-
-      return (
-        data || []
-      )
-      .some(
-
-        item =>
-
-          staffRoles.includes(
-            item.roles?.code
-          )
-
-      );
-
-    }
-
-
     // ======================================
     // LOAD ROLES
     // ======================================
