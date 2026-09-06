@@ -203,37 +203,33 @@ document.addEventListener(
     // STAFF ACCESS CHECK
     // ======================================
 
-// ======================================
-// STAFF ACCESS CHECK
-// ======================================
+    async function checkStaffAccess() {
 
-async function checkStaffAccess() {
-
-  const {
-    data,
-    error
-  } =
-    await supabase
-      .rpc(
-        "is_ua_legion_staff"
-      );
+      const {
+        data,
+        error
+      } =
+        await supabase
+          .rpc(
+            "is_ua_legion_staff"
+          );
 
 
-  if (error) {
+      if (error) {
 
-    console.error(
-      "Помилка перевірки адміністрації:",
-      error
-    );
+        console.error(
+          "Помилка перевірки адміністрації:",
+          error
+        );
 
-    return false;
+        return false;
 
-  }
+      }
 
 
-  return data === true;
+      return data === true;
 
-}
+    }
 
 
     // ======================================
@@ -247,7 +243,9 @@ async function checkStaffAccess() {
         error
       } =
         await supabase
-          .from("roles")
+          .from(
+            "roles"
+          )
           .select(
             "id, code, name"
           )
@@ -288,7 +286,9 @@ async function checkStaffAccess() {
         error
       } =
         await supabase
-          .from("directions")
+          .from(
+            "directions"
+          )
           .select(
             "id, name, slug"
           )
@@ -342,8 +342,12 @@ async function checkStaffAccess() {
 
       let query =
         supabase
-          .from("applications")
-          .select("*");
+          .from(
+            "applications"
+          )
+          .select(
+            "*"
+          );
 
 
       // ====================================
@@ -362,39 +366,45 @@ async function checkStaffAccess() {
       }
 
 
-    const {
-  data,
-  error
-} =
-  await query;
+      const {
+        data,
+        error
+      } =
+        await query;
 
 
-if (error) {
+      if (error) {
 
-  console.error(
-    "Помилка завантаження заявок:",
-    error
-  );
+        console.error(
+          "Помилка завантаження заявок:",
+          error
+        );
 
-  applicationsList.innerHTML = `
 
-    <div class="applications-empty">
+        applicationsList.innerHTML = `
 
-      ❌ Не вдалося завантажити заявки.
+          <div class="applications-empty">
 
-      <br><br>
+            ❌ Не вдалося завантажити заявки.
 
-      <small>
-        ${escapeHtml(error.message)}
-      </small>
+            <br><br>
 
-    </div>
+            <small>
 
-  `;
+              ${escapeHtml(
+                error.message
+              )}
 
-  return;
+            </small>
 
-}
+          </div>
+
+        `;
+
+
+        return;
+
+      }
 
 
       allApplications =
@@ -402,7 +412,7 @@ if (error) {
 
 
       // ====================================
-      // NO APPLICATIONS FOR USER
+      // USER HAS NO APPLICATIONS
       // ====================================
 
       if (
@@ -436,6 +446,10 @@ if (error) {
       }
 
 
+      // ====================================
+      // ADMIN STATISTICS
+      // ====================================
+
       if (isStaff) {
 
         updateStatistics();
@@ -458,7 +472,8 @@ if (error) {
         allApplications.filter(
 
           item =>
-            item.status === "new"
+            item.status ===
+            "new"
 
         ).length;
 
@@ -467,7 +482,8 @@ if (error) {
         allApplications.filter(
 
           item =>
-            item.status === "approved"
+            item.status ===
+            "approved"
 
         ).length;
 
@@ -476,7 +492,8 @@ if (error) {
         allApplications.filter(
 
           item =>
-            item.status === "rejected"
+            item.status ===
+            "rejected"
 
         ).length;
 
@@ -530,10 +547,6 @@ if (error) {
     // ======================================
 
     function getFilteredApplications() {
-
-      // ====================================
-      // USER DOES NOT USE FILTER
-      // ====================================
 
       if (!isStaff) {
 
@@ -678,7 +691,6 @@ if (error) {
 
         }
 
-
       };
 
 
@@ -763,7 +775,7 @@ if (error) {
 
 
     // ======================================
-    // GET APPLICATION DIRECTION ID
+    // GET APPLICATION DIRECTION
     // ======================================
 
     function getApplicationDirectionId(
@@ -859,7 +871,8 @@ if (error) {
         allDirections.find(
 
           item =>
-            item.slug === slug
+            item.slug ===
+            slug
 
         );
 
@@ -950,7 +963,12 @@ if (error) {
           allDirections.find(
 
             item =>
-              String(item.id) ===
+              String(
+                item.id
+              )
+
+              ===
+
               String(
                 applicationDirectionId
               )
@@ -1057,16 +1075,13 @@ if (error) {
 
             card.innerHTML = `
 
-              <div
-                class="application-card-header"
-              >
+              <div class="application-card-header">
 
                 <div>
 
                   <h2>
 
                     👤
-
                     ${escapeHtml(
                       application.name ||
                       "Без імені"
@@ -1078,7 +1093,6 @@ if (error) {
                   <p>
 
                     🎮
-
                     ${escapeHtml(
                       application.game_nickname ||
                       "-"
@@ -1103,9 +1117,7 @@ if (error) {
               </div>
 
 
-              <div
-                class="application-grid"
-              >
+              <div class="application-grid">
 
                 <div>
 
@@ -1181,13 +1193,14 @@ if (error) {
               </div>
 
 
-              <div
-                class="application-section"
-              >
+              <div class="application-section">
 
                 <span>
+
                   📍 Напрямок
+
                 </span>
+
 
                 <strong>
 
@@ -1202,13 +1215,14 @@ if (error) {
               </div>
 
 
-              <div
-                class="application-section"
-              >
+              <div class="application-section">
 
                 <span>
+
                   📝 Про користувача
+
                 </span>
+
 
                 <p>
 
@@ -1222,13 +1236,14 @@ if (error) {
               </div>
 
 
-              <div
-                class="application-section"
-              >
+              <div class="application-section">
 
                 <span>
+
                   🔎 Звідки дізнався
+
                 </span>
+
 
                 <strong>
 
@@ -1242,9 +1257,7 @@ if (error) {
               </div>
 
 
-              <div
-                class="application-date"
-              >
+              <div class="application-date">
 
                 📅 Подано:
 
@@ -1255,12 +1268,12 @@ if (error) {
               </div>
 
 
-              <div
-                class="application-section"
-              >
+              <div class="application-section">
 
                 <span>
+
                   🎖️ Призначення ролі
+
                 </span>
 
 
@@ -1290,9 +1303,7 @@ if (error) {
               </div>
 
 
-              <div
-                class="admin-comment-block"
-              >
+              <div class="admin-comment-block">
 
                 <label>
 
@@ -1314,9 +1325,7 @@ if (error) {
               </div>
 
 
-              <div
-                class="application-actions"
-              >
+              <div class="application-actions">
 
                 <button
                   class="
@@ -1360,9 +1369,7 @@ if (error) {
 
             card.innerHTML = `
 
-              <div
-                class="application-card-header"
-              >
+              <div class="application-card-header">
 
                 <div>
 
@@ -1376,7 +1383,6 @@ if (error) {
                   <p>
 
                     🎮
-
                     ${escapeHtml(
                       application.game_nickname ||
                       "UA LEGION"
@@ -1401,13 +1407,14 @@ if (error) {
               </div>
 
 
-              <div
-                class="application-section"
-              >
+              <div class="application-section">
 
                 <span>
+
                   📍 Обраний напрямок
+
                 </span>
+
 
                 <strong>
 
@@ -1422,9 +1429,7 @@ if (error) {
               </div>
 
 
-              <div
-                class="application-date"
-              >
+              <div class="application-date">
 
                 📅 Заявку подано:
 
@@ -1531,7 +1536,7 @@ if (error) {
 
 
       // ====================================
-      // ADMIN EVENTS ONLY
+      // ADMIN EVENTS
       // ====================================
 
       if (isStaff) {
@@ -1578,8 +1583,15 @@ if (error) {
         allApplications.find(
 
           item =>
-            String(item.id) ===
-            String(applicationId)
+            String(
+              item.id
+            )
+
+            ===
+
+            String(
+              applicationId
+            )
 
         );
 
@@ -1608,10 +1620,6 @@ if (error) {
       }
 
 
-      // ====================================
-      // DIRECTION
-      // ====================================
-
       const finalDirectionId =
 
         directionId === "global"
@@ -1628,12 +1636,14 @@ if (error) {
 
 
       // ====================================
-      // CHECK ROLE
+      // CHECK EXISTING ROLE
       // ====================================
 
       let roleQuery =
         supabase
-          .from("user_roles")
+          .from(
+            "user_roles"
+          )
           .select(
             "user_id, role_id, direction_id"
           )
@@ -1643,7 +1653,9 @@ if (error) {
           )
           .eq(
             "role_id",
-            Number(roleId)
+            Number(
+              roleId
+            )
           );
 
 
@@ -1685,12 +1697,16 @@ if (error) {
         );
 
 
-        button.disabled =
-          false;
+        if (button) {
+
+          button.disabled =
+            false;
 
 
-        button.textContent =
-          "🟢 СХВАЛИТИ";
+          button.textContent =
+            "🟢 СХВАЛИТИ";
+
+        }
 
 
         return;
@@ -1711,16 +1727,18 @@ if (error) {
           error: roleError
         } =
           await supabase
-            .from("user_roles")
+            .from(
+              "user_roles"
+            )
             .insert({
 
               user_id:
                 application.user_id,
 
-
               role_id:
-                Number(roleId),
-
+                Number(
+                  roleId
+                ),
 
               direction_id:
                 finalDirectionId
@@ -1743,12 +1761,16 @@ if (error) {
           );
 
 
-          button.disabled =
-            false;
+          if (button) {
+
+            button.disabled =
+              false;
 
 
-          button.textContent =
-            "🟢 СХВАЛИТИ";
+            button.textContent =
+              "🟢 СХВАЛИТИ";
+
+          }
 
 
           return;
@@ -1766,16 +1788,16 @@ if (error) {
         error: applicationError
       } =
         await supabase
-          .from("applications")
+          .from(
+            "applications"
+          )
           .update({
 
             status:
               "approved",
 
-
             review_comment:
               reviewComment,
-
 
             reviewed_at:
               new Date()
@@ -1796,12 +1818,16 @@ if (error) {
         );
 
 
-        button.disabled =
-          false;
+        if (button) {
+
+          button.disabled =
+            false;
 
 
-        button.textContent =
-          "🟢 СХВАЛИТИ";
+          button.textContent =
+            "🟢 СХВАЛИТИ";
+
+        }
 
 
         return;
@@ -1851,16 +1877,16 @@ if (error) {
         error
       } =
         await supabase
-          .from("applications")
+          .from(
+            "applications"
+          )
           .update({
 
             status:
               "rejected",
 
-
             review_comment:
               reviewComment,
-
 
             reviewed_at:
               new Date()
@@ -1881,12 +1907,16 @@ if (error) {
         );
 
 
-        button.disabled =
-          false;
+        if (button) {
+
+          button.disabled =
+            false;
 
 
-        button.textContent =
-          "🔴 ВІДХИЛИТИ";
+          button.textContent =
+            "🔴 ВІДХИЛИТИ";
+
+        }
 
 
         return;
@@ -1906,7 +1936,7 @@ if (error) {
 
 
     // ======================================
-    // EVENTS
+    // ATTACH APPLICATION EVENTS
     // ======================================
 
     function attachApplicationEvents() {
@@ -1971,6 +2001,7 @@ if (error) {
 
 
                 const reviewComment =
+
                   commentElement
                     ?.value
                     .trim()
@@ -2036,6 +2067,7 @@ if (error) {
 
 
                 const reviewComment =
+
                   commentElement
                     ?.value
                     .trim()
@@ -2108,11 +2140,21 @@ if (error) {
     // START
     // ======================================
 
+    console.log(
+      "UA LEGION Applications запущено"
+    );
 
-    // CHECK ACCESS
+
+    // CHECK STAFF ACCESS
 
     isStaff =
       await checkStaffAccess();
+
+
+    console.log(
+      "Staff access:",
+      isStaff
+    );
 
 
     // ====================================
@@ -2190,7 +2232,7 @@ if (error) {
 
 
     // ====================================
-    // LOAD DATA
+    // LOAD ADMIN DATA
     // ====================================
 
     if (isStaff) {
@@ -2201,6 +2243,10 @@ if (error) {
 
     }
 
+
+    // ====================================
+    // LOAD APPLICATIONS
+    // ====================================
 
     await loadApplications();
 
