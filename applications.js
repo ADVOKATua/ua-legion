@@ -4,7 +4,6 @@
 // applications.js
 // ==========================================
 
-
 document.addEventListener(
   "DOMContentLoaded",
 
@@ -49,6 +48,12 @@ document.addEventListener(
       userError ||
       !user
     ) {
+
+      console.error(
+        "Користувач не авторизований:",
+        userError
+      );
+
 
       window.location.href =
         "login.html";
@@ -192,9 +197,7 @@ document.addEventListener(
 
 
       div.textContent =
-        String(
-          value
-        );
+        String(value);
 
 
       return div.innerHTML;
@@ -207,7 +210,6 @@ document.addEventListener(
     // ======================================
 
     async function checkStaffAccess() {
-
 
       const {
         data,
@@ -226,7 +228,6 @@ document.addEventListener(
           error
         );
 
-
         return false;
 
       }
@@ -243,23 +244,19 @@ document.addEventListener(
 
     async function loadRoles() {
 
-
       const {
         data,
         error
       } =
         await supabase
-          .from(
-            "roles"
-          )
+          .from("roles")
           .select(
             "id, code, name"
           )
           .order(
             "id",
             {
-              ascending:
-                true
+              ascending: true
             }
           );
 
@@ -270,7 +267,6 @@ document.addEventListener(
           "Помилка завантаження ролей:",
           error
         );
-
 
         return;
 
@@ -289,23 +285,19 @@ document.addEventListener(
 
     async function loadDirections() {
 
-
       const {
         data,
         error
       } =
         await supabase
-          .from(
-            "directions"
-          )
+          .from("directions")
           .select(
             "id, name, slug"
           )
           .order(
-            "id",
+            "name",
             {
-              ascending:
-                true
+              ascending: true
             }
           );
 
@@ -316,7 +308,6 @@ document.addEventListener(
           "Помилка завантаження напрямків:",
           error
         );
-
 
         return;
 
@@ -334,7 +325,6 @@ document.addEventListener(
     // ======================================
 
     async function loadApplications() {
-
 
       if (!applicationsList) {
         return;
@@ -354,12 +344,8 @@ document.addEventListener(
 
       let query =
         supabase
-          .from(
-            "applications"
-          )
-          .select(
-            "*"
-          );
+          .from("applications")
+          .select("*");
 
 
       // ====================================
@@ -413,7 +399,6 @@ document.addEventListener(
 
         `;
 
-
         return;
 
       }
@@ -428,8 +413,7 @@ document.addEventListener(
       // ====================================
 
       if (
-        !isStaff
-        &&
+        !isStaff &&
         allApplications.length === 0
       ) {
 
@@ -476,13 +460,11 @@ document.addEventListener(
 
     function updateStatistics() {
 
-
       const newCount =
         allApplications.filter(
 
           item =>
-            item.status ===
-            "new"
+            item.status === "new"
 
         ).length;
 
@@ -491,8 +473,7 @@ document.addEventListener(
         allApplications.filter(
 
           item =>
-            item.status ===
-            "approved"
+            item.status === "approved"
 
         ).length;
 
@@ -501,8 +482,7 @@ document.addEventListener(
         allApplications.filter(
 
           item =>
-            item.status ===
-            "rejected"
+            item.status === "rejected"
 
         ).length;
 
@@ -557,7 +537,6 @@ document.addEventListener(
 
     function getFilteredApplications() {
 
-
       if (!isStaff) {
 
         return allApplications;
@@ -586,9 +565,7 @@ document.addEventListener(
 
           const statusMatch =
 
-            status === "all"
-
-            ||
+            status === "all" ||
 
             application.status ===
             status;
@@ -620,21 +597,15 @@ document.addEventListener(
 
           const searchMatch =
 
-            !search
-
-            ||
+            !search ||
 
             name.includes(
               search
-            )
-
-            ||
+            ) ||
 
             discord.includes(
               search
-            )
-
-            ||
+            ) ||
 
             gameNickname.includes(
               search
@@ -643,9 +614,7 @@ document.addEventListener(
 
           return (
 
-            statusMatch
-
-            &&
+            statusMatch &&
 
             searchMatch
 
@@ -665,7 +634,6 @@ document.addEventListener(
     function getStatusLabel(
       status
     ) {
-
 
       const statuses = {
 
@@ -702,14 +670,13 @@ document.addEventListener(
 
         }
 
+
       };
 
 
       return (
 
-        statuses[
-          status
-        ]
+        statuses[status]
 
         ||
 
@@ -737,7 +704,6 @@ document.addEventListener(
       dateString
     ) {
 
-
       if (!dateString) {
 
         return "-";
@@ -745,22 +711,12 @@ document.addEventListener(
       }
 
 
-      try {
-
-        return new Date(
-          dateString
-        )
-        .toLocaleString(
-          "uk-UA"
-        );
-
-      }
-
-      catch {
-
-        return "-";
-
-      }
+      return new Date(
+        dateString
+      )
+      .toLocaleString(
+        "uk-UA"
+      );
 
     }
 
@@ -772,7 +728,6 @@ document.addEventListener(
     function formatDirections(
       directions
     ) {
-
 
       if (!directions) {
 
@@ -806,7 +761,6 @@ document.addEventListener(
     function getApplicationDirectionId(
       application
     ) {
-
 
       if (
         !application.directions
@@ -844,28 +798,47 @@ document.addEventListener(
       }
 
 
-      const directionMap = {
+      // Якщо в заявці вже UUID напрямку
 
+      const directDirection =
+        allDirections.find(
+
+          direction =>
+            String(
+              direction.id
+            ) ===
+            String(
+              applicationDirection
+            )
+
+        );
+
+
+      if (directDirection) {
+
+        return directDirection.id;
+
+      }
+
+
+      // Відповідність старих назв
+
+      const directionMap = {
 
         "ETS2":
           "ets2",
 
-
         "ETS2 / TruckersMP":
           "ets2",
-
 
         "World of Tanks":
           "wot",
 
-
         "Dota 2":
           "dota2",
 
-
         "World of Warcraft":
           "wow",
-
 
         "Streaming":
           "streaming"
@@ -881,12 +854,10 @@ document.addEventListener(
 
       if (!slug) {
 
-
         const foundByName =
           allDirections.find(
 
             direction =>
-
               direction.name ===
               applicationDirection
 
@@ -905,9 +876,7 @@ document.addEventListener(
         allDirections.find(
 
           item =>
-
-            item.slug ===
-            slug
+            item.slug === slug
 
         );
 
@@ -926,7 +895,6 @@ document.addEventListener(
 
     function createRoleOptions() {
 
-
       let html = `
 
         <option value="">
@@ -942,11 +910,12 @@ document.addEventListener(
 
         role => {
 
-
           html += `
 
             <option
-              value="${escapeHtml(role.id)}"
+              value="${escapeHtml(
+                role.id
+              )}"
             >
 
               ${escapeHtml(
@@ -975,7 +944,6 @@ document.addEventListener(
       application
     ) {
 
-
       const applicationDirectionId =
         getApplicationDirectionId(
           application
@@ -997,18 +965,11 @@ document.addEventListener(
         applicationDirectionId
       ) {
 
-
         const direction =
           allDirections.find(
 
             item =>
-
-              String(
-                item.id
-              )
-
-              ===
-
+              String(item.id) ===
               String(
                 applicationDirectionId
               )
@@ -1018,11 +979,12 @@ document.addEventListener(
 
         if (direction) {
 
-
           html += `
 
             <option
-              value="${escapeHtml(direction.id)}"
+              value="${escapeHtml(
+                direction.id
+              )}"
             >
 
               📍 ${escapeHtml(
@@ -1049,7 +1011,6 @@ document.addEventListener(
 
     function renderApplications() {
 
-
       if (!applicationsList) {
         return;
       }
@@ -1067,7 +1028,6 @@ document.addEventListener(
         applications.length === 0
       ) {
 
-
         applicationsList.innerHTML = `
 
           <div class="applications-empty">
@@ -1077,7 +1037,6 @@ document.addEventListener(
           </div>
 
         `;
-
 
         return;
 
@@ -1115,7 +1074,6 @@ document.addEventListener(
           // ==================================
 
           if (isStaff) {
-
 
             card.innerHTML = `
 
@@ -1168,7 +1126,6 @@ document.addEventListener(
               <div
                 class="application-grid"
               >
-
 
                 <div>
 
@@ -1240,7 +1197,6 @@ document.addEventListener(
                   </strong>
 
                 </div>
-
 
               </div>
 
@@ -1330,7 +1286,7 @@ document.addEventListener(
 
                 <select
                   class="application-role-select"
-                  data-id="${escapeHtml(application.id)}"
+                  data-id="${application.id}"
                   ${isNew ? "" : "disabled"}
                 >
 
@@ -1341,7 +1297,7 @@ document.addEventListener(
 
                 <select
                   class="application-direction-select"
-                  data-id="${escapeHtml(application.id)}"
+                  data-id="${application.id}"
                   ${isNew ? "" : "disabled"}
                 >
 
@@ -1350,7 +1306,6 @@ document.addEventListener(
                   )}
 
                 </select>
-
 
               </div>
 
@@ -1368,7 +1323,7 @@ document.addEventListener(
 
                 <textarea
                   class="review-comment"
-                  data-id="${escapeHtml(application.id)}"
+                  data-id="${application.id}"
                   placeholder="Коментар для заявки..."
                   ${isNew ? "" : "readonly"}
                 >${escapeHtml(
@@ -1383,13 +1338,12 @@ document.addEventListener(
                 class="application-actions"
               >
 
-
                 <button
                   class="
                     application-btn
                     approve-btn
                   "
-                  data-id="${escapeHtml(application.id)}"
+                  data-id="${application.id}"
                   ${isNew ? "" : "disabled"}
                 >
 
@@ -1403,14 +1357,13 @@ document.addEventListener(
                     application-btn
                     reject-btn
                   "
-                  data-id="${escapeHtml(application.id)}"
+                  data-id="${application.id}"
                   ${isNew ? "" : "disabled"}
                 >
 
                   🔴 ВІДХИЛИТИ
 
                 </button>
-
 
               </div>
 
@@ -1424,7 +1377,6 @@ document.addEventListener(
           // ==================================
 
           else {
-
 
             card.innerHTML = `
 
@@ -1598,132 +1550,11 @@ document.addEventListener(
       );
 
 
-      // ====================================
-      // ADMIN EVENTS
-      // ====================================
-
       if (isStaff) {
 
         attachApplicationEvents();
 
       }
-
-    }
-
-
-    // ======================================
-    // UPDATE APPLICATION STATUS
-    // ======================================
-
-    async function updateApplicationStatus(
-
-      applicationId,
-
-      status,
-
-      reviewComment
-
-    ) {
-
-
-      // ====================================
-      // FIRST TRY WITH COMMENT
-      // ====================================
-
-      const updateData = {
-
-        status:
-          status,
-
-        reviewed_at:
-          new Date()
-            .toISOString()
-
-      };
-
-
-      if (
-        reviewComment
-      ) {
-
-        updateData.review_comment =
-          reviewComment;
-
-      }
-
-
-      console.log(
-        "Оновлення заявки:",
-        updateData
-      );
-
-
-      let {
-        error
-      } =
-        await supabase
-          .from(
-            "applications"
-          )
-          .update(
-            updateData
-          )
-          .eq(
-            "id",
-            applicationId
-          );
-
-
-      // ====================================
-      // FALLBACK
-      // IF review_comment COLUMN DOES NOT EXIST
-      // ====================================
-
-      if (
-        error
-        &&
-        String(
-          error.message
-        )
-        .includes(
-          "review_comment"
-        )
-      ) {
-
-
-        console.warn(
-          "Колонка review_comment відсутня. Оновлюємо без коментаря."
-        );
-
-
-        const fallback =
-          await supabase
-            .from(
-              "applications"
-            )
-            .update({
-
-              status:
-                status,
-
-              reviewed_at:
-                new Date()
-                  .toISOString()
-
-            })
-            .eq(
-              "id",
-              applicationId
-            );
-
-
-        error =
-          fallback.error;
-
-      }
-
-
-      return error;
 
     }
 
@@ -1747,54 +1578,53 @@ document.addEventListener(
     ) {
 
 
-      if (!roleId) {
+      // ====================================
+      // CHECK ROLE
+      // ====================================
 
+      if (!roleId) {
 
         showMessage(
           "Перед схваленням потрібно вибрати роль.",
           "error"
         );
 
-
         return;
 
       }
 
 
+      // ====================================
+      // GET APPLICATION
+      // ====================================
+
       const application =
         allApplications.find(
 
           item =>
-
-            String(
-              item.id
-            )
-
-            ===
-
-            String(
-              applicationId
-            )
+            String(item.id) ===
+            String(applicationId)
 
         );
 
 
       if (!application) {
 
-
         showMessage(
           "Заявку не знайдено.",
           "error"
         );
-
 
         return;
 
       }
 
 
-      if (button) {
+      // ====================================
+      // BUTTON LOADING
+      // ====================================
 
+      if (button) {
 
         button.disabled =
           true;
@@ -1807,27 +1637,40 @@ document.addEventListener(
 
 
       // ====================================
-      // DIRECTION
-      // UUID НЕ ПЕРЕТВОРЮЄМО В NUMBER
+      // NORMALIZE DIRECTION
+      // ====================================
+      //
+      // ВАЖЛИВО:
+      // "global", "null", "", null
+      // НЕ повинні потрапити в UUID поле.
+      //
+      // Якщо напрямок глобальний —
+      // direction_id взагалі не передаємо.
+      //
       // ====================================
 
-      const finalDirectionId =
-
-        directionId === "global"
-
-          ?
-
-          null
-
-          :
-
-          directionId;
+      let finalDirectionId =
+        null;
 
 
-      console.log(
-        "Вибрана роль:",
-        roleId
-      );
+      if (
+
+        directionId &&
+
+        directionId !== "global" &&
+
+        directionId !== "null" &&
+
+        directionId !== ""
+
+      ) {
+
+        finalDirectionId =
+          String(
+            directionId
+          );
+
+      }
 
 
       console.log(
@@ -1837,14 +1680,12 @@ document.addEventListener(
 
 
       // ====================================
-      // CHECK ROLE
+      // CHECK EXISTING ROLE
       // ====================================
 
       let roleQuery =
         supabase
-          .from(
-            "user_roles"
-          )
+          .from("user_roles")
           .select(
             "user_id, role_id, direction_id"
           )
@@ -1854,14 +1695,17 @@ document.addEventListener(
           )
           .eq(
             "role_id",
-            roleId
+            Number(roleId)
           );
 
+
+      // ====================================
+      // GLOBAL ROLE
+      // ====================================
 
       if (
         finalDirectionId === null
       ) {
-
 
         roleQuery =
           roleQuery.is(
@@ -1872,8 +1716,11 @@ document.addEventListener(
       }
 
 
-      else {
+      // ====================================
+      // DIRECTION ROLE
+      // ====================================
 
+      else {
 
         roleQuery =
           roleQuery.eq(
@@ -1892,7 +1739,6 @@ document.addEventListener(
 
 
       if (existingRoleError) {
-
 
         console.error(
           "Помилка перевірки ролі:",
@@ -1928,34 +1774,35 @@ document.addEventListener(
       // ====================================
 
       if (
+
         !existingRoles ||
+
         existingRoles.length === 0
+
       ) {
 
 
         const roleData = {
 
-
           user_id:
             application.user_id,
 
 
-          // UUID залишаємо рядком
-
           role_id:
-            roleId
+            Number(roleId)
 
         };
 
 
         // ==================================
-        // ADD DIRECTION ONLY IF NOT GLOBAL
+        // ADD DIRECTION ONLY IF SELECTED
         // ==================================
 
         if (
-          finalDirectionId !== null
-        ) {
 
+          finalDirectionId !== null
+
+        ) {
 
           roleData.direction_id =
             finalDirectionId;
@@ -1972,17 +1819,17 @@ document.addEventListener(
         const {
           error: roleError
         } =
+
           await supabase
-            .from(
-              "user_roles"
-            )
+
+            .from("user_roles")
+
             .insert(
               roleData
             );
 
 
         if (roleError) {
-
 
           console.error(
             "Повна помилка призначення ролі:",
@@ -1991,14 +1838,17 @@ document.addEventListener(
 
 
           showMessage(
+
             "Не вдалося призначити роль: " +
+
             roleError.message,
+
             "error"
+
           );
 
 
           if (button) {
-
 
             button.disabled =
               false;
@@ -2021,20 +1871,53 @@ document.addEventListener(
       // UPDATE APPLICATION
       // ====================================
 
-      const applicationError =
-        await updateApplicationStatus(
+      const updateData = {
 
-          applicationId,
-
+        status:
           "approved",
 
-          reviewComment
 
-        );
+        reviewed_at:
+          new Date()
+            .toISOString()
+
+      };
+
+
+      // Додаємо коментар тільки якщо поле існує
+      // і адміністратор ввів текст
+
+      if (
+        reviewComment
+      ) {
+
+        updateData.review_comment =
+          reviewComment;
+
+      }
+
+
+      console.log(
+        "Оновлення заявки:",
+        updateData
+      );
+
+
+      const {
+        error: applicationError
+      } =
+        await supabase
+          .from("applications")
+          .update(
+            updateData
+          )
+          .eq(
+            "id",
+            applicationId
+          );
 
 
       if (applicationError) {
-
 
         console.error(
           "Помилка оновлення заявки:",
@@ -2049,7 +1932,6 @@ document.addEventListener(
 
 
         if (button) {
-
 
           button.disabled =
             false;
@@ -2094,7 +1976,6 @@ document.addEventListener(
 
       if (button) {
 
-
         button.disabled =
           true;
 
@@ -2105,20 +1986,50 @@ document.addEventListener(
       }
 
 
-      const error =
-        await updateApplicationStatus(
+      const updateData = {
 
-          applicationId,
-
+        status:
           "rejected",
 
-          reviewComment
 
-        );
+        reviewed_at:
+          new Date()
+            .toISOString()
+
+      };
+
+
+      if (
+        reviewComment
+      ) {
+
+        updateData.review_comment =
+          reviewComment;
+
+      }
+
+
+      console.log(
+        "Оновлення заявки:",
+        updateData
+      );
+
+
+      const {
+        error
+      } =
+        await supabase
+          .from("applications")
+          .update(
+            updateData
+          )
+          .eq(
+            "id",
+            applicationId
+          );
 
 
       if (error) {
-
 
         console.error(
           "Помилка відхилення заявки:",
@@ -2133,7 +2044,6 @@ document.addEventListener(
 
 
         if (button) {
-
 
           button.disabled =
             false;
@@ -2332,7 +2242,6 @@ document.addEventListener(
 
       () => {
 
-
         if (isStaff) {
 
           renderApplications();
@@ -2350,7 +2259,6 @@ document.addEventListener(
 
       () => {
 
-
         if (isStaff) {
 
           renderApplications();
@@ -2367,9 +2275,7 @@ document.addEventListener(
     // ======================================
 
 
-    // ====================================
     // CHECK ACCESS
-    // ====================================
 
     isStaff =
       await checkStaffAccess();
@@ -2455,9 +2361,7 @@ document.addEventListener(
 
     if (isStaff) {
 
-
       await loadRoles();
-
 
       await loadDirections();
 
