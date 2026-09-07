@@ -1,103 +1,276 @@
 <!DOCTYPE html>
 <html lang="uk">
+
 <head>
+
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
   <meta name="theme-color" content="#05070b">
-  <title>UA LEGION — Українська gaming-спільнота</title>
-  <meta name="description" content="UA LEGION — українська gaming-спільнота. ETS2, World of Tanks, World of Warcraft, Dota 2 та UA LEGION Media.">
-  <link rel="stylesheet" href="style.css">
+
+  <title>
+    UA LEGION — Українська gaming-спільнота
+  </title>
+
+  <meta
+    name="description"
+    content="UA LEGION — українська gaming-спільнота. ETS2, World of Tanks, World of Warcraft, Dota 2 та UA LEGION Media."
+  >
+
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
+
 
   <style>
-    html, body {
+
+    html,
+    body {
+
       width: 100%;
       height: 100%;
+
       margin: 0;
       padding: 0;
+
       overflow: hidden;
+
     }
 
-    body { min-height: 100vh; }
+
+    body {
+
+      min-height: 100vh;
+
+    }
+
 
     .home-page {
+
       height: calc(100vh - 76px);
+
       min-height: 0;
+
       overflow: hidden;
+
     }
+
 
     .home-page .hero {
+
       height: 100%;
+
       min-height: 0;
+
       box-sizing: border-box;
+
       overflow: hidden;
+
     }
 
-    .home-page .hero-content { z-index: 3; }
-    .home-page .hero-logo { z-index: 2; }
+
+    .home-page .hero-content {
+
+      z-index: 3;
+
+    }
+
+
+    .home-page .hero-logo {
+
+      z-index: 2;
+
+    }
+
 
     .home-page .hero-logo img {
+
       max-height: 68vh;
+
       max-width: 44vw;
+
       width: auto;
       height: auto;
+
       object-fit: contain;
-      transform: translate(-4vw, 5vh);
+
+      transform:
+        translate(
+          -4vw,
+          5vh
+        );
+
     }
 
-    @media (max-width: 900px) {
-      html, body { overflow: hidden; }
-      .home-page { height: calc(100vh - 70px); }
-      .home-page .hero-logo img {
-        max-width: 42vw;
-        max-height: 55vh;
+
+    @media (
+      max-width: 900px
+    ) {
+
+      html,
+      body {
+
+        overflow: hidden;
+
       }
+
+
+      .home-page {
+
+        height:
+          calc(
+            100vh - 70px
+          );
+
+      }
+
+
+      .home-page .hero-logo img {
+
+        max-width: 42vw;
+
+        max-height: 55vh;
+
+      }
+
     }
 
-    @media (max-width: 700px) {
-      .home-page { height: calc(100vh - 64px); }
+
+    @media (
+      max-width: 700px
+    ) {
+
+      .home-page {
+
+        height:
+          calc(
+            100vh - 64px
+          );
+
+      }
+
 
       .home-page .hero {
+
         display: flex;
+
         align-items: center;
+
         justify-content: center;
+
       }
 
-      .home-page .hero-content { width: 90%; }
-      .home-page .hero-logo { opacity: 0.25; }
+
+      .home-page .hero-content {
+
+        width: 90%;
+
+      }
+
+
+      .home-page .hero-logo {
+
+        opacity: 0.25;
+
+      }
+
 
       .home-page .hero-logo img {
+
         max-width: 75vw;
+
         max-height: 60vh;
+
       }
+
     }
+
   </style>
+
 </head>
+
 
 <body class="home-page">
 
+
   <div class="noise"></div>
+
+
+  <!-- =========================================
+       ВЕРХНЄ МЕНЮ
+       ========================================= -->
 
   <header class="topbar">
 
-    <a class="brand" href="index.html">
-      <img src="ua-legion-logo.png" alt="UA LEGION">
-      <span>UA LEGION</span>
+
+    <a
+      class="brand"
+      href="index.html"
+    >
+
+      <img
+        src="ua-legion-logo.png"
+        alt="UA LEGION"
+      >
+
+      <span>
+        UA LEGION
+      </span>
+
     </a>
 
-    <button class="menu-btn" aria-label="Відкрити меню">
+
+    <!-- МОБІЛЬНЕ МЕНЮ -->
+
+    <button
+      class="menu-btn"
+      aria-label="Відкрити меню"
+    >
       ☰
     </button>
 
+
+    <!-- НАВІГАЦІЯ -->
+
     <nav class="nav">
 
-      <a href="index.html">Головна</a>
-      <a href="about.html">Про нас</a>
-      <a href="games.html">Ігри</a>
-      <a href="events.html">Події</a>
-      <a href="media.html">Медіа</a>
-      <a href="gallery.html">Галерея</a>
 
-      <!-- ПОДАТИ ЗАЯВКУ ВИДАЛЕНО З ГОЛОВНОГО МЕНЮ -->
+      <a href="index.html">
+        Головна
+      </a>
+
+
+      <a href="about.html">
+        Про нас
+      </a>
+
+
+      <a href="games.html">
+        Ігри
+      </a>
+
+
+      <a href="events.html">
+        Події
+      </a>
+
+
+      <a href="media.html">
+        Медіа
+      </a>
+
+
+      <a href="gallery.html">
+        Галерея
+      </a>
+
+
+      <!-- TIKTOK -->
 
       <a
         href="https://www.tiktok.com/@ua_legion_"
@@ -106,6 +279,9 @@
       >
         TikTok
       </a>
+
+
+      <!-- DISCORD -->
 
       <a
         href="https://discord.gg/gfunf3yq7"
@@ -116,48 +292,85 @@
         Discord
       </a>
 
+
+      <!-- ВХІД / КАБІНЕТ
+           ЗАВЖДИ ОСТАННІЙ ПУНКТ МЕНЮ -->
+
       <a
         href="login.html"
         id="authButton"
-        class="nav-auth"
       >
         Увійти / Реєстрація
       </a>
 
+
     </nav>
+
 
   </header>
 
+
+  <!-- =========================================
+       ГОЛОВНА СТОРІНКА
+       ========================================= -->
+
   <main>
+
 
     <section class="hero">
 
+
       <div class="hero-glow"></div>
+
+
+      <!-- ОСНОВНИЙ ТЕКСТ -->
 
       <div class="hero-content">
 
+
         <div class="eyebrow">
+
           🇺🇦 УКРАЇНСЬКА GAMING-СПІЛЬНОТА
+
         </div>
 
+
         <h1>
+
           UA
-          <span>LEGION</span>
+
+          <span>
+            LEGION
+          </span>
+
         </h1>
 
+
         <p class="slogan">
+
           Україна грає.
-          <strong>ЛЕГІОН перемагає.</strong>
+
+          <strong>
+            ЛЕГІОН перемагає.
+          </strong>
+
         </p>
 
+
         <p class="hero-text">
+
           Єдина спільнота для геймерів,
           стрімерів та команд.
 
           Різні ігри — один LEGION.
+
         </p>
 
+
+        <!-- КНОПКИ -->
+
         <div class="hero-actions">
+
 
           <a
             href="https://discord.gg/gfunf3yq7"
@@ -168,6 +381,7 @@
             ПРИЄДНАТИСЯ
           </a>
 
+
           <a
             href="about.html"
             class="btn btn-ghost"
@@ -175,22 +389,59 @@
             ПРО СПІЛЬНОТУ
           </a>
 
+
         </div>
 
+
       </div>
 
+
+      <!-- ЛОГОТИП -->
+
       <div class="hero-logo">
-        <img src="ua-legion-logo.png" alt="UA LEGION">
+
+
+        <img
+          src="ua-legion-logo.png"
+          alt="UA LEGION"
+        >
+
+
       </div>
+
 
     </section>
 
+
   </main>
 
+
+  <!-- =========================================
+       JAVASCRIPT
+       ========================================= -->
+
+
+  <!-- SUPABASE -->
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+  <!-- ПІДКЛЮЧЕННЯ SUPABASE -->
+
   <script src="supabase.js"></script>
+
+
+  <!-- ОСНОВНИЙ JAVASCRIPT -->
+
   <script src="script.js"></script>
+
+
+  <!-- АВТОРИЗАЦІЯ ТА ДИНАМІЧНЕ МЕНЮ
+       ЗАВЖДИ ОСТАННІМ -->
+
   <script src="auth-menu.js"></script>
 
+
 </body>
+
 </html>
