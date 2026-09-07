@@ -97,12 +97,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // ======================================
   // NORMALIZE ARRAY
-  // Converts:
-  // array
-  // JSON string
-  // object
-  // simple string
-  // into array
   // ======================================
 
   function normalizeArray(value) {
@@ -133,7 +127,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    // JSON string
+    // String
     if (typeof value === "string") {
 
       const trimmed =
@@ -146,7 +140,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
 
 
-      // Try JSON
+      // JSON array
       try {
 
         const parsed =
@@ -169,11 +163,11 @@ document.addEventListener("DOMContentLoaded", async () => {
       } catch (error) {
 
         // Not JSON
+
       }
 
 
-      // PostgreSQL style array:
-      // {ETS2,WoT}
+      // PostgreSQL array
       if (
         trimmed.startsWith("{") &&
         trimmed.endsWith("}")
@@ -213,7 +207,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Object
     if (typeof value === "object") {
 
-      return Object.values(value)
+      return Object
+        .values(value)
         .filter(item =>
           item !== null &&
           item !== undefined &&
@@ -389,7 +384,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
   // ======================================
-  // GET MEMBER ROLES
+  // MEMBER ROLES
   // ======================================
 
   function getMemberRoles(member) {
@@ -402,7 +397,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
   // ======================================
-  // GET MEMBER DIRECTIONS
+  // MEMBER DIRECTIONS
   // ======================================
 
   function getMemberDirections(member) {
@@ -415,7 +410,139 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
   // ======================================
-  // GET FILTERED MEMBERS
+  // DIRECTION ICON
+  // ======================================
+
+  function getDirectionIcon(direction) {
+
+    const value =
+      String(direction || "")
+        .trim()
+        .toLowerCase();
+
+
+    const icons = {
+
+      "ets2": "🚛",
+
+      "euro truck simulator 2": "🚛",
+
+      "ats": "🇺🇸🚛",
+
+      "american truck simulator": "🇺🇸🚛",
+
+      "wot": "🛡",
+
+      "world of tanks": "🛡",
+
+      "wow": "⚔️",
+
+      "world of warcraft": "⚔️",
+
+      "dota": "🎯",
+
+      "dota 2": "🎯",
+
+      "cs2": "🔫",
+
+      "counter-strike 2": "🔫",
+
+      "minecraft": "⛏️",
+
+      "fortnite": "🏗️",
+
+      "stream": "📺",
+
+      "streaming": "📺",
+
+      "youtube": "▶️",
+
+      "tiktok": "🎵"
+
+    };
+
+
+    return (
+      icons[value] ||
+      "🎮"
+    );
+
+  }
+
+
+  // ======================================
+  // AVATAR LETTER
+  // ======================================
+
+  function getAvatarLetter(member) {
+
+    const name =
+      String(
+        member.name ||
+        member.game_nickname ||
+        "U"
+      )
+        .trim();
+
+
+    return (
+      name.charAt(0)
+        .toUpperCase() ||
+      "U"
+    );
+
+  }
+
+
+  // ======================================
+  // GET AVATAR
+  // ======================================
+
+  function renderAvatar(member) {
+
+    const avatarUrl =
+      member.avatar_url ||
+      member.avatar ||
+      "";
+
+
+    if (avatarUrl) {
+
+      return `
+
+        <img
+          src="${escapeHtml(avatarUrl)}"
+          alt="${escapeHtml(
+            member.name ||
+            "Учасник"
+          )}"
+          class="member-avatar-image"
+        >
+
+      `;
+
+    }
+
+
+    return `
+
+      <span
+        class="member-avatar-letter"
+      >
+
+        ${escapeHtml(
+          getAvatarLetter(member)
+        )}
+
+      </span>
+
+    `;
+
+  }
+
+
+  // ======================================
+  // FILTER MEMBERS
   // ======================================
 
   function getFilteredMembers() {
@@ -486,15 +613,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
   // ======================================
-  // RENDER BADGES
+  // ROLE BADGES
   // ======================================
 
-  function renderBadges(
-    items,
-    className,
-    icon,
-    emptyText
-  ) {
+  function renderRoleBadges(items) {
 
     if (
       !items ||
@@ -504,11 +626,10 @@ document.addEventListener("DOMContentLoaded", async () => {
       return `
 
         <span
-          class="${className} ${className}-empty"
+          class="member-role member-role-empty"
         >
 
-          ${icon}
-          ${escapeHtml(emptyText)}
+          🛡 Без ролі
 
         </span>
 
@@ -522,10 +643,58 @@ document.addEventListener("DOMContentLoaded", async () => {
         item => `
 
           <span
-            class="${className}"
+            class="member-role"
           >
 
-            ${icon}
+            🛡
+
+            ${escapeHtml(item)}
+
+          </span>
+
+        `
+      )
+      .join("");
+
+  }
+
+
+  // ======================================
+  // DIRECTION BADGES
+  // ======================================
+
+  function renderDirectionBadges(items) {
+
+    if (
+      !items ||
+      items.length === 0
+    ) {
+
+      return `
+
+        <span
+          class="member-direction member-direction-empty"
+        >
+
+          🎮 Не вказано
+
+        </span>
+
+      `;
+
+    }
+
+
+    return items
+      .map(
+        item => `
+
+          <span
+            class="member-direction"
+          >
+
+            ${getDirectionIcon(item)}
+
             ${escapeHtml(item)}
 
           </span>
@@ -609,7 +778,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
         const card =
-          document.createElement("div");
+          document.createElement("article");
 
 
         card.className =
@@ -618,39 +787,55 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         card.innerHTML = `
 
-          <div class="member-avatar">
+          <!-- AVATAR -->
 
-            👤
+          <div
+            class="member-avatar"
+          >
+
+            ${renderAvatar(member)}
 
           </div>
 
 
-          <div class="member-info">
+          <!-- INFO -->
 
-
-            <h2>
-
-              ${escapeHtml(
-                member.name ||
-                "Учасник UA LEGION"
-              )}
-
-            </h2>
+          <div
+            class="member-info"
+          >
 
 
             <div
-              class="member-nickname"
+              class="member-main-info"
             >
 
-              🎮
+              <h2>
 
-              ${escapeHtml(
-                member.game_nickname ||
-                "Не вказано"
-              )}
+                ${escapeHtml(
+                  member.name ||
+                  "Учасник UA LEGION"
+                )}
+
+              </h2>
+
+
+              <div
+                class="member-nickname"
+              >
+
+                🎮
+
+                ${escapeHtml(
+                  member.game_nickname ||
+                  "Не вказано"
+                )}
+
+              </div>
 
             </div>
 
+
+            <!-- ROLES -->
 
             <div
               class="member-section"
@@ -669,17 +854,16 @@ document.addEventListener("DOMContentLoaded", async () => {
                 class="member-badges"
               >
 
-                ${renderBadges(
-                  roles,
-                  "member-role",
-                  "🛡",
-                  "Без ролі"
+                ${renderRoleBadges(
+                  roles
                 )}
 
               </div>
 
             </div>
 
+
+            <!-- DIRECTIONS -->
 
             <div
               class="member-section"
@@ -698,11 +882,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                 class="member-badges"
               >
 
-                ${renderBadges(
-                  directions,
-                  "member-direction",
-                  "🎯",
-                  "Не вказано"
+                ${renderDirectionBadges(
+                  directions
                 )}
 
               </div>
