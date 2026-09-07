@@ -7,6 +7,7 @@ document.addEventListener(
   "DOMContentLoaded",
   async () => {
 
+
     // ======================================
     // SUPABASE
     // ======================================
@@ -54,7 +55,7 @@ document.addEventListener(
 
 
     // ======================================
-    // ЕЛЕМЕНТИ СТОРІНКИ
+    // ЕЛЕМЕНТИ
     // ======================================
 
     const profileForm =
@@ -75,9 +76,9 @@ document.addEventListener(
       );
 
 
-    const avatarUrl =
+    const avatarFile =
       document.getElementById(
-        "avatarUrl"
+        "avatarFile"
       );
 
 
@@ -148,73 +149,11 @@ document.addEventListener(
 
 
     // ======================================
-    // НАЛАШТУВАННЯ ПОЛЯ АВАТАРА
+    // ПОТОЧНИЙ URL АВАТАРА
     // ======================================
 
-    if (avatarUrl) {
-
-      avatarUrl.type =
-        "file";
-
-
-      avatarUrl.accept =
-        "image/png,image/jpeg,image/webp,image/gif";
-
-
-      avatarUrl.removeAttribute(
-        "placeholder"
-      );
-
-
-      avatarUrl.addEventListener(
-        "change",
-        () => {
-
-          const file =
-            avatarUrl.files?.[0];
-
-
-          if (
-            !file ||
-            !profileAvatar
-          ) {
-            return;
-          }
-
-
-          if (
-            !file.type.startsWith(
-              "image/"
-            )
-          ) {
-
-            showMessage(
-              "Будь ласка, виберіть зображення.",
-              "error"
-            );
-
-
-            avatarUrl.value =
-              "";
-
-            return;
-
-          }
-
-
-          const previewUrl =
-            URL.createObjectURL(
-              file
-            );
-
-
-          profileAvatar.src =
-            previewUrl;
-
-        }
-      );
-
-    }
+    let currentAvatarUrl =
+      null;
 
 
     // ======================================
@@ -238,6 +177,65 @@ document.addEventListener(
       messageBox.className =
         "profile-message " +
         type;
+
+    }
+
+
+    // ======================================
+    // ПОПЕРЕДНІЙ ПЕРЕГЛЯД АВАТАРА
+    // ======================================
+
+    if (avatarFile) {
+
+      avatarFile.addEventListener(
+        "change",
+        () => {
+
+          const file =
+            avatarFile.files[0];
+
+
+          if (!file) {
+            return;
+          }
+
+
+          if (
+            !file.type.startsWith(
+              "image/"
+            )
+          ) {
+
+            showMessage(
+              "Будь ласка, виберіть файл зображення.",
+              "error"
+            );
+
+
+            avatarFile.value =
+              "";
+
+
+            return;
+
+          }
+
+
+          const previewUrl =
+            URL.createObjectURL(
+              file
+            );
+
+
+          if (profileAvatar) {
+
+            profileAvatar.src =
+              previewUrl;
+
+          }
+
+        }
+      );
 
     }
 
@@ -285,10 +283,6 @@ document.addEventListener(
       }
 
 
-      // ====================================
-      // ІМ'Я
-      // ====================================
-
       if (
         profile.display_name &&
         displayName
@@ -308,10 +302,6 @@ document.addEventListener(
       }
 
 
-      // ====================================
-      // ДАТА НАРОДЖЕННЯ
-      // ====================================
-
       if (
         profile.birth_date &&
         birthDate
@@ -323,24 +313,23 @@ document.addEventListener(
       }
 
 
-      // ====================================
-      // АВАТАР
-      // ====================================
-
       if (
-        profile.avatar_url &&
-        profileAvatar
+        profile.avatar_url
       ) {
 
-        profileAvatar.src =
+        currentAvatarUrl =
           profile.avatar_url;
+
+
+        if (profileAvatar) {
+
+          profileAvatar.src =
+            profile.avatar_url;
+
+        }
 
       }
 
-
-      // ====================================
-      // DISCORD USERNAME
-      // ====================================
 
       if (
         profile.discord_username &&
@@ -353,10 +342,6 @@ document.addEventListener(
       }
 
 
-      // ====================================
-      // DISCORD USER ID
-      // ====================================
-
       if (
         profile.discord_user_id &&
         discordUserId
@@ -368,10 +353,6 @@ document.addEventListener(
       }
 
 
-      // ====================================
-      // STEAM ID
-      // ====================================
-
       if (
         profile.steam_id &&
         steamId
@@ -382,10 +363,6 @@ document.addEventListener(
 
       }
 
-
-      // ====================================
-      // ІГРОВИЙ НІК
-      // ====================================
 
       if (
         profile.game_nickname &&
@@ -406,78 +383,50 @@ document.addEventListener(
 
     async function uploadAvatar() {
 
-      const selectedFile =
-        avatarUrl?.files?.[0];
+      if (
+        !avatarFile ||
+        !avatarFile.files ||
+        avatarFile.files.length === 0
+      ) {
 
-
-      // Якщо новий файл не вибрано —
-      // залишаємо поточний аватар.
-
-      if (!selectedFile) {
-
-        return null;
+        return currentAvatarUrl;
 
       }
 
 
+      const file =
+        avatarFile.files[0];
+
+
       if (
-        !selectedFile.type.startsWith(
+        !file.type.startsWith(
           "image/"
         )
       ) {
 
         throw new Error(
-          "Будь ласка, виберіть файл зображення."
+          "Можна завантажувати лише зображення."
         );
 
       }
 
 
-      // Максимум 5 MB
-
-      const maxSize =
-        5 * 1024 * 1024;
-
-
-      if (
-        selectedFile.size >
-        maxSize
-      ) {
-
-        throw new Error(
-          "Розмір зображення не повинен перевищувати 5 MB."
-        );
-
-      }
-
-
-      // Визначаємо розширення
-
-      let extension =
-        selectedFile.name
+      const fileExtension =
+        file.name
           .split(".")
           .pop()
-          ?.toLowerCase();
+          .toLowerCase();
 
 
-      if (
-        !extension ||
-        extension.length > 10
-      ) {
-
-        extension =
-          "jpg";
-
-      }
-
-
-      // Кожен користувач має свій файл
+      // У кожного користувача
+      // постійний шлях до аватара
 
       const filePath =
-        `${user.id}/avatar.${extension}`;
+        `${user.id}/avatar.${fileExtension}`;
 
 
-      // Завантаження у bucket avatars
+      // Завантажуємо
+      // з автоматичною заміною
 
       const {
         error: uploadError
@@ -488,20 +437,15 @@ document.addEventListener(
 
           filePath,
 
-          selectedFile,
+          file,
 
           {
-
-            cacheControl:
-              "3600",
-
 
             upsert:
               true,
 
-
-            contentType:
-              selectedFile.type
+            cacheControl:
+              "3600"
 
           }
 
@@ -521,8 +465,6 @@ document.addEventListener(
       }
 
 
-      // Отримуємо публічне посилання
-
       const {
         data: publicUrlData
       } = supabase
@@ -539,13 +481,20 @@ document.addEventListener(
       ) {
 
         throw new Error(
-          "Не вдалося отримати посилання на аватар."
+          "Не вдалося отримати URL аватара."
         );
 
       }
 
 
-      return publicUrlData.publicUrl;
+      // Додаємо параметр часу,
+      // щоб браузер не показував старе фото
+
+      return (
+        publicUrlData.publicUrl +
+        "?v=" +
+        Date.now()
+      );
 
     }
 
@@ -602,16 +551,6 @@ document.addEventListener(
 
       if (error) {
 
-        console.error(
-          "Помилка завантаження заявки:",
-          error
-        );
-
-
-        applicationStatus.className =
-          "application-card";
-
-
         applicationStatus.innerHTML =
           `
             <h3>
@@ -636,10 +575,6 @@ document.addEventListener(
           : null;
 
 
-      // ====================================
-      // ЗАЯВКИ НЕМАЄ
-      // ====================================
-
       if (!application) {
 
         applicationStatus.className =
@@ -663,10 +598,8 @@ document.addEventListener(
           joinButton.style.display =
             "inline-flex";
 
-
           joinButton.href =
             "join.html";
-
 
           joinButton.textContent =
             "📝 ПОДАТИ ЗАЯВКУ";
@@ -682,10 +615,6 @@ document.addEventListener(
       const status =
         application.status;
 
-
-      // ====================================
-      // PENDING
-      // ====================================
 
       if (
         status === "pending"
@@ -719,10 +648,6 @@ document.addEventListener(
 
       }
 
-
-      // ====================================
-      // APPROVED
-      // ====================================
 
       if (
         status === "approved"
@@ -764,10 +689,6 @@ document.addEventListener(
       }
 
 
-      // ====================================
-      // REJECTED
-      // ====================================
-
       if (
         status === "rejected"
       ) {
@@ -793,10 +714,8 @@ document.addEventListener(
           joinButton.style.display =
             "inline-flex";
 
-
           joinButton.href =
             "join.html";
-
 
           joinButton.textContent =
             "📝 ПОДАТИ НОВУ ЗАЯВКУ";
@@ -809,14 +728,6 @@ document.addEventListener(
       }
 
 
-      // ====================================
-      // НЕВІДОМИЙ СТАТУС
-      // ====================================
-
-      applicationStatus.className =
-        "application-card";
-
-
       applicationStatus.innerHTML =
         `
           <h3>
@@ -827,14 +738,6 @@ document.addEventListener(
             Поточний статус: ${status}
           </p>
         `;
-
-
-      if (joinButton) {
-
-        joinButton.style.display =
-          "none";
-
-      }
 
     }
 
@@ -858,7 +761,6 @@ document.addEventListener(
       if (directionsError) {
 
         console.error(
-          "Помилка читання directions:",
           directionsError
         );
 
@@ -900,7 +802,6 @@ document.addEventListener(
       if (selectedError) {
 
         console.error(
-          "Помилка завантаження напрямків:",
           selectedError
         );
 
@@ -934,11 +835,6 @@ document.addEventListener(
             );
 
 
-          if (!slug) {
-            return;
-          }
-
-
           const checkbox =
             document.querySelector(
               `input[name="direction"][value="${slug}"]`
@@ -969,14 +865,6 @@ document.addEventListener(
       }
 
 
-      rolesList.innerHTML =
-        `
-          <div class="roles-empty">
-            Завантаження ролей...
-          </div>
-        `;
-
-
       const {
         data: userRoles,
         error: userRolesError
@@ -993,19 +881,12 @@ document.addEventListener(
 
       if (userRolesError) {
 
-        console.error(
-          "Помилка user_roles:",
-          userRolesError
-        );
-
-
         rolesList.innerHTML =
           `
             <div class="roles-empty">
               Не вдалося завантажити ролі.
             </div>
           `;
-
 
         return;
 
@@ -1017,14 +898,9 @@ document.addEventListener(
         userRoles.length === 0
       ) {
 
-        window.currentUserRoles =
-          [];
-
-
         renderUserRoles(
           []
         );
-
 
         return;
 
@@ -1034,21 +910,16 @@ document.addEventListener(
       const roleIds =
         [
           ...new Set(
-            userRoles
-              .map(
-                (item) =>
-                  item.role_id
-              )
-              .filter(
-                Boolean
-              )
+            userRoles.map(
+              item =>
+                item.role_id
+            )
           )
         ];
 
 
       const {
-        data: roles,
-        error: rolesError
+        data: roles
       } = await supabase
         .from("roles")
         .select(
@@ -1060,38 +931,19 @@ document.addEventListener(
         );
 
 
-      if (rolesError) {
-
-        console.error(
-          "Помилка roles:",
-          rolesError
-        );
-
-
-        rolesList.innerHTML =
-          `
-            <div class="roles-empty">
-              Не вдалося завантажити інформацію про ролі.
-            </div>
-          `;
-
-
-        return;
-
-      }
-
-
       const directionIds =
         [
           ...new Set(
+
             userRoles
               .map(
-                (item) =>
+                item =>
                   item.direction_id
               )
               .filter(
                 Boolean
               )
+
           )
         ];
 
@@ -1105,8 +957,7 @@ document.addEventListener(
       ) {
 
         const {
-          data: directionsData,
-          error: directionsError
+          data
         } = await supabase
           .from("directions")
           .select(
@@ -1118,34 +969,18 @@ document.addEventListener(
           );
 
 
-        if (directionsError) {
-
-          console.error(
-            "Помилка directions:",
-            directionsError
-          );
-
-        } else {
-
-          directions =
-            directionsData || [];
-
-        }
+        directions =
+          data || [];
 
       }
 
 
       const rolesMap =
         new Map(
-          roles.map(
-            (role) => [
-
-              String(
-                role.id
-              ),
-
+          (roles || []).map(
+            role => [
+              String(role.id),
               role
-
             ]
           )
         );
@@ -1154,14 +989,9 @@ document.addEventListener(
       const directionsMap =
         new Map(
           directions.map(
-            (direction) => [
-
-              String(
-                direction.id
-              ),
-
+            direction => [
+              String(direction.id),
               direction
-
             ]
           )
         );
@@ -1169,33 +999,26 @@ document.addEventListener(
 
       const fullRoles =
         userRoles.map(
-          (item) => ({
+          item => ({
 
             role_id:
               item.role_id,
 
-
             direction_id:
               item.direction_id,
 
-
             roles:
               rolesMap.get(
-                String(
-                  item.role_id
-                )
-              ) || null,
-
+                String(item.role_id)
+              ),
 
             directions:
 
               item.direction_id
-                ? (
-                    directionsMap.get(
-                      String(
-                        item.direction_id
-                      )
-                    ) || null
+                ? directionsMap.get(
+                    String(
+                      item.direction_id
+                    )
                   )
                 : null
 
@@ -1204,10 +1027,7 @@ document.addEventListener(
 
 
       fullRoles.sort(
-        (
-          a,
-          b
-        ) => {
+        (a, b) => {
 
           if (
             a.direction_id === null &&
@@ -1229,10 +1049,6 @@ document.addEventListener(
 
         }
       );
-
-
-      window.currentUserRoles =
-        fullRoles;
 
 
       renderUserRoles(
@@ -1271,14 +1087,13 @@ document.addEventListener(
             </div>
           `;
 
-
         return;
 
       }
 
 
       roles.forEach(
-        (item) => {
+        item => {
 
           const roleCard =
             document.createElement(
@@ -1319,42 +1134,6 @@ document.addEventListener(
 
             roleIcon =
               "👑";
-
-          }
-
-          else if (
-            roleCode === "deputy_owner"
-          ) {
-
-            roleIcon =
-              "🛡️";
-
-          }
-
-          else if (
-            roleCode === "top_manager"
-          ) {
-
-            roleIcon =
-              "🏆";
-
-          }
-
-          else if (
-            roleCode === "hr_manager"
-          ) {
-
-            roleIcon =
-              "👥";
-
-          }
-
-          else if (
-            roleCode === "logistics_manager"
-          ) {
-
-            roleIcon =
-              "🚛";
 
           }
 
@@ -1406,6 +1185,7 @@ document.addEventListener(
           event
         ) => {
 
+
           event.preventDefault();
 
 
@@ -1416,32 +1196,22 @@ document.addEventListener(
 
           try {
 
-            // ================================
-            // ЗАВАНТАЖЕННЯ НОВОГО АВАТАРА
-            // ================================
 
-            let uploadedAvatarUrl =
-              null;
+            // ==================================
+            // АВАТАР
+            // ==================================
 
-
-            if (
-              avatarUrl?.files?.length > 0
-            ) {
-
-              showMessage(
-                "Завантаження аватара..."
-              );
+            const newAvatarUrl =
+              await uploadAvatar();
 
 
-              uploadedAvatarUrl =
-                await uploadAvatar();
-
-            }
+            currentAvatarUrl =
+              newAvatarUrl;
 
 
-            // ================================
+            // ==================================
             // НАПРЯМКИ
-            // ================================
+            // ==================================
 
             const selectedSlugs =
               Array.from(
@@ -1452,71 +1222,14 @@ document.addEventListener(
 
               )
               .map(
-                (checkbox) =>
+                checkbox =>
                   checkbox.value
               );
 
 
-            // ================================
+            // ==================================
             // ПРОФІЛЬ
-            // ================================
-
-            const profileData =
-              {
-
-                id:
-                  user.id,
-
-
-                display_name:
-                  displayName.value.trim() ||
-                  null,
-
-
-                birth_date:
-                  birthDate.value ||
-                  null,
-
-
-                discord_username:
-                  discordUsername.value.trim() ||
-                  null,
-
-
-                discord_user_id:
-                  discordUserId.value.trim() ||
-                  null,
-
-
-                steam_id:
-                  steamId.value.trim() ||
-                  null,
-
-
-                game_nickname:
-                  gameNickname.value.trim() ||
-                  null,
-
-
-                updated_at:
-                  new Date()
-                    .toISOString()
-
-              };
-
-
-            // Додаємо avatar_url
-            // тільки якщо завантажено нове фото
-
-            if (
-              uploadedAvatarUrl
-            ) {
-
-              profileData.avatar_url =
-                uploadedAvatarUrl;
-
-            }
-
+            // ==================================
 
             const {
               error: profileError
@@ -1524,7 +1237,44 @@ document.addEventListener(
               .from("profiles")
               .upsert(
 
-                profileData,
+                {
+
+                  id:
+                    user.id,
+
+                  display_name:
+                    displayName.value.trim() ||
+                    null,
+
+                  birth_date:
+                    birthDate.value ||
+                    null,
+
+                  avatar_url:
+                    currentAvatarUrl ||
+                    null,
+
+                  discord_username:
+                    discordUsername.value.trim() ||
+                    null,
+
+                  discord_user_id:
+                    discordUserId.value.trim() ||
+                    null,
+
+                  steam_id:
+                    steamId.value.trim() ||
+                    null,
+
+                  game_nickname:
+                    gameNickname.value.trim() ||
+                    null,
+
+                  updated_at:
+                    new Date()
+                      .toISOString()
+
+                },
 
                 {
 
@@ -1543,9 +1293,9 @@ document.addEventListener(
             }
 
 
-            // ================================
+            // ==================================
             // НАПРЯМКИ
-            // ================================
+            // ==================================
 
             let selectedDirections =
               [];
@@ -1556,12 +1306,12 @@ document.addEventListener(
             ) {
 
               const {
-                data: directions,
-                error: directionsError
+                data,
+                error
               } = await supabase
                 .from("directions")
                 .select(
-                  "id, slug"
+                  "id"
                 )
                 .in(
                   "slug",
@@ -1569,15 +1319,15 @@ document.addEventListener(
                 );
 
 
-              if (directionsError) {
+              if (error) {
 
-                throw directionsError;
+                throw error;
 
               }
 
 
               selectedDirections =
-                directions || [];
+                data || [];
 
             }
 
@@ -1604,13 +1354,12 @@ document.addEventListener(
               selectedDirections.length > 0
             ) {
 
-              const rowsToInsert =
+              const rows =
                 selectedDirections.map(
-                  (direction) => ({
+                  direction => ({
 
                     profile_id:
                       user.id,
-
 
                     direction_id:
                       direction.id
@@ -1624,7 +1373,7 @@ document.addEventListener(
               } = await supabase
                 .from("profile_directions")
                 .insert(
-                  rowsToInsert
+                  rows
                 );
 
 
@@ -1637,17 +1386,17 @@ document.addEventListener(
             }
 
 
-            // ================================
+            // ==================================
             // ОНОВЛЕННЯ ІНТЕРФЕЙСУ
-            // ================================
+            // ==================================
 
             if (
-              uploadedAvatarUrl &&
+              currentAvatarUrl &&
               profileAvatar
             ) {
 
               profileAvatar.src =
-                uploadedAvatarUrl;
+                currentAvatarUrl;
 
             }
 
@@ -1658,17 +1407,7 @@ document.addEventListener(
             ) {
 
               profileNamePreview.textContent =
-                displayName
-                  .value
-                  .trim();
-
-            }
-
-
-            if (avatarUrl) {
-
-              avatarUrl.value =
-                "";
+                displayName.value.trim();
 
             }
 
@@ -1678,14 +1417,13 @@ document.addEventListener(
               "success"
             );
 
-          }
 
-          catch (
+          } catch (
             error
           ) {
 
             console.error(
-              "Помилка збереження профілю:",
+              "Помилка збереження:",
               error
             );
 
@@ -1716,23 +1454,9 @@ document.addEventListener(
 
         async () => {
 
-          const {
-            error
-          } = await supabase
+          await supabase
             .auth
             .signOut();
-
-
-          if (error) {
-
-            console.error(
-              "Помилка виходу:",
-              error
-            );
-
-            return;
-
-          }
 
 
           window.location.href =
@@ -1756,6 +1480,7 @@ document.addEventListener(
     await loadApplicationStatus();
 
     await loadUserRoles();
+
 
   }
 );
