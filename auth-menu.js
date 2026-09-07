@@ -63,6 +63,45 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
   // ======================================
+  // КНОПКА АВТОРИЗАЦІЇ
+  // ======================================
+
+  let authButton =
+    document.getElementById(
+      "authButton"
+    );
+
+
+  // Якщо кнопки немає — створюємо
+  if (!authButton) {
+
+    authButton =
+      document.createElement(
+        "a"
+      );
+
+
+    authButton.id =
+      "authButton";
+
+
+    nav.appendChild(
+      authButton
+    );
+
+  }
+
+
+  // ======================================
+  // ЗАВЖДИ РОБИМО AUTH BUTTON ОСТАННІМ
+  // ======================================
+
+  nav.appendChild(
+    authButton
+  );
+
+
+  // ======================================
   // ОТРИМУЄМО КОРИСТУВАЧА
   // ======================================
 
@@ -85,6 +124,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     !user
   ) {
 
+    authButton.href =
+      "login.html";
+
+
+    authButton.textContent =
+      "Увійти / Реєстрація";
+
+
     console.log(
       "Користувач не авторизований"
     );
@@ -92,6 +139,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
 
   }
+
+
+  // ======================================
+  // ЯКЩО АВТОРИЗОВАНИЙ
+  // ======================================
+
+  authButton.href =
+    "profile.html";
+
+
+  authButton.textContent =
+    "👤 Мій кабінет";
 
 
   // ======================================
@@ -207,7 +266,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
   // ======================================
-  // ШУКАЄМО ПОСИЛАННЯ
+  // ЗНАХОДИМО TIKTOK
   // ======================================
 
   const tiktokLink =
@@ -224,15 +283,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     );
 
 
-  const authButton =
-    document.getElementById(
-      "authButton"
-    );
-
-
   // ======================================
   // УЧАСНИКИ
-  // ПЕРЕД TIKTOK
   // ======================================
 
   if (
@@ -258,6 +310,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       "👥 Учасники";
 
 
+    // Вставляємо перед TikTok
     if (
       tiktokLink
     ) {
@@ -269,21 +322,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     }
 
-    else if (
-      authButton
-    ) {
+    else {
 
       nav.insertBefore(
         membersLink,
         authButton
-      );
-
-    }
-
-    else {
-
-      nav.appendChild(
-        membersLink
       );
 
     }
@@ -318,6 +361,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       "📋 Заявки";
 
 
+    // Якщо TikTok є — перед ним
     if (
       tiktokLink
     ) {
@@ -329,9 +373,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     }
 
-    else if (
-      authButton
-    ) {
+    else {
 
       nav.insertBefore(
         applicationsLink,
@@ -340,15 +382,17 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     }
 
-    else {
-
-      nav.appendChild(
-        applicationsLink
-      );
-
-    }
-
   }
+
+
+  // ======================================
+  // ЩЕ РАЗ ФІКСУЄМО
+  // AUTH BUTTON ОСТАННІМ
+  // ======================================
+
+  nav.appendChild(
+    authButton
+  );
 
 
   // ======================================
