@@ -39,7 +39,11 @@
 
     .about-hero {
       padding: 100px 0 45px;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
+
+      border-bottom:
+        1px solid
+        rgba(255, 255, 255, 0.08);
+
       background:
         radial-gradient(
           circle at 85% 30%,
@@ -50,20 +54,36 @@
 
     .about-label {
       display: block;
+
       margin-bottom: 10px;
+
       font-size: 10px;
+
       font-weight: 800;
+
       letter-spacing: 3px;
+
       text-transform: uppercase;
+
       color: #f5b800;
     }
 
     .about-hero h1 {
       margin: 0;
-      font-size: clamp(46px, 6vw, 78px);
+
+      font-size:
+        clamp(
+          46px,
+          6vw,
+          78px
+        );
+
       line-height: 0.95;
+
       font-weight: 900;
+
       letter-spacing: -3px;
+
       text-transform: uppercase;
     }
 
@@ -73,9 +93,13 @@
 
     .about-intro {
       max-width: 650px;
+
       margin-top: 18px;
+
       color: #9ba6b7;
+
       font-size: 14px;
+
       line-height: 1.7;
     }
 
@@ -84,15 +108,27 @@
     }
 
     .about-section + .about-section {
-      border-top: 1px solid rgba(255,255,255,0.06);
+      border-top:
+        1px solid
+        rgba(255, 255, 255, 0.06);
     }
 
     .about-title {
       margin: 0 0 22px;
-      font-size: clamp(30px, 4vw, 46px);
+
+      font-size:
+        clamp(
+          30px,
+          4vw,
+          46px
+        );
+
       line-height: 1;
+
       font-weight: 900;
+
       letter-spacing: -1px;
+
       text-transform: uppercase;
     }
 
@@ -102,17 +138,34 @@
 
     .who-box {
       display: grid;
-      grid-template-columns: 1fr 220px;
+
+      grid-template-columns:
+        1fr 220px;
+
       gap: 30px;
+
       padding: 28px;
-      border: 1px solid rgba(255,255,255,0.10);
-      background: rgba(10, 16, 27, 0.65);
+
+      border:
+        1px solid
+        rgba(255, 255, 255, 0.10);
+
+      background:
+        rgba(
+          10,
+          16,
+          27,
+          0.65
+        );
     }
 
     .who-box p {
       margin: 0 0 14px;
+
       color: #aeb7c6;
+
       font-size: 14px;
+
       line-height: 1.7;
     }
 
@@ -126,56 +179,126 @@
 
     .who-badge {
       display: flex;
+
       align-items: center;
+
       justify-content: center;
-      border-left: 1px solid rgba(245,184,0,0.35);
+
+      border-left:
+        1px solid
+        rgba(
+          245,
+          184,
+          0,
+          0.35
+        );
+
       font-size: 40px;
+
       font-weight: 900;
+
       color: #f5b800;
     }
 
     .directions-grid {
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
+
+      grid-template-columns:
+        repeat(
+          5,
+          1fr
+        );
+
       gap: 10px;
     }
 
     .direction-card {
       display: block;
+
       min-height: 125px;
+
       padding: 18px;
+
       box-sizing: border-box;
-      border: 1px solid rgba(255,255,255,0.09);
-      background: rgba(12, 18, 29, 0.75);
+
+      border:
+        1px solid
+        rgba(
+          255,
+          255,
+          255,
+          0.09
+        );
+
+      background:
+        rgba(
+          12,
+          18,
+          29,
+          0.75
+        );
+
       text-decoration: none;
+
       color: inherit;
-      transition: 0.25s ease;
+
+      transition:
+        0.25s ease;
     }
 
     .direction-card:hover {
-      transform: translateY(-3px);
-      border-color: rgba(245,184,0,0.45);
-      background: rgba(18, 27, 42, 0.9);
+      transform:
+        translateY(-3px);
+
+      border-color:
+        rgba(
+          245,
+          184,
+          0,
+          0.45
+        );
+
+      background:
+        rgba(
+          18,
+          27,
+          42,
+          0.9
+        );
+
       box-shadow:
-        0 8px 25px rgba(0,0,0,0.25);
+        0 8px 25px
+        rgba(
+          0,
+          0,
+          0,
+          0.25
+        );
     }
 
     .direction-icon {
       font-size: 25px;
+
       margin-bottom: 12px;
     }
 
     .direction-card h3 {
       margin: 0 0 6px;
+
       color: #fff;
+
       font-size: 15px;
+
       font-weight: 800;
     }
 
     .direction-card p {
       margin: 0;
+
       color: #7f8b9e;
+
       font-size: 11px;
+
       line-height: 1.5;
     }
 
@@ -185,61 +308,113 @@
 
     .ets2-card::after {
       content: "ВІДКРИТИ →";
+
       display: block;
+
       margin-top: 12px;
+
       color: #f5b800;
+
       font-size: 9px;
+
       font-weight: 800;
+
       letter-spacing: 1px;
     }
 
     .principles-grid {
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
+
+      grid-template-columns:
+        repeat(
+          5,
+          1fr
+        );
+
       gap: 10px;
     }
 
     .principle {
       padding: 20px;
-      border-top: 2px solid #f5b800;
-      background: rgba(12, 18, 29, 0.7);
+
+      border-top:
+        2px solid
+        #f5b800;
+
+      background:
+        rgba(
+          12,
+          18,
+          29,
+          0.7
+        );
     }
 
     .principle-icon {
       font-size: 25px;
+
       margin-bottom: 10px;
     }
 
     .principle h3 {
       margin: 0 0 7px;
+
       color: #fff;
+
       font-size: 14px;
+
       font-weight: 800;
     }
 
     .principle p {
       margin: 0;
+
       color: #8490a3;
+
       font-size: 11px;
+
       line-height: 1.5;
     }
 
     .goal-box {
       padding: 30px;
-      border: 1px solid rgba(35, 108, 255, 0.25);
+
+      border:
+        1px solid
+        rgba(
+          35,
+          108,
+          255,
+          0.25
+        );
+
       background:
         linear-gradient(
           110deg,
-          rgba(20, 65, 130, 0.16),
-          rgba(10, 15, 25, 0.7)
+          rgba(
+            20,
+            65,
+            130,
+            0.16
+          ),
+          rgba(
+            10,
+            15,
+            25,
+            0.7
+          )
         );
     }
 
     .goal-box p {
       max-width: 850px;
+
       margin: 0 0 12px;
+
       color: #aeb7c6;
+
       font-size: 15px;
+
       line-height: 1.7;
     }
 
@@ -257,23 +432,49 @@
 
     .join-box {
       display: flex;
+
       align-items: center;
+
       justify-content: space-between;
+
       gap: 30px;
+
       padding: 28px 30px;
-      border: 1px solid rgba(245,184,0,0.25);
+
+      border:
+        1px solid
+        rgba(
+          245,
+          184,
+          0,
+          0.25
+        );
+
       background:
         linear-gradient(
           100deg,
-          rgba(245,184,0,0.08),
-          rgba(10,15,25,0.8)
+          rgba(
+            245,
+            184,
+            0,
+            0.08
+          ),
+          rgba(
+            10,
+            15,
+            25,
+            0.8
+          )
         );
     }
 
     .join-box h2 {
       margin: 0 0 8px;
+
       color: #fff;
+
       font-size: 26px;
+
       font-weight: 900;
     }
 
@@ -283,56 +484,102 @@
 
     .join-box p {
       margin: 0;
+
       color: #8994a6;
+
       font-size: 13px;
     }
 
-    @media (max-width: 900px) {
+    @media (
+      max-width: 900px
+    ) {
 
       .directions-grid,
       .principles-grid {
-        grid-template-columns: repeat(2, 1fr);
+
+        grid-template-columns:
+          repeat(
+            2,
+            1fr
+          );
+
       }
 
       .who-box {
-        grid-template-columns: 1fr;
+
+        grid-template-columns:
+          1fr;
+
       }
 
       .who-badge {
+
         min-height: 70px;
+
         border-left: 0;
-        border-top: 1px solid rgba(245,184,0,0.35);
+
+        border-top:
+          1px solid
+          rgba(
+            245,
+            184,
+            0,
+            0.35
+          );
+
       }
 
       .join-box {
-        flex-direction: column;
-        align-items: flex-start;
+
+        flex-direction:
+          column;
+
+        align-items:
+          flex-start;
+
       }
 
     }
 
-    @media (max-width: 600px) {
+    @media (
+      max-width: 600px
+    ) {
 
       .about-hero {
-        padding: 65px 0 30px;
+
+        padding:
+          65px 0 30px;
+
       }
 
       .about-section {
-        padding: 30px 0;
+
+        padding:
+          30px 0;
+
       }
 
       .directions-grid,
       .principles-grid {
-        grid-template-columns: 1fr;
+
+        grid-template-columns:
+          1fr;
+
       }
 
       .who-box,
       .goal-box {
-        padding: 20px;
+
+        padding:
+          20px;
+
       }
 
       .about-hero h1 {
-        letter-spacing: -2px;
+
+        letter-spacing:
+          -2px;
+
       }
 
     }
@@ -342,26 +589,38 @@
 </head>
 
 
+
 <body class="about-page">
 
   <div class="noise"></div>
 
 
-  <!-- ВЕРХНЄ МЕНЮ -->
+
+  <!-- =========================================
+       ВЕРХНЄ МЕНЮ
+       ========================================= -->
 
   <header class="topbar">
 
-    <a class="brand" href="index.html">
+    <a
+      class="brand"
+      href="index.html"
+    >
 
       <img
         src="ua-legion-logo.png"
         alt="UA LEGION"
       >
 
-      <span>UA LEGION</span>
+      <span>
+        UA LEGION
+      </span>
 
     </a>
 
+
+
+    <!-- МОБІЛЬНЕ МЕНЮ -->
 
     <button
       class="menu-btn"
@@ -371,7 +630,8 @@
     </button>
 
 
-    <!-- МЕНЮ -->
+
+    <!-- НАВІГАЦІЯ -->
 
     <nav class="nav">
 
@@ -400,6 +660,7 @@
       </a>
 
 
+
       <!-- TIKTOK -->
 
       <a
@@ -409,6 +670,7 @@
       >
         TikTok
       </a>
+
 
 
       <!-- DISCORD -->
@@ -423,7 +685,18 @@
       </a>
 
 
-      <!-- ВХІД / КАБІНЕТ -->
+
+      <!--
+        AUTH BUTTON
+
+        auth-menu.js автоматично змінює:
+        Увійти / Реєстрація
+        → 👤 Мій кабінет
+
+        Також динамічно додає:
+        👥 Учасники
+        📋 Заявки
+      -->
 
       <a
         href="login.html"
@@ -437,8 +710,14 @@
   </header>
 
 
+
+  <!-- =========================================
+       ОСНОВНИЙ КОНТЕНТ
+       ========================================= -->
+
   <main class="about-main">
 
+    <!-- HERO -->
 
     <section class="about-hero">
 
@@ -449,7 +728,10 @@
         </span>
 
         <h1>
-          ПРО <span>UA LEGION</span>
+          ПРО
+          <span>
+            UA LEGION
+          </span>
         </h1>
 
         <p class="about-intro">
@@ -466,12 +748,18 @@
     </section>
 
 
+
+    <!-- ХТО МИ -->
+
     <section class="about-section">
 
       <div class="about-container">
 
         <h2 class="about-title">
-          ХТО <span>МИ</span>
+          ХТО
+          <span>
+            МИ
+          </span>
         </h2>
 
         <div class="who-box">
@@ -480,7 +768,10 @@
 
             <p>
 
-              <strong>UA LEGION</strong> —
+              <strong>
+                UA LEGION
+              </strong>
+              —
               це українська gaming-спільнота,
               яка об'єднує людей навколо
               улюблених ігор, командної гри,
@@ -500,7 +791,9 @@
 
               Різні ігри — різні напрямки,
               але головний бренд залишається один:
-              <strong>UA LEGION.</strong>
+              <strong>
+                UA LEGION.
+              </strong>
 
             </p>
 
@@ -517,16 +810,21 @@
     </section>
 
 
+
+    <!-- НАПРЯМКИ -->
+
     <section class="about-section">
 
       <div class="about-container">
 
         <h2 class="about-title">
-          НАШІ <span>НАПРЯМКИ</span>
+          НАШІ
+          <span>
+            НАПРЯМКИ
+          </span>
         </h2>
 
         <div class="directions-grid">
-
 
           <a
             href="ets2.html"
@@ -549,6 +847,7 @@
           </a>
 
 
+
           <div class="direction-card">
 
             <div class="direction-icon">
@@ -565,6 +864,7 @@
             </p>
 
           </div>
+
 
 
           <div class="direction-card">
@@ -585,6 +885,7 @@
           </div>
 
 
+
           <div class="direction-card">
 
             <div class="direction-icon">
@@ -601,6 +902,7 @@
             </p>
 
           </div>
+
 
 
           <div class="direction-card">
@@ -623,11 +925,14 @@
         </div>
 
 
+
         <p class="about-intro">
 
           <strong style="color:#fff;">
+
             UA LEGION відкритий до нових ігор,
             нових напрямків та нових учасників.
+
           </strong>
 
         </p>
@@ -637,21 +942,31 @@
     </section>
 
 
+
+    <!-- ПРИНЦИПИ -->
+
     <section class="about-section">
 
       <div class="about-container">
 
         <h2 class="about-title">
-          НАШІ <span>ПРИНЦИПИ</span>
+          НАШІ
+          <span>
+            ПРИНЦИПИ
+          </span>
         </h2>
 
         <div class="principles-grid">
 
           <div class="principle">
 
-            <div class="principle-icon">🤝</div>
+            <div class="principle-icon">
+              🤝
+            </div>
 
-            <h3>Єдність</h3>
+            <h3>
+              Єдність
+            </h3>
 
             <p>
               Різні ігри,
@@ -661,11 +976,16 @@
           </div>
 
 
+
           <div class="principle">
 
-            <div class="principle-icon">🏆</div>
+            <div class="principle-icon">
+              🏆
+            </div>
 
-            <h3>Командний дух</h3>
+            <h3>
+              Командний дух
+            </h3>
 
             <p>
               Граємо разом
@@ -675,11 +995,16 @@
           </div>
 
 
+
           <div class="principle">
 
-            <div class="principle-icon">🔥</div>
+            <div class="principle-icon">
+              🔥
+            </div>
 
-            <h3>Активність</h3>
+            <h3>
+              Активність
+            </h3>
 
             <p>
               Створюємо заходи,
@@ -689,11 +1014,16 @@
           </div>
 
 
+
           <div class="principle">
 
-            <div class="principle-icon">🛡️</div>
+            <div class="principle-icon">
+              🛡️
+            </div>
 
-            <h3>Повага</h3>
+            <h3>
+              Повага
+            </h3>
 
             <p>
               Цінуємо кожного
@@ -703,11 +1033,16 @@
           </div>
 
 
+
           <div class="principle">
 
-            <div class="principle-icon">🇺🇦</div>
+            <div class="principle-icon">
+              🇺🇦
+            </div>
 
-            <h3>Україна</h3>
+            <h3>
+              Україна
+            </h3>
 
             <p>
               Розвиваємо українську
@@ -723,12 +1058,18 @@
     </section>
 
 
+
+    <!-- МЕТА -->
+
     <section class="about-section">
 
       <div class="about-container">
 
         <h2 class="about-title">
-          НАША <span>МЕТА</span>
+          НАША
+          <span>
+            МЕТА
+          </span>
         </h2>
 
         <div class="goal-box">
@@ -760,6 +1101,9 @@
     </section>
 
 
+
+    <!-- ПОДАТИ ЗАЯВКУ -->
+
     <section class="join-section">
 
       <div class="about-container">
@@ -769,17 +1113,25 @@
           <div>
 
             <h2>
+
               Готовий стати частиною
-              <span>LEGION?</span>
+              <span>
+                LEGION?
+              </span>
+
             </h2>
 
             <p>
-              Грай. Спілкуйся.
+
+              Грай.
+              Спілкуйся.
               Знаходь однодумців.
               Ставай частиною команди.
+
             </p>
 
           </div>
+
 
 
           <a
@@ -798,16 +1150,33 @@
   </main>
 
 
-  <!-- JAVASCRIPT -->
+
+  <!-- =========================================
+       JAVASCRIPT
+       ========================================= -->
+
+  <!-- SUPABASE -->
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+
+
+  <!-- ПІДКЛЮЧЕННЯ SUPABASE -->
+
   <script src="supabase.js"></script>
+
+
+
+  <!-- ОСНОВНЕ МЕНЮ -->
 
   <script src="script.js"></script>
 
+
+
+  <!-- АВТОРИЗАЦІЯ ТА ДИНАМІЧНЕ МЕНЮ -->
+
   <script src="auth-menu.js"></script>
 
-
 </body>
+
 </html>
