@@ -19,7 +19,6 @@
     href="style.css"
   >
 
-
   <style>
 
     /* =========================================
@@ -34,7 +33,9 @@
     .profile-page {
 
       width: 100%;
-      min-height: calc(100vh - 76px);
+
+      min-height:
+        calc(100vh - 76px);
 
       display: flex;
 
@@ -50,6 +51,7 @@
     .profile-container {
 
       width: 100%;
+
       max-width: 900px;
 
     }
@@ -70,11 +72,12 @@
 
       margin-bottom: 10px;
 
-      font-size: clamp(
-        32px,
-        5vw,
-        52px
-      );
+      font-size:
+        clamp(
+          32px,
+          5vw,
+          52px
+        );
 
     }
 
@@ -179,7 +182,8 @@
 
     .avatar-info h2 {
 
-      margin: 0 0 8px;
+      margin:
+        0 0 8px;
 
     }
 
@@ -283,6 +287,15 @@
 
       border-color:
         #ffd34d;
+
+    }
+
+
+    .profile-field input[type="file"] {
+
+      padding: 10px;
+
+      cursor: pointer;
 
     }
 
@@ -724,10 +737,6 @@
     }
 
 
-    /* =========================================
-       ПОДАТИ ЗАЯВКУ
-       ========================================= */
-
     .join-application-button {
 
       display: inline-flex;
@@ -814,9 +823,7 @@
        МОБІЛЬНА ВЕРСІЯ
        ========================================= */
 
-    @media (
-      max-width: 700px
-    ) {
+    @media (max-width: 700px) {
 
       .profile-page {
 
@@ -914,30 +921,17 @@
 
     <nav class="nav">
 
-      <a href="index.html">
-        Головна
-      </a>
+      <a href="index.html">Головна</a>
 
-      <a href="about.html">
-        Про нас
-      </a>
+      <a href="about.html">Про нас</a>
 
-      <a href="games.html">
-        Ігри
-      </a>
+      <a href="games.html">Ігри</a>
 
-      <a href="events.html">
-        Події
-      </a>
+      <a href="events.html">Події</a>
 
-      <a href="media.html">
-        Медіа
-      </a>
+      <a href="media.html">Медіа</a>
 
-      <a href="gallery.html">
-        Галерея
-      </a>
-
+      <a href="gallery.html">Галерея</a>
 
       <a
         href="https://www.tiktok.com/@ua_legion_"
@@ -947,7 +941,6 @@
         TikTok
       </a>
 
-
       <a
         href="https://discord.gg/gfunf3yq7"
         target="_blank"
@@ -956,7 +949,6 @@
       >
         Discord
       </a>
-
 
       <a
         href="profile.html"
@@ -1009,9 +1001,7 @@
 
           <div class="avatar-info">
 
-            <h2
-              id="profileNamePreview"
-            >
+            <h2 id="profileNamePreview">
               UA LEGION Member
             </h2>
 
@@ -1026,9 +1016,7 @@
 
         <!-- ФОРМА -->
 
-        <form
-          id="profileForm"
-        >
+        <form id="profileForm">
 
 
           <div class="profile-grid">
@@ -1063,16 +1051,18 @@
             </div>
 
 
+            <!-- ЗАВАНТАЖЕННЯ АВАТАРА -->
+
             <div class="profile-field full">
 
               <label>
-                👤 Посилання на фото профілю
+                🖼️ Фото профілю
               </label>
 
               <input
-                type="url"
-                id="avatarUrl"
-                placeholder="https://..."
+                type="file"
+                id="avatarFile"
+                accept="image/*"
               >
 
             </div>
@@ -1142,29 +1132,21 @@
 
           <!-- НАПРЯМКИ -->
 
-          <section
-            class="directions"
-          >
+          <section class="directions">
 
             <h2>
               📍 Напрямки UA LEGION
             </h2>
 
-            <p
-              class="directions-description"
-            >
+            <p class="directions-description">
               Можна вибрати один або декілька напрямків.
             </p>
 
 
-            <div
-              class="direction-list"
-            >
+            <div class="direction-list">
 
 
-              <label
-                class="direction-item"
-              >
+              <label class="direction-item">
 
                 <input
                   type="checkbox"
@@ -1177,9 +1159,7 @@
               </label>
 
 
-              <label
-                class="direction-item"
-              >
+              <label class="direction-item">
 
                 <input
                   type="checkbox"
@@ -1192,9 +1172,7 @@
               </label>
 
 
-              <label
-                class="direction-item"
-              >
+              <label class="direction-item">
 
                 <input
                   type="checkbox"
@@ -1207,9 +1185,7 @@
               </label>
 
 
-              <label
-                class="direction-item"
-              >
+              <label class="direction-item">
 
                 <input
                   type="checkbox"
@@ -1221,6 +1197,7 @@
 
               </label>
 
+
             </div>
 
           </section>
@@ -1228,17 +1205,13 @@
 
           <!-- МОЯ ЗАЯВКА -->
 
-          <section
-            class="application-status"
-          >
+          <section class="application-status">
 
             <h2>
               📋 Моя заявка
             </h2>
 
-            <p
-              class="application-description"
-            >
+            <p class="application-description">
               Тут відображається поточний статус вашої заявки до UA LEGION.
             </p>
 
@@ -1263,17 +1236,13 @@
 
           <!-- МОЇ РОЛІ -->
 
-          <section
-            class="user-roles"
-          >
+          <section class="user-roles">
 
             <h2>
               🏅 Мої ролі
             </h2>
 
-            <p
-              class="roles-description"
-            >
+            <p class="roles-description">
               Ваші ролі та посади в UA LEGION.
             </p>
 
@@ -1283,9 +1252,7 @@
               class="roles-list"
             >
 
-              <div
-                class="roles-empty"
-              >
+              <div class="roles-empty">
                 Завантаження ролей...
               </div>
 
@@ -1296,9 +1263,7 @@
 
           <!-- КНОПКИ -->
 
-          <div
-            class="profile-actions"
-          >
+          <div class="profile-actions">
 
 
             <button
@@ -1325,6 +1290,7 @@
               🚪 ВИЙТИ
             </button>
 
+
           </div>
 
 
@@ -1348,17 +1314,17 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 
-  <!-- ПІДКЛЮЧЕННЯ SUPABASE -->
+  <!-- SUPABASE CLIENT -->
 
   <script src="supabase.js"></script>
 
 
-  <!-- АВТОРИЗАЦІЯ В МЕНЮ -->
+  <!-- АВТОРИЗАЦІЯ -->
 
   <script src="auth-menu.js"></script>
 
 
-  <!-- ОСОБИСТИЙ ПРОФІЛЬ -->
+  <!-- ПРОФІЛЬ -->
 
   <script src="profile.js"></script>
 
@@ -1366,6 +1332,7 @@
   <!-- МОБІЛЬНЕ МЕНЮ -->
 
   <script src="script.js"></script>
+
 
 </body>
 
