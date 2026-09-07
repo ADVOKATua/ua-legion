@@ -3,282 +3,196 @@
 // auth-menu.js
 // ======================================
 
-document.addEventListener(
-  "DOMContentLoaded",
+async function initAuthMenu() {
 
-  async () => {
+  // ======================================
+  // SUPABASE
+  // ======================================
 
-    // ======================================
-    // SUPABASE
-    // ======================================
+  const supabase =
+    window.supabaseClient;
 
-    const supabase =
-      window.supabaseClient;
 
+  if (!supabase) {
 
-    if (!supabase) {
+    console.error(
+      "UA LEGION: Supabase не підключений"
+    );
 
-      console.error(
-        "Supabase не підключений"
-      );
+    return;
 
-      return;
+  }
 
-    }
 
+  // ======================================
+  // НАВІГАЦІЯ
+  // ======================================
 
-    // ======================================
-    // НАВІГАЦІЯ
-    // ======================================
+  const nav =
+    document.querySelector(
+      ".nav"
+    );
 
-    const nav =
-      document.querySelector(
-        ".nav"
-      );
 
+  if (!nav) {
 
-    if (!nav) {
+    console.error(
+      "UA LEGION: навігаційне меню не знайдено"
+    );
 
-      console.error(
-        "Навігаційне меню не знайдено"
-      );
+    return;
 
-      return;
+  }
 
-    }
 
+  // ======================================
+  // ВИДАЛЯЄМО СТАРІ ДИНАМІЧНІ ПУНКТИ
+  // ======================================
 
-    // ======================================
-    // ВИДАЛЯЄМО СТАРІ ДИНАМІЧНІ ПУНКТИ
-    // ======================================
+  nav
+    .querySelectorAll(
+      ".admin-menu-item, .members-menu-item"
+    )
+    .forEach(
+      (item) => {
 
-    nav
-      .querySelectorAll(
-        ".admin-menu-item, .members-menu-item"
-      )
-      .forEach(
-        (item) => {
+        item.remove();
 
-          item.remove();
+      }
+    );
 
-        }
-      );
 
+  // ======================================
+  // КНОПКА АВТОРИЗАЦІЇ
+  // ======================================
 
-    // ======================================
-    // ШУКАЄМО КНОПКУ АВТОРИЗАЦІЇ
-    // ======================================
+  let authButton =
+    document.getElementById(
+      "authButton"
+    );
 
-    let authButton =
-      document.getElementById(
-        "authButton"
-      );
 
+  // --------------------------------------
+  // ЯКЩО КНОПКИ НЕМАЄ — СТВОРЮЄМО
+  // --------------------------------------
 
-    // --------------------------------------
-    // ЯКЩО НЕ ЗНАЙДЕНО ПО ID
-    // --------------------------------------
+  if (!authButton) {
 
-    if (!authButton) {
-
-      authButton =
-        Array
-          .from(
-            nav.querySelectorAll(
-              "a"
-            )
-          )
-          .find(
-            (link) => {
-
-              const href =
-                link.getAttribute(
-                  "href"
-                ) || "";
-
-
-              const text =
-                link
-                  .textContent
-                  .trim()
-                  .toLowerCase();
-
-
-              return (
-
-                href.includes(
-                  "login.html"
-                ) ||
-
-                href.includes(
-                  "profile.html"
-                ) ||
-
-                text.includes(
-                  "увійти"
-                ) ||
-
-                text.includes(
-                  "реєстрація"
-                ) ||
-
-                text.includes(
-                  "мій кабінет"
-                )
-
-              );
-
-            }
-          );
-
-    }
-
-
-    // --------------------------------------
-    // ЯКЩО ЗНАЙШЛИ — ДОДАЄМО ID
-    // --------------------------------------
-
-    if (authButton) {
-
-      authButton.id =
-        "authButton";
-
-    }
-
-
-    // --------------------------------------
-    // ЯКЩО ВЗАГАЛІ НЕМАЄ
-    // --------------------------------------
-
-    if (!authButton) {
-
-      authButton =
-        document.createElement(
-          "a"
-        );
-
-
-      authButton.id =
-        "authButton";
-
-
-      nav.appendChild(
-        authButton
-      );
-
-    }
-
-
-    // ======================================
-    // ОТРИМУЄМО КОРИСТУВАЧА
-    // ======================================
-
-    const {
-      data: {
-        user
-      },
-      error: userError
-    } = await supabase
-      .auth
-      .getUser();
-
-
-    // ======================================
-    // НЕАВТОРИЗОВАНИЙ КОРИСТУВАЧ
-    // ======================================
-
-    if (
-
-      userError ||
-
-      !user
-
-    ) {
-
-      authButton.href =
-        "login.html";
-
-
-      authButton.textContent =
-        "Увійти / Реєстрація";
-
-
-      // КНОПКА ЗАВЖДИ ОСТАННЯ
-
-      nav.appendChild(
-        authButton
+    authButton =
+      document.createElement(
+        "a"
       );
 
 
-      console.log(
-        "UA LEGION: користувач не авторизований"
-      );
+    authButton.id =
+      "authButton";
 
 
-      return;
+    nav.appendChild(
+      authButton
+    );
 
-    }
+  }
 
 
-    // ======================================
-    // АВТОРИЗОВАНИЙ КОРИСТУВАЧ
-    // ======================================
+  // ======================================
+  // СПОЧАТКУ ЗАВЖДИ СТАВИМО
+  // КНОПКУ В КІНЕЦЬ МЕНЮ
+  // ======================================
+
+  nav.appendChild(
+    authButton
+  );
+
+
+  // ======================================
+  // ПЕРЕВІРЯЄМО СЕСІЮ
+  // ======================================
+
+  const {
+    data: {
+      session
+    },
+    error: sessionError
+  } = await supabase
+    .auth
+    .getSession();
+
+
+  // ======================================
+  // НЕАВТОРИЗОВАНИЙ
+  // ======================================
+
+  if (
+    sessionError ||
+    !session ||
+    !session.user
+  ) {
 
     authButton.href =
-      "profile.html";
+      "login.html";
 
 
     authButton.textContent =
-      "👤 Мій кабінет";
+      "Увійти / Реєстрація";
 
-
-    // КНОПКА ЗАВЖДИ ОСТАННЯ
 
     nav.appendChild(
       authButton
     );
 
 
-    // ======================================
-    // ПЕРЕВІРКА АДМІНІСТРАЦІЇ
-    // ======================================
-
-    let isAdmin =
-      false;
-
-
-    try {
-
-      const {
-        data: adminResult,
-        error: adminError
-      } = await supabase
-        .rpc(
-          "is_ua_legion_staff"
-        );
-
-
-      if (adminError) {
-
-        console.error(
-          "Помилка перевірки адміністрації:",
-          adminError
-        );
-
+    console.log(
+      "UA LEGION MENU STATUS:",
+      {
+        user: null,
+        isAdmin: false,
+        isApproved: false
       }
+    );
 
-      else {
 
-        isAdmin =
-          adminResult === true;
+    return;
 
-      }
+  }
 
-    }
 
-    catch (
+  // ======================================
+  // АВТОРИЗОВАНИЙ КОРИСТУВАЧ
+  // ======================================
+
+  const user =
+    session.user;
+
+
+  authButton.href =
+    "profile.html";
+
+
+  authButton.textContent =
+    "👤 Мій кабінет";
+
+
+  // ======================================
+  // ПЕРЕВІРКА АДМІНІСТРАЦІЇ
+  // ======================================
+
+  let isAdmin =
+    false;
+
+
+  try {
+
+    const {
+      data,
       error
-    ) {
+    } = await supabase
+      .rpc(
+        "is_ua_legion_staff"
+      );
+
+
+    if (error) {
 
       console.error(
         "Помилка перевірки адміністрації:",
@@ -287,229 +201,263 @@ document.addEventListener(
 
     }
 
+    else {
 
-    // ======================================
-    // ПЕРЕВІРКА ЗАТВЕРДЖЕНОЇ ЗАЯВКИ
-    // ======================================
-
-    let isApproved =
-      false;
-
-
-    try {
-
-      const {
-        data: application,
-        error: applicationError
-      } = await supabase
-        .from(
-          "applications"
-        )
-        .select(
-          "status"
-        )
-        .eq(
-          "user_id",
-          user.id
-        )
-        .eq(
-          "status",
-          "approved"
-        )
-        .maybeSingle();
-
-
-      if (applicationError) {
-
-        console.error(
-          "Помилка перевірки заявки:",
-          applicationError
-        );
-
-      }
-
-      else if (
-        application
-      ) {
-
-        isApproved =
-          true;
-
-      }
+      isAdmin =
+        data === true;
 
     }
 
-    catch (
+  }
+
+  catch (error) {
+
+    console.error(
+      "Помилка перевірки адміністрації:",
       error
-    ) {
+    );
+
+  }
+
+
+  // ======================================
+  // ПЕРЕВІРКА ОДОБРЕНОЇ ЗАЯВКИ
+  // ======================================
+
+  let isApproved =
+    false;
+
+
+  try {
+
+    const {
+      data,
+      error
+    } = await supabase
+      .from(
+        "applications"
+      )
+      .select(
+        "id"
+      )
+      .eq(
+        "user_id",
+        user.id
+      )
+      .eq(
+        "status",
+        "approved"
+      )
+      .limit(
+        1
+      );
+
+
+    if (error) {
 
       console.error(
-        "Помилка перевірки статусу заявки:",
+        "Помилка перевірки заявки:",
         error
       );
 
     }
 
+    else {
 
-    // ======================================
-    // ШУКАЄМО TIKTOK
-    // ======================================
-
-    const tiktokLink =
-      Array
-        .from(
-          nav.querySelectorAll(
-            "a"
-          )
-        )
-        .find(
-          (link) =>
-            link.href.includes(
-              "tiktok.com"
-            )
-        );
-
-
-    // ======================================
-    // УЧАСНИКИ
-    // ======================================
-
-    if (
-
-      isAdmin ||
-
-      isApproved
-
-    ) {
-
-      const membersLink =
-        document.createElement(
-          "a"
-        );
-
-
-      membersLink.href =
-        "members.html";
-
-
-      membersLink.className =
-        "members-menu-item";
-
-
-      membersLink.textContent =
-        "👥 Учасники";
-
-
-      // ВСТАВЛЯЄМО ПЕРЕД TIKTOK
-
-      if (
-        tiktokLink
-      ) {
-
-        nav.insertBefore(
-          membersLink,
-          tiktokLink
-        );
-
-      }
-
-      else {
-
-        nav.insertBefore(
-          membersLink,
-          authButton
-        );
-
-      }
+      isApproved =
+        Array.isArray(data) &&
+        data.length > 0;
 
     }
-
-
-    // ======================================
-    // ЗАЯВКИ
-    // ТІЛЬКИ ДЛЯ АДМІНІСТРАЦІЇ
-    // ======================================
-
-    if (
-      isAdmin
-    ) {
-
-      const applicationsLink =
-        document.createElement(
-          "a"
-        );
-
-
-      applicationsLink.href =
-        "applications.html";
-
-
-      applicationsLink.className =
-        "admin-menu-item";
-
-
-      applicationsLink.textContent =
-        "📋 Заявки";
-
-
-      // ВСТАВЛЯЄМО ПЕРЕД TIKTOK
-
-      if (
-        tiktokLink
-      ) {
-
-        nav.insertBefore(
-          applicationsLink,
-          tiktokLink
-        );
-
-      }
-
-      else {
-
-        nav.insertBefore(
-          applicationsLink,
-          authButton
-        );
-
-      }
-
-    }
-
-
-    // ======================================
-    // ФІНАЛЬНО:
-    // AUTH BUTTON ЗАВЖДИ ОСТАННЯ
-    // ======================================
-
-    nav.appendChild(
-      authButton
-    );
-
-
-    // ======================================
-    // DEBUG
-    // ======================================
-
-    console.log(
-      "UA LEGION MENU STATUS:",
-      {
-
-        user:
-          user.email,
-
-
-        isAdmin:
-          isAdmin,
-
-
-        isApproved:
-          isApproved
-
-      }
-    );
-
 
   }
 
+  catch (error) {
+
+    console.error(
+      "Помилка перевірки статусу заявки:",
+      error
+    );
+
+  }
+
+
+  // ======================================
+  // ШУКАЄМО TIKTOK
+  // ======================================
+
+  const tiktokLink =
+    Array
+      .from(
+        nav.querySelectorAll(
+          "a"
+        )
+      )
+      .find(
+        (link) => {
+
+          return (
+            link.href.includes(
+              "tiktok.com"
+            )
+          );
+
+        }
+      );
+
+
+  // ======================================
+  // ФУНКЦІЯ ДОДАВАННЯ ПУНКТУ
+  // ======================================
+
+  function addMenuItem(
+    href,
+    text,
+    className
+  ) {
+
+    const link =
+      document.createElement(
+        "a"
+      );
+
+
+    link.href =
+      href;
+
+
+    link.textContent =
+      text;
+
+
+    link.className =
+      className;
+
+
+    if (tiktokLink) {
+
+      nav.insertBefore(
+        link,
+        tiktokLink
+      );
+
+    }
+
+    else {
+
+      nav.insertBefore(
+        link,
+        authButton
+      );
+
+    }
+
+
+    return link;
+
+  }
+
+
+  // ======================================
+  // УЧАСНИКИ
+  //
+  // АДМІНІСТРАЦІЯ
+  // АБО ОДОБРЕНИЙ УЧАСНИК
+  // ======================================
+
+  if (
+    isAdmin ||
+    isApproved
+  ) {
+
+    addMenuItem(
+      "members.html",
+      "👥 Учасники",
+      "members-menu-item"
+    );
+
+  }
+
+
+  // ======================================
+  // ЗАЯВКИ
+  //
+  // ТІЛЬКИ АДМІНІСТРАЦІЯ
+  // ======================================
+
+  if (isAdmin) {
+
+    addMenuItem(
+      "applications.html",
+      "📋 Заявки",
+      "admin-menu-item"
+    );
+
+  }
+
+
+  // ======================================
+  // МІЙ КАБІНЕТ ЗАВЖДИ ОСТАННІЙ
+  // ======================================
+
+  nav.appendChild(
+    authButton
+  );
+
+
+  // ======================================
+  // DEBUG
+  // ======================================
+
+  console.log(
+    "UA LEGION MENU STATUS:",
+    {
+      user:
+        user.email,
+
+      isAdmin:
+        isAdmin,
+
+      isApproved:
+        isApproved
+    }
+  );
+
+}
+
+
+// ======================================
+// ЗАПУСК
+// ======================================
+
+if (
+  document.readyState ===
+  "loading"
+) {
+
+  document.addEventListener(
+    "DOMContentLoaded",
+    initAuthMenu
+  );
+
+}
+
+else {
+
+  initAuthMenu();
+
+}
+
+
+// ======================================
+// ОНОВЛЕННЯ ПІСЛЯ LOGIN / LOGOUT
+// ======================================
+
+window.addEventListener(
+  "focus",
+  () => {
+
+    initAuthMenu();
+
+  }
 );
