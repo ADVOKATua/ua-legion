@@ -21,6 +21,11 @@
 }
 
 
+/* ==========================================
+   HEADER
+========================================== */
+
+
 .members-header {
 
   display: flex;
@@ -67,6 +72,11 @@
 }
 
 
+/* ==========================================
+   CONTROLS
+========================================== */
+
+
 .members-controls {
 
   display: flex;
@@ -100,6 +110,11 @@
 }
 
 
+/* ==========================================
+   MEMBERS LIST
+========================================== */
+
+
 .members-list {
 
   display: grid;
@@ -108,34 +123,55 @@
 
     repeat(
       auto-fill,
-      minmax(280px, 1fr)
+      minmax(320px, 1fr)
     );
 
-  gap: 15px;
+  gap: 18px;
 
 }
+
+
+/* ==========================================
+   MEMBER CARD
+========================================== */
 
 
 .member-card {
 
   display: flex;
 
-  align-items: center;
+  align-items: flex-start;
 
-  gap: 15px;
+  gap: 18px;
 
-  padding: 20px;
+  padding: 22px;
 
-  border-radius: 12px;
+  border-radius: 14px;
+
+  transition:
+
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+
+}
+
+
+.member-card:hover {
+
+  transform:
+
+    translateY(-3px);
 
 }
 
 
 .member-avatar {
 
-  width: 55px;
+  width: 58px;
 
-  height: 55px;
+  height: 58px;
+
+  min-width: 58px;
 
   display: flex;
 
@@ -154,71 +190,263 @@
 
   min-width: 0;
 
+  flex: 1;
+
 }
 
 
 .member-info h2 {
 
-  margin: 0 0 8px;
+  margin:
 
-  font-size: 18px;
+    0 0 8px;
+
+  font-size: 19px;
+
+  word-break:
+
+    break-word;
 
 }
 
 
 .member-nickname {
 
-  margin-bottom: 5px;
+  margin-bottom: 18px;
+
+  font-size: 15px;
+
+  opacity: 0.9;
 
 }
 
 
-.member-directions {
+/* ==========================================
+   MEMBER SECTIONS
+========================================== */
 
-  font-size: 14px;
 
-  opacity: 0.75;
+.member-section {
+
+  margin-top: 14px;
 
 }
+
+
+.member-section-title {
+
+  margin-bottom: 8px;
+
+  font-size: 12px;
+
+  font-weight: 700;
+
+  text-transform: uppercase;
+
+  letter-spacing: 0.8px;
+
+  opacity: 0.65;
+
+}
+
+
+/* ==========================================
+   BADGES
+========================================== */
+
+
+.member-badges {
+
+  display: flex;
+
+  flex-wrap: wrap;
+
+  gap: 8px;
+
+}
+
+
+.member-role,
+
+.member-direction {
+
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 5px;
+
+  padding:
+
+    6px 10px;
+
+  border-radius: 20px;
+
+  font-size: 13px;
+
+  font-weight: 600;
+
+  line-height: 1.2;
+
+}
+
+
+/* ROLE */
+
+
+.member-role {
+
+  border:
+
+    1px solid
+    rgba(255, 215, 0, 0.35);
+
+  background:
+
+    rgba(255, 215, 0, 0.08);
+
+}
+
+
+/* DIRECTION */
+
+
+.member-direction {
+
+  border:
+
+    1px solid
+    rgba(70, 140, 255, 0.35);
+
+  background:
+
+    rgba(70, 140, 255, 0.08);
+
+}
+
+
+/* EMPTY BADGES */
+
+
+.member-role-empty,
+
+.member-direction-empty {
+
+  opacity: 0.55;
+
+}
+
+
+/* ==========================================
+   STATUS
+========================================== */
 
 
 .members-loading,
+
 .members-empty {
 
-  grid-column: 1 / -1;
+  grid-column:
 
-  padding: 30px;
+    1 / -1;
 
-  text-align: center;
+  padding:
+
+    30px;
+
+  text-align:
+
+    center;
 
 }
 
 
 .members-message {
 
-  margin-bottom: 20px;
+  margin-bottom:
+
+    20px;
 
 }
+
+
+.members-message.error {
+
+  color:
+
+    #ff6b6b;
+
+}
+
+
+/* ==========================================
+   MOBILE
+========================================== */
 
 
 @media (
   max-width: 700px
 ) {
 
+
+  .members-page {
+
+    padding:
+
+      25px 15px;
+
+  }
+
+
   .members-header {
 
-    flex-direction: column;
+    flex-direction:
 
-    align-items: flex-start;
+      column;
+
+    align-items:
+
+      flex-start;
 
   }
 
 
   .members-controls {
 
-    flex-direction: column;
+    flex-direction:
 
-    align-items: stretch;
+      column;
+
+    align-items:
+
+      stretch;
+
+  }
+
+
+  .members-count {
+
+    white-space:
+
+      normal;
+
+  }
+
+
+  .members-list {
+
+    grid-template-columns:
+
+      1fr;
+
+  }
+
+
+  .member-card {
+
+    padding:
+
+      18px;
 
   }
 
