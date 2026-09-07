@@ -55,7 +55,7 @@ document.addEventListener(
 
 
     // ======================================
-    // ЕЛЕМЕНТИ
+    // ЕЛЕМЕНТИ СТОРІНКИ
     // ======================================
 
     const profileForm =
@@ -76,9 +76,9 @@ document.addEventListener(
       );
 
 
-    const avatarFile =
+    const avatarUrl =
       document.getElementById(
-        "avatarFile"
+        "avatarUrl"
       );
 
 
@@ -149,14 +149,6 @@ document.addEventListener(
 
 
     // ======================================
-    // ПОТОЧНИЙ URL АВАТАРА
-    // ======================================
-
-    let currentAvatarUrl =
-      null;
-
-
-    // ======================================
     // ПОВІДОМЛЕННЯ
     // ======================================
 
@@ -177,65 +169,6 @@ document.addEventListener(
       messageBox.className =
         "profile-message " +
         type;
-
-    }
-
-
-    // ======================================
-    // ПОПЕРЕДНІЙ ПЕРЕГЛЯД АВАТАРА
-    // ======================================
-
-    if (avatarFile) {
-
-      avatarFile.addEventListener(
-        "change",
-        () => {
-
-          const file =
-            avatarFile.files[0];
-
-
-          if (!file) {
-            return;
-          }
-
-
-          if (
-            !file.type.startsWith(
-              "image/"
-            )
-          ) {
-
-            showMessage(
-              "Будь ласка, виберіть файл зображення.",
-              "error"
-            );
-
-
-            avatarFile.value =
-              "";
-
-
-            return;
-
-          }
-
-
-          const previewUrl =
-            URL.createObjectURL(
-              file
-            );
-
-
-          if (profileAvatar) {
-
-            profileAvatar.src =
-              previewUrl;
-
-          }
-
-        }
-      );
 
     }
 
@@ -283,6 +216,8 @@ document.addEventListener(
       }
 
 
+      // ІМ'Я
+
       if (
         profile.display_name &&
         displayName
@@ -302,6 +237,8 @@ document.addEventListener(
       }
 
 
+      // ДАТА НАРОДЖЕННЯ
+
       if (
         profile.birth_date &&
         birthDate
@@ -313,23 +250,20 @@ document.addEventListener(
       }
 
 
+      // АВАТАР
+
       if (
-        profile.avatar_url
+        profile.avatar_url &&
+        profileAvatar
       ) {
 
-        currentAvatarUrl =
+        profileAvatar.src =
           profile.avatar_url;
-
-
-        if (profileAvatar) {
-
-          profileAvatar.src =
-            profile.avatar_url;
-
-        }
 
       }
 
+
+      // DISCORD USERNAME
 
       if (
         profile.discord_username &&
@@ -342,6 +276,8 @@ document.addEventListener(
       }
 
 
+      // DISCORD USER ID
+
       if (
         profile.discord_user_id &&
         discordUserId
@@ -353,6 +289,8 @@ document.addEventListener(
       }
 
 
+      // STEAM ID
+
       if (
         profile.steam_id &&
         steamId
@@ -363,6 +301,8 @@ document.addEventListener(
 
       }
 
+
+      // ІГРОВИЙ НІК
 
       if (
         profile.game_nickname &&
@@ -378,122 +318,42 @@ document.addEventListener(
 
 
     // ======================================
-    // ЗАВАНТАЖЕННЯ АВАТАРА
+    // ПОПЕРЕДНІЙ ПЕРЕГЛЯД ФОТО
     // ======================================
 
-    async function uploadAvatar() {
+    if (avatarUrl) {
 
-      if (
-        !avatarFile ||
-        !avatarFile.files ||
-        avatarFile.files.length === 0
-      ) {
+      avatarUrl.addEventListener(
+        "change",
 
-        return currentAvatarUrl;
+        () => {
 
-      }
-
-
-      const file =
-        avatarFile.files[0];
+          const file =
+            avatarUrl.files &&
+            avatarUrl.files.length > 0
+              ? avatarUrl.files[0]
+              : null;
 
 
-      if (
-        !file.type.startsWith(
-          "image/"
-        )
-      ) {
-
-        throw new Error(
-          "Можна завантажувати лише зображення."
-        );
-
-      }
-
-
-      const fileExtension =
-        file.name
-          .split(".")
-          .pop()
-          .toLowerCase();
-
-
-      // У кожного користувача
-      // постійний шлях до аватара
-
-      const filePath =
-        `${user.id}/avatar.${fileExtension}`;
-
-
-      // Завантажуємо
-      // з автоматичною заміною
-
-      const {
-        error: uploadError
-      } = await supabase
-        .storage
-        .from("avatars")
-        .upload(
-
-          filePath,
-
-          file,
-
-          {
-
-            upsert:
-              true,
-
-            cacheControl:
-              "3600"
-
+          if (
+            !file ||
+            !profileAvatar
+          ) {
+            return;
           }
 
-        );
+
+          const previewUrl =
+            URL.createObjectURL(
+              file
+            );
 
 
-      if (uploadError) {
+          profileAvatar.src =
+            previewUrl;
 
-        console.error(
-          "Помилка завантаження аватара:",
-          uploadError
-        );
+        }
 
-
-        throw uploadError;
-
-      }
-
-
-      const {
-        data: publicUrlData
-      } = supabase
-        .storage
-        .from("avatars")
-        .getPublicUrl(
-          filePath
-        );
-
-
-      if (
-        !publicUrlData ||
-        !publicUrlData.publicUrl
-      ) {
-
-        throw new Error(
-          "Не вдалося отримати URL аватара."
-        );
-
-      }
-
-
-      // Додаємо параметр часу,
-      // щоб браузер не показував старе фото
-
-      return (
-        publicUrlData.publicUrl +
-        "?v=" +
-        Date.now()
       );
 
     }
@@ -550,6 +410,12 @@ document.addEventListener(
 
 
       if (error) {
+
+        console.error(
+          "Помилка завантаження заявки:",
+          error
+        );
+
 
         applicationStatus.innerHTML =
           `
@@ -728,6 +594,10 @@ document.addEventListener(
       }
 
 
+      applicationStatus.className =
+        "application-card";
+
+
       applicationStatus.innerHTML =
         `
           <h3>
@@ -761,6 +631,7 @@ document.addEventListener(
       if (directionsError) {
 
         console.error(
+          "Помилка читання directions:",
           directionsError
         );
 
@@ -802,6 +673,7 @@ document.addEventListener(
       if (selectedError) {
 
         console.error(
+          "Помилка завантаження напрямків:",
           selectedError
         );
 
@@ -835,6 +707,11 @@ document.addEventListener(
             );
 
 
+          if (!slug) {
+            return;
+          }
+
+
           const checkbox =
             document.querySelector(
               `input[name="direction"][value="${slug}"]`
@@ -865,6 +742,14 @@ document.addEventListener(
       }
 
 
+      rolesList.innerHTML =
+        `
+          <div class="roles-empty">
+            Завантаження ролей...
+          </div>
+        `;
+
+
       const {
         data: userRoles,
         error: userRolesError
@@ -888,6 +773,7 @@ document.addEventListener(
             </div>
           `;
 
+
         return;
 
       }
@@ -902,6 +788,7 @@ document.addEventListener(
           []
         );
 
+
         return;
 
       }
@@ -910,16 +797,21 @@ document.addEventListener(
       const roleIds =
         [
           ...new Set(
-            userRoles.map(
-              item =>
-                item.role_id
-            )
+            userRoles
+              .map(
+                (item) =>
+                  item.role_id
+              )
+              .filter(
+                Boolean
+              )
           )
         ];
 
 
       const {
-        data: roles
+        data: roles,
+        error: rolesError
       } = await supabase
         .from("roles")
         .select(
@@ -931,19 +823,32 @@ document.addEventListener(
         );
 
 
+      if (rolesError) {
+
+        rolesList.innerHTML =
+          `
+            <div class="roles-empty">
+              Не вдалося завантажити інформацію про ролі.
+            </div>
+          `;
+
+
+        return;
+
+      }
+
+
       const directionIds =
         [
           ...new Set(
-
             userRoles
               .map(
-                item =>
+                (item) =>
                   item.direction_id
               )
               .filter(
                 Boolean
               )
-
           )
         ];
 
@@ -957,7 +862,7 @@ document.addEventListener(
       ) {
 
         const {
-          data
+          data: directionsData
         } = await supabase
           .from("directions")
           .select(
@@ -970,17 +875,22 @@ document.addEventListener(
 
 
         directions =
-          data || [];
+          directionsData || [];
 
       }
 
 
       const rolesMap =
         new Map(
-          (roles || []).map(
-            role => [
-              String(role.id),
+          roles.map(
+            (role) => [
+
+              String(
+                role.id
+              ),
+
               role
+
             ]
           )
         );
@@ -989,9 +899,14 @@ document.addEventListener(
       const directionsMap =
         new Map(
           directions.map(
-            direction => [
-              String(direction.id),
+            (direction) => [
+
+              String(
+                direction.id
+              ),
+
               direction
+
             ]
           )
         );
@@ -999,26 +914,33 @@ document.addEventListener(
 
       const fullRoles =
         userRoles.map(
-          item => ({
+          (item) => ({
 
             role_id:
               item.role_id,
 
+
             direction_id:
               item.direction_id,
 
+
             roles:
               rolesMap.get(
-                String(item.role_id)
-              ),
+                String(
+                  item.role_id
+                )
+              ) || null,
+
 
             directions:
 
               item.direction_id
-                ? directionsMap.get(
-                    String(
-                      item.direction_id
-                    )
+                ? (
+                    directionsMap.get(
+                      String(
+                        item.direction_id
+                      )
+                    ) || null
                   )
                 : null
 
@@ -1027,7 +949,10 @@ document.addEventListener(
 
 
       fullRoles.sort(
-        (a, b) => {
+        (
+          a,
+          b
+        ) => {
 
           if (
             a.direction_id === null &&
@@ -1087,13 +1012,14 @@ document.addEventListener(
             </div>
           `;
 
+
         return;
 
       }
 
 
       roles.forEach(
-        item => {
+        (item) => {
 
           const roleCard =
             document.createElement(
@@ -1134,6 +1060,42 @@ document.addEventListener(
 
             roleIcon =
               "👑";
+
+          }
+
+          else if (
+            roleCode === "deputy_owner"
+          ) {
+
+            roleIcon =
+              "🛡️";
+
+          }
+
+          else if (
+            roleCode === "top_manager"
+          ) {
+
+            roleIcon =
+              "🏆";
+
+          }
+
+          else if (
+            roleCode === "hr_manager"
+          ) {
+
+            roleIcon =
+              "👥";
+
+          }
+
+          else if (
+            roleCode === "logistics_manager"
+          ) {
+
+            roleIcon =
+              "🚛";
 
           }
 
@@ -1185,7 +1147,6 @@ document.addEventListener(
           event
         ) => {
 
-
           event.preventDefault();
 
 
@@ -1194,247 +1155,379 @@ document.addEventListener(
           );
 
 
-          try {
-
-
-            // ==================================
-            // АВАТАР
-            // ==================================
-
-            const newAvatarUrl =
-              await uploadAvatar();
-
-
-            currentAvatarUrl =
-              newAvatarUrl;
-
-
-            // ==================================
-            // НАПРЯМКИ
-            // ==================================
-
-            const selectedSlugs =
-              Array.from(
-
-                document.querySelectorAll(
-                  'input[name="direction"]:checked'
-                )
-
+          const selectedSlugs =
+            Array.from(
+              document.querySelectorAll(
+                'input[name="direction"]:checked'
               )
-              .map(
-                checkbox =>
-                  checkbox.value
+            )
+            .map(
+              (checkbox) =>
+                checkbox.value
+            );
+
+
+          // ==================================
+          // АВАТАР
+          // ==================================
+
+          let avatarPublicUrl =
+            null;
+
+
+          const avatarFile =
+            avatarUrl &&
+            avatarUrl.files &&
+            avatarUrl.files.length > 0
+              ? avatarUrl.files[0]
+              : null;
+
+
+          if (avatarFile) {
+
+            const fileExtension =
+              avatarFile.name
+                .split(".")
+                .pop()
+                .toLowerCase();
+
+
+            const fileName =
+              `avatar-${Date.now()}.${fileExtension}`;
+
+
+            const filePath =
+              `${user.id}/${fileName}`;
+
+
+            showMessage(
+              "Завантаження фото..."
+            );
+
+
+            const {
+              error: uploadError
+            } = await supabase
+              .storage
+              .from("avatars")
+              .upload(
+                filePath,
+                avatarFile,
+                {
+                  upsert:
+                    true
+                }
               );
 
 
-            // ==================================
-            // ПРОФІЛЬ
-            // ==================================
+            if (uploadError) {
+
+              console.error(
+                "Помилка завантаження фото:",
+                uploadError
+              );
+
+
+              showMessage(
+                "Помилка завантаження фото: " +
+                uploadError.message,
+                "error"
+              );
+
+
+              return;
+
+            }
+
 
             const {
-              error: profileError
+              data: publicUrlData
+            } = supabase
+              .storage
+              .from("avatars")
+              .getPublicUrl(
+                filePath
+              );
+
+
+            avatarPublicUrl =
+              publicUrlData.publicUrl;
+
+          }
+
+          else {
+
+            const {
+              data: oldProfile
             } = await supabase
               .from("profiles")
-              .upsert(
-
-                {
-
-                  id:
-                    user.id,
-
-                  display_name:
-                    displayName.value.trim() ||
-                    null,
-
-                  birth_date:
-                    birthDate.value ||
-                    null,
-
-                  avatar_url:
-                    currentAvatarUrl ||
-                    null,
-
-                  discord_username:
-                    discordUsername.value.trim() ||
-                    null,
-
-                  discord_user_id:
-                    discordUserId.value.trim() ||
-                    null,
-
-                  steam_id:
-                    steamId.value.trim() ||
-                    null,
-
-                  game_nickname:
-                    gameNickname.value.trim() ||
-                    null,
-
-                  updated_at:
-                    new Date()
-                      .toISOString()
-
-                },
-
-                {
-
-                  onConflict:
-                    "id"
-
-                }
-
-              );
-
-
-            if (profileError) {
-
-              throw profileError;
-
-            }
-
-
-            // ==================================
-            // НАПРЯМКИ
-            // ==================================
-
-            let selectedDirections =
-              [];
-
-
-            if (
-              selectedSlugs.length > 0
-            ) {
-
-              const {
-                data,
-                error
-              } = await supabase
-                .from("directions")
-                .select(
-                  "id"
-                )
-                .in(
-                  "slug",
-                  selectedSlugs
-                );
-
-
-              if (error) {
-
-                throw error;
-
-              }
-
-
-              selectedDirections =
-                data || [];
-
-            }
-
-
-            const {
-              error: deleteError
-            } = await supabase
-              .from("profile_directions")
-              .delete()
+              .select(
+                "avatar_url"
+              )
               .eq(
-                "profile_id",
+                "id",
                 user.id
-              );
-
-
-            if (deleteError) {
-
-              throw deleteError;
-
-            }
+              )
+              .maybeSingle();
 
 
             if (
-              selectedDirections.length > 0
+              oldProfile &&
+              oldProfile.avatar_url
             ) {
 
-              const rows =
-                selectedDirections.map(
-                  direction => ({
+              avatarPublicUrl =
+                oldProfile.avatar_url;
 
-                    profile_id:
-                      user.id,
+            }
 
-                    direction_id:
-                      direction.id
-
-                  })
-                );
+          }
 
 
-              const {
-                error: insertError
-              } = await supabase
-                .from("profile_directions")
-                .insert(
-                  rows
-                );
+          // ==================================
+          // ПРОФІЛЬ
+          // ==================================
+
+          const {
+            error: profileError
+          } = await supabase
+            .from("profiles")
+            .upsert(
+
+              {
+
+                id:
+                  user.id,
 
 
-              if (insertError) {
+                display_name:
+                  displayName.value.trim() ||
+                  null,
 
-                throw insertError;
+
+                birth_date:
+                  birthDate.value ||
+                  null,
+
+
+                avatar_url:
+                  avatarPublicUrl,
+
+
+                discord_username:
+                  discordUsername.value.trim() ||
+                  null,
+
+
+                discord_user_id:
+                  discordUserId.value.trim() ||
+                  null,
+
+
+                steam_id:
+                  steamId.value.trim() ||
+                  null,
+
+
+                game_nickname:
+                  gameNickname.value.trim() ||
+                  null,
+
+
+                updated_at:
+                  new Date()
+                    .toISOString()
+
+              },
+
+              {
+
+                onConflict:
+                  "id"
 
               }
 
-            }
-
-
-            // ==================================
-            // ОНОВЛЕННЯ ІНТЕРФЕЙСУ
-            // ==================================
-
-            if (
-              currentAvatarUrl &&
-              profileAvatar
-            ) {
-
-              profileAvatar.src =
-                currentAvatarUrl;
-
-            }
-
-
-            if (
-              displayName.value.trim() &&
-              profileNamePreview
-            ) {
-
-              profileNamePreview.textContent =
-                displayName.value.trim();
-
-            }
-
-
-            showMessage(
-              "Профіль успішно збережено!",
-              "success"
             );
 
 
-          } catch (
-            error
-          ) {
+          if (profileError) {
 
             console.error(
-              "Помилка збереження:",
-              error
+              "Помилка профілю:",
+              profileError
             );
 
 
             showMessage(
-              error.message ||
-              "Не вдалося зберегти профіль.",
+              profileError.message,
               "error"
             );
 
+
+            return;
+
           }
+
+
+          // ==================================
+          // НАПРЯМКИ
+          // ==================================
+
+          let selectedDirections =
+            [];
+
+
+          if (
+            selectedSlugs.length > 0
+          ) {
+
+            const {
+              data: directions,
+              error: directionsError
+            } = await supabase
+              .from("directions")
+              .select(
+                "id, slug"
+              )
+              .in(
+                "slug",
+                selectedSlugs
+              );
+
+
+            if (directionsError) {
+
+              showMessage(
+                "Не вдалося зберегти напрямки: " +
+                directionsError.message,
+                "error"
+              );
+
+
+              return;
+
+            }
+
+
+            selectedDirections =
+              directions;
+
+          }
+
+
+          const {
+            error: deleteError
+          } = await supabase
+            .from("profile_directions")
+            .delete()
+            .eq(
+              "profile_id",
+              user.id
+            );
+
+
+          if (deleteError) {
+
+            showMessage(
+              deleteError.message,
+              "error"
+            );
+
+
+            return;
+
+          }
+
+
+          if (
+            selectedDirections.length > 0
+          ) {
+
+            const rowsToInsert =
+              selectedDirections.map(
+                (direction) => ({
+
+                  profile_id:
+                    user.id,
+
+
+                  direction_id:
+                    direction.id
+
+                })
+              );
+
+
+            const {
+              error: insertError
+            } = await supabase
+              .from("profile_directions")
+              .insert(
+                rowsToInsert
+              );
+
+
+            if (insertError) {
+
+              showMessage(
+                insertError.message,
+                "error"
+              );
+
+
+              return;
+
+            }
+
+          }
+
+
+          // ==================================
+          // ОНОВЛЕННЯ АВАТАРА
+          // ==================================
+
+          if (
+            avatarPublicUrl &&
+            profileAvatar
+          ) {
+
+            profileAvatar.src =
+              avatarPublicUrl;
+
+          }
+
+
+          // ==================================
+          // ОНОВЛЕННЯ ІМЕНІ
+          // ==================================
+
+          if (
+            displayName.value.trim() &&
+            profileNamePreview
+          ) {
+
+            profileNamePreview.textContent =
+              displayName
+                .value
+                .trim();
+
+          }
+
+
+          // ОЧИЩАЄМО ВИБІР ФАЙЛУ
+
+          if (avatarUrl) {
+
+            avatarUrl.value =
+              "";
+
+          }
+
+
+          showMessage(
+            "Профіль успішно збережено!",
+            "success"
+          );
 
         }
 
@@ -1454,9 +1547,23 @@ document.addEventListener(
 
         async () => {
 
-          await supabase
+          const {
+            error
+          } = await supabase
             .auth
             .signOut();
+
+
+          if (error) {
+
+            console.error(
+              "Помилка виходу:",
+              error
+            );
+
+            return;
+
+          }
 
 
           window.location.href =
