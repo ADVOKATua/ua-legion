@@ -5,10 +5,6 @@
 
 document.addEventListener("DOMContentLoaded", async () => {
 
-  // ======================================
-  // SUPABASE
-  // ======================================
-
   const supabase = window.supabaseClient;
 
   if (!supabase) {
@@ -18,7 +14,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
   // ======================================
-  // ПЕРЕВІРКА АВТОРИЗАЦІЇ
+  // AUTH
   // ======================================
 
   const {
@@ -34,16 +30,20 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
   // ======================================
-  // ЕЛЕМЕНТИ СТОРІНКИ
+  // ELEMENTS
   // ======================================
 
-  const profileForm = document.getElementById("profileForm");
+  const profileForm =
+    document.getElementById("profileForm");
 
-  const displayName = document.getElementById("displayName");
+  const displayName =
+    document.getElementById("displayName");
 
-  const birthDate = document.getElementById("birthDate");
+  const birthDate =
+    document.getElementById("birthDate");
 
-  const avatarUrl = document.getElementById("avatarUrl");
+  const avatarInput =
+    document.getElementById("avatarUrl");
 
   const discordUsername =
     document.getElementById("discordUsername");
@@ -80,17 +80,20 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
   // ======================================
-  // ПОТОЧНИЙ URL АВАТАРА
+  // CURRENT AVATAR
   // ======================================
 
   let currentAvatarUrl = null;
 
 
   // ======================================
-  // ПОВІДОМЛЕННЯ
+  // MESSAGE
   // ======================================
 
-  function showMessage(message, type = "success") {
+  function showMessage(
+    message,
+    type = "success"
+  ) {
 
     if (!messageBox) return;
 
@@ -102,17 +105,17 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
   // ======================================
-  // ПОПЕРЕДНІЙ ПЕРЕГЛЯД АВАТАРА
+  // AVATAR PREVIEW
   // ======================================
 
-  if (avatarUrl) {
+  if (avatarInput) {
 
-    avatarUrl.addEventListener(
+    avatarInput.addEventListener(
       "change",
       () => {
 
         const file =
-          avatarUrl.files?.[0];
+          avatarInput.files?.[0];
 
         if (!file) return;
 
@@ -124,7 +127,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             "error"
           );
 
-          avatarUrl.value = "";
+          avatarInput.value = "";
 
           return;
         }
@@ -132,15 +135,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         if (
           file.size >
-          10 * 1024 * 1024
+          5 * 1024 * 1024
         ) {
 
           showMessage(
-            "Розмір аватара не повинен перевищувати 10 MB.",
+            "Розмір аватара не повинен перевищувати 5 MB.",
             "error"
           );
 
-          avatarUrl.value = "";
+          avatarInput.value = "";
 
           return;
         }
@@ -162,7 +165,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
   // ======================================
-  // ЗАВАНТАЖЕННЯ ПРОФІЛЮ
+  // LOAD PROFILE
   // ======================================
 
   async function loadProfile() {
@@ -193,12 +196,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    if (!profile) return;
+    if (!profile) {
+      return;
+    }
 
 
-    // ======================================
-    // ІМ'Я
-    // ======================================
+    // ==================================
+    // NAME
+    // ==================================
 
     if (
       profile.display_name &&
@@ -208,18 +213,20 @@ document.addEventListener("DOMContentLoaded", async () => {
       displayName.value =
         profile.display_name;
 
+
       if (profileNamePreview) {
 
         profileNamePreview.textContent =
           profile.display_name;
+
       }
 
     }
 
 
-    // ======================================
-    // ДАТА НАРОДЖЕННЯ
-    // ======================================
+    // ==================================
+    // BIRTH DATE
+    // ==================================
 
     if (
       profile.birth_date &&
@@ -232,12 +239,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    // ======================================
-    // АВАТАР
-    // ======================================
+    // ==================================
+    // AVATAR
+    // ==================================
 
     currentAvatarUrl =
-      profile.avatar_url || null;
+      profile.avatar_url ||
+      null;
+
+
+    console.log(
+      "UA LEGION — avatar_url:",
+      currentAvatarUrl
+    );
 
 
     if (
@@ -245,20 +259,33 @@ document.addEventListener("DOMContentLoaded", async () => {
       profileAvatar
     ) {
 
-      // Додаємо timestamp,
-      // щоб браузер не показував старий кешований аватар
-
       profileAvatar.src =
         currentAvatarUrl +
-        "?v=" +
+        (
+          currentAvatarUrl.includes("?")
+            ? "&"
+            : "?"
+        ) +
+        "v=" +
         Date.now();
+
+
+      profileAvatar.onerror =
+        () => {
+
+          console.error(
+            "UA LEGION — не вдалося завантажити аватар:",
+            currentAvatarUrl
+          );
+
+        };
 
     }
 
 
-    // ======================================
-    // DISCORD USERNAME
-    // ======================================
+    // ==================================
+    // DISCORD
+    // ==================================
 
     if (
       profile.discord_username &&
@@ -271,10 +298,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    // ======================================
-    // DISCORD USER ID
-    // ======================================
-
     if (
       profile.discord_user_id &&
       discordUserId
@@ -286,9 +309,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    // ======================================
-    // STEAM ID
-    // ======================================
+    // ==================================
+    // STEAM
+    // ==================================
 
     if (
       profile.steam_id &&
@@ -301,9 +324,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    // ======================================
-    // ІГРОВИЙ НІК
-    // ======================================
+    // ==================================
+    // GAME NICKNAME
+    // ==================================
 
     if (
       profile.game_nickname &&
@@ -319,7 +342,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
   // ======================================
-  // СТАТУС ЗАЯВКИ
+  // APPLICATION STATUS
   // ======================================
 
   async function loadApplicationStatus() {
@@ -333,6 +356,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     applicationStatus.innerHTML = `
       <h3>Завантаження...</h3>
+
       <p>
         Перевіряємо інформацію про вашу заявку.
       </p>
@@ -344,8 +368,13 @@ document.addEventListener("DOMContentLoaded", async () => {
       error
     } = await supabase
       .from("applications")
-      .select("id, status, created_at")
-      .eq("user_id", user.id)
+      .select(
+        "id, status, created_at"
+      )
+      .eq(
+        "user_id",
+        user.id
+      )
       .order(
         "created_at",
         {
@@ -380,15 +409,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     const application =
       applications &&
       applications.length > 0
-
         ? applications[0]
-
         : null;
 
-
-    // ======================================
-    // ЗАЯВКИ НЕМАЄ
-    // ======================================
 
     if (!application) {
 
@@ -417,6 +440,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         joinButton.textContent =
           "📝 ПОДАТИ ЗАЯВКУ";
+
       }
 
       return;
@@ -426,10 +450,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     const status =
       application.status;
 
-
-    // ======================================
-    // PENDING
-    // ======================================
 
     if (status === "pending") {
 
@@ -449,16 +469,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
       if (joinButton) {
-        joinButton.style.display = "none";
+        joinButton.style.display =
+          "none";
       }
 
       return;
     }
 
-
-    // ======================================
-    // APPROVED
-    // ======================================
 
     if (status === "approved") {
 
@@ -486,16 +503,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
       if (joinButton) {
-        joinButton.style.display = "none";
+        joinButton.style.display =
+          "none";
       }
 
       return;
     }
 
-
-    // ======================================
-    // REJECTED
-    // ======================================
 
     if (status === "rejected") {
 
@@ -525,15 +539,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         joinButton.textContent =
           "📝 ПОДАТИ НОВУ ЗАЯВКУ";
+
       }
 
       return;
     }
 
-
-    // ======================================
-    // НЕВІДОМИЙ СТАТУС
-    // ======================================
 
     applicationStatus.innerHTML = `
       <h3>
@@ -548,14 +559,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
     if (joinButton) {
-      joinButton.style.display = "none";
+      joinButton.style.display =
+        "none";
     }
 
   }
 
 
   // ======================================
-  // ЗАВАНТАЖЕННЯ НАПРЯМКІВ
+  // DIRECTIONS
   // ======================================
 
   async function loadDirections() {
@@ -596,7 +608,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     } = await supabase
       .from("profile_directions")
       .select("direction_id")
-      .eq("profile_id", user.id);
+      .eq(
+        "profile_id",
+        user.id
+      );
 
 
     if (selectedError) {
@@ -616,7 +631,10 @@ document.addEventListener("DOMContentLoaded", async () => {
       )
       .forEach(
         (checkbox) => {
-          checkbox.checked = false;
+
+          checkbox.checked =
+            false;
+
         }
       );
 
@@ -640,7 +658,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
         if (checkbox) {
-          checkbox.checked = true;
+
+          checkbox.checked =
+            true;
+
         }
 
       }
@@ -650,7 +671,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
   // ======================================
-  // ЗАВАНТАЖЕННЯ РОЛЕЙ
+  // USER ROLES
   // ======================================
 
   async function loadUserRoles() {
@@ -670,8 +691,13 @@ document.addEventListener("DOMContentLoaded", async () => {
       error: userRolesError
     } = await supabase
       .from("user_roles")
-      .select("role_id, direction_id")
-      .eq("user_id", user.id);
+      .select(
+        "role_id, direction_id"
+      )
+      .eq(
+        "user_id",
+        user.id
+      );
 
 
     if (userRolesError) {
@@ -698,6 +724,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     ) {
 
       renderUserRoles([]);
+
       return;
     }
 
@@ -707,7 +734,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         ...new Set(
           userRoles
             .map(
-              (item) => item.role_id
+              item => item.role_id
             )
             .filter(Boolean)
         )
@@ -719,8 +746,13 @@ document.addEventListener("DOMContentLoaded", async () => {
       error: rolesError
     } = await supabase
       .from("roles")
-      .select("id, code, name")
-      .in("id", roleIds);
+      .select(
+        "id, code, name"
+      )
+      .in(
+        "id",
+        roleIds
+      );
 
 
     if (rolesError) {
@@ -739,7 +771,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         ...new Set(
           userRoles
             .map(
-              (item) =>
+              item =>
                 item.direction_id
             )
             .filter(Boolean)
@@ -750,25 +782,50 @@ document.addEventListener("DOMContentLoaded", async () => {
     let directions = [];
 
 
-    if (directionIds.length > 0) {
+    if (
+      directionIds.length > 0
+    ) {
 
       const {
-        data: directionsData
+        data: directionsData,
+        error: directionsError
       } = await supabase
         .from("directions")
-        .select("id, name, slug")
-        .in("id", directionIds);
+        .select(
+          "id, name, slug"
+        )
+        .in(
+          "id",
+          directionIds
+        );
 
 
-      directions =
-        directionsData || [];
+      if (
+        directionsError
+      ) {
+
+        console.error(
+          "Помилка directions:",
+          directionsError
+        );
+
+      }
+
+      else {
+
+        directions =
+          directionsData ||
+          [];
+
+      }
+
     }
 
 
     const rolesMap =
       new Map(
         roles.map(
-          (role) => [
+          role => [
             String(role.id),
             role
           ]
@@ -779,7 +836,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const directionsMap =
       new Map(
         directions.map(
-          (direction) => [
+          direction => [
             String(direction.id),
             direction
           ]
@@ -789,7 +846,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const fullRoles =
       userRoles.map(
-        (item) => ({
+        item => ({
 
           role_id:
             item.role_id,
@@ -838,21 +895,26 @@ document.addEventListener("DOMContentLoaded", async () => {
     );
 
 
-    renderUserRoles(fullRoles);
+    renderUserRoles(
+      fullRoles
+    );
 
   }
 
 
   // ======================================
-  // ВІДОБРАЖЕННЯ РОЛЕЙ
+  // RENDER ROLES
   // ======================================
 
-  function renderUserRoles(roles) {
+  function renderUserRoles(
+    roles
+  ) {
 
     if (!rolesList) return;
 
 
-    rolesList.innerHTML = "";
+    rolesList.innerHTML =
+      "";
 
 
     if (
@@ -871,10 +933,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
     roles.forEach(
-      (item) => {
+      item => {
 
         const roleCard =
-          document.createElement("div");
+          document.createElement(
+            "div"
+          );
 
 
         roleCard.className =
@@ -900,40 +964,61 @@ document.addEventListener("DOMContentLoaded", async () => {
           "Глобальна роль";
 
 
-        let roleIcon = "👤";
+        let roleIcon =
+          "👤";
 
 
-        if (roleCode === "owner") {
+        if (
+          roleCode === "owner"
+        ) {
+
           roleIcon = "👑";
+
         }
 
         else if (
-          roleCode === "deputy_owner"
+          roleCode ===
+          "deputy_owner"
         ) {
+
           roleIcon = "🛡️";
+
         }
 
         else if (
-          roleCode === "top_manager"
+          roleCode ===
+          "top_manager"
         ) {
+
           roleIcon = "🏆";
+
         }
 
         else if (
-          roleCode === "hr_manager"
+          roleCode ===
+          "hr_manager"
         ) {
+
           roleIcon = "👥";
+
         }
 
         else if (
-          roleCode === "logistics_manager"
+          roleCode ===
+          "logistics_manager"
         ) {
+
           roleIcon = "🚛";
+
         }
 
 
         if (isGlobal) {
-          roleCard.classList.add("global");
+
+          roleCard.classList.add(
+            "global"
+          );
+
         }
 
 
@@ -960,7 +1045,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
   // ======================================
-  // ЗБЕРЕЖЕННЯ ПРОФІЛЮ
+  // SAVE PROFILE
   // ======================================
 
   if (profileForm) {
@@ -979,7 +1064,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
         // ==================================
-        // ВИБРАНІ НАПРЯМКИ
+        // DIRECTIONS
         // ==================================
 
         const selectedSlugs =
@@ -989,19 +1074,22 @@ document.addEventListener("DOMContentLoaded", async () => {
             )
           )
           .map(
-            (checkbox) =>
+            checkbox =>
               checkbox.value
           );
 
 
         // ==================================
-        // АВАТАР
+        // AVATAR
         // ==================================
 
-        let uploadedAvatarUrl = null;
+        let avatarToSave =
+          currentAvatarUrl ||
+          null;
+
 
         const avatarFile =
-          avatarUrl?.files?.[0];
+          avatarInput?.files?.[0];
 
 
         if (avatarFile) {
@@ -1023,11 +1111,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
           if (
             avatarFile.size >
-            10 * 1024 * 1024
+            5 * 1024 * 1024
           ) {
 
             showMessage(
-              "Розмір аватара не повинен перевищувати 10 MB.",
+              "Розмір аватара не повинен перевищувати 5 MB.",
               "error"
             );
 
@@ -1041,46 +1129,39 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
           // ==================================
-          // БЕЗПЕЧНЕ РОЗШИРЕННЯ ФАЙЛУ
+          // STORAGE PATH
           // ==================================
 
-          const originalExtension =
-            avatarFile.name
-              .split(".")
-              .pop()
-              ?.toLowerCase();
+          const extensionMap = {
 
-
-          const allowedExtensions =
-            [
+            "image/png":
               "png",
+
+            "image/jpeg":
               "jpg",
-              "jpeg",
+
+            "image/webp":
               "webp",
+
+            "image/gif":
               "gif"
-            ];
+
+          };
 
 
-          const fileExtension =
-            allowedExtensions.includes(
-              originalExtension
-            )
+          const extension =
+            extensionMap[
+              avatarFile.type
+            ] ||
+            "png";
 
-              ? originalExtension
-
-              : "png";
-
-
-          // ==================================
-          // НОВИЙ УНІКАЛЬНИЙ ШЛЯХ
-          // ==================================
 
           const filePath =
-            `${user.id}/avatar-${Date.now()}.${fileExtension}`;
+            `${user.id}/avatar.${extension}`;
 
 
           // ==================================
-          // ЗАВАНТАЖЕННЯ У STORAGE
+          // UPLOAD
           // ==================================
 
           const {
@@ -1096,7 +1177,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                   "3600",
 
                 upsert:
-                  false,
+                  true,
 
                 contentType:
                   avatarFile.type
@@ -1123,7 +1204,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
           // ==================================
-          // ОТРИМАННЯ PUBLIC URL
+          // PUBLIC URL
           // ==================================
 
           const {
@@ -1137,12 +1218,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
           if (
-            !publicUrlData ||
-            !publicUrlData.publicUrl
+            !publicUrlData?.publicUrl
           ) {
 
             showMessage(
-              "Не вдалося отримати URL аватара.",
+              "Не вдалося отримати посилання на аватар.",
               "error"
             );
 
@@ -1150,18 +1230,24 @@ document.addEventListener("DOMContentLoaded", async () => {
           }
 
 
-          uploadedAvatarUrl =
+          avatarToSave =
             publicUrlData.publicUrl;
 
 
+          console.log(
+            "UA LEGION — новий avatar URL:",
+            avatarToSave
+          );
+
+
           // ==================================
-          // ПОКАЗ НОВОГО АВАТАРА
+          // PREVIEW
           // ==================================
 
           if (profileAvatar) {
 
             profileAvatar.src =
-              uploadedAvatarUrl +
+              avatarToSave +
               "?v=" +
               Date.now();
 
@@ -1171,17 +1257,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
         // ==================================
-        // URL АВАТАРА ДЛЯ ПРОФІЛЮ
-        // ==================================
-
-        const avatarToSave =
-          uploadedAvatarUrl ||
-          currentAvatarUrl ||
-          null;
-
-
-        // ==================================
-        // ЗБЕРЕЖЕННЯ ПРОФІЛЮ
+        // SAVE PROFILE
         // ==================================
 
         const {
@@ -1225,9 +1301,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                 new Date().toISOString()
 
             },
-
             {
-              onConflict: "id"
+              onConflict:
+                "id"
             }
           );
 
@@ -1235,7 +1311,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (profileError) {
 
           console.error(
-            "Помилка профілю:",
+            "Помилка збереження профілю:",
             profileError
           );
 
@@ -1250,10 +1326,54 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
         // ==================================
-        // ЗБЕРЕЖЕННЯ НАПРЯМКІВ
+        // VERIFY PROFILE
         // ==================================
 
-        let selectedDirections = [];
+        const {
+          data: verifiedProfile,
+          error: verifyError
+        } = await supabase
+          .from("profiles")
+          .select(
+            "avatar_url"
+          )
+          .eq(
+            "id",
+            user.id
+          )
+          .maybeSingle();
+
+
+        if (verifyError) {
+
+          console.error(
+            "Помилка перевірки профілю:",
+            verifyError
+          );
+
+        }
+
+        else {
+
+          console.log(
+            "UA LEGION — avatar_url у БД:",
+            verifiedProfile?.avatar_url
+          );
+
+
+          currentAvatarUrl =
+            verifiedProfile?.avatar_url ||
+            null;
+
+        }
+
+
+        // ==================================
+        // DIRECTIONS
+        // ==================================
+
+        let selectedDirections =
+          [];
 
 
         if (
@@ -1265,7 +1385,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             error: directionsError
           } = await supabase
             .from("directions")
-            .select("id, slug")
+            .select(
+              "id, slug"
+            )
             .in(
               "slug",
               selectedSlugs
@@ -1291,7 +1413,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
         // ==================================
-        // ВИДАЛЕННЯ СТАРИХ НАПРЯМКІВ
+        // DELETE OLD DIRECTIONS
         // ==================================
 
         const {
@@ -1317,7 +1439,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
         // ==================================
-        // ЗАПИС НОВИХ НАПРЯМКІВ
+        // INSERT DIRECTIONS
         // ==================================
 
         if (
@@ -1326,7 +1448,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
           const rowsToInsert =
             selectedDirections.map(
-              (direction) => ({
+              direction => ({
 
                 profile_id:
                   user.id,
@@ -1361,24 +1483,19 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
         // ==================================
-        // ОНОВЛЕННЯ ПОТОЧНОГО АВАТАРА
+        // CLEAR FILE INPUT
         // ==================================
 
-        if (uploadedAvatarUrl) {
+        if (avatarInput) {
 
-          currentAvatarUrl =
-            uploadedAvatarUrl;
-
-
-          if (avatarUrl) {
-            avatarUrl.value = "";
-          }
+          avatarInput.value =
+            "";
 
         }
 
 
         // ==================================
-        // ОНОВЛЕННЯ ІМЕНІ
+        // UPDATE NAME
         // ==================================
 
         if (
@@ -1387,15 +1504,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         ) {
 
           profileNamePreview.textContent =
-            displayName
-              .value
-              .trim();
+            displayName.value.trim();
 
         }
 
 
         // ==================================
-        // ГОТОВО
+        // SUCCESS
         // ==================================
 
         showMessage(
@@ -1411,7 +1526,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
   // ======================================
-  // ВИХІД
+  // LOGOUT
   // ======================================
 
   if (logoutButton) {
@@ -1450,7 +1565,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
   // ======================================
-  // ЗАПУСК
+  // START
   // ======================================
 
   await loadProfile();
