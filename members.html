@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+
+<html lang="uk">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    Учасники — UA LEGION
+  </title>
+
+
+  <!-- ОСНОВНИЙ СТИЛЬ -->
+
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
+
+
+  <!-- СТИЛЬ УЧАСНИКІВ -->
+
+  <link
+    rel="stylesheet"
+    href="members.css"
+  >
+
+</head>
+
+
+<body>
+
+
+  <!-- ================================ -->
+  <!-- HEADER -->
+  <!-- ================================ -->
+
+  <header class="header">
+
+    <div class="header-container">
+
+
+      <a
+        href="index.html"
+        class="logo"
+      >
+
+        UA LEGION
+
+      </a>
+
+
+      <nav
+        class="nav"
+        id="mainNavigation"
+      >
+
+        <a href="index.html">
+
+          Головна
+
+        </a>
+
+
+        <a href="profile.html">
+
+          Мій кабінет
+
+        </a>
+
+
+        <a
+          href="members.html"
+          class="active"
+        >
+
+          👥 Учасники
+
+        </a>
+
+
+      </nav>
+
+
+    </div>
+
+  </header>
+
+
+
+  <!-- ================================ -->
+  <!-- MAIN -->
+  <!-- ================================ -->
+
+  <main
+    class="members-page"
+  >
+
+    <div
+      class="members-container"
+    >
+
+
+      <!-- HEADER -->
+
+      <div
+        class="members-header"
+      >
+
+        <div>
+
+          <span
+            class="members-kicker"
+          >
+
+            UA LEGION
+
+          </span>
+
+
+          <h1>
+
+            👥 Учасники UA LEGION
+
+          </h1>
+
+
+          <p>
+
+            Список учасників спільноти
+            UA LEGION.
+
+          </p>
+
+        </div>
+
+
+        <a
+          href="profile.html"
+          class="back-profile-btn"
+        >
+
+          ← МІЙ КАБІНЕТ
+
+        </a>
+
+
+      </div>
+
+
+
+      <!-- SEARCH -->
+
+      <div
+        class="members-controls"
+      >
+
+        <input
+
+          type="text"
+
+          id="membersSearch"
+
+          placeholder="🔎 Пошук за ім'ям або ігровим ніком..."
+
+        >
+
+
+        <div
+          class="members-count"
+          id="membersCount"
+        >
+
+          Учасників: 0
+
+        </div>
+
+
+      </div>
+
+
+
+      <!-- MESSAGE -->
+
+      <div
+        id="membersMessage"
+        class="members-message"
+      >
+
+      </div>
+
+
+
+      <!-- LIST -->
+
+      <div
+        id="membersList"
+        class="members-list"
+      >
+
+        <div
+          class="members-loading"
+        >
+
+          ⏳ Завантаження учасників...
+
+        </div>
+
+
+      </div>
+
+
+    </div>
+
+  </main>
+
+
+
+  <!-- ================================ -->
+  <!-- SUPABASE -->
+  <!-- ================================ -->
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+  ></script>
+
+
+  <script
+    src="supabase.js"
+  ></script>
+
+
+  <script
+    src="members.js"
+  ></script>
+
+
+</body>
+
+</html>
