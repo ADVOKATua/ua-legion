@@ -76,9 +76,8 @@ document.addEventListener(
       );
 
 
-    // ВАЖЛИВО:
-    // У твоєму HTML це поле вибору файлу.
-    const avatarInput =
+    // INPUT TYPE FILE
+    const avatarUrl =
       document.getElementById(
         "avatarUrl"
       );
@@ -151,7 +150,7 @@ document.addEventListener(
 
 
     // ======================================
-    // ЗБЕРІГАЄМО URL ПОТОЧНОГО АВАТАРА
+    // ПОТОЧНИЙ URL АВАТАРА
     // ======================================
 
     let currentAvatarUrl =
@@ -179,6 +178,100 @@ document.addEventListener(
       messageBox.className =
         "profile-message " +
         type;
+
+    }
+
+
+    // ======================================
+    // ПЕРЕВІРКА ФОТО
+    // ======================================
+
+    if (avatarUrl) {
+
+      avatarUrl.addEventListener(
+        "change",
+
+        () => {
+
+          const file =
+            avatarUrl.files &&
+            avatarUrl.files[0];
+
+
+          if (!file) {
+            return;
+          }
+
+
+          // Перевірка типу
+
+          if (
+            !file.type.startsWith(
+              "image/"
+            )
+          ) {
+
+            showMessage(
+              "Будь ласка, виберіть файл зображення.",
+              "error"
+            );
+
+
+            avatarUrl.value =
+              "";
+
+
+            return;
+
+          }
+
+
+          // Максимум 10 MB
+
+          if (
+            file.size >
+            10 * 1024 * 1024
+          ) {
+
+            showMessage(
+              "Фото занадто велике. Максимальний розмір — 10 MB.",
+              "error"
+            );
+
+
+            avatarUrl.value =
+              "";
+
+
+            return;
+
+          }
+
+
+          // Попередній перегляд
+
+          const previewUrl =
+            URL.createObjectURL(
+              file
+            );
+
+
+          if (profileAvatar) {
+
+            profileAvatar.src =
+              previewUrl;
+
+          }
+
+
+          showMessage(
+            "Фото вибрано. Натисніть «ЗБЕРЕГТИ ПРОФІЛЬ».",
+            "success"
+          );
+
+        }
+
+      );
 
     }
 
@@ -226,9 +319,9 @@ document.addEventListener(
       }
 
 
-      // ====================================
+      // ======================================
       // ІМ'Я
-      // ====================================
+      // ======================================
 
       if (
         profile.display_name &&
@@ -249,9 +342,9 @@ document.addEventListener(
       }
 
 
-      // ====================================
+      // ======================================
       // ДАТА НАРОДЖЕННЯ
-      // ====================================
+      // ======================================
 
       if (
         profile.birth_date &&
@@ -264,9 +357,9 @@ document.addEventListener(
       }
 
 
-      // ====================================
+      // ======================================
       // АВАТАР
-      // ====================================
+      // ======================================
 
       if (
         profile.avatar_url
@@ -286,9 +379,9 @@ document.addEventListener(
       }
 
 
-      // ====================================
+      // ======================================
       // DISCORD USERNAME
-      // ====================================
+      // ======================================
 
       if (
         profile.discord_username &&
@@ -301,9 +394,9 @@ document.addEventListener(
       }
 
 
-      // ====================================
+      // ======================================
       // DISCORD USER ID
-      // ====================================
+      // ======================================
 
       if (
         profile.discord_user_id &&
@@ -316,9 +409,9 @@ document.addEventListener(
       }
 
 
-      // ====================================
+      // ======================================
       // STEAM ID
-      // ====================================
+      // ======================================
 
       if (
         profile.steam_id &&
@@ -331,9 +424,9 @@ document.addEventListener(
       }
 
 
-      // ====================================
+      // ======================================
       // ІГРОВИЙ НІК
-      // ====================================
+      // ======================================
 
       if (
         profile.game_nickname &&
@@ -344,243 +437,6 @@ document.addEventListener(
           profile.game_nickname;
 
       }
-
-    }
-
-
-    // ======================================
-    // ПОПЕРЕДНІЙ ПЕРЕГЛЯД АВАТАРА
-    // ======================================
-
-    if (avatarInput) {
-
-      avatarInput.addEventListener(
-        "change",
-
-        () => {
-
-          const file =
-            avatarInput.files &&
-            avatarInput.files.length > 0
-              ? avatarInput.files[0]
-              : null;
-
-
-          if (
-            !file ||
-            !profileAvatar
-          ) {
-
-            return;
-
-          }
-
-
-          // Перевірка типу файлу
-
-          if (
-            !file.type.startsWith(
-              "image/"
-            )
-          ) {
-
-            showMessage(
-              "Будь ласка, виберіть файл зображення.",
-              "error"
-            );
-
-
-            avatarInput.value =
-              "";
-
-
-            return;
-
-          }
-
-
-          // Максимум 5 MB
-
-          if (
-            file.size >
-            5 * 1024 * 1024
-          ) {
-
-            showMessage(
-              "Розмір фото не повинен перевищувати 5 MB.",
-              "error"
-            );
-
-
-            avatarInput.value =
-              "";
-
-
-            return;
-
-          }
-
-
-          // Попередній перегляд
-
-          const previewUrl =
-            URL.createObjectURL(
-              file
-            );
-
-
-          profileAvatar.src =
-            previewUrl;
-
-        }
-
-      );
-
-    }
-
-
-    // ======================================
-    // ЗАВАНТАЖЕННЯ ФОТО В SUPABASE STORAGE
-    // ======================================
-
-    async function uploadAvatar() {
-
-      const file =
-        avatarInput &&
-        avatarInput.files &&
-        avatarInput.files.length > 0
-          ? avatarInput.files[0]
-          : null;
-
-
-      // Якщо нове фото не вибрано —
-      // залишаємо старий аватар.
-
-      if (!file) {
-
-        return currentAvatarUrl;
-
-      }
-
-
-      // ====================================
-      // РОЗШИРЕННЯ ФАЙЛУ
-      // ====================================
-
-      const originalName =
-        file.name;
-
-
-      let extension =
-        originalName
-          .split(".")
-          .pop()
-          .toLowerCase();
-
-
-      if (
-        !extension ||
-        extension.length > 5
-      ) {
-
-        extension =
-          "jpg";
-
-      }
-
-
-      // ====================================
-      // ПОСТІЙНИЙ ШЛЯХ
-      //
-      // У кожного користувача
-      // одна папка та один аватар.
-      // ====================================
-
-      const filePath =
-        user.id +
-        "/avatar." +
-        extension;
-
-
-      // ====================================
-      // ЗАВАНТАЖЕННЯ
-      // ====================================
-
-      const {
-        error: uploadError
-      } = await supabase
-        .storage
-        .from("avatars")
-        .upload(
-
-          filePath,
-
-          file,
-
-          {
-
-            upsert:
-              true,
-
-
-            cacheControl:
-              "3600"
-
-
-          }
-
-        );
-
-
-      if (uploadError) {
-
-        console.error(
-          "Помилка завантаження аватара:",
-          uploadError
-        );
-
-
-        throw uploadError;
-
-      }
-
-
-      // ====================================
-      // ОТРИМУЄМО PUBLIC URL
-      // ====================================
-
-      const {
-        data: publicUrlData
-      } = supabase
-        .storage
-        .from("avatars")
-        .getPublicUrl(
-          filePath
-        );
-
-
-      if (
-        !publicUrlData ||
-        !publicUrlData.publicUrl
-      ) {
-
-        throw new Error(
-          "Не вдалося отримати URL аватара."
-        );
-
-      }
-
-
-      // Додаємо timestamp,
-      // щоб браузер не показував старе фото з кешу.
-
-      const avatarPublicUrl =
-        publicUrlData.publicUrl +
-        "?v=" +
-        Date.now();
-
-
-      return avatarPublicUrl;
 
     }
 
@@ -844,10 +700,6 @@ document.addEventListener(
       // НЕВІДОМИЙ СТАТУС
       // ====================================
 
-      applicationStatus.className =
-        "application-card";
-
-
       applicationStatus.innerHTML =
         `
           <h3>
@@ -893,7 +745,6 @@ document.addEventListener(
           directionsError
         );
 
-
         return;
 
       }
@@ -935,7 +786,6 @@ document.addEventListener(
           "Помилка завантаження напрямків:",
           selectedError
         );
-
 
         return;
 
@@ -1050,6 +900,10 @@ document.addEventListener(
         userRoles.length === 0
       ) {
 
+        window.currentUserRoles =
+          [];
+
+
         renderUserRoles(
           []
         );
@@ -1091,10 +945,16 @@ document.addEventListener(
 
       if (rolesError) {
 
+        console.error(
+          "Помилка roles:",
+          rolesError
+        );
+
+
         rolesList.innerHTML =
           `
             <div class="roles-empty">
-              Не вдалося завантажити ролі.
+              Не вдалося завантажити інформацію про ролі.
             </div>
           `;
 
@@ -1128,7 +988,8 @@ document.addEventListener(
       ) {
 
         const {
-          data: directionsData
+          data: directionsData,
+          error: directionsError
         } = await supabase
           .from("directions")
           .select(
@@ -1140,9 +1001,12 @@ document.addEventListener(
           );
 
 
-        directions =
-          directionsData ||
-          [];
+        if (!directionsError) {
+
+          directions =
+            directionsData || [];
+
+        }
 
       }
 
@@ -1196,8 +1060,7 @@ document.addEventListener(
                 String(
                   item.role_id
                 )
-              ) ||
-              null,
+              ) || null,
 
 
             directions:
@@ -1208,8 +1071,7 @@ document.addEventListener(
                       String(
                         item.direction_id
                       )
-                    ) ||
-                    null
+                    ) || null
                   )
                 : null
 
@@ -1227,9 +1089,7 @@ document.addEventListener(
             a.direction_id === null &&
             b.direction_id !== null
           ) {
-
             return -1;
-
           }
 
 
@@ -1237,9 +1097,7 @@ document.addEventListener(
             a.direction_id !== null &&
             b.direction_id === null
           ) {
-
             return 1;
-
           }
 
 
@@ -1247,6 +1105,10 @@ document.addEventListener(
 
         }
       );
+
+
+      window.currentUserRoles =
+        fullRoles;
 
 
       renderUserRoles(
@@ -1425,12 +1287,144 @@ document.addEventListener(
 
 
           showMessage(
-            "Збереження профілю..."
+            "Збереження..."
           );
 
 
           // ==================================
-          // НАПРЯМКИ
+          // ПОТОЧНИЙ АВАТАР
+          // ==================================
+
+          let newAvatarUrl =
+            currentAvatarUrl;
+
+
+          // ==================================
+          // ВИБРАНЕ НОВЕ ФОТО
+          // ==================================
+
+          const selectedFile =
+            avatarUrl &&
+            avatarUrl.files &&
+            avatarUrl.files[0]
+              ? avatarUrl.files[0]
+              : null;
+
+
+          if (selectedFile) {
+
+            showMessage(
+              "Завантаження фото..."
+            );
+
+
+            // Отримуємо розширення файлу
+
+            const fileExtension =
+              selectedFile.name
+                .split(".")
+                .pop()
+                .toLowerCase();
+
+
+            // Створюємо шлях
+
+            const fileName =
+              `${user.id}/avatar.${fileExtension}`;
+
+
+            // Завантажуємо в Supabase Storage
+
+            const {
+              error: uploadError
+            } = await supabase
+              .storage
+              .from("avatars")
+              .upload(
+
+                fileName,
+
+                selectedFile,
+
+                {
+                  cacheControl:
+                    "3600",
+
+                  upsert:
+                    true,
+
+                  contentType:
+                    selectedFile.type
+                }
+
+              );
+
+
+            if (uploadError) {
+
+              console.error(
+                "Помилка завантаження фото:",
+                uploadError
+              );
+
+
+              showMessage(
+                "Не вдалося завантажити фото: " +
+                uploadError.message,
+                "error"
+              );
+
+
+              return;
+
+            }
+
+
+            // Отримуємо PUBLIC URL
+
+            const {
+              data: publicUrlData
+            } = supabase
+              .storage
+              .from("avatars")
+              .getPublicUrl(
+                fileName
+              );
+
+
+            if (
+              !publicUrlData ||
+              !publicUrlData.publicUrl
+            ) {
+
+              showMessage(
+                "Не вдалося отримати посилання на фото.",
+                "error"
+              );
+
+
+              return;
+
+            }
+
+
+            // Додаємо параметр часу,
+            // щоб браузер не показував старий кеш
+
+            newAvatarUrl =
+              publicUrlData.publicUrl +
+              "?v=" +
+              Date.now();
+
+
+            currentAvatarUrl =
+              newAvatarUrl;
+
+          }
+
+
+          // ==================================
+          // ВИБРАНІ НАПРЯМКИ
           // ==================================
 
           const selectedSlugs =
@@ -1448,59 +1442,7 @@ document.addEventListener(
 
 
           // ==================================
-          // ЗАВАНТАЖЕННЯ АВАТАРА
-          // ==================================
-
-          let newAvatarUrl =
-            currentAvatarUrl;
-
-
-          try {
-
-            const hasNewAvatar =
-              avatarInput &&
-              avatarInput.files &&
-              avatarInput.files.length > 0;
-
-
-            if (hasNewAvatar) {
-
-              showMessage(
-                "Завантаження фото..."
-              );
-
-
-              newAvatarUrl =
-                await uploadAvatar();
-
-            }
-
-          }
-
-          catch (
-            avatarError
-          ) {
-
-            console.error(
-              "Помилка аватара:",
-              avatarError
-            );
-
-
-            showMessage(
-              "Не вдалося завантажити фото: " +
-              avatarError.message,
-              "error"
-            );
-
-
-            return;
-
-          }
-
-
-          // ==================================
-          // ЗБЕРЕЖЕННЯ ПРОФІЛЮ
+          // ЗБЕРІГАЄМО ПРОФІЛЬ
           // ==================================
 
           const {
@@ -1516,21 +1458,13 @@ document.addEventListener(
 
 
                 display_name:
-                  displayName
-                    ? (
-                        displayName.value.trim() ||
-                        null
-                      )
-                    : null,
+                  displayName.value.trim() ||
+                  null,
 
 
                 birth_date:
-                  birthDate
-                    ? (
-                        birthDate.value ||
-                        null
-                      )
-                    : null,
+                  birthDate.value ||
+                  null,
 
 
                 avatar_url:
@@ -1539,39 +1473,23 @@ document.addEventListener(
 
 
                 discord_username:
-                  discordUsername
-                    ? (
-                        discordUsername.value.trim() ||
-                        null
-                      )
-                    : null,
+                  discordUsername.value.trim() ||
+                  null,
 
 
                 discord_user_id:
-                  discordUserId
-                    ? (
-                        discordUserId.value.trim() ||
-                        null
-                      )
-                    : null,
+                  discordUserId.value.trim() ||
+                  null,
 
 
                 steam_id:
-                  steamId
-                    ? (
-                        steamId.value.trim() ||
-                        null
-                      )
-                    : null,
+                  steamId.value.trim() ||
+                  null,
 
 
                 game_nickname:
-                  gameNickname
-                    ? (
-                        gameNickname.value.trim() ||
-                        null
-                      )
-                    : null,
+                  gameNickname.value.trim() ||
+                  null,
 
 
                 updated_at:
@@ -1650,8 +1568,7 @@ document.addEventListener(
 
 
             selectedDirections =
-              directions ||
-              [];
+              directions;
 
           }
 
@@ -1685,7 +1602,7 @@ document.addEventListener(
 
 
           // ==================================
-          // ДОДАЄМО НОВІ НАПРЯМКИ
+          // ЗБЕРІГАЄМО НОВІ НАПРЯМКИ
           // ==================================
 
           if (
@@ -1735,10 +1652,6 @@ document.addEventListener(
           // ОНОВЛЮЄМО АВАТАР
           // ==================================
 
-          currentAvatarUrl =
-            newAvatarUrl;
-
-
           if (
             newAvatarUrl &&
             profileAvatar
@@ -1755,7 +1668,6 @@ document.addEventListener(
           // ==================================
 
           if (
-            displayName &&
             displayName.value.trim() &&
             profileNamePreview
           ) {
@@ -1768,13 +1680,11 @@ document.addEventListener(
           }
 
 
-          // ==================================
-          // ОЧИЩАЄМО ВИБІР ФАЙЛУ
-          // ==================================
+          // Очищаємо вибір файлу
 
-          if (avatarInput) {
+          if (avatarUrl) {
 
-            avatarInput.value =
+            avatarUrl.value =
               "";
 
           }
@@ -1816,7 +1726,6 @@ document.addEventListener(
               "Помилка виходу:",
               error
             );
-
 
             return;
 
