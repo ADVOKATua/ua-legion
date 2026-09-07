@@ -1,63 +1,280 @@
-// ==========================================
-// UA LEGION — AUTH MENU
-// ==========================================
+// ======================================
+// UA LEGION — AUTH MENU SYSTEM
+// auth-menu.js
+// ======================================
 
 document.addEventListener("DOMContentLoaded", async () => {
+
+  // ======================================
+  // SUPABASE
+  // ======================================
 
   const supabase = window.supabaseClient;
 
   if (!supabase) {
-    console.error("Supabase не підключений");
+
+    console.error(
+      "Supabase не підключений"
+    );
+
+    return;
+
+  }
+
+
+  // ======================================
+  // НАВІГАЦІЯ
+  // ======================================
+
+  const nav =
+    document.querySelector(".nav");
+
+
+  if (!nav) {
     return;
   }
 
-  const authButton =
-    document.getElementById("authButton");
 
-  if (!authButton) {
-    return;
-  }
+  // ======================================
+  // ВИДАЛЯЄМО СТАРІ ДИНАМІЧНІ ПУНКТИ
+  // ======================================
 
-  // Перевіряємо, чи користувач увійшов
+  document
+    .querySelectorAll(
+      ".admin-menu-item, .members-menu-item"
+    )
+    .forEach(
+      (item) => {
+
+        item.remove();
+
+      }
+    );
+
+
+  // ======================================
+  // ОТРИМУЄМО КОРИСТУВАЧА
+  // ======================================
 
   const {
     data: {
       user
     },
-    error
-  } =
-    await supabase.auth.getUser();
-
-
-  if (error) {
-    console.error(error);
-  }
+    error: userError
+  } = await supabase
+    .auth
+    .getUser();
 
 
   // ======================================
-  // КОРИСТУВАЧ НЕ УВІЙШОВ
+  // ЯКЩО КОРИСТУВАЧ НЕ АВТОРИЗОВАНИЙ
   // ======================================
 
-  if (!user) {
-
-    authButton.textContent =
-      "Увійти / Реєстрація";
-
-    authButton.href =
-      "login.html";
+  if (
+    userError ||
+    !user
+  ) {
 
     return;
+
   }
 
 
   // ======================================
-  // КОРИСТУВАЧ УВІЙШОВ
+  // ПЕРЕВІРКА АДМІНІСТРАЦІЇ
   // ======================================
 
-  authButton.textContent =
-    "Мій кабінет";
+  let isAdmin =
+    false;
 
-  authButton.href =
-    "profile.html";
+
+  try {
+
+    const {
+      data: adminResult,
+      error: adminError
+    } = await supabase
+      .rpc(
+        "is_ua_legion_staff"
+      );
+
+
+    if (adminError) {
+
+      console.error(
+        "Помилка перевірки адміністрації:",
+        adminError
+      );
+
+    }
+
+    else {
+
+      isAdmin =
+        adminResult === true;
+
+    }
+
+  }
+
+  catch (
+    error
+  ) {
+
+    console.error(
+      "Помилка перевірки адміністрації:",
+      error
+    );
+
+  }
+
+
+  // ======================================
+  // ПЕРЕВІРКА СТАТУСУ ЗАЯВКИ
+  // ======================================
+
+  let isApproved =
+    false;
+
+
+  try {
+
+    const {
+      data: application,
+      error: applicationError
+    } = await supabase
+      .from("applications")
+      .select(
+        "status"
+      )
+      .eq(
+        "user_id",
+        user.id
+      )
+      .eq(
+        "status",
+        "approved"
+      )
+      .maybeSingle();
+
+
+    if (applicationError) {
+
+      console.error(
+        "Помилка перевірки заявки:",
+        applicationError
+      );
+
+    }
+
+    else if (
+      application
+    ) {
+
+      isApproved =
+        true;
+
+    }
+
+  }
+
+  catch (
+    error
+  ) {
+
+    console.error(
+      "Помилка перевірки статусу заявки:",
+      error
+    );
+
+  }
+
+
+  // ======================================
+  // АДМІНІСТРАЦІЯ
+  // ======================================
+
+  if (
+    isAdmin
+  ) {
+
+    const applicationsLink =
+      document.createElement(
+        "a"
+      );
+
+
+    applicationsLink.href =
+      "applications.html";
+
+
+    applicationsLink.className =
+      "admin-menu-item";
+
+
+    applicationsLink.textContent =
+      "📋 Заявки";
+
+
+    nav.appendChild(
+      applicationsLink
+    );
+
+  }
+
+
+  // ======================================
+  // УЧАСНИКИ
+  // ======================================
+
+  if (
+    isAdmin ||
+    isApproved
+  ) {
+
+    const membersLink =
+      document.createElement(
+        "a"
+      );
+
+
+    membersLink.href =
+      "members.html";
+
+
+    membersLink.className =
+      "members-menu-item";
+
+
+    membersLink.textContent =
+      "👥 Учасники";
+
+
+    nav.appendChild(
+      membersLink
+    );
+
+  }
+
+
+  // ======================================
+  // DEBUG
+  // ======================================
+
+  console.log(
+    "UA LEGION MENU:",
+    {
+
+      user:
+        user.email,
+
+
+      isAdmin,
+
+
+      isApproved
+
+    }
+  );
 
 });
