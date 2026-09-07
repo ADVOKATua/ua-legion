@@ -9,7 +9,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   // SUPABASE
   // ======================================
 
-  const supabase = window.supabaseClient;
+  const supabase =
+    window.supabaseClient;
+
 
   if (!supabase) {
 
@@ -27,11 +29,19 @@ document.addEventListener("DOMContentLoaded", async () => {
   // ======================================
 
   const nav =
-    document.querySelector(".nav");
+    document.querySelector(
+      ".nav"
+    );
 
 
   if (!nav) {
+
+    console.error(
+      "Навігаційне меню не знайдено"
+    );
+
     return;
+
   }
 
 
@@ -67,13 +77,17 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
   // ======================================
-  // ЯКЩО КОРИСТУВАЧ НЕ АВТОРИЗОВАНИЙ
+  // ЯКЩО НЕ АВТОРИЗОВАНИЙ
   // ======================================
 
   if (
     userError ||
     !user
   ) {
+
+    console.log(
+      "Користувач не авторизований"
+    );
 
     return;
 
@@ -130,7 +144,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
   // ======================================
-  // ПЕРЕВІРКА СТАТУСУ ЗАЯВКИ
+  // ПЕРЕВІРКА ЗАТВЕРДЖЕНОЇ ЗАЯВКИ
   // ======================================
 
   let isApproved =
@@ -143,7 +157,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       data: application,
       error: applicationError
     } = await supabase
-      .from("applications")
+      .from(
+        "applications"
+      )
       .select(
         "status"
       )
@@ -191,40 +207,32 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
   // ======================================
-  // АДМІНІСТРАЦІЯ
+  // ШУКАЄМО ПОСИЛАННЯ
   // ======================================
 
-  if (
-    isAdmin
-  ) {
-
-    const applicationsLink =
-      document.createElement(
+  const tiktokLink =
+    Array.from(
+      nav.querySelectorAll(
         "a"
-      );
-
-
-    applicationsLink.href =
-      "applications.html";
-
-
-    applicationsLink.className =
-      "admin-menu-item";
-
-
-    applicationsLink.textContent =
-      "📋 Заявки";
-
-
-    nav.appendChild(
-      applicationsLink
+      )
+    )
+    .find(
+      (link) =>
+        link.href.includes(
+          "tiktok.com"
+        )
     );
 
-  }
+
+  const authButton =
+    document.getElementById(
+      "authButton"
+    );
 
 
   // ======================================
   // УЧАСНИКИ
+  // ПЕРЕД TIKTOK
   // ======================================
 
   if (
@@ -250,9 +258,95 @@ document.addEventListener("DOMContentLoaded", async () => {
       "👥 Учасники";
 
 
-    nav.appendChild(
-      membersLink
-    );
+    if (
+      tiktokLink
+    ) {
+
+      nav.insertBefore(
+        membersLink,
+        tiktokLink
+      );
+
+    }
+
+    else if (
+      authButton
+    ) {
+
+      nav.insertBefore(
+        membersLink,
+        authButton
+      );
+
+    }
+
+    else {
+
+      nav.appendChild(
+        membersLink
+      );
+
+    }
+
+  }
+
+
+  // ======================================
+  // ЗАЯВКИ
+  // ТІЛЬКИ ДЛЯ АДМІНІСТРАЦІЇ
+  // ======================================
+
+  if (
+    isAdmin
+  ) {
+
+    const applicationsLink =
+      document.createElement(
+        "a"
+      );
+
+
+    applicationsLink.href =
+      "applications.html";
+
+
+    applicationsLink.className =
+      "admin-menu-item";
+
+
+    applicationsLink.textContent =
+      "📋 Заявки";
+
+
+    if (
+      tiktokLink
+    ) {
+
+      nav.insertBefore(
+        applicationsLink,
+        tiktokLink
+      );
+
+    }
+
+    else if (
+      authButton
+    ) {
+
+      nav.insertBefore(
+        applicationsLink,
+        authButton
+      );
+
+    }
+
+    else {
+
+      nav.appendChild(
+        applicationsLink
+      );
+
+    }
 
   }
 
@@ -262,19 +356,22 @@ document.addEventListener("DOMContentLoaded", async () => {
   // ======================================
 
   console.log(
-    "UA LEGION MENU:",
+    "UA LEGION MENU STATUS:",
     {
 
       user:
         user.email,
 
 
-      isAdmin,
+      isAdmin:
+        isAdmin,
 
 
-      isApproved
+      isApproved:
+        isApproved
 
     }
   );
+
 
 });
