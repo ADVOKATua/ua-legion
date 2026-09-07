@@ -7,7 +7,6 @@ document.addEventListener(
   "DOMContentLoaded",
   async () => {
 
-
     // ======================================
     // SUPABASE
     // ======================================
@@ -149,6 +148,76 @@ document.addEventListener(
 
 
     // ======================================
+    // НАЛАШТУВАННЯ ПОЛЯ АВАТАРА
+    // ======================================
+
+    if (avatarUrl) {
+
+      avatarUrl.type =
+        "file";
+
+
+      avatarUrl.accept =
+        "image/png,image/jpeg,image/webp,image/gif";
+
+
+      avatarUrl.removeAttribute(
+        "placeholder"
+      );
+
+
+      avatarUrl.addEventListener(
+        "change",
+        () => {
+
+          const file =
+            avatarUrl.files?.[0];
+
+
+          if (
+            !file ||
+            !profileAvatar
+          ) {
+            return;
+          }
+
+
+          if (
+            !file.type.startsWith(
+              "image/"
+            )
+          ) {
+
+            showMessage(
+              "Будь ласка, виберіть зображення.",
+              "error"
+            );
+
+
+            avatarUrl.value =
+              "";
+
+            return;
+
+          }
+
+
+          const previewUrl =
+            URL.createObjectURL(
+              file
+            );
+
+
+          profileAvatar.src =
+            previewUrl;
+
+        }
+      );
+
+    }
+
+
+    // ======================================
     // ПОВІДОМЛЕННЯ
     // ======================================
 
@@ -216,7 +285,9 @@ document.addEventListener(
       }
 
 
+      // ====================================
       // ІМ'Я
+      // ====================================
 
       if (
         profile.display_name &&
@@ -237,7 +308,9 @@ document.addEventListener(
       }
 
 
+      // ====================================
       // ДАТА НАРОДЖЕННЯ
+      // ====================================
 
       if (
         profile.birth_date &&
@@ -250,28 +323,24 @@ document.addEventListener(
       }
 
 
+      // ====================================
       // АВАТАР
+      // ====================================
 
       if (
         profile.avatar_url &&
-        avatarUrl
+        profileAvatar
       ) {
 
-        avatarUrl.value =
+        profileAvatar.src =
           profile.avatar_url;
-
-
-        if (profileAvatar) {
-
-          profileAvatar.src =
-            profile.avatar_url;
-
-        }
 
       }
 
 
+      // ====================================
       // DISCORD USERNAME
+      // ====================================
 
       if (
         profile.discord_username &&
@@ -284,7 +353,9 @@ document.addEventListener(
       }
 
 
+      // ====================================
       // DISCORD USER ID
+      // ====================================
 
       if (
         profile.discord_user_id &&
@@ -297,7 +368,9 @@ document.addEventListener(
       }
 
 
+      // ====================================
       // STEAM ID
+      // ====================================
 
       if (
         profile.steam_id &&
@@ -310,7 +383,9 @@ document.addEventListener(
       }
 
 
+      // ====================================
       // ІГРОВИЙ НІК
+      // ====================================
 
       if (
         profile.game_nickname &&
@@ -321,6 +396,156 @@ document.addEventListener(
           profile.game_nickname;
 
       }
+
+    }
+
+
+    // ======================================
+    // ЗАВАНТАЖЕННЯ АВАТАРА
+    // ======================================
+
+    async function uploadAvatar() {
+
+      const selectedFile =
+        avatarUrl?.files?.[0];
+
+
+      // Якщо новий файл не вибрано —
+      // залишаємо поточний аватар.
+
+      if (!selectedFile) {
+
+        return null;
+
+      }
+
+
+      if (
+        !selectedFile.type.startsWith(
+          "image/"
+        )
+      ) {
+
+        throw new Error(
+          "Будь ласка, виберіть файл зображення."
+        );
+
+      }
+
+
+      // Максимум 5 MB
+
+      const maxSize =
+        5 * 1024 * 1024;
+
+
+      if (
+        selectedFile.size >
+        maxSize
+      ) {
+
+        throw new Error(
+          "Розмір зображення не повинен перевищувати 5 MB."
+        );
+
+      }
+
+
+      // Визначаємо розширення
+
+      let extension =
+        selectedFile.name
+          .split(".")
+          .pop()
+          ?.toLowerCase();
+
+
+      if (
+        !extension ||
+        extension.length > 10
+      ) {
+
+        extension =
+          "jpg";
+
+      }
+
+
+      // Кожен користувач має свій файл
+
+      const filePath =
+        `${user.id}/avatar.${extension}`;
+
+
+      // Завантаження у bucket avatars
+
+      const {
+        error: uploadError
+      } = await supabase
+        .storage
+        .from("avatars")
+        .upload(
+
+          filePath,
+
+          selectedFile,
+
+          {
+
+            cacheControl:
+              "3600",
+
+
+            upsert:
+              true,
+
+
+            contentType:
+              selectedFile.type
+
+          }
+
+        );
+
+
+      if (uploadError) {
+
+        console.error(
+          "Помилка завантаження аватара:",
+          uploadError
+        );
+
+
+        throw uploadError;
+
+      }
+
+
+      // Отримуємо публічне посилання
+
+      const {
+        data: publicUrlData
+      } = supabase
+        .storage
+        .from("avatars")
+        .getPublicUrl(
+          filePath
+        );
+
+
+      if (
+        !publicUrlData ||
+        !publicUrlData.publicUrl
+      ) {
+
+        throw new Error(
+          "Не вдалося отримати посилання на аватар."
+        );
+
+      }
+
+
+      return publicUrlData.publicUrl;
 
     }
 
@@ -453,10 +678,6 @@ document.addEventListener(
 
       }
 
-
-      // ====================================
-      // ОТРИМУЄМО СТАТУС
-      // ====================================
 
       const status =
         application.status;
@@ -1185,7 +1406,6 @@ document.addEventListener(
           event
         ) => {
 
-
           event.preventDefault();
 
 
@@ -1194,26 +1414,54 @@ document.addEventListener(
           );
 
 
-          const selectedSlugs =
-            Array.from(
+          try {
 
-              document.querySelectorAll(
-                'input[name="direction"]:checked'
+            // ================================
+            // ЗАВАНТАЖЕННЯ НОВОГО АВАТАРА
+            // ================================
+
+            let uploadedAvatarUrl =
+              null;
+
+
+            if (
+              avatarUrl?.files?.length > 0
+            ) {
+
+              showMessage(
+                "Завантаження аватара..."
+              );
+
+
+              uploadedAvatarUrl =
+                await uploadAvatar();
+
+            }
+
+
+            // ================================
+            // НАПРЯМКИ
+            // ================================
+
+            const selectedSlugs =
+              Array.from(
+
+                document.querySelectorAll(
+                  'input[name="direction"]:checked'
+                )
+
               )
-
-            )
-            .map(
-              (checkbox) =>
-                checkbox.value
-            );
+              .map(
+                (checkbox) =>
+                  checkbox.value
+              );
 
 
-          const {
-            error: profileError
-          } = await supabase
-            .from("profiles")
-            .upsert(
+            // ================================
+            // ПРОФІЛЬ
+            // ================================
 
+            const profileData =
               {
 
                 id:
@@ -1227,11 +1475,6 @@ document.addEventListener(
 
                 birth_date:
                   birthDate.value ||
-                  null,
-
-
-                avatar_url:
-                  avatarUrl.value.trim() ||
                   null,
 
 
@@ -1259,174 +1502,201 @@ document.addEventListener(
                   new Date()
                     .toISOString()
 
-              },
+              };
 
-              {
 
-                onConflict:
-                  "id"
+            // Додаємо avatar_url
+            // тільки якщо завантажено нове фото
+
+            if (
+              uploadedAvatarUrl
+            ) {
+
+              profileData.avatar_url =
+                uploadedAvatarUrl;
+
+            }
+
+
+            const {
+              error: profileError
+            } = await supabase
+              .from("profiles")
+              .upsert(
+
+                profileData,
+
+                {
+
+                  onConflict:
+                    "id"
+
+                }
+
+              );
+
+
+            if (profileError) {
+
+              throw profileError;
+
+            }
+
+
+            // ================================
+            // НАПРЯМКИ
+            // ================================
+
+            let selectedDirections =
+              [];
+
+
+            if (
+              selectedSlugs.length > 0
+            ) {
+
+              const {
+                data: directions,
+                error: directionsError
+              } = await supabase
+                .from("directions")
+                .select(
+                  "id, slug"
+                )
+                .in(
+                  "slug",
+                  selectedSlugs
+                );
+
+
+              if (directionsError) {
+
+                throw directionsError;
 
               }
 
-            );
 
-
-          if (profileError) {
-
-            console.error(
-              "Помилка профілю:",
-              profileError
-            );
-
-
-            showMessage(
-              profileError.message,
-              "error"
-            );
-
-
-            return;
-
-          }
-
-
-          let selectedDirections =
-            [];
-
-
-          if (
-            selectedSlugs.length > 0
-          ) {
-
-            const {
-              data: directions,
-              error: directionsError
-            } = await supabase
-              .from("directions")
-              .select(
-                "id, slug"
-              )
-              .in(
-                "slug",
-                selectedSlugs
-              );
-
-
-            if (directionsError) {
-
-              showMessage(
-                "Не вдалося зберегти напрямки: " +
-                directionsError.message,
-                "error"
-              );
-
-
-              return;
+              selectedDirections =
+                directions || [];
 
             }
 
 
-            selectedDirections =
-              directions;
-
-          }
-
-
-          const {
-            error: deleteError
-          } = await supabase
-            .from("profile_directions")
-            .delete()
-            .eq(
-              "profile_id",
-              user.id
-            );
-
-
-          if (deleteError) {
-
-            showMessage(
-              deleteError.message,
-              "error"
-            );
-
-
-            return;
-
-          }
-
-
-          if (
-            selectedDirections.length > 0
-          ) {
-
-            const rowsToInsert =
-              selectedDirections.map(
-                (direction) => ({
-
-                  profile_id:
-                    user.id,
-
-
-                  direction_id:
-                    direction.id
-
-                })
-              );
-
-
             const {
-              error: insertError
+              error: deleteError
             } = await supabase
               .from("profile_directions")
-              .insert(
-                rowsToInsert
+              .delete()
+              .eq(
+                "profile_id",
+                user.id
               );
 
 
-            if (insertError) {
+            if (deleteError) {
 
-              showMessage(
-                insertError.message,
-                "error"
-              );
-
-
-              return;
+              throw deleteError;
 
             }
 
+
+            if (
+              selectedDirections.length > 0
+            ) {
+
+              const rowsToInsert =
+                selectedDirections.map(
+                  (direction) => ({
+
+                    profile_id:
+                      user.id,
+
+
+                    direction_id:
+                      direction.id
+
+                  })
+                );
+
+
+              const {
+                error: insertError
+              } = await supabase
+                .from("profile_directions")
+                .insert(
+                  rowsToInsert
+                );
+
+
+              if (insertError) {
+
+                throw insertError;
+
+              }
+
+            }
+
+
+            // ================================
+            // ОНОВЛЕННЯ ІНТЕРФЕЙСУ
+            // ================================
+
+            if (
+              uploadedAvatarUrl &&
+              profileAvatar
+            ) {
+
+              profileAvatar.src =
+                uploadedAvatarUrl;
+
+            }
+
+
+            if (
+              displayName.value.trim() &&
+              profileNamePreview
+            ) {
+
+              profileNamePreview.textContent =
+                displayName
+                  .value
+                  .trim();
+
+            }
+
+
+            if (avatarUrl) {
+
+              avatarUrl.value =
+                "";
+
+            }
+
+
+            showMessage(
+              "Профіль успішно збережено!",
+              "success"
+            );
+
           }
 
-
-          if (
-            avatarUrl.value.trim() &&
-            profileAvatar
+          catch (
+            error
           ) {
 
-            profileAvatar.src =
-              avatarUrl.value.trim();
+            console.error(
+              "Помилка збереження профілю:",
+              error
+            );
+
+
+            showMessage(
+              error.message ||
+              "Не вдалося зберегти профіль.",
+              "error"
+            );
 
           }
-
-
-          if (
-            displayName.value.trim() &&
-            profileNamePreview
-          ) {
-
-            profileNamePreview.textContent =
-              displayName
-                .value
-                .trim();
-
-          }
-
-
-          showMessage(
-            "Профіль успішно збережено!",
-            "success"
-          );
 
         }
 
@@ -1486,7 +1756,6 @@ document.addEventListener(
     await loadApplicationStatus();
 
     await loadUserRoles();
-
 
   }
 );
