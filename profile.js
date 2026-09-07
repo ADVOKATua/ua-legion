@@ -76,7 +76,9 @@ document.addEventListener(
       );
 
 
-    const avatarUrl =
+    // ВАЖЛИВО:
+    // У твоєму HTML це поле вибору файлу.
+    const avatarInput =
       document.getElementById(
         "avatarUrl"
       );
@@ -149,6 +151,14 @@ document.addEventListener(
 
 
     // ======================================
+    // ЗБЕРІГАЄМО URL ПОТОЧНОГО АВАТАРА
+    // ======================================
+
+    let currentAvatarUrl =
+      null;
+
+
+    // ======================================
     // ПОВІДОМЛЕННЯ
     // ======================================
 
@@ -216,7 +226,9 @@ document.addEventListener(
       }
 
 
+      // ====================================
       // ІМ'Я
+      // ====================================
 
       if (
         profile.display_name &&
@@ -237,7 +249,9 @@ document.addEventListener(
       }
 
 
+      // ====================================
       // ДАТА НАРОДЖЕННЯ
+      // ====================================
 
       if (
         profile.birth_date &&
@@ -250,20 +264,31 @@ document.addEventListener(
       }
 
 
+      // ====================================
       // АВАТАР
+      // ====================================
 
       if (
-        profile.avatar_url &&
-        profileAvatar
+        profile.avatar_url
       ) {
 
-        profileAvatar.src =
+        currentAvatarUrl =
           profile.avatar_url;
+
+
+        if (profileAvatar) {
+
+          profileAvatar.src =
+            profile.avatar_url;
+
+        }
 
       }
 
 
+      // ====================================
       // DISCORD USERNAME
+      // ====================================
 
       if (
         profile.discord_username &&
@@ -276,7 +301,9 @@ document.addEventListener(
       }
 
 
+      // ====================================
       // DISCORD USER ID
+      // ====================================
 
       if (
         profile.discord_user_id &&
@@ -289,7 +316,9 @@ document.addEventListener(
       }
 
 
+      // ====================================
       // STEAM ID
+      // ====================================
 
       if (
         profile.steam_id &&
@@ -302,7 +331,9 @@ document.addEventListener(
       }
 
 
+      // ====================================
       // ІГРОВИЙ НІК
+      // ====================================
 
       if (
         profile.game_nickname &&
@@ -318,20 +349,20 @@ document.addEventListener(
 
 
     // ======================================
-    // ПОПЕРЕДНІЙ ПЕРЕГЛЯД ФОТО
+    // ПОПЕРЕДНІЙ ПЕРЕГЛЯД АВАТАРА
     // ======================================
 
-    if (avatarUrl) {
+    if (avatarInput) {
 
-      avatarUrl.addEventListener(
+      avatarInput.addEventListener(
         "change",
 
         () => {
 
           const file =
-            avatarUrl.files &&
-            avatarUrl.files.length > 0
-              ? avatarUrl.files[0]
+            avatarInput.files &&
+            avatarInput.files.length > 0
+              ? avatarInput.files[0]
               : null;
 
 
@@ -339,9 +370,58 @@ document.addEventListener(
             !file ||
             !profileAvatar
           ) {
+
             return;
+
           }
 
+
+          // Перевірка типу файлу
+
+          if (
+            !file.type.startsWith(
+              "image/"
+            )
+          ) {
+
+            showMessage(
+              "Будь ласка, виберіть файл зображення.",
+              "error"
+            );
+
+
+            avatarInput.value =
+              "";
+
+
+            return;
+
+          }
+
+
+          // Максимум 5 MB
+
+          if (
+            file.size >
+            5 * 1024 * 1024
+          ) {
+
+            showMessage(
+              "Розмір фото не повинен перевищувати 5 MB.",
+              "error"
+            );
+
+
+            avatarInput.value =
+              "";
+
+
+            return;
+
+          }
+
+
+          // Попередній перегляд
 
           const previewUrl =
             URL.createObjectURL(
@@ -355,6 +435,152 @@ document.addEventListener(
         }
 
       );
+
+    }
+
+
+    // ======================================
+    // ЗАВАНТАЖЕННЯ ФОТО В SUPABASE STORAGE
+    // ======================================
+
+    async function uploadAvatar() {
+
+      const file =
+        avatarInput &&
+        avatarInput.files &&
+        avatarInput.files.length > 0
+          ? avatarInput.files[0]
+          : null;
+
+
+      // Якщо нове фото не вибрано —
+      // залишаємо старий аватар.
+
+      if (!file) {
+
+        return currentAvatarUrl;
+
+      }
+
+
+      // ====================================
+      // РОЗШИРЕННЯ ФАЙЛУ
+      // ====================================
+
+      const originalName =
+        file.name;
+
+
+      let extension =
+        originalName
+          .split(".")
+          .pop()
+          .toLowerCase();
+
+
+      if (
+        !extension ||
+        extension.length > 5
+      ) {
+
+        extension =
+          "jpg";
+
+      }
+
+
+      // ====================================
+      // ПОСТІЙНИЙ ШЛЯХ
+      //
+      // У кожного користувача
+      // одна папка та один аватар.
+      // ====================================
+
+      const filePath =
+        user.id +
+        "/avatar." +
+        extension;
+
+
+      // ====================================
+      // ЗАВАНТАЖЕННЯ
+      // ====================================
+
+      const {
+        error: uploadError
+      } = await supabase
+        .storage
+        .from("avatars")
+        .upload(
+
+          filePath,
+
+          file,
+
+          {
+
+            upsert:
+              true,
+
+
+            cacheControl:
+              "3600"
+
+
+          }
+
+        );
+
+
+      if (uploadError) {
+
+        console.error(
+          "Помилка завантаження аватара:",
+          uploadError
+        );
+
+
+        throw uploadError;
+
+      }
+
+
+      // ====================================
+      // ОТРИМУЄМО PUBLIC URL
+      // ====================================
+
+      const {
+        data: publicUrlData
+      } = supabase
+        .storage
+        .from("avatars")
+        .getPublicUrl(
+          filePath
+        );
+
+
+      if (
+        !publicUrlData ||
+        !publicUrlData.publicUrl
+      ) {
+
+        throw new Error(
+          "Не вдалося отримати URL аватара."
+        );
+
+      }
+
+
+      // Додаємо timestamp,
+      // щоб браузер не показував старе фото з кешу.
+
+      const avatarPublicUrl =
+        publicUrlData.publicUrl +
+        "?v=" +
+        Date.now();
+
+
+      return avatarPublicUrl;
 
     }
 
@@ -441,6 +667,10 @@ document.addEventListener(
           : null;
 
 
+      // ====================================
+      // ЗАЯВКИ НЕМАЄ
+      // ====================================
+
       if (!application) {
 
         applicationStatus.className =
@@ -464,8 +694,10 @@ document.addEventListener(
           joinButton.style.display =
             "inline-flex";
 
+
           joinButton.href =
             "join.html";
+
 
           joinButton.textContent =
             "📝 ПОДАТИ ЗАЯВКУ";
@@ -481,6 +713,10 @@ document.addEventListener(
       const status =
         application.status;
 
+
+      // ====================================
+      // PENDING
+      // ====================================
 
       if (
         status === "pending"
@@ -514,6 +750,10 @@ document.addEventListener(
 
       }
 
+
+      // ====================================
+      // APPROVED
+      // ====================================
 
       if (
         status === "approved"
@@ -555,6 +795,10 @@ document.addEventListener(
       }
 
 
+      // ====================================
+      // REJECTED
+      // ====================================
+
       if (
         status === "rejected"
       ) {
@@ -580,8 +824,10 @@ document.addEventListener(
           joinButton.style.display =
             "inline-flex";
 
+
           joinButton.href =
             "join.html";
+
 
           joinButton.textContent =
             "📝 ПОДАТИ НОВУ ЗАЯВКУ";
@@ -593,6 +839,10 @@ document.addEventListener(
 
       }
 
+
+      // ====================================
+      // НЕВІДОМИЙ СТАТУС
+      // ====================================
 
       applicationStatus.className =
         "application-card";
@@ -608,6 +858,14 @@ document.addEventListener(
             Поточний статус: ${status}
           </p>
         `;
+
+
+      if (joinButton) {
+
+        joinButton.style.display =
+          "none";
+
+      }
 
     }
 
@@ -634,6 +892,7 @@ document.addEventListener(
           "Помилка читання directions:",
           directionsError
         );
+
 
         return;
 
@@ -676,6 +935,7 @@ document.addEventListener(
           "Помилка завантаження напрямків:",
           selectedError
         );
+
 
         return;
 
@@ -766,6 +1026,12 @@ document.addEventListener(
 
       if (userRolesError) {
 
+        console.error(
+          "Помилка user_roles:",
+          userRolesError
+        );
+
+
         rolesList.innerHTML =
           `
             <div class="roles-empty">
@@ -828,7 +1094,7 @@ document.addEventListener(
         rolesList.innerHTML =
           `
             <div class="roles-empty">
-              Не вдалося завантажити інформацію про ролі.
+              Не вдалося завантажити ролі.
             </div>
           `;
 
@@ -875,7 +1141,8 @@ document.addEventListener(
 
 
         directions =
-          directionsData || [];
+          directionsData ||
+          [];
 
       }
 
@@ -929,7 +1196,8 @@ document.addEventListener(
                 String(
                   item.role_id
                 )
-              ) || null,
+              ) ||
+              null,
 
 
             directions:
@@ -940,7 +1208,8 @@ document.addEventListener(
                       String(
                         item.direction_id
                       )
-                    ) || null
+                    ) ||
+                    null
                   )
                 : null
 
@@ -958,7 +1227,9 @@ document.addEventListener(
             a.direction_id === null &&
             b.direction_id !== null
           ) {
+
             return -1;
+
           }
 
 
@@ -966,7 +1237,9 @@ document.addEventListener(
             a.direction_id !== null &&
             b.direction_id === null
           ) {
+
             return 1;
+
           }
 
 
@@ -1147,19 +1420,26 @@ document.addEventListener(
           event
         ) => {
 
+
           event.preventDefault();
 
 
           showMessage(
-            "Збереження..."
+            "Збереження профілю..."
           );
 
 
+          // ==================================
+          // НАПРЯМКИ
+          // ==================================
+
           const selectedSlugs =
             Array.from(
+
               document.querySelectorAll(
                 'input[name="direction"]:checked'
               )
+
             )
             .map(
               (checkbox) =>
@@ -1168,124 +1448,59 @@ document.addEventListener(
 
 
           // ==================================
-          // АВАТАР
+          // ЗАВАНТАЖЕННЯ АВАТАРА
           // ==================================
 
-          let avatarPublicUrl =
-            null;
+          let newAvatarUrl =
+            currentAvatarUrl;
 
 
-          const avatarFile =
-            avatarUrl &&
-            avatarUrl.files &&
-            avatarUrl.files.length > 0
-              ? avatarUrl.files[0]
-              : null;
+          try {
+
+            const hasNewAvatar =
+              avatarInput &&
+              avatarInput.files &&
+              avatarInput.files.length > 0;
 
 
-          if (avatarFile) {
+            if (hasNewAvatar) {
 
-            const fileExtension =
-              avatarFile.name
-                .split(".")
-                .pop()
-                .toLowerCase();
+              showMessage(
+                "Завантаження фото..."
+              );
 
 
-            const fileName =
-              `avatar-${Date.now()}.${fileExtension}`;
+              newAvatarUrl =
+                await uploadAvatar();
 
+            }
 
-            const filePath =
-              `${user.id}/${fileName}`;
+          }
 
+          catch (
+            avatarError
+          ) {
 
-            showMessage(
-              "Завантаження фото..."
+            console.error(
+              "Помилка аватара:",
+              avatarError
             );
 
 
-            const {
-              error: uploadError
-            } = await supabase
-              .storage
-              .from("avatars")
-              .upload(
-                filePath,
-                avatarFile,
-                {
-                  upsert:
-                    true
-                }
-              );
+            showMessage(
+              "Не вдалося завантажити фото: " +
+              avatarError.message,
+              "error"
+            );
 
 
-            if (uploadError) {
-
-              console.error(
-                "Помилка завантаження фото:",
-                uploadError
-              );
-
-
-              showMessage(
-                "Помилка завантаження фото: " +
-                uploadError.message,
-                "error"
-              );
-
-
-              return;
-
-            }
-
-
-            const {
-              data: publicUrlData
-            } = supabase
-              .storage
-              .from("avatars")
-              .getPublicUrl(
-                filePath
-              );
-
-
-            avatarPublicUrl =
-              publicUrlData.publicUrl;
-
-          }
-
-          else {
-
-            const {
-              data: oldProfile
-            } = await supabase
-              .from("profiles")
-              .select(
-                "avatar_url"
-              )
-              .eq(
-                "id",
-                user.id
-              )
-              .maybeSingle();
-
-
-            if (
-              oldProfile &&
-              oldProfile.avatar_url
-            ) {
-
-              avatarPublicUrl =
-                oldProfile.avatar_url;
-
-            }
+            return;
 
           }
 
 
           // ==================================
-          // ПРОФІЛЬ
+          // ЗБЕРЕЖЕННЯ ПРОФІЛЮ
           // ==================================
 
           const {
@@ -1301,37 +1516,62 @@ document.addEventListener(
 
 
                 display_name:
-                  displayName.value.trim() ||
-                  null,
+                  displayName
+                    ? (
+                        displayName.value.trim() ||
+                        null
+                      )
+                    : null,
 
 
                 birth_date:
-                  birthDate.value ||
-                  null,
+                  birthDate
+                    ? (
+                        birthDate.value ||
+                        null
+                      )
+                    : null,
 
 
                 avatar_url:
-                  avatarPublicUrl,
+                  newAvatarUrl ||
+                  null,
 
 
                 discord_username:
-                  discordUsername.value.trim() ||
-                  null,
+                  discordUsername
+                    ? (
+                        discordUsername.value.trim() ||
+                        null
+                      )
+                    : null,
 
 
                 discord_user_id:
-                  discordUserId.value.trim() ||
-                  null,
+                  discordUserId
+                    ? (
+                        discordUserId.value.trim() ||
+                        null
+                      )
+                    : null,
 
 
                 steam_id:
-                  steamId.value.trim() ||
-                  null,
+                  steamId
+                    ? (
+                        steamId.value.trim() ||
+                        null
+                      )
+                    : null,
 
 
                 game_nickname:
-                  gameNickname.value.trim() ||
-                  null,
+                  gameNickname
+                    ? (
+                        gameNickname.value.trim() ||
+                        null
+                      )
+                    : null,
 
 
                 updated_at:
@@ -1370,7 +1610,7 @@ document.addEventListener(
 
 
           // ==================================
-          // НАПРЯМКИ
+          // ОТРИМУЄМО ID НАПРЯМКІВ
           // ==================================
 
           let selectedDirections =
@@ -1410,10 +1650,15 @@ document.addEventListener(
 
 
             selectedDirections =
-              directions;
+              directions ||
+              [];
 
           }
 
+
+          // ==================================
+          // ВИДАЛЯЄМО СТАРІ НАПРЯМКИ
+          // ==================================
 
           const {
             error: deleteError
@@ -1438,6 +1683,10 @@ document.addEventListener(
 
           }
 
+
+          // ==================================
+          // ДОДАЄМО НОВІ НАПРЯМКИ
+          // ==================================
 
           if (
             selectedDirections.length > 0
@@ -1483,25 +1732,30 @@ document.addEventListener(
 
 
           // ==================================
-          // ОНОВЛЕННЯ АВАТАРА
+          // ОНОВЛЮЄМО АВАТАР
           // ==================================
 
+          currentAvatarUrl =
+            newAvatarUrl;
+
+
           if (
-            avatarPublicUrl &&
+            newAvatarUrl &&
             profileAvatar
           ) {
 
             profileAvatar.src =
-              avatarPublicUrl;
+              newAvatarUrl;
 
           }
 
 
           // ==================================
-          // ОНОВЛЕННЯ ІМЕНІ
+          // ОНОВЛЮЄМО ІМ'Я
           // ==================================
 
           if (
+            displayName &&
             displayName.value.trim() &&
             profileNamePreview
           ) {
@@ -1514,11 +1768,13 @@ document.addEventListener(
           }
 
 
+          // ==================================
           // ОЧИЩАЄМО ВИБІР ФАЙЛУ
+          // ==================================
 
-          if (avatarUrl) {
+          if (avatarInput) {
 
-            avatarUrl.value =
+            avatarInput.value =
               "";
 
           }
@@ -1560,6 +1816,7 @@ document.addEventListener(
               "Помилка виходу:",
               error
             );
+
 
             return;
 
