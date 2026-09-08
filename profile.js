@@ -136,7 +136,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     },
     error: userError
   } =
-    await supabaseClient.auth.getUser();
+    await supabaseClient
+      .auth
+      .getUser();
 
 
   if (userError || !user) {
@@ -169,6 +171,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     text,
     type = ""
   ) {
+
+    if (!profileMessage) {
+
+      return;
+
+    }
+
 
     profileMessage.textContent =
       text;
@@ -211,61 +220,77 @@ document.addEventListener("DOMContentLoaded", async () => {
      ОНОВЛЕННЯ ІМЕНІ
      ========================================= */
 
-  displayName.addEventListener(
-    "input",
-    () => {
+  if (displayName) {
 
-      const name =
-        displayName.value.trim();
+    displayName.addEventListener(
+      "input",
+      () => {
+
+        const name =
+          displayName.value.trim();
 
 
-      profileNamePreview.textContent =
-        name ||
-        user.email ||
-        "UA LEGION Member";
+        if (profileNamePreview) {
 
-    }
-  );
+          profileNamePreview.textContent =
+            name ||
+            user.email ||
+            "UA LEGION Member";
+
+        }
+
+      }
+    );
+
+  }
 
 
   /* =========================================
      ПЕРЕГЛЯД АВАТАРА
      ========================================= */
 
-  avatarInput.addEventListener(
-    "change",
-    () => {
+  if (avatarInput) {
 
-      const file =
-        avatarInput.files[0];
+    avatarInput.addEventListener(
+      "change",
+      () => {
+
+        const file =
+          avatarInput.files[0];
 
 
-      if (!file) {
+        if (!file) {
 
-        return;
+          return;
+
+        }
+
+
+        const reader =
+          new FileReader();
+
+
+        reader.onload =
+          event => {
+
+            if (profileAvatar) {
+
+              profileAvatar.src =
+                event.target.result;
+
+            }
+
+          };
+
+
+        reader.readAsDataURL(
+          file
+        );
 
       }
+    );
 
-
-      const reader =
-        new FileReader();
-
-
-      reader.onload =
-        event => {
-
-          profileAvatar.src =
-            event.target.result;
-
-        };
-
-
-      reader.readAsDataURL(
-        file
-      );
-
-    }
-  );
+  }
 
 
   /* =========================================
@@ -306,18 +331,30 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     if (!profile) {
 
-      displayName.value =
-        user.email ||
-        "";
+      if (displayName) {
+
+        displayName.value =
+          user.email ||
+          "";
+
+      }
 
 
-      profileNamePreview.textContent =
-        user.email ||
-        "UA LEGION Member";
+      if (profileNamePreview) {
+
+        profileNamePreview.textContent =
+          user.email ||
+          "UA LEGION Member";
+
+      }
 
 
-      profileAvatar.src =
-        defaultAvatar;
+      if (profileAvatar) {
+
+        profileAvatar.src =
+          defaultAvatar;
+
+      }
 
 
       return;
@@ -329,15 +366,23 @@ document.addEventListener("DOMContentLoaded", async () => {
        ІМ'Я
        ----------------------------------------- */
 
-    displayName.value =
-      profile.display_name ||
-      "";
+    if (displayName) {
+
+      displayName.value =
+        profile.display_name ||
+        "";
+
+    }
 
 
-    profileNamePreview.textContent =
-      profile.display_name ||
-      user.email ||
-      "UA LEGION Member";
+    if (profileNamePreview) {
+
+      profileNamePreview.textContent =
+        profile.display_name ||
+        user.email ||
+        "UA LEGION Member";
+
+    }
 
 
     /* -----------------------------------------
@@ -411,15 +456,19 @@ document.addEventListener("DOMContentLoaded", async () => {
        АВАТАР
        ----------------------------------------- */
 
-    if (profile.avatar_url) {
+    if (profileAvatar) {
 
-      profileAvatar.src =
-        profile.avatar_url;
+      if (profile.avatar_url) {
 
-    } else {
+        profileAvatar.src =
+          profile.avatar_url;
 
-      profileAvatar.src =
-        defaultAvatar;
+      } else {
+
+        profileAvatar.src =
+          defaultAvatar;
+
+      }
 
     }
 
@@ -467,6 +516,13 @@ document.addEventListener("DOMContentLoaded", async () => {
      ========================================= */
 
   async function uploadAvatar() {
+
+    if (!avatarInput) {
+
+      return null;
+
+    }
+
 
     const file =
       avatarInput.files[0];
@@ -560,7 +616,6 @@ document.addEventListener("DOMContentLoaded", async () => {
           {
             cacheControl:
               "3600",
-
             upsert:
               false
           }
@@ -647,183 +702,205 @@ document.addEventListener("DOMContentLoaded", async () => {
      ЗБЕРЕЖЕННЯ ПРОФІЛЮ
      ========================================= */
 
-  profileForm.addEventListener(
-    "submit",
-    async event => {
+  if (profileForm) {
 
-      event.preventDefault();
+    profileForm.addEventListener(
+      "submit",
+      async event => {
 
-
-      try {
-
-        saveProfileButton.disabled =
-          true;
+        event.preventDefault();
 
 
-        saveProfileButton.textContent =
-          "⏳ ЗБЕРІГАЄМО...";
+        try {
+
+          if (saveProfileButton) {
+
+            saveProfileButton.disabled =
+              true;
 
 
-        showMessage(
-          ""
-        );
+            saveProfileButton.textContent =
+              "⏳ ЗБЕРІГАЄМО...";
+
+          }
 
 
-        /* -------------------------------
-           АВАТАР
-           ------------------------------- */
-
-        const avatarUrl =
-          await uploadAvatar();
+          showMessage(
+            ""
+          );
 
 
-        /* -------------------------------
-           НАПРЯМКИ
-           ------------------------------- */
+          /* -------------------------------
+             АВАТАР
+             ------------------------------- */
 
-        const directions =
-          getDirections();
-
-
-        /* -------------------------------
-           ДАНІ ПРОФІЛЮ
-           ------------------------------- */
-
-        const profileData =
-          {
-
-            id:
-              userId,
+          const avatarUrl =
+            await uploadAvatar();
 
 
-            display_name:
-              displayName.value.trim(),
+          /* -------------------------------
+             НАПРЯМКИ
+             ------------------------------- */
+
+          const directions =
+            getDirections();
 
 
-            birth_date:
-              birthDate.value ||
-              null,
+          /* -------------------------------
+             ДАНІ ПРОФІЛЮ
+             ------------------------------- */
+
+          const profileData =
+            {
+
+              id:
+                userId,
 
 
-            discord_username:
-              discordUsername.value.trim() ||
-              null,
+              display_name:
+                displayName
+                  ? displayName.value.trim()
+                  : null,
 
 
-            discord_user_id:
-              discordUserId.value.trim() ||
-              null,
+              birth_date:
+                birthDate?.value ||
+                null,
 
 
-            steam_id:
-              steamId.value.trim() ||
-              null,
+              discord_username:
+                discordUsername?.value.trim() ||
+                null,
 
 
-            game_nickname:
-              gameNickname.value.trim() ||
-              null,
+              discord_user_id:
+                discordUserId?.value.trim() ||
+                null,
 
 
-            directions:
-              directions,
+              steam_id:
+                steamId?.value.trim() ||
+                null,
 
 
-            avatar_url:
-              avatarUrl,
+              game_nickname:
+                gameNickname?.value.trim() ||
+                null,
 
 
-            updated_at:
-              new Date().toISOString()
-
-          };
+              directions:
+                directions,
 
 
-        /* -------------------------------
-           UPSERT
-           ------------------------------- */
+              avatar_url:
+                avatarUrl,
 
-        const {
-          error
-        } =
-          await supabaseClient
-            .from("profiles")
-            .upsert(
-              profileData,
-              {
-                onConflict:
-                  "id"
-              }
+
+              updated_at:
+                new Date().toISOString()
+
+            };
+
+
+          /* -------------------------------
+             UPSERT
+             ------------------------------- */
+
+          const {
+            error
+          } =
+            await supabaseClient
+              .from("profiles")
+              .upsert(
+                profileData,
+                {
+                  onConflict:
+                    "id"
+                }
+              );
+
+
+          if (error) {
+
+            console.error(
+              error
             );
 
 
-        if (error) {
+            throw new Error(
+              error.message
+            );
+
+          }
+
+
+          /* -------------------------------
+             ОНОВЛЕННЯ АВАТАРА
+             ------------------------------- */
+
+          if (
+            avatarUrl &&
+            profileAvatar
+          ) {
+
+            profileAvatar.src =
+              avatarUrl;
+
+          }
+
+
+          /* -------------------------------
+             ОНОВЛЕННЯ ІМЕНІ
+             ------------------------------- */
+
+          if (profileNamePreview) {
+
+            profileNamePreview.textContent =
+              displayName?.value.trim() ||
+              user.email;
+
+          }
+
+
+          showMessage(
+            "Профіль успішно збережено ✓",
+            "success"
+          );
+
+
+        } catch (error) {
 
           console.error(
+            "Помилка:",
             error
           );
 
 
-          throw new Error(
-            error.message
+          showMessage(
+            error.message ||
+            "Помилка збереження профілю.",
+            "error"
           );
 
+        } finally {
+
+          if (saveProfileButton) {
+
+            saveProfileButton.disabled =
+              false;
+
+
+            saveProfileButton.textContent =
+              "💾 ЗБЕРЕГТИ ПРОФІЛЬ";
+
+          }
+
         }
-
-
-        /* -------------------------------
-           ОНОВЛЕННЯ АВАТАРА
-           ------------------------------- */
-
-        if (avatarUrl) {
-
-          profileAvatar.src =
-            avatarUrl;
-
-        }
-
-
-        /* -------------------------------
-           ОНОВЛЕННЯ ІМЕНІ
-           ------------------------------- */
-
-        profileNamePreview.textContent =
-          displayName.value.trim() ||
-          user.email;
-
-
-        showMessage(
-          "Профіль успішно збережено ✓",
-          "success"
-        );
-
-      } catch (error) {
-
-        console.error(
-          "Помилка:",
-          error
-        );
-
-
-        showMessage(
-          error.message ||
-          "Помилка збереження профілю.",
-          "error"
-        );
-
-      } finally {
-
-        saveProfileButton.disabled =
-          false;
-
-
-        saveProfileButton.textContent =
-          "💾 ЗБЕРЕГТИ ПРОФІЛЬ";
 
       }
+    );
 
-    }
-  );
+  }
 
 
   /* =========================================
@@ -1059,27 +1136,47 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    /*
-      Спроба завантажити ролі.
+    rolesList.innerHTML =
+      `
+        <div class="roles-empty">
+          ⏳ Завантаження ролей...
+        </div>
+      `;
 
-      Очікувана таблиця:
+
+    /*
+      Правильне завантаження:
 
       user_roles
-
-      user_id
-      role_name
-      direction
-      is_global
+          ↓
+      roles
+          ↓
+      directions
     */
 
-
     const {
-      data: roles,
+      data: userRoles,
       error
     } =
       await supabaseClient
         .from("user_roles")
-        .select("*")
+        .select(`
+          id,
+          user_id,
+          role_id,
+          direction_id,
+
+          roles (
+            id,
+            name,
+            code
+          ),
+
+          directions (
+            id,
+            name
+          )
+        `)
         .eq(
           "user_id",
           userId
@@ -1089,7 +1186,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (error) {
 
       console.error(
-        "Помилка ролей:",
+        "Помилка завантаження ролей:",
         error
       );
 
@@ -1097,7 +1194,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       rolesList.innerHTML =
         `
           <div class="roles-empty">
-            Ролі поки що відсутні.
+            ⚠️ Не вдалося завантажити ролі.
           </div>
         `;
 
@@ -1112,8 +1209,8 @@ document.addEventListener("DOMContentLoaded", async () => {
        ----------------------------------------- */
 
     if (
-      !roles ||
-      roles.length === 0
+      !userRoles ||
+      userRoles.length === 0
     ) {
 
       rolesList.innerHTML =
@@ -1133,32 +1230,73 @@ document.addEventListener("DOMContentLoaded", async () => {
       "";
 
 
-    roles.forEach(
-      role => {
+    /* -----------------------------------------
+       СТВОРЕННЯ КАРТОК РОЛЕЙ
+       ----------------------------------------- */
+
+    userRoles.forEach(
+      userRole => {
+
+
+        /* -------------------------------------
+           РОЛЬ
+           ------------------------------------- */
+
+        const role =
+          Array.isArray(
+            userRole.roles
+          )
+            ? userRole.roles[0]
+            : userRole.roles;
+
 
         const roleName =
-          role.role_name ||
-          role.name ||
+          role?.name ||
           "Учасник";
 
 
+        const roleCode =
+          (
+            role?.code ||
+            ""
+          )
+          .toLowerCase();
+
+
+        /* -------------------------------------
+           НАПРЯМОК
+           ------------------------------------- */
+
         const direction =
-          role.direction ||
-          role.description ||
+          Array.isArray(
+            userRole.directions
+          )
+            ? userRole.directions[0]
+            : userRole.directions;
+
+
+        const directionName =
+          direction?.name ||
           "UA LEGION";
 
 
+        /* -------------------------------------
+           ГЛОБАЛЬНА РОЛЬ
+           ------------------------------------- */
+
         const normalizedName =
-          roleName.toLowerCase();
+          roleName
+            .toLowerCase();
 
-
-        /*
-          ВИЗНАЧЕННЯ
-          ГЛОБАЛЬНОЇ АДМІНІСТРАЦІЇ
-        */
 
         const isGlobal =
-          role.is_global === true ||
+          roleCode === "owner" ||
+          roleCode === "admin" ||
+          roleCode === "administrator" ||
+
+          normalizedName.includes(
+            "власник"
+          ) ||
 
           normalizedName.includes(
             "глобаль"
@@ -1170,16 +1308,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
           normalizedName.includes(
             "administrator"
-          ) ||
-
-          normalizedName.includes(
-            "owner"
-          ) ||
-
-          normalizedName.includes(
-            "власник"
           );
 
+
+        /* -------------------------------------
+           СТВОРЕННЯ КАРТКИ
+           ------------------------------------- */
 
         const roleCard =
           document.createElement(
@@ -1197,7 +1331,34 @@ document.addEventListener("DOMContentLoaded", async () => {
           "🏅";
 
 
-        if (isGlobal) {
+        if (roleCode === "member") {
+
+          icon =
+            "🏅";
+
+        }
+
+
+        if (roleCode === "moderator") {
+
+          icon =
+            "🛡️";
+
+        }
+
+
+        if (
+          roleCode === "admin" ||
+          roleCode === "administrator"
+        ) {
+
+          icon =
+            "⚔️";
+
+        }
+
+
+        if (roleCode === "owner") {
 
           icon =
             "🇺🇦";
@@ -1213,7 +1374,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             </h3>
 
             <p>
-              ${direction}
+              ${directionName}
             </p>
           `;
 
