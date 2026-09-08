@@ -1,1570 +1,1040 @@
 <!DOCTYPE html>
-
 <html lang="uk">
 
 <head>
+    <meta charset="UTF-8">
 
-  <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
+    <meta name="theme-color" content="#05070b">
 
-  <meta
-    name="theme-color"
-    content="#05070b"
-  >
+    <title>Мій кабінет — UA LEGION</title>
 
-  <title>
-    Мій кабінет — UA LEGION
-  </title>
+    <link rel="stylesheet" href="style.css">
 
+    <style>
 
-  <link
-    rel="stylesheet"
-    href="style.css"
-  >
+        /* =========================================
+           UA LEGION — ОСОБИСТИЙ КАБІНЕТ
+        ========================================= */
 
+        body {
+            min-height: 100vh;
+        }
 
-  <style>
+        .profile-page {
+            width: 100%;
+            min-height: calc(100vh - 76px);
 
-    /* =========================================
-       UA LEGION — ОСОБИСТИЙ КАБІНЕТ
-    ========================================= */
+            display: flex;
+            justify-content: center;
 
-    body {
+            padding: 50px 20px;
 
-      min-height:
-        100vh;
+            box-sizing: border-box;
+        }
 
-    }
+        .profile-container {
+            width: 100%;
+            max-width: 900px;
+        }
 
 
-    /* =========================================
-       СТОРІНКА
-    ========================================= */
+        /* =========================================
+           ЗАГОЛОВОК
+        ========================================= */
 
-    .profile-page {
+        .profile-header {
+            margin-bottom: 30px;
+        }
 
-      width:
-        100%;
+        .profile-header h1 {
+            margin: 0 0 10px;
 
-      min-height:
-        calc(
-          100vh - 76px
-        );
+            font-size: clamp(32px, 5vw, 52px);
+        }
 
-      display:
-        flex;
+        .profile-header p {
+            margin: 0;
+            opacity: 0.7;
+        }
 
-      justify-content:
-        center;
 
-      padding:
-        50px 20px;
+        /* =========================================
+           КАРТКА ПРОФІЛЮ
+        ========================================= */
 
-      box-sizing:
-        border-box;
+        .profile-card {
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(255, 255, 255, 0.055),
+                    rgba(255, 255, 255, 0.025)
+                );
 
-    }
+            border:
+                1px solid rgba(255, 255, 255, 0.12);
 
+            border-radius: 20px;
 
-    .profile-container {
+            padding: 30px;
 
-      width:
-        100%;
+            box-shadow:
+                0 20px 70px rgba(0, 0, 0, 0.25);
 
-      max-width:
-        900px;
+            backdrop-filter: blur(12px);
+        }
 
-    }
 
+        /* =========================================
+           АВАТАР
+        ========================================= */
 
-    /* =========================================
-       ЗАГОЛОВОК
-    ========================================= */
+        .avatar-section {
+            display: flex;
+            align-items: center;
 
-    .profile-header {
+            gap: 25px;
 
-      margin-bottom:
-        30px;
+            margin-bottom: 35px;
+            padding-bottom: 30px;
 
-    }
+            border-bottom:
+                1px solid rgba(255, 255, 255, 0.1);
+        }
 
+        .profile-avatar {
+            width: 110px;
+            height: 110px;
 
-    .profile-header h1 {
+            flex-shrink: 0;
 
-      margin-bottom:
-        10px;
+            border-radius: 50%;
 
-      font-size:
-        clamp(
-          32px,
-          5vw,
-          52px
-        );
+            object-fit: cover;
 
-    }
+            background:
+                rgba(255, 255, 255, 0.08);
 
+            border:
+                2px solid rgba(255, 255, 255, 0.15);
 
-    .profile-header p {
+            box-shadow:
+                0 0 25px rgba(255, 255, 255, 0.05);
+        }
 
-      opacity:
-        0.7;
+        .avatar-info h2 {
+            margin: 0 0 8px;
+            font-size: 28px;
+        }
 
-    }
+        .avatar-info p {
+            margin: 0;
+            opacity: 0.65;
+        }
 
 
-    /* =========================================
-       КАРТКА ПРОФІЛЮ
-    ========================================= */
+        /* =========================================
+           ФОРМА
+        ========================================= */
 
-    .profile-card {
+        .profile-grid {
+            display: grid;
 
-      background:
-        rgba(
-          255,
-          255,
-          255,
-          0.04
-        );
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
 
-      border:
-        1px solid
-        rgba(
-          255,
-          255,
-          255,
-          0.1
-        );
+            gap: 20px;
+        }
 
-      border-radius:
-        20px;
+        .profile-field {
+            display: flex;
+            flex-direction: column;
 
-      padding:
-        30px;
+            gap: 8px;
+        }
 
-      backdrop-filter:
-        blur(
-          12px
-        );
+        .profile-field.full {
+            grid-column: 1 / -1;
+        }
 
-    }
+        .profile-field label {
+            font-size: 14px;
+            font-weight: 600;
 
+            opacity: 0.75;
+        }
 
-    /* =========================================
-       АВАТАР
-    ========================================= */
+        .profile-field input {
+            width: 100%;
 
-    .avatar-section {
+            padding: 14px 16px;
 
-      display:
-        flex;
+            box-sizing: border-box;
 
-      align-items:
-        center;
+            border-radius: 10px;
 
-      gap:
-        25px;
+            border:
+                1px solid rgba(255, 255, 255, 0.12);
 
-      margin-bottom:
-        35px;
+            background:
+                rgba(0, 0, 0, 0.25);
 
-      padding-bottom:
-        30px;
+            color: white;
 
-      border-bottom:
-        1px solid
-        rgba(
-          255,
-          255,
-          255,
-          0.1
-        );
+            font-size: 16px;
 
-    }
+            outline: none;
 
+            transition:
+                border-color 0.2s,
+                box-shadow 0.2s;
+        }
 
-    .profile-avatar {
+        .profile-field input:focus {
+            border-color: #ffd34d;
 
-      width:
-        120px;
+            box-shadow:
+                0 0 0 3px rgba(255, 211, 77, 0.08);
+        }
 
-      height:
-        120px;
+        .profile-field input[type="file"] {
+            padding: 10px;
+        }
 
-      min-width:
-        120px;
 
-      border-radius:
-        50%;
+        /* =========================================
+           НАПРЯМКИ
+        ========================================= */
 
-      object-fit:
-        cover;
+        .directions {
+            margin-top: 35px;
+        }
 
-      object-position:
-        center;
+        .directions h2 {
+            margin: 0 0 10px;
+        }
 
-      display:
-        block;
+        .directions-description {
+            margin: 0 0 20px;
+            opacity: 0.65;
+        }
 
-      background:
-        #151922;
+        .direction-list {
+            display: grid;
 
-      border:
-        2px solid
-        rgba(
-          255,
-          211,
-          77,
-          0.45
-        );
+            grid-template-columns:
+                repeat(4, minmax(0, 1fr));
 
-      box-shadow:
-        0 0 20px
-        rgba(
-          255,
-          211,
-          77,
-          0.15
-        );
+            gap: 15px;
+        }
 
-    }
+        .direction-item {
+            display: flex;
+            align-items: center;
 
+            gap: 10px;
 
-    .avatar-info h2 {
+            min-height: 64px;
 
-      margin:
-        0 0 8px;
+            padding: 14px;
 
-    }
+            box-sizing: border-box;
 
+            border-radius: 12px;
 
-    .avatar-info p {
+            cursor: pointer;
 
-      margin:
-        0;
+            background:
+                rgba(255, 255, 255, 0.04);
 
-      opacity:
-        0.65;
+            border:
+                1px solid rgba(255, 255, 255, 0.1);
 
-    }
+            transition:
+                border-color 0.2s,
+                background 0.2s,
+                transform 0.2s;
 
+            font-size: 14px;
+        }
 
-    /* =========================================
-       ФОРМА
-    ========================================= */
+        .direction-item:hover {
+            border-color: #ffd34d;
 
-    .profile-grid {
+            background:
+                rgba(255, 211, 77, 0.05);
 
-      display:
-        grid;
+            transform:
+                translateY(-2px);
+        }
 
-      grid-template-columns:
-        repeat(
-          2,
-          minmax(
-            0,
-            1fr
-          )
-        );
+        .direction-item input {
+            width: 16px;
+            height: 16px;
 
-      gap:
-        20px;
+            flex-shrink: 0;
+        }
 
-    }
 
+        /* =========================================
+           МОЯ ЗАЯВКА
+        ========================================= */
 
-    .profile-field {
+        .application-status {
+            margin-top: 35px;
+            padding-top: 30px;
 
-      display:
-        flex;
+            border-top:
+                1px solid rgba(255, 255, 255, 0.1);
+        }
 
-      flex-direction:
-        column;
+        .application-status h2 {
+            margin: 0 0 10px;
+        }
 
-      gap:
-        8px;
+        .application-description {
+            margin: 0 0 20px;
+            opacity: 0.65;
+        }
 
-    }
+        .application-card {
+            padding: 20px;
 
+            border-radius: 14px;
 
-    .profile-field.full {
+            background:
+                rgba(255, 255, 255, 0.04);
 
-      grid-column:
-        1 / -1;
+            border:
+                1px solid rgba(255, 255, 255, 0.08);
+        }
 
-    }
+        .application-card h3 {
+            margin: 0 0 10px;
+            font-size: 20px;
+        }
 
+        .application-card p {
+            margin: 0;
+            opacity: 0.75;
+        }
 
-    .profile-field label {
+        .application-card.pending {
+            border-color:
+                rgba(255, 211, 77, 0.6);
+        }
 
-      font-size:
-        14px;
+        .application-card.approved {
+            border-color:
+                rgba(98, 229, 156, 0.7);
+        }
 
-      opacity:
-        0.75;
+        .application-card.rejected {
+            border-color:
+                rgba(255, 112, 112, 0.7);
+        }
 
-    }
+        .application-card.none {
+            opacity: 0.8;
+        }
 
 
-    .profile-field input {
+        /* =========================================
+           МОЇ РОЛІ
+        ========================================= */
 
-      width:
-        100%;
+        .user-roles {
+            margin-top: 35px;
+            padding-top: 30px;
 
-      padding:
-        14px 16px;
+            border-top:
+                1px solid rgba(255, 255, 255, 0.1);
+        }
 
-      box-sizing:
-        border-box;
+        .user-roles h2 {
+            margin: 0 0 10px;
+        }
 
-      border-radius:
-        10px;
+        .roles-description {
+            margin: 0 0 20px;
+            opacity: 0.65;
+        }
 
-      border:
-        1px solid
-        rgba(
-          255,
-          255,
-          255,
-          0.12
-        );
+        .roles-list {
+            display: grid;
 
-      background:
-        rgba(
-          0,
-          0,
-          0,
-          0.25
-        );
+            grid-template-columns:
+                repeat(auto-fit, minmax(220px, 1fr));
 
-      color:
-        white;
+            gap: 15px;
+        }
 
-      font-size:
-        16px;
+        .role-card {
+            padding: 18px;
 
-      outline:
-        none;
+            border-radius: 12px;
 
-    }
+            background:
+                rgba(255, 255, 255, 0.04);
 
+            border:
+                1px solid rgba(255, 255, 255, 0.1);
+        }
 
-    .profile-field input:focus {
+        .role-card.global {
+            border-color:
+                rgba(255, 211, 77, 0.55);
+        }
 
-      border-color:
-        #ffd34d;
+        .role-card h3 {
+            margin: 0 0 8px;
+            font-size: 17px;
+        }
 
-    }
+        .role-card p {
+            margin: 0;
 
+            opacity: 0.7;
 
-    /* =========================================
-       НАПРЯМКИ
-    ========================================= */
+            font-size: 14px;
+        }
 
-    .directions {
+        .roles-empty {
+            padding: 18px;
 
-      margin-top:
-        35px;
+            border-radius: 12px;
 
-    }
+            background:
+                rgba(255, 255, 255, 0.04);
 
+            opacity: 0.7;
+        }
 
-    .directions h2 {
 
-      margin-bottom:
-        10px;
+        /* =========================================
+           КНОПКИ
+        ========================================= */
 
-    }
+        .profile-actions {
+            display: flex;
 
+            align-items: center;
 
-    .directions-description {
+            gap: 15px;
 
-      opacity:
-        0.65;
+            margin-top: 35px;
 
-      margin-bottom:
-        20px;
+            flex-wrap: wrap;
+        }
 
-    }
+        .profile-actions button,
+        .join-application-button {
+            padding: 14px 22px;
 
+            border-radius: 10px;
 
-    .direction-list {
+            border: none;
 
-      display:
-        grid;
+            cursor: pointer;
 
-      grid-template-columns:
-        repeat(
-          auto-fit,
-          minmax(
-            180px,
-            1fr
-          )
-        );
+            font-size: 14px;
 
-      gap:
-        15px;
+            font-weight: 700;
 
-    }
+            transition:
+                transform 0.2s,
+                filter 0.2s;
+        }
 
+        #saveProfile {
+            background: #ffd34d;
+            color: #111;
+        }
 
-    .direction-item {
+        .join-application-button {
+            display: inline-flex;
 
-      display:
-        flex;
+            align-items: center;
+            justify-content: center;
 
-      align-items:
-        center;
+            box-sizing: border-box;
 
-      gap:
-        10px;
+            text-decoration: none;
 
-      padding:
-        16px;
+            background: #f5b400;
+            color: #111;
+        }
 
-      border-radius:
-        12px;
+        #logoutButton {
+            background:
+                rgba(255, 255, 255, 0.08);
 
-      cursor:
-        pointer;
+            color: white;
+        }
 
-      background:
-        rgba(
-          255,
-          255,
-          255,
-          0.04
-        );
+        #saveProfile:hover,
+        .join-application-button:hover,
+        #logoutButton:hover {
+            transform:
+                translateY(-2px);
 
-      border:
-        1px solid
-        rgba(
-          255,
-          255,
-          255,
-          0.08
-        );
+            filter:
+                brightness(1.08);
+        }
 
-      transition:
-        0.2s;
 
-    }
+        /* =========================================
+           ПОВІДОМЛЕННЯ
+        ========================================= */
 
+        .profile-message {
+            margin-top: 20px;
 
-    .direction-item:hover {
+            min-height: 20px;
 
-      border-color:
-        #ffd34d;
+            font-size: 14px;
+        }
 
-    }
+        .profile-message.success {
+            color: #62e59c;
+        }
 
+        .profile-message.error {
+            color: #ff7070;
+        }
 
-    .direction-item input {
 
-      width:
-        18px;
+        /* =========================================
+           ПЛАНШЕТ
+        ========================================= */
 
-      height:
-        18px;
+        @media (max-width: 850px) {
 
-    }
+            .direction-list {
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr));
+            }
 
+        }
 
-    /* =========================================
-       МОЯ ЗАЯВКА
-    ========================================= */
 
-    .application-status {
+        /* =========================================
+           МОБІЛЬНА ВЕРСІЯ
+        ========================================= */
 
-      margin-top:
-        35px;
+        @media (max-width: 700px) {
 
-      padding-top:
-        30px;
+            .profile-page {
+                padding: 30px 15px;
+            }
 
-      border-top:
-        1px solid
-        rgba(
-          255,
-          255,
-          255,
-          0.1
-        );
+            .profile-grid {
+                grid-template-columns: 1fr;
+            }
 
-    }
+            .profile-card {
+                padding: 20px;
+            }
 
+            .avatar-section {
+                flex-direction: column;
 
-    .application-status h2 {
+                text-align: center;
+            }
 
-      margin-bottom:
-        10px;
+            .avatar-info h2 {
+                font-size: 22px;
+            }
 
-    }
+            .direction-list {
+                grid-template-columns: 1fr;
+            }
 
+            .profile-actions {
+                flex-direction: column;
 
-    .application-description {
+                align-items: stretch;
+            }
 
-      opacity:
-        0.65;
+            .profile-actions button,
+            .join-application-button {
+                width: 100%;
+            }
 
-      margin-bottom:
-        20px;
+        }
 
-    }
-
-
-    .application-card {
-
-      padding:
-        20px;
-
-      border-radius:
-        14px;
-
-      background:
-        rgba(
-          255,
-          255,
-          255,
-          0.04
-        );
-
-      border:
-        1px solid
-        rgba(
-          255,
-          255,
-          255,
-          0.08
-        );
-
-    }
-
-
-    .application-card h3 {
-
-      margin:
-        0 0 10px;
-
-      font-size:
-        20px;
-
-    }
-
-
-    .application-card p {
-
-      margin:
-        0;
-
-      opacity:
-        0.75;
-
-    }
-
-
-    .application-card.pending {
-
-      border-color:
-        rgba(
-          255,
-          211,
-          77,
-          0.6
-        );
-
-    }
-
-
-    .application-card.approved {
-
-      border-color:
-        rgba(
-          98,
-          229,
-          156,
-          0.7
-        );
-
-    }
-
-
-    .application-card.rejected {
-
-      border-color:
-        rgba(
-          255,
-          112,
-          112,
-          0.7
-        );
-
-    }
-
-
-    .application-card.none {
-
-      opacity:
-        0.8;
-
-    }
-
-
-    .members-link {
-
-      display:
-        inline-flex;
-
-      align-items:
-        center;
-
-      justify-content:
-        center;
-
-      margin-top:
-        15px;
-
-      padding:
-        12px 20px;
-
-      border-radius:
-        10px;
-
-      background:
-        #ffd34d;
-
-      color:
-        #111;
-
-      text-decoration:
-        none;
-
-      font-weight:
-        700;
-
-    }
-
-
-    /* =========================================
-       МОЇ РОЛІ
-    ========================================= */
-
-    .user-roles {
-
-      margin-top:
-        35px;
-
-      padding-top:
-        30px;
-
-      border-top:
-        1px solid
-        rgba(
-          255,
-          255,
-          255,
-          0.1
-        );
-
-    }
-
-
-    .user-roles h2 {
-
-      margin-bottom:
-        10px;
-
-    }
-
-
-    .roles-description {
-
-      opacity:
-        0.65;
-
-      margin-bottom:
-        20px;
-
-    }
-
-
-    .roles-list {
-
-      display:
-        grid;
-
-      grid-template-columns:
-        repeat(
-          auto-fit,
-          minmax(
-            220px,
-            1fr
-          )
-        );
-
-      gap:
-        15px;
-
-    }
-
-
-    .role-card {
-
-      padding:
-        18px;
-
-      border-radius:
-        12px;
-
-      background:
-        rgba(
-          255,
-          255,
-          255,
-          0.04
-        );
-
-      border:
-        1px solid
-        rgba(
-          255,
-          255,
-          255,
-          0.08
-        );
-
-    }
-
-
-    .role-card.global {
-
-      border-color:
-        rgba(
-          255,
-          211,
-          77,
-          0.55
-        );
-
-    }
-
-
-    .role-card h3 {
-
-      margin:
-        0 0 8px;
-
-      font-size:
-        17px;
-
-    }
-
-
-    .role-card p {
-
-      margin:
-        0;
-
-      opacity:
-        0.7;
-
-      font-size:
-        14px;
-
-    }
-
-
-    .roles-empty {
-
-      padding:
-        18px;
-
-      border-radius:
-        12px;
-
-      background:
-        rgba(
-          255,
-          255,
-          255,
-          0.04
-        );
-
-      opacity:
-        0.7;
-
-    }
-
-
-    /* =========================================
-       КНОПКИ
-    ========================================= */
-
-    .profile-actions {
-
-      display:
-        flex;
-
-      gap:
-        15px;
-
-      margin-top:
-        35px;
-
-      flex-wrap:
-        wrap;
-
-    }
-
-
-    .profile-actions button,
-    .join-application-button {
-
-      padding:
-        14px 25px;
-
-      border-radius:
-        10px;
-
-      border:
-        none;
-
-      cursor:
-        pointer;
-
-      font-size:
-        15px;
-
-      font-weight:
-        700;
-
-    }
-
-
-    #saveProfile {
-
-      background:
-        #ffd34d;
-
-      color:
-        #111;
-
-    }
-
-
-    .join-application-button {
-
-      display:
-        inline-flex;
-
-      align-items:
-        center;
-
-      justify-content:
-        center;
-
-      box-sizing:
-        border-box;
-
-      text-decoration:
-        none;
-
-      background:
-        #f5b400;
-
-      color:
-        #111;
-
-      transition:
-        0.2s;
-
-    }
-
-
-    .join-application-button:hover {
-
-      transform:
-        translateY(
-          -2px
-        );
-
-      filter:
-        brightness(
-          1.08
-        );
-
-    }
-
-
-    #logoutButton {
-
-      background:
-        rgba(
-          255,
-          255,
-          255,
-          0.08
-        );
-
-      color:
-        white;
-
-    }
-
-
-    /* =========================================
-       ПОВІДОМЛЕННЯ
-    ========================================= */
-
-    .profile-message {
-
-      margin-top:
-        20px;
-
-      min-height:
-        20px;
-
-      font-size:
-        14px;
-
-    }
-
-
-    .profile-message.success {
-
-      color:
-        #62e59c;
-
-    }
-
-
-    .profile-message.error {
-
-      color:
-        #ff7070;
-
-    }
-
-
-    /* =========================================
-       МОБІЛЬНА ВЕРСІЯ
-    ========================================= */
-
-    @media (
-      max-width: 700px
-    ) {
-
-      .profile-page {
-
-        padding:
-          30px 15px;
-
-      }
-
-
-      .profile-grid {
-
-        grid-template-columns:
-          1fr;
-
-      }
-
-
-      .avatar-section {
-
-        flex-direction:
-          column;
-
-        text-align:
-          center;
-
-      }
-
-
-      .profile-avatar {
-
-        width:
-          110px;
-
-        height:
-          110px;
-
-        min-width:
-          110px;
-
-      }
-
-
-      .profile-card {
-
-        padding:
-          20px;
-
-      }
-
-
-      .profile-actions {
-
-        flex-direction:
-          column;
-
-      }
-
-
-      .profile-actions button,
-      .join-application-button {
-
-        width:
-          100%;
-
-      }
-
-    }
-
-  </style>
-
+    </style>
 </head>
 
 
 <body>
 
-  <div
-    class="noise"
-  ></div>
+    <div class="noise"></div>
 
 
-  <!-- =========================================
-       ВЕРХНЄ МЕНЮ
-  ========================================= -->
+    <!-- =========================================
+         ВЕРХНЄ МЕНЮ
+    ========================================= -->
 
-  <header
-    class="topbar"
-  >
+    <header class="topbar">
 
-    <a
-      class="brand"
-      href="index.html"
-    >
+        <a class="brand" href="index.html">
 
-      <img
-        src="ua-legion-logo.png"
-        alt="UA LEGION"
-      >
+            <img
+                src="ua-legion-logo.png"
+                alt="UA LEGION"
+            >
 
-      <span>
-        UA LEGION
-      </span>
+            <span>UA LEGION</span>
 
-    </a>
+        </a>
 
 
-    <button
-      class="menu-btn"
-      aria-label="Відкрити меню"
-    >
-      ☰
-    </button>
-
-
-    <nav
-      class="nav"
-    >
-
-      <a href="index.html">
-        Головна
-      </a>
-
-      <a href="about.html">
-        Про нас
-      </a>
-
-      <a href="games.html">
-        Ігри
-      </a>
-
-      <a href="events.html">
-        Події
-      </a>
-
-      <a href="media.html">
-        Медіа
-      </a>
-
-      <a href="gallery.html">
-        Галерея
-      </a>
-
-
-      <a
-        href="https://www.tiktok.com/@ua_legion_"
-        target="_blank"
-        rel="noopener"
-      >
-        TikTok
-      </a>
-
-
-      <a
-        href="https://discord.gg/gfunf3yq7"
-        target="_blank"
-        rel="noopener"
-        class="nav-cta"
-      >
-        Discord
-      </a>
-
-
-      <a
-        href="profile.html"
-        id="authButton"
-      >
-        Мій кабінет
-      </a>
-
-    </nav>
-
-  </header>
-
-
-  <!-- =========================================
-       ОСОБИСТИЙ КАБІНЕТ
-  ========================================= -->
-
-  <main
-    class="profile-page"
-  >
-
-    <div
-      class="profile-container"
-    >
-
-
-      <div
-        class="profile-header"
-      >
-
-        <h1>
-          👤 Мій кабінет
-        </h1>
-
-        <p>
-          Налаштуйте свій профіль UA LEGION
-        </p>
-
-      </div>
-
-
-      <div
-        class="profile-card"
-      >
-
-
-        <!-- АВАТАР -->
-
-        <div
-          class="avatar-section"
+        <button
+            class="menu-btn"
+            aria-label="Відкрити меню"
         >
+            ☰
+        </button>
 
-          <img
-            id="profileAvatar"
-            class="profile-avatar"
-            src="ua-legion-logo.png"
-            alt="Аватар"
-          >
 
+        <nav class="nav">
 
-          <div
-            class="avatar-info"
-          >
+            <a href="index.html">Головна</a>
 
-            <h2
-              id="profileNamePreview"
-            >
-              UA LEGION Member
-            </h2>
+            <a href="about.html">Про нас</a>
 
-            <p>
-              Особистий профіль
-            </p>
+            <a href="games.html">Ігри</a>
 
-          </div>
+            <a href="events.html">Події</a>
 
-        </div>
+            <a href="media.html">Медіа</a>
 
-
-        <!-- ФОРМА -->
-
-        <form
-          id="profileForm"
-        >
-
-
-          <div
-            class="profile-grid"
-          >
-
-
-            <div
-              class="profile-field"
-            >
-
-              <label>
-                👤 Ім'я
-              </label>
-
-              <input
-                type="text"
-                id="displayName"
-                placeholder="Ваше ім'я"
-              >
-
-            </div>
-
-
-            <div
-              class="profile-field"
-            >
-
-              <label>
-                🎂 Дата народження
-              </label>
-
-              <input
-                type="date"
-                id="birthDate"
-              >
-
-            </div>
-
-
-            <div
-              class="profile-field full"
-            >
-
-              <label>
-                🖼️ Фото профілю
-              </label>
-
-              <input
-                type="file"
-                id="avatarUrl"
-                accept="image/png,image/jpeg,image/jpg,image/webp"
-              >
-
-            </div>
-
-
-            <div
-              class="profile-field"
-            >
-
-              <label>
-                💬 Ваш нікнейм у Discord
-              </label>
-
-              <input
-                type="text"
-                id="discordUsername"
-                placeholder="Наприклад: ADVOKAT"
-              >
-
-            </div>
-
-
-            <div
-              class="profile-field"
-            >
-
-              <label>
-                🆔 Discord ID
-              </label>
-
-              <input
-                type="text"
-                id="discordUserId"
-                placeholder="Ваш Discord ID"
-              >
-
-            </div>
-
-
-            <div
-              class="profile-field"
-            >
-
-              <label>
-                🎮 Steam ID
-              </label>
-
-              <input
-                type="text"
-                id="steamId"
-                placeholder="Ваш Steam ID"
-              >
-
-            </div>
-
-
-            <div
-              class="profile-field"
-            >
-
-              <label>
-                🎮 Ігровий нік
-              </label>
-
-              <input
-                type="text"
-                id="gameNickname"
-                placeholder="Ваш ігровий нік"
-              >
-
-            </div>
-
-          </div>
-
-
-          <!-- НАПРЯМКИ -->
-
-          <section
-            class="directions"
-          >
-
-            <h2>
-              📍 Напрямки UA LEGION
-            </h2>
-
-            <p
-              class="directions-description"
-            >
-              Можна вибрати один або декілька напрямків.
-            </p>
-
-
-            <div
-              class="direction-list"
-            >
-
-
-              <label
-                class="direction-item"
-              >
-
-                <input
-                  type="checkbox"
-                  value="ets2"
-                  name="direction"
-                >
-
-                🚛 ETS2 / TruckersMP
-
-              </label>
-
-
-              <label
-                class="direction-item"
-              >
-
-                <input
-                  type="checkbox"
-                  value="wot"
-                  name="direction"
-                >
-
-                🪖 World of Tanks
-
-              </label>
-
-
-              <label
-                class="direction-item"
-              >
-
-                <input
-                  type="checkbox"
-                  value="dota2"
-                  name="direction"
-                >
-
-                ⚔️ Dota 2
-
-              </label>
-
-
-              <label
-                class="direction-item"
-              >
-
-                <input
-                  type="checkbox"
-                  value="wow"
-                  name="direction"
-                >
-
-                🐉 World of Warcraft
-
-              </label>
-
-            </div>
-
-          </section>
-
-
-          <!-- МОЯ ЗАЯВКА -->
-
-          <section
-            class="application-status"
-          >
-
-            <h2>
-              📋 Моя заявка
-            </h2>
-
-            <p
-              class="application-description"
-            >
-              Тут відображається поточний статус вашої заявки до UA LEGION.
-            </p>
-
-
-            <div
-              id="applicationStatus"
-              class="application-card"
-            >
-
-              <h3>
-                Завантаження...
-              </h3>
-
-              <p>
-                Перевіряємо інформацію про вашу заявку.
-              </p>
-
-            </div>
-
-          </section>
-
-
-          <!-- МОЇ РОЛІ -->
-
-          <section
-            class="user-roles"
-          >
-
-            <h2>
-              🏅 Мої ролі
-            </h2>
-
-            <p
-              class="roles-description"
-            >
-              Ваші ролі та посади в UA LEGION.
-            </p>
-
-
-            <div
-              id="rolesList"
-              class="roles-list"
-            >
-
-              <div
-                class="roles-empty"
-              >
-                Завантаження ролей...
-              </div>
-
-            </div>
-
-          </section>
-
-
-          <!-- КНОПКИ -->
-
-          <div
-            class="profile-actions"
-          >
-
-
-            <button
-              type="submit"
-              id="saveProfile"
-            >
-              💾 ЗБЕРЕГТИ ПРОФІЛЬ
-            </button>
+            <a href="gallery.html">Галерея</a>
 
 
             <a
-              href="join.html"
-              class="join-application-button"
-              id="joinButton"
+                href="https://www.tiktok.com/@ua_legion_"
+                target="_blank"
+                rel="noopener"
             >
-              📝 ПОДАТИ ЗАЯВКУ
+                TikTok
             </a>
 
 
-            <button
-              type="button"
-              id="logoutButton"
+            <a
+                href="https://discord.gg/gfunf3yq7"
+                target="_blank"
+                rel="noopener"
+                class="nav-cta"
             >
-              🚪 ВИЙТИ
-            </button>
-
-          </div>
+                Discord
+            </a>
 
 
-          <div
-            id="profileMessage"
-            class="profile-message"
-          ></div>
+            <a
+                href="profile.html"
+                id="authButton"
+            >
+                Мій кабінет
+            </a>
+
+        </nav>
+
+    </header>
 
 
-        </form>
+    <!-- =========================================
+         ОСОБИСТИЙ КАБІНЕТ
+    ========================================= -->
 
-      </div>
+    <main class="profile-page">
 
-    </div>
-
-  </main>
-
-
-  <!-- SUPABASE -->
-
-  <script
-    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
-  ></script>
+        <div class="profile-container">
 
 
-  <!-- SUPABASE CONFIG -->
+            <div class="profile-header">
 
-  <script
-    src="supabase.js"
-  ></script>
+                <h1>👤 Мій кабінет</h1>
 
+                <p>
+                    Налаштуйте свій профіль UA LEGION
+                </p>
 
-  <!-- АВТОРИЗАЦІЯ -->
-
-  <script
-    src="auth-menu.js"
-  ></script>
+            </div>
 
 
-  <!-- PROFILE -->
-
-  <script
-    src="profile.js"
-  ></script>
+            <div class="profile-card">
 
 
-  <!-- MOBILE MENU -->
+                <!-- АВАТАР -->
 
-  <script
-    src="script.js"
-  ></script>
+                <div class="avatar-section">
+
+                    <img
+                        id="profileAvatar"
+                        class="profile-avatar"
+                        src="ua-legion-logo.png"
+                        alt="Аватар"
+                    >
+
+
+                    <div class="avatar-info">
+
+                        <h2 id="profileNamePreview">
+                            UA LEGION Member
+                        </h2>
+
+                        <p>
+                            Особистий профіль
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ФОРМА -->
+
+                <form id="profileForm">
+
+
+                    <div class="profile-grid">
+
+
+                        <!-- ІМ'Я -->
+
+                        <div class="profile-field">
+
+                            <label for="displayName">
+                                👤 Ім'я
+                            </label>
+
+                            <input
+                                type="text"
+                                id="displayName"
+                                placeholder="Ваше ім'я"
+                            >
+
+                        </div>
+
+
+                        <!-- ДАТА НАРОДЖЕННЯ -->
+
+                        <div class="profile-field">
+
+                            <label for="birthDate">
+                                🎂 Дата народження
+                            </label>
+
+                            <input
+                                type="date"
+                                id="birthDate"
+                            >
+
+                        </div>
+
+
+                        <!-- АВАТАР -->
+
+                        <div class="profile-field full">
+
+                            <label for="avatarUrl">
+                                🖼️ Фото профілю
+                            </label>
+
+                            <input
+                                type="file"
+                                id="avatarUrl"
+                                accept="image/png,image/jpeg,image/jpg,image/webp"
+                            >
+
+                        </div>
+
+
+                        <!-- DISCORD -->
+
+                        <div class="profile-field">
+
+                            <label for="discordUsername">
+                                💬 Ваш нікнейм у Discord
+                            </label>
+
+                            <input
+                                type="text"
+                                id="discordUsername"
+                                placeholder="Наприклад: ADVOKAT"
+                            >
+
+                        </div>
+
+
+                        <!-- DISCORD ID -->
+
+                        <div class="profile-field">
+
+                            <label for="discordUserId">
+                                🆔 Discord ID
+                            </label>
+
+                            <input
+                                type="text"
+                                id="discordUserId"
+                                placeholder="Ваш Discord ID"
+                            >
+
+                        </div>
+
+
+                        <!-- STEAM -->
+
+                        <div class="profile-field">
+
+                            <label for="steamId">
+                                🎮 Steam ID
+                            </label>
+
+                            <input
+                                type="text"
+                                id="steamId"
+                                placeholder="Ваш Steam ID"
+                            >
+
+                        </div>
+
+
+                        <!-- ІГРОВИЙ НІК -->
+
+                        <div class="profile-field">
+
+                            <label for="gameNickname">
+                                🎮 Ігровий нік
+                            </label>
+
+                            <input
+                                type="text"
+                                id="gameNickname"
+                                placeholder="Ваш ігровий нік"
+                            >
+
+                        </div>
+
+
+                    </div>
+
+
+                    <!-- =========================================
+                         НАПРЯМКИ
+                    ========================================= -->
+
+                    <section class="directions">
+
+                        <h2>
+                            📍 Напрямки UA LEGION
+                        </h2>
+
+                        <p class="directions-description">
+                            Можна вибрати один або декілька напрямків.
+                        </p>
+
+
+                        <div class="direction-list">
+
+
+                            <label class="direction-item">
+
+                                <input
+                                    type="checkbox"
+                                    value="ets2"
+                                    name="direction"
+                                >
+
+                                🚛 ETS2 / TruckersMP
+
+                            </label>
+
+
+                            <label class="direction-item">
+
+                                <input
+                                    type="checkbox"
+                                    value="wot"
+                                    name="direction"
+                                >
+
+                                🪖 World of Tanks
+
+                            </label>
+
+
+                            <label class="direction-item">
+
+                                <input
+                                    type="checkbox"
+                                    value="dota2"
+                                    name="direction"
+                                >
+
+                                ⚔️ Dota 2
+
+                            </label>
+
+
+                            <label class="direction-item">
+
+                                <input
+                                    type="checkbox"
+                                    value="wow"
+                                    name="direction"
+                                >
+
+                                🐉 World of Warcraft
+
+                            </label>
+
+
+                        </div>
+
+                    </section>
+
+
+                    <!-- =========================================
+                         МОЯ ЗАЯВКА
+                    ========================================= -->
+
+                    <section class="application-status">
+
+                        <h2>
+                            📋 Моя заявка
+                        </h2>
+
+                        <p class="application-description">
+                            Тут відображається поточний статус вашої заявки до UA LEGION.
+                        </p>
+
+
+                        <div
+                            id="applicationStatus"
+                            class="application-card"
+                        >
+
+                            <h3>
+                                Завантаження...
+                            </h3>
+
+                            <p>
+                                Перевіряємо інформацію про вашу заявку.
+                            </p>
+
+                        </div>
+
+                    </section>
+
+
+                    <!-- =========================================
+                         МОЇ РОЛІ
+                    ========================================= -->
+
+                    <section class="user-roles">
+
+                        <h2>
+                            🏅 Мої ролі
+                        </h2>
+
+                        <p class="roles-description">
+                            Ваші ролі та посади в UA LEGION.
+                        </p>
+
+
+                        <div
+                            id="rolesList"
+                            class="roles-list"
+                        >
+
+                            <div class="roles-empty">
+                                Завантаження ролей...
+                            </div>
+
+                        </div>
+
+                    </section>
+
+
+                    <!-- =========================================
+                         КНОПКИ
+                    ========================================= -->
+
+                    <div class="profile-actions">
+
+
+                        <button
+                            type="submit"
+                            id="saveProfile"
+                        >
+                            💾 ЗБЕРЕГТИ ПРОФІЛЬ
+                        </button>
+
+
+                        <a
+                            href="join.html"
+                            class="join-application-button"
+                            id="joinButton"
+                        >
+                            📝 ПОДАТИ НОВУ ЗАЯВКУ
+                        </a>
+
+
+                        <button
+                            type="button"
+                            id="logoutButton"
+                        >
+                            🚪 ВИЙТИ
+                        </button>
+
+
+                    </div>
+
+
+                    <div
+                        id="profileMessage"
+                        class="profile-message"
+                    ></div>
+
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </main>
+
+
+    <!-- SUPABASE -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+    <!-- SUPABASE CONFIG -->
+
+    <script src="supabase.js"></script>
+
+
+    <!-- АВТОРИЗАЦІЯ -->
+
+    <script src="auth-menu.js"></script>
+
+
+    <!-- PROFILE -->
+
+    <script src="profile.js"></script>
+
+
+    <!-- MOBILE MENU -->
+
+    <script src="script.js"></script>
 
 
 </body>
-
 </html>
