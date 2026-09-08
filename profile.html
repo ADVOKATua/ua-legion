@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="uk">
+
 <head>
+
   <meta charset="UTF-8">
 
   <meta
@@ -66,13 +68,16 @@
     .profile-header h1 {
       margin: 0 0 10px;
 
-      font-size: clamp(32px, 5vw, 52px);
+      font-size: clamp(
+        32px,
+        5vw,
+        52px
+      );
     }
 
 
     .profile-header p {
       margin: 0;
-
       opacity: 0.7;
     }
 
@@ -82,51 +87,27 @@
        ========================================= */
 
     .profile-card {
-      position: relative;
-
       background:
         linear-gradient(
           135deg,
-          rgba(20, 25, 34, 0.95),
-          rgba(8, 11, 17, 0.96)
+          rgba(255, 255, 255, 0.055),
+          rgba(255, 255, 255, 0.018)
         );
 
       border:
         1px solid
         rgba(255, 255, 255, 0.12);
 
-      border-radius: 22px;
+      border-radius: 20px;
 
       padding: 30px;
 
-      overflow: hidden;
-
-      backdrop-filter: blur(14px);
+      backdrop-filter:
+        blur(12px);
 
       box-shadow:
-        0 20px 70px rgba(0, 0, 0, 0.35);
-    }
-
-
-    .profile-card::before {
-      content: "";
-
-      position: absolute;
-
-      width: 400px;
-      height: 400px;
-
-      top: -250px;
-      right: -200px;
-
-      background:
-        radial-gradient(
-          circle,
-          rgba(0, 91, 187, 0.08),
-          transparent 70%
-        );
-
-      pointer-events: none;
+        0 20px 70px
+        rgba(0, 0, 0, 0.3);
     }
 
 
@@ -136,11 +117,13 @@
 
     .avatar-section {
       display: flex;
+
       align-items: center;
 
       gap: 28px;
 
       margin-bottom: 35px;
+
       padding-bottom: 30px;
 
       border-bottom:
@@ -149,61 +132,46 @@
     }
 
 
-    /* СИНЬО-ЖОВТА РАМКА */
+    /* СИНЬО-ЖОВТА УКРАЇНСЬКА РАМКА */
 
     .avatar-frame {
-      position: relative;
-
-      width: 130px;
-      height: 130px;
+      width: 126px;
+      height: 126px;
 
       flex-shrink: 0;
 
+      border-radius: 50%;
+
       padding: 5px;
 
-      border-radius: 50%;
+      box-sizing: border-box;
 
       background:
         conic-gradient(
           from 210deg,
-          #005bbb,
-          #1688e8,
-          #005bbb,
-          #ffd700,
-          #ffde35,
-          #ffd700,
-          #005bbb
+          #005bbb 0deg,
+          #005bbb 180deg,
+          #ffd700 180deg,
+          #ffd700 360deg
         );
 
       box-shadow:
-        0 0 12px rgba(0, 91, 187, 0.65),
-        0 0 22px rgba(255, 215, 0, 0.4),
-        0 0 45px rgba(0, 91, 187, 0.2);
-    }
+        0 0 10px
+        rgba(0, 91, 187, 0.9),
 
+        0 0 22px
+        rgba(255, 215, 0, 0.65),
 
-    .avatar-frame::before {
-      content: "";
-
-      position: absolute;
-
-      inset: -3px;
-
-      border-radius: 50%;
-
-      border:
-        1px solid
-        rgba(255, 215, 0, 0.45);
-
-      pointer-events: none;
+        0 0 45px
+        rgba(0, 91, 187, 0.35);
     }
 
 
     .profile-avatar {
-      display: block;
-
       width: 100%;
       height: 100%;
+
+      display: block;
 
       border-radius: 50%;
 
@@ -213,25 +181,25 @@
 
       border:
         3px solid
-        #11151c;
-
-      box-sizing: border-box;
+        rgba(5, 7, 11, 0.95);
     }
 
 
     .avatar-info h2 {
       margin: 0 0 8px;
 
-      font-size: clamp(24px, 3vw, 32px);
-
-      color: #f2f4f8;
+      font-size: clamp(
+        22px,
+        3vw,
+        30px
+      );
     }
 
 
     .avatar-info p {
       margin: 0;
 
-      opacity: 0.7;
+      opacity: 0.65;
     }
 
 
@@ -269,9 +237,9 @@
     .profile-field label {
       font-size: 14px;
 
-      font-weight: 600;
+      opacity: 0.75;
 
-      opacity: 0.78;
+      font-weight: 600;
     }
 
 
@@ -286,10 +254,10 @@
 
       border:
         1px solid
-        rgba(255, 255, 255, 0.13);
+        rgba(255, 255, 255, 0.14);
 
       background:
-        rgba(0, 0, 0, 0.22);
+        rgba(0, 0, 0, 0.25);
 
       color: white;
 
@@ -299,14 +267,7 @@
 
       transition:
         border-color 0.2s,
-        box-shadow 0.2s,
-        background 0.2s;
-    }
-
-
-    .profile-field input:hover {
-      border-color:
-        rgba(255, 255, 255, 0.22);
+        box-shadow 0.2s;
     }
 
 
@@ -315,7 +276,16 @@
 
       box-shadow:
         0 0 0 3px
-        rgba(255, 211, 77, 0.1);
+        rgba(255, 211, 77, 0.08);
+    }
+
+
+    /* =========================================
+       ФАЙЛ
+       ========================================= */
+
+    .profile-field input[type="file"] {
+      padding: 12px;
     }
 
 
@@ -329,14 +299,14 @@
 
 
     .directions h2 {
-      margin-bottom: 10px;
+      margin: 0 0 10px;
     }
 
 
     .directions-description {
       opacity: 0.65;
 
-      margin-bottom: 20px;
+      margin: 0 0 20px;
     }
 
 
@@ -355,6 +325,7 @@
 
     .direction-item {
       display: flex;
+
       align-items: center;
 
       gap: 10px;
@@ -380,13 +351,14 @@
 
 
     .direction-item:hover {
-      transform: translateY(-2px);
+      transform:
+        translateY(-2px);
 
       border-color:
         rgba(255, 211, 77, 0.65);
 
       background:
-        rgba(255, 211, 77, 0.05);
+        rgba(255, 211, 77, 0.04);
     }
 
 
@@ -394,7 +366,7 @@
       width: 18px;
       height: 18px;
 
-      accent-color: #0b73d0;
+      accent-color: #ffd34d;
     }
 
 
@@ -404,6 +376,7 @@
 
     .application-status {
       margin-top: 35px;
+
       padding-top: 30px;
 
       border-top:
@@ -413,14 +386,14 @@
 
 
     .application-status h2 {
-      margin-bottom: 10px;
+      margin: 0 0 10px;
     }
 
 
     .application-description {
       opacity: 0.65;
 
-      margin-bottom: 20px;
+      margin: 0 0 20px;
     }
 
 
@@ -430,11 +403,11 @@
       border-radius: 14px;
 
       background:
-        rgba(255, 255, 255, 0.035);
+        rgba(255, 255, 255, 0.04);
 
       border:
         1px solid
-        rgba(255, 255, 255, 0.09);
+        rgba(255, 255, 255, 0.08);
     }
 
 
@@ -457,14 +430,18 @@
         rgba(255, 211, 77, 0.7);
 
       box-shadow:
-        inset 0 0 20px
-        rgba(255, 211, 77, 0.03);
+        0 0 20px
+        rgba(255, 211, 77, 0.05);
     }
 
 
     .application-card.approved {
       border-color:
         rgba(98, 229, 156, 0.75);
+
+      box-shadow:
+        0 0 20px
+        rgba(98, 229, 156, 0.05);
     }
 
 
@@ -479,12 +456,35 @@
     }
 
 
+    .members-link {
+      display: inline-flex;
+
+      align-items: center;
+      justify-content: center;
+
+      margin-top: 15px;
+
+      padding: 12px 20px;
+
+      border-radius: 10px;
+
+      background: #ffd34d;
+
+      color: #111;
+
+      text-decoration: none;
+
+      font-weight: 700;
+    }
+
+
     /* =========================================
        МОЇ РОЛІ
        ========================================= */
 
     .user-roles {
       margin-top: 35px;
+
       padding-top: 30px;
 
       border-top:
@@ -494,14 +494,14 @@
 
 
     .user-roles h2 {
-      margin-bottom: 10px;
+      margin: 0 0 10px;
     }
 
 
     .roles-description {
       opacity: 0.65;
 
-      margin-bottom: 20px;
+      margin: 0 0 20px;
     }
 
 
@@ -525,54 +525,64 @@
 
       padding: 18px;
 
-      border-radius: 14px;
+      border-radius: 12px;
+
+      overflow: hidden;
 
       background:
         linear-gradient(
           135deg,
-          rgba(255, 255, 255, 0.05),
-          rgba(255, 255, 255, 0.025)
+          rgba(255, 255, 255, 0.055),
+          rgba(255, 255, 255, 0.02)
         );
 
       border:
         1px solid
         rgba(255, 255, 255, 0.1);
 
-      overflow: hidden;
-
       transition:
         transform 0.2s,
-        border-color 0.2s;
+        box-shadow 0.2s;
     }
 
 
     .role-card:hover {
-      transform: translateY(-2px);
+      transform:
+        translateY(-2px);
 
-      border-color:
-        rgba(0, 91, 187, 0.55);
+      box-shadow:
+        0 12px 30px
+        rgba(0, 0, 0, 0.25);
     }
 
 
     .role-card h3 {
+      position: relative;
+
       margin: 0 0 8px;
 
       font-size: 17px;
+
+      z-index: 1;
     }
 
 
     .role-card p {
+      position: relative;
+
       margin: 0;
 
       opacity: 0.7;
 
       font-size: 14px;
+
+      z-index: 1;
     }
 
 
     /* =========================================
        ГЛОБАЛЬНА АДМІНІСТРАЦІЯ
-       СИНЬО-ЖОВТИЙ СТИЛЬ
+       СИНЬО-ЖОВТА КАРТКА
        ========================================= */
 
     .role-card.global {
@@ -583,112 +593,76 @@
       background:
         linear-gradient(
           135deg,
-          rgba(0, 91, 187, 0.16),
-          rgba(20, 23, 31, 0.96),
-          rgba(255, 215, 0, 0.09)
+          #005bbb,
+          #003f80 48%,
+          #ffd700 48%,
+          #e6b800
         );
 
       box-shadow:
-        0 0 20px rgba(0, 91, 187, 0.12),
-        0 0 25px rgba(255, 215, 0, 0.07);
+        0 0 20px
+        rgba(0, 91, 187, 0.25),
+
+        0 0 30px
+        rgba(255, 215, 0, 0.12);
     }
 
+
+    /* Внутрішня темна частина */
 
     .role-card.global::before {
       content: "";
 
       position: absolute;
 
-      inset: 0;
+      inset: 3px;
 
-      padding: 1px;
-
-      border-radius: 14px;
+      border-radius: 10px;
 
       background:
         linear-gradient(
           135deg,
-          #0066c8,
-          #1688e8 35%,
-          #ffd700 65%,
-          #ffde35
+          rgba(0, 91, 187, 0.3),
+          rgba(8, 11, 18, 0.96) 45%,
+          rgba(255, 215, 0, 0.12)
         );
 
-      -webkit-mask:
-        linear-gradient(#fff 0 0)
-        content-box,
-        linear-gradient(#fff 0 0);
+      z-index: 0;
+    }
 
-      -webkit-mask-composite: xor;
 
-      mask-composite: exclude;
+    /* УКРАЇНСЬКИЙ АКЦЕНТ */
 
-      pointer-events: none;
+    .role-card.global::after {
+      content: "🇺🇦";
+
+      position: absolute;
+
+      top: 12px;
+      right: 15px;
+
+      font-size: 24px;
+
+      opacity: 0.9;
     }
 
 
     .role-card.global h3 {
-      color: #f5f7fa;
+      color: #ffffff;
+
+      text-shadow:
+        0 0 12px
+        rgba(255, 215, 0, 0.35);
+    }
+
+
+    .role-card.global p {
+      color: #dcecff;
     }
 
 
     /* =========================================
-       РОЛЬ ВЛАСНИКА
-       ========================================= */
-
-    .role-card.owner {
-      border: none;
-
-      background:
-        linear-gradient(
-          135deg,
-          rgba(0, 91, 187, 0.17),
-          rgba(25, 26, 28, 0.97),
-          rgba(255, 215, 0, 0.13)
-        );
-    }
-
-
-    .role-card.owner::before {
-      content: "";
-
-      position: absolute;
-
-      inset: 0;
-
-      padding: 1px;
-
-      border-radius: 14px;
-
-      background:
-        linear-gradient(
-          90deg,
-          #005bbb,
-          #1976d2,
-          #ffd700,
-          #ffe65a
-        );
-
-      -webkit-mask:
-        linear-gradient(#fff 0 0)
-        content-box,
-        linear-gradient(#fff 0 0);
-
-      -webkit-mask-composite: xor;
-
-      mask-composite: exclude;
-
-      pointer-events: none;
-    }
-
-
-    .role-card.owner h3 {
-      color: #ffd84d;
-    }
-
-
-    /* =========================================
-       ПУСТИЙ СПИСОК
+       ПОРОЖНІ РОЛІ
        ========================================= */
 
     .roles-empty {
@@ -734,29 +708,28 @@
 
       transition:
         transform 0.2s,
-        filter 0.2s;
-    }
-
-
-    .profile-actions button:hover,
-    .join-application-button:hover {
-      transform: translateY(-2px);
+        filter 0.2s,
+        box-shadow 0.2s;
     }
 
 
     #saveProfile {
-      background:
-        linear-gradient(
-          135deg,
-          #ffe171,
-          #ffd34d
-        );
+      background: #ffd34d;
 
       color: #111;
 
       box-shadow:
-        0 5px 18px
+        0 8px 20px
         rgba(255, 211, 77, 0.15);
+    }
+
+
+    #saveProfile:hover {
+      transform:
+        translateY(-2px);
+
+      filter:
+        brightness(1.08);
     }
 
 
@@ -770,14 +743,18 @@
 
       text-decoration: none;
 
-      background:
-        linear-gradient(
-          135deg,
-          #ffca00,
-          #f5ad00
-        );
+      background: #f5b400;
 
       color: #111;
+    }
+
+
+    .join-application-button:hover {
+      transform:
+        translateY(-2px);
+
+      filter:
+        brightness(1.08);
     }
 
 
@@ -789,7 +766,16 @@
 
       border:
         1px solid
-        rgba(255, 255, 255, 0.08);
+        rgba(255, 255, 255, 0.1);
+    }
+
+
+    #logoutButton:hover {
+      background:
+        rgba(255, 80, 80, 0.12);
+
+      border-color:
+        rgba(255, 80, 80, 0.4);
     }
 
 
@@ -827,11 +813,6 @@
       }
 
 
-      .profile-card {
-        padding: 20px;
-      }
-
-
       .profile-grid {
         grid-template-columns: 1fr;
       }
@@ -841,6 +822,11 @@
         flex-direction: column;
 
         text-align: center;
+      }
+
+
+      .profile-card {
+        padding: 20px;
       }
 
 
@@ -854,9 +840,16 @@
         width: 100%;
       }
 
+
+      .avatar-frame {
+        width: 120px;
+        height: 120px;
+      }
+
     }
 
   </style>
+
 </head>
 
 
@@ -963,6 +956,8 @@
     <div class="profile-container">
 
 
+      <!-- ЗАГОЛОВОК -->
+
       <div class="profile-header">
 
         <h1>
@@ -976,6 +971,8 @@
       </div>
 
 
+      <!-- КАРТКА -->
+
       <div class="profile-card">
 
 
@@ -984,6 +981,9 @@
              ===================================== -->
 
         <div class="avatar-section">
+
+
+          <!-- СИНЬО-ЖОВТА РАМКА -->
 
           <div class="avatar-frame">
 
@@ -1022,6 +1022,8 @@
           <div class="profile-grid">
 
 
+            <!-- ІМ'Я -->
+
             <div class="profile-field">
 
               <label>
@@ -1036,6 +1038,8 @@
 
             </div>
 
+
+            <!-- ДАТА -->
 
             <div class="profile-field">
 
@@ -1068,6 +1072,8 @@
             </div>
 
 
+            <!-- DISCORD -->
+
             <div class="profile-field">
 
               <label>
@@ -1082,6 +1088,8 @@
 
             </div>
 
+
+            <!-- DISCORD ID -->
 
             <div class="profile-field">
 
@@ -1098,6 +1106,8 @@
             </div>
 
 
+            <!-- STEAM -->
+
             <div class="profile-field">
 
               <label>
@@ -1112,6 +1122,8 @@
 
             </div>
 
+
+            <!-- GAME NICK -->
 
             <div class="profile-field">
 
@@ -1318,30 +1330,43 @@
   </main>
 
 
-  <!-- SUPABASE -->
+  <!-- =========================================
+       SUPABASE
+       ========================================= -->
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+  ></script>
 
 
   <!-- SUPABASE CONFIG -->
 
-  <script src="supabase.js"></script>
+  <script
+    src="supabase.js"
+  ></script>
 
 
   <!-- АВТОРИЗАЦІЯ -->
 
-  <script src="auth-menu.js"></script>
+  <script
+    src="auth-menu.js"
+  ></script>
 
 
   <!-- PROFILE -->
 
-  <script src="profile.js"></script>
+  <script
+    src="profile.js"
+  ></script>
 
 
   <!-- MOBILE MENU -->
 
-  <script src="script.js"></script>
+  <script
+    src="script.js"
+  ></script>
 
 
 </body>
+
 </html>
