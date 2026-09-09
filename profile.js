@@ -17,9 +17,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   if (!supabaseClient) {
 
-    console.error(
-      "Supabase client не знайдено."
-    );
+    console.error("Supabase client не знайдено.");
 
     return;
 
@@ -129,27 +127,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const defaultAvatar =
     "ua-legion-logo.png";
-
-
-  /* =========================================
-     НАЗВИ НАПРЯМКІВ
-     ========================================= */
-
-  const directionNames = {
-
-    ets2:
-      "🚛 ETS2 / TruckersMP",
-
-    wot:
-      "🪖 World of Tanks",
-
-    dota2:
-      "⚔️ Dota 2",
-
-    wow:
-      "🐉 World of Warcraft"
-
-  };
 
 
   /* =========================================
@@ -314,9 +291,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    /* -----------------------------------------
-       ПРОФІЛЬ ЩЕ НЕ СТВОРЕНИЙ
-       ----------------------------------------- */
+    /* ПРОФІЛЬ ЩЕ НЕ СТВОРЕНИЙ */
 
     if (!profile) {
 
@@ -351,9 +326,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    /* -----------------------------------------
-       ІМ'Я
-       ----------------------------------------- */
+    /* ІМ'Я */
 
     if (displayName) {
 
@@ -374,9 +347,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    /* -----------------------------------------
-       ДАТА НАРОДЖЕННЯ
-       ----------------------------------------- */
+    /* ДАТА НАРОДЖЕННЯ */
 
     if (
       profile.birth_date &&
@@ -389,9 +360,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    /* -----------------------------------------
-       DISCORD USERNAME
-       ----------------------------------------- */
+    /* DISCORD USERNAME */
 
     if (discordUsername) {
 
@@ -402,9 +371,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    /* -----------------------------------------
-       DISCORD ID
-       ----------------------------------------- */
+    /* DISCORD ID */
 
     if (discordUserId) {
 
@@ -415,9 +382,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    /* -----------------------------------------
-       STEAM ID
-       ----------------------------------------- */
+    /* STEAM ID */
 
     if (steamId) {
 
@@ -428,9 +393,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    /* -----------------------------------------
-       GAME NICKNAME
-       ----------------------------------------- */
+    /* GAME NICKNAME */
 
     if (gameNickname) {
 
@@ -441,9 +404,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    /* -----------------------------------------
-       АВАТАР
-       ----------------------------------------- */
+    /* АВАТАР */
 
     if (profileAvatar) {
 
@@ -453,57 +414,24 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     }
 
-  }
+
+    /* НАПРЯМКИ */
+
+    let selectedDirections =
+      [];
 
 
-  /* =========================================
-     ЗАВАНТАЖЕННЯ НАПРЯМКІВ КОРИСТУВАЧА
+    if (
+      Array.isArray(
+        profile.directions
+      )
+    ) {
 
-     user_directions
-        ↓
-     directions
-     ========================================= */
-
-  async function loadUserDirections() {
-
-    const {
-      data: userDirections,
-      error
-    } =
-      await supabaseClient
-        .from("user_directions")
-        .select(`
-          direction_id,
-          directions (
-            id,
-            code,
-            slug,
-            name
-          )
-        `)
-        .eq(
-          "user_id",
-          userId
-        )
-        .eq(
-          "status",
-          "active"
-        );
-
-
-    if (error) {
-
-      console.error(
-        "Помилка завантаження напрямків:",
-        error
-      );
-
-      return;
+      selectedDirections =
+        profile.directions;
 
     }
 
-
-    /* Спочатку знімаємо всі галочки */
 
     document
       .querySelectorAll(
@@ -513,67 +441,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         checkbox => {
 
           checkbox.checked =
-            false;
+            selectedDirections.includes(
+              checkbox.value
+            );
 
         }
       );
-
-
-    if (
-      !userDirections ||
-      userDirections.length === 0
-    ) {
-
-      return;
-
-    }
-
-
-    userDirections.forEach(
-      item => {
-
-        const direction =
-          Array.isArray(
-            item.directions
-          )
-            ? item.directions[0]
-            : item.directions;
-
-
-        if (!direction) {
-
-          return;
-
-        }
-
-
-        const code =
-          direction.code ||
-          direction.slug;
-
-
-        if (!code) {
-
-          return;
-
-        }
-
-
-        const checkbox =
-          document.querySelector(
-            `input[name="direction"][value="${code}"]`
-          );
-
-
-        if (checkbox) {
-
-          checkbox.checked =
-            true;
-
-        }
-
-      }
-    );
 
   }
 
@@ -595,7 +468,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       avatarInput.files[0];
 
 
-    /* Якщо файл не вибраний */
+    /* ЯКЩО НОВИЙ ФАЙЛ НЕ ВИБРАНИЙ */
 
     if (!file) {
 
@@ -620,6 +493,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
+    /* ПЕРЕВІРКА ТИПУ */
+
     const allowedTypes =
       [
         "image/png",
@@ -642,6 +517,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
+    /* РОЗШИРЕННЯ */
+
     const extension =
       file.name
         .split(".")
@@ -657,6 +534,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       `${userId}/${fileName}`;
 
 
+    /* ЗАВАНТАЖЕННЯ */
+
     const {
       error: uploadError
     } =
@@ -667,10 +546,8 @@ document.addEventListener("DOMContentLoaded", async () => {
           filePath,
           file,
           {
-            cacheControl:
-              "3600",
-            upsert:
-              false
+            cacheControl: "3600",
+            upsert: false
           }
         );
 
@@ -688,6 +565,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     }
 
+
+    /* PUBLIC URL */
 
     const {
       data: urlData
@@ -748,158 +627,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
   /* =========================================
-     СИНХРОНІЗАЦІЯ НАПРЯМКІВ
-
-     checkbox
-        ↓
-     directions
-        ↓
-     user_directions
-     ========================================= */
-
-  async function saveUserDirections(
-    selectedDirections
-  ) {
-
-    /* Отримуємо всі напрямки */
-
-    const {
-      data: directions,
-      error: directionsError
-    } =
-      await supabaseClient
-        .from("directions")
-        .select(`
-          id,
-          code,
-          slug
-        `);
-
-
-    if (directionsError) {
-
-      throw new Error(
-        directionsError.message
-      );
-
-    }
-
-
-    /* Видаляємо старі напрямки користувача */
-
-    const {
-      error: deleteError
-    } =
-      await supabaseClient
-        .from("user_directions")
-        .delete()
-        .eq(
-          "user_id",
-          userId
-        );
-
-
-    if (deleteError) {
-
-      throw new Error(
-        deleteError.message
-      );
-
-    }
-
-
-    /* Якщо нічого не вибрано */
-
-    if (
-      !selectedDirections ||
-      selectedDirections.length === 0
-    ) {
-
-      return;
-
-    }
-
-
-    const rows =
-      [];
-
-
-    selectedDirections.forEach(
-      selectedCode => {
-
-        const direction =
-          directions.find(
-            item =>
-              item.code === selectedCode ||
-              item.slug === selectedCode
-          );
-
-
-        if (!direction) {
-
-          return;
-
-        }
-
-
-        rows.push(
-          {
-
-            user_id:
-              userId,
-
-            direction_id:
-              direction.id,
-
-            status:
-              "active",
-
-            /*
-              Для ETS2 залишаємо клас водія.
-              Для інших напрямків він може бути null.
-            */
-
-            driver_class:
-              selectedCode === "ets2"
-                ? "A"
-                : null
-
-          }
-        );
-
-      }
-    );
-
-
-    if (rows.length === 0) {
-
-      return;
-
-    }
-
-
-    const {
-      error: insertError
-    } =
-      await supabaseClient
-        .from("user_directions")
-        .insert(
-          rows
-        );
-
-
-    if (insertError) {
-
-      throw new Error(
-        insertError.message
-      );
-
-    }
-
-  }
-
-
-  /* =========================================
      ЗБЕРЕЖЕННЯ ПРОФІЛЮ
      ========================================= */
 
@@ -919,7 +646,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             saveProfileButton.disabled =
               true;
 
-
             saveProfileButton.textContent =
               "⏳ ЗБЕРІГАЄМО...";
 
@@ -929,25 +655,19 @@ document.addEventListener("DOMContentLoaded", async () => {
           showMessage("");
 
 
-          /* -------------------------------
-             АВАТАР
-             ------------------------------- */
+          /* АВАТАР */
 
           const avatarUrl =
             await uploadAvatar();
 
 
-          /* -------------------------------
-             НАПРЯМКИ
-             ------------------------------- */
+          /* НАПРЯМКИ */
 
-          const selectedDirections =
+          const directions =
             getDirections();
 
 
-          /* -------------------------------
-             ДАНІ ПРОФІЛЮ
-             ------------------------------- */
+          /* ДАНІ ПРОФІЛЮ */
 
           const profileData =
             {
@@ -987,13 +707,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                 null,
 
 
-              /*
-                Залишаємо також у profiles
-                для сумісності зі старими даними.
-              */
-
               directions:
-                selectedDirections,
+                directions,
 
 
               avatar_url:
@@ -1006,45 +721,33 @@ document.addEventListener("DOMContentLoaded", async () => {
             };
 
 
-          /* -------------------------------
-             ЗБЕРЕЖЕННЯ ПРОФІЛЮ
-             ------------------------------- */
+          /* UPSERT */
 
           const {
-            error: profileError
+            error
           } =
             await supabaseClient
               .from("profiles")
               .upsert(
                 profileData,
                 {
-                  onConflict:
-                    "id"
+                  onConflict: "id"
                 }
               );
 
 
-          if (profileError) {
+          if (error) {
+
+            console.error(error);
 
             throw new Error(
-              profileError.message
+              error.message
             );
 
           }
 
 
-          /* -------------------------------
-             ЗБЕРЕЖЕННЯ НАПРЯМКІВ
-             ------------------------------- */
-
-          await saveUserDirections(
-            selectedDirections
-          );
-
-
-          /* -------------------------------
-             ОНОВЛЕННЯ АВАТАРА
-             ------------------------------- */
+          /* ОНОВЛЕННЯ АВАТАРА */
 
           if (
             avatarUrl &&
@@ -1057,9 +760,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           }
 
 
-          /* -------------------------------
-             ОНОВЛЕННЯ ІМЕНІ
-             ------------------------------- */
+          /* ОНОВЛЕННЯ ІМЕНІ */
 
           if (profileNamePreview) {
 
@@ -1089,6 +790,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             "Помилка збереження профілю.",
             "error"
           );
+
 
         } finally {
 
@@ -1160,7 +862,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       applicationStatus.innerHTML =
         `
           <h3>ℹ️ Заявку не знайдено</h3>
-
           <p>
             Ви ще не подавали заявку до UA LEGION.
           </p>
@@ -1172,6 +873,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
+    /* НЕМАЄ ЗАЯВКИ */
+
     if (!application) {
 
       applicationStatus.className =
@@ -1181,7 +884,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       applicationStatus.innerHTML =
         `
           <h3>📄 Заявки немає</h3>
-
           <p>
             Ви ще не подавали заявку до UA LEGION.
           </p>
@@ -1209,6 +911,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       .toLowerCase();
 
 
+    /* ОЧІКУЄ */
+
     if (status === "pending") {
 
       applicationStatus.className =
@@ -1218,7 +922,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       applicationStatus.innerHTML =
         `
           <h3>⏳ Заявка на розгляді</h3>
-
           <p>
             Ваша заявка очікує перевірки адміністрацією.
           </p>
@@ -1229,6 +932,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     }
 
+
+    /* ПРИЙНЯТО */
 
     if (
       status === "approved" ||
@@ -1242,7 +947,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       applicationStatus.innerHTML =
         `
           <h3>✓ Заявку прийнято</h3>
-
           <p>
             Вітаємо у UA LEGION!
           </p>
@@ -1262,6 +966,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
+    /* ВІДХИЛЕНО */
+
     if (
       status === "rejected" ||
       status === "declined"
@@ -1274,7 +980,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       applicationStatus.innerHTML =
         `
           <h3>❌ Заявку відхилено</h3>
-
           <p>
             Ваша заявка була відхилена.
             Ви можете подати нову заявку.
@@ -1295,6 +1000,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
+    /* ІНШИЙ СТАТУС */
+
     applicationStatus.className =
       "application-card";
 
@@ -1302,7 +1009,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     applicationStatus.innerHTML =
       `
         <h3>📋 Статус: ${status}</h3>
-
         <p>
           Перевірте інформацію пізніше.
         </p>
@@ -1313,12 +1019,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   /* =========================================
      МОЇ РОЛІ
-
-     НОВА СТРУКТУРА:
-
-     user_direction_roles
-        ↓
-     direction + role
      ========================================= */
 
   async function loadRoles() {
@@ -1338,238 +1038,490 @@ document.addEventListener("DOMContentLoaded", async () => {
       `;
 
 
+    /* =========================================
+       1. РОЛІ ЗА НАПРЯМКАМИ
+       user_direction_roles
+       ========================================= */
+
     const {
-      data: userRoles,
-      error
+      data: directionRoles,
+      error: directionRolesError
     } =
       await supabaseClient
         .from("user_direction_roles")
-        .select(`
-          id,
-          user_id,
-          direction,
-          role,
-          created_at
-        `)
+        .select(
+          `
+            id,
+            user_id,
+            direction,
+            role,
+            created_at
+          `
+        )
         .eq(
           "user_id",
           userId
         );
 
 
-    if (error) {
+    if (directionRolesError) {
 
       console.error(
-        "Помилка завантаження ролей:",
-        error
+        "Помилка завантаження ролей напрямків:",
+        directionRolesError
       );
 
-
-      rolesList.innerHTML =
-        `
-          <div class="roles-empty">
-            ⚠️ Не вдалося завантажити ролі.
-          </div>
-        `;
+    }
 
 
-      return;
+    /* =========================================
+       2. ГЛОБАЛЬНІ РОЛІ
+       user_roles
+       ========================================= */
+
+    const {
+      data: globalUserRoles,
+      error: globalRolesError
+    } =
+      await supabaseClient
+        .from("user_roles")
+        .select(
+          `
+            id,
+            user_id,
+            role_id,
+            direction_id
+          `
+        )
+        .eq(
+          "user_id",
+          userId
+        )
+        .is(
+          "direction_id",
+          null
+        );
+
+
+    if (globalRolesError) {
+
+      console.error(
+        "Помилка завантаження глобальних ролей:",
+        globalRolesError
+      );
 
     }
 
 
-    if (
-      !userRoles ||
-      userRoles.length === 0
-    ) {
-
-      rolesList.innerHTML =
-        `
-          <div class="roles-empty">
-            🏅 У вас поки що немає призначених ролей.
-          </div>
-        `;
-
-
-      return;
-
-    }
-
+    /* =========================================
+       ОЧИЩЕННЯ СПИСКУ
+       ========================================= */
 
     rolesList.innerHTML =
       "";
 
 
-    userRoles.forEach(
-      userRole => {
+    let rolesFound =
+      false;
 
 
-        const roleCode =
-          (
-            userRole.role ||
-            "member"
+    /* =========================================
+       ГЛОБАЛЬНІ РОЛІ
+       ========================================= */
+
+    if (
+      globalUserRoles &&
+      globalUserRoles.length > 0
+    ) {
+
+      const roleIds =
+        globalUserRoles
+          .map(
+            item => item.role_id
           )
-          .toLowerCase();
-
-
-        const directionCode =
-          (
-            userRole.direction ||
-            ""
-          )
-          .toLowerCase();
-
-
-        /* -------------------------------------
-           НАЗВА РОЛІ
-           ------------------------------------- */
-
-        const roleNames =
-          {
-
-            member:
-              "Учасник",
-
-            driver:
-              "Водій",
-
-            director:
-              "Керівник напрямку",
-
-            moderator:
-              "Модератор",
-
-            admin:
-              "Адміністратор",
-
-            administrator:
-              "Адміністратор",
-
-            owner:
-              "Власник"
-
-          };
-
-
-        const roleName =
-          roleNames[roleCode] ||
-          userRole.role ||
-          "Учасник";
-
-
-        /* -------------------------------------
-           НАЗВА НАПРЯМКУ
-           ------------------------------------- */
-
-        const directionName =
-          directionNames[directionCode] ||
-          directionCode ||
-          "UA LEGION";
-
-
-        /* -------------------------------------
-           ГЛОБАЛЬНА РОЛЬ
-           ------------------------------------- */
-
-        const isGlobal =
-          roleCode === "owner" ||
-          roleCode === "admin" ||
-          roleCode === "administrator";
-
-
-        /* -------------------------------------
-           КАРТКА
-           ------------------------------------- */
-
-        const roleCard =
-          document.createElement(
-            "div"
+          .filter(
+            Boolean
           );
 
 
-        roleCard.className =
-          isGlobal
-            ? "role-card global"
-            : "role-card";
+      if (roleIds.length > 0) {
+
+        const {
+          data: roles,
+          error: rolesError
+        } =
+          await supabaseClient
+            .from("roles")
+            .select(
+              `
+                id,
+                name,
+                code
+              `
+            )
+            .in(
+              "id",
+              roleIds
+            );
 
 
-        /* -------------------------------------
-           ІКОНКА
-           ------------------------------------- */
+        if (rolesError) {
 
-        let icon =
-          "🏅";
+          console.error(
+            "Помилка отримання назв глобальних ролей:",
+            rolesError
+          );
+
+        } else {
+
+          globalUserRoles.forEach(
+            userRole => {
+
+              const role =
+                roles?.find(
+                  item =>
+                    item.id ===
+                    userRole.role_id
+                );
 
 
-        if (
-          roleCode === "driver"
-        ) {
+              if (!role) {
 
-          icon =
-            "🚛";
+                return;
+
+              }
+
+
+              createRoleCard(
+                role.name,
+                "Глобальна роль",
+                role.code,
+                true
+              );
+
+
+              rolesFound =
+                true;
+
+            }
+          );
 
         }
-
-
-        if (
-          roleCode === "director"
-        ) {
-
-          icon =
-            "👑";
-
-        }
-
-
-        if (
-          roleCode === "moderator"
-        ) {
-
-          icon =
-            "🛡️";
-
-        }
-
-
-        if (
-          roleCode === "admin" ||
-          roleCode === "administrator"
-        ) {
-
-          icon =
-            "⚔️";
-
-        }
-
-
-        if (
-          roleCode === "owner"
-        ) {
-
-          icon =
-            "🇺🇦";
-
-        }
-
-
-        roleCard.innerHTML =
-          `
-            <h3>
-              ${icon}
-              ${roleName}
-            </h3>
-
-            <p>
-              ${directionName}
-            </p>
-          `;
-
-
-        rolesList.appendChild(
-          roleCard
-        );
 
       }
+
+    }
+
+
+    /* =========================================
+       РОЛІ ЗА НАПРЯМКАМИ
+       ========================================= */
+
+    if (
+      directionRoles &&
+      directionRoles.length > 0
+    ) {
+
+      directionRoles.forEach(
+        item => {
+
+          const directionName =
+            getDirectionName(
+              item.direction
+            );
+
+
+          const roleName =
+            getRoleName(
+              item.role
+            );
+
+
+          createRoleCard(
+            roleName,
+            directionName,
+            item.role,
+            false
+          );
+
+
+          rolesFound =
+            true;
+
+        }
+      );
+
+    }
+
+
+    /* =========================================
+       НЕМАЄ РОЛЕЙ
+       ========================================= */
+
+    if (!rolesFound) {
+
+      rolesList.innerHTML =
+        `
+          <div class="roles-empty">
+            🏅 У вас поки що немає
+            призначених ролей.
+          </div>
+        `;
+
+    }
+
+  }
+
+
+  /* =========================================
+     НАЗВИ НАПРЯМКІВ
+     ========================================= */
+
+  function getDirectionName(
+    direction
+  ) {
+
+    const directions =
+      {
+
+        ets2:
+          "🚛 ETS2 / TruckersMP",
+
+        wot:
+          "🪖 World of Tanks",
+
+        dota2:
+          "⚔️ Dota 2",
+
+        wow:
+          "🐉 World of Warcraft"
+
+      };
+
+
+    return (
+      directions[direction] ||
+      direction ||
+      "UA LEGION"
+    );
+
+  }
+
+
+  /* =========================================
+     НАЗВИ ПОСАД
+     ========================================= */
+
+  function getRoleName(
+    role
+  ) {
+
+    const roles =
+      {
+
+        director:
+          "Директор",
+
+        deputy_director:
+          "Заступник директора",
+
+        top_manager:
+          "Топ-менеджер",
+
+        manager:
+          "Менеджер",
+
+        logistics_manager:
+          "Менеджер з логістики",
+
+        recruiter:
+          "Рекрутер",
+
+        member:
+          "Учасник",
+
+        moderator:
+          "Модератор",
+
+        admin:
+          "Адміністратор",
+
+        owner:
+          "Власник"
+
+      };
+
+
+    return (
+      roles[role] ||
+      role ||
+      "Учасник"
+    );
+
+  }
+
+
+  /* =========================================
+     СТВОРЕННЯ КАРТКИ РОЛІ
+     ========================================= */
+
+  function createRoleCard(
+    roleName,
+    directionName,
+    roleCode,
+    forceGlobal = false
+  ) {
+
+    if (!rolesList) {
+
+      return;
+
+    }
+
+
+    const normalizedCode =
+      (
+        roleCode ||
+        ""
+      )
+      .toLowerCase();
+
+
+    const isGlobal =
+      forceGlobal ||
+      normalizedCode === "owner" ||
+      normalizedCode === "admin" ||
+      normalizedCode === "administrator";
+
+
+    let icon =
+      "🏅";
+
+
+    if (
+      normalizedCode === "director"
+    ) {
+
+      icon =
+        "👔";
+
+    }
+
+
+    if (
+      normalizedCode ===
+      "deputy_director"
+    ) {
+
+      icon =
+        "🎖️";
+
+    }
+
+
+    if (
+      normalizedCode ===
+      "top_manager"
+    ) {
+
+      icon =
+        "📊";
+
+    }
+
+
+    if (
+      normalizedCode ===
+      "manager"
+    ) {
+
+      icon =
+        "💼";
+
+    }
+
+
+    if (
+      normalizedCode ===
+      "logistics_manager"
+    ) {
+
+      icon =
+        "🚛";
+
+    }
+
+
+    if (
+      normalizedCode ===
+      "recruiter"
+    ) {
+
+      icon =
+        "🤝";
+
+    }
+
+
+    if (
+      normalizedCode ===
+      "moderator"
+    ) {
+
+      icon =
+        "🛡️";
+
+    }
+
+
+    if (
+      normalizedCode === "admin" ||
+      normalizedCode === "administrator"
+    ) {
+
+      icon =
+        "⚔️";
+
+    }
+
+
+    if (
+      normalizedCode === "owner"
+    ) {
+
+      icon =
+        "🇺🇦";
+
+    }
+
+
+    const roleCard =
+      document.createElement(
+        "div"
+      );
+
+
+    roleCard.className =
+      isGlobal
+        ? "role-card global"
+        : "role-card";
+
+
+    roleCard.innerHTML =
+      `
+        <h3>
+          ${icon}
+          ${roleName}
+        </h3>
+
+        <p>
+          ${directionName}
+        </p>
+      `;
+
+
+    rolesList.appendChild(
+      roleCard
     );
 
   }
@@ -1595,11 +1547,10 @@ document.addEventListener("DOMContentLoaded", async () => {
           window.location.href =
             "login.html";
 
+
         } catch (error) {
 
-          console.error(
-            error
-          );
+          console.error(error);
 
 
           showMessage(
@@ -1616,15 +1567,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
   /* =========================================
-     ЗАВАНТАЖЕННЯ СТОРІНКИ
+     ЗАВАНТАЖЕННЯ ВСІЄЇ ІНФОРМАЦІЇ
      ========================================= */
 
   await Promise.all(
     [
 
       loadProfile(),
-
-      loadUserDirections(),
 
       loadApplication(),
 
