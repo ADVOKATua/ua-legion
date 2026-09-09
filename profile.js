@@ -17,9 +17,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   if (!supabaseClient) {
 
-    console.error(
-      "Supabase client не знайдено."
-    );
+    console.error("Supabase client не знайдено.");
 
     return;
 
@@ -31,99 +29,67 @@ document.addEventListener("DOMContentLoaded", async () => {
      ========================================= */
 
   const profileForm =
-    document.getElementById(
-      "profileForm"
-    );
+    document.getElementById("profileForm");
 
 
   const profileAvatar =
-    document.getElementById(
-      "profileAvatar"
-    );
+    document.getElementById("profileAvatar");
 
 
   const profileNamePreview =
-    document.getElementById(
-      "profileNamePreview"
-    );
+    document.getElementById("profileNamePreview");
 
 
   const displayName =
-    document.getElementById(
-      "displayName"
-    );
+    document.getElementById("displayName");
 
 
   const birthDate =
-    document.getElementById(
-      "birthDate"
-    );
+    document.getElementById("birthDate");
 
 
   const avatarInput =
-    document.getElementById(
-      "avatarUrl"
-    );
+    document.getElementById("avatarUrl");
 
 
   const discordUsername =
-    document.getElementById(
-      "discordUsername"
-    );
+    document.getElementById("discordUsername");
 
 
   const discordUserId =
-    document.getElementById(
-      "discordUserId"
-    );
+    document.getElementById("discordUserId");
 
 
   const steamId =
-    document.getElementById(
-      "steamId"
-    );
+    document.getElementById("steamId");
 
 
   const gameNickname =
-    document.getElementById(
-      "gameNickname"
-    );
+    document.getElementById("gameNickname");
 
 
   const applicationStatus =
-    document.getElementById(
-      "applicationStatus"
-    );
+    document.getElementById("applicationStatus");
 
 
   const rolesList =
-    document.getElementById(
-      "rolesList"
-    );
+    document.getElementById("rolesList");
 
 
   const joinButton =
-    document.getElementById(
-      "joinButton"
-    );
+    document.getElementById("joinButton");
 
 
   const logoutButton =
-    document.getElementById(
-      "logoutButton"
-    );
+    document.getElementById("logoutButton");
 
 
   const profileMessage =
-    document.getElementById(
-      "profileMessage"
-    );
+    document.getElementById("profileMessage");
 
 
   const saveProfileButton =
-    document.getElementById(
-      "saveProfile"
-    );
+    document.getElementById("saveProfile");
 
 
   /* =========================================
@@ -203,6 +169,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
           profileMessage.textContent =
             "";
+
 
           profileMessage.className =
             "profile-message";
@@ -511,9 +478,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       } =
         await supabaseClient
           .from("profiles")
-          .select(
-            "avatar_url"
-          )
+          .select("avatar_url")
           .eq(
             "id",
             userId
@@ -529,7 +494,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    /* ПЕРЕВІРКА ТИПУ */
+    /* ДОЗВОЛЕНІ ТИПИ */
 
     const allowedTypes =
       [
@@ -582,10 +547,8 @@ document.addEventListener("DOMContentLoaded", async () => {
           filePath,
           file,
           {
-            cacheControl:
-              "3600",
-            upsert:
-              false
+            cacheControl: "3600",
+            upsert: false
           }
         );
 
@@ -691,9 +654,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           }
 
 
-          showMessage(
-            ""
-          );
+          showMessage("");
 
 
           /* АВАТАР */
@@ -708,7 +669,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             getDirections();
 
 
-          /* ДАНІ */
+          /* ДАНІ ПРОФІЛЮ */
 
           const profileData =
             {
@@ -792,6 +753,8 @@ document.addEventListener("DOMContentLoaded", async () => {
           }
 
 
+          /* АВАТАР */
+
           if (
             avatarUrl &&
             profileAvatar
@@ -802,6 +765,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
           }
 
+
+          /* ІМ'Я */
 
           if (profileNamePreview) {
 
@@ -816,6 +781,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             "Профіль успішно збережено ✓",
             "success"
           );
+
 
         } catch (error) {
 
@@ -1063,7 +1029,115 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
   /* =========================================
-     МОЇ РОЛІ
+     НАЗВИ НАПРЯМКІВ
+     ========================================= */
+
+  function getDirectionName(
+    direction
+  ) {
+
+    const directions =
+      {
+
+        ets2:
+          "ETS2",
+
+
+        wot:
+          "World of Tanks",
+
+
+        dota2:
+          "Dota 2",
+
+
+        wow:
+          "World of Warcraft"
+
+      };
+
+
+    return (
+      directions[
+        String(direction).toLowerCase()
+      ] ||
+      direction
+    );
+
+  }
+
+
+  /* =========================================
+     НАЗВИ ПОСАД
+     ========================================= */
+
+  function getRoleName(
+    role,
+    direction
+  ) {
+
+    const normalizedRole =
+      String(role || "")
+        .toLowerCase();
+
+
+    const normalizedDirection =
+      String(direction || "")
+        .toLowerCase();
+
+
+    /* ETS2 */
+
+    if (normalizedDirection === "ets2") {
+
+      const ets2Roles =
+        {
+
+          director:
+            "Директор ETS2",
+
+
+          top_manager:
+            "Топ-менеджер ETS2",
+
+
+          logistics_manager:
+            "Менеджер з логістики ETS2",
+
+
+          recruiter:
+            "Рекрутер ETS2",
+
+
+          moderator:
+            "Модератор ETS2",
+
+
+          dispatcher:
+            "Диспетчер ETS2",
+
+
+          instructor:
+            "Інструктор ETS2"
+
+        };
+
+
+      return (
+        ets2Roles[normalizedRole] ||
+        role
+      );
+
+    }
+
+
+    return role;
+
+  }
+
+
+  /* =========================================
+     МОЇ РОЛІ ТА ПОСАДИ
      ========================================= */
 
   async function loadRoles() {
@@ -1084,23 +1158,20 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
     /*
-      ВАЖЛИВО
+      ЗАВАНТАЖУЄМО ДАНІ
+      З ТВОЄЇ ТАБЛИЦІ:
 
-      Використовуємо реальну таблицю:
-
-      public.user_direction_roles
+      user_direction_roles
 
       Колонки:
 
-      id
       user_id
       direction
       role
-      created_at
     */
 
     const {
-      data: userRoles,
+      data: directionRoles,
       error
     } =
       await supabaseClient
@@ -1142,14 +1213,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     /* НЕМАЄ РОЛЕЙ */
 
     if (
-      !userRoles ||
-      userRoles.length === 0
+      !directionRoles ||
+      directionRoles.length === 0
     ) {
 
       rolesList.innerHTML =
         `
           <div class="roles-empty">
-            🏅 У вас поки що немає призначених ролей.
+            🏅 У вас поки що немає призначених ролей або посад.
           </div>
         `;
 
@@ -1164,41 +1235,44 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
     /*
-      =========================================
-
-      ГРУПУЄМО РОЛІ ЗА НАПРЯМКАМИ
-
-      Наприклад:
+      ГРУПУЄМО ПО НАПРЯМКАХ
 
       ETS2:
-      - director
-      - logistics_manager
+      director
+      logistics_manager
 
-      =========================================
+      і т.д.
     */
 
-    const groupedRoles =
+    const groupedDirections =
       {};
 
 
-    userRoles.forEach(
+    directionRoles.forEach(
       item => {
 
         const direction =
-          (
+          String(
             item.direction ||
-            "global"
+            ""
           )
           .toLowerCase();
 
 
+        if (!direction) {
+
+          return;
+
+        }
+
+
         if (
-          !groupedRoles[
+          !groupedDirections[
             direction
           ]
         ) {
 
-          groupedRoles[
+          groupedDirections[
             direction
           ] =
             [];
@@ -1206,350 +1280,107 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
 
-        groupedRoles[
-          direction
-        ].push(
-          item
-        );
+        if (
+          item.role &&
+          String(item.role).toLowerCase() !== "none"
+        ) {
+
+          groupedDirections[
+            direction
+          ].push(
+            item.role
+          );
+
+        }
 
       }
     );
 
 
     /*
-      =========================================
-      ВІДОБРАЖЕННЯ ГРУП
-      =========================================
+      СТВОРЮЄМО КАРТКИ
     */
 
     Object.keys(
-      groupedRoles
+      groupedDirections
     )
-      .forEach(
-        directionCode => {
+    .forEach(
+      direction => {
 
-          const roles =
-            groupedRoles[
-              directionCode
-            ];
-
-
-          /*
-            Назва напрямку
-          */
-
-          let directionName =
-            "UA LEGION";
+        const roles =
+          groupedDirections[
+            direction
+          ];
 
 
-          if (directionCode === "ets2") {
-
-            directionName =
-              "ETS2";
-
-          }
+        const directionName =
+          getDirectionName(
+            direction
+          );
 
 
-          if (directionCode === "wot") {
-
-            directionName =
-              "World of Tanks";
-
-          }
+        const roleCard =
+          document.createElement(
+            "div"
+          );
 
 
-          if (directionCode === "dota2") {
-
-            directionName =
-              "Dota 2";
-
-          }
+        roleCard.className =
+          "role-card";
 
 
-          if (directionCode === "wow") {
-
-            directionName =
-              "World of Warcraft";
-
-          }
-
-
-          /*
-            Перевірка глобальної ролі
-          */
-
-          const isGlobal =
-            directionCode === "global" ||
-            directionCode === "ua_legion" ||
-            directionCode === "ua-legion";
+        let html =
+          `
+            <h3>
+              📍 Напрямок: ${directionName}
+            </h3>
+          `;
 
 
-          /*
-            Створюємо картку
-          */
+        /*
+          ПОСАДИ ВИВОДИМО
+          ТІЛЬКИ ЯКЩО ВОНИ Є
 
-          const roleCard =
-            document.createElement(
-              "div"
+          Якщо глобальної ролі немає,
+          рядок про глобальну роль
+          взагалі НЕ виводиться.
+        */
+
+        if (
+          roles.length > 0
+        ) {
+
+          const roleNames =
+            roles.map(
+              role =>
+                getRoleName(
+                  role,
+                  direction
+                )
             );
 
 
-          roleCard.className =
-            isGlobal
-              ? "role-card global"
-              : "role-card";
-
-
-          /*
-            ІКОНКА
-          */
-
-          let icon =
-            "🏅";
-
-
-          if (directionCode === "ets2") {
-
-            icon =
-              "🚛";
-
-          }
-
-
-          if (directionCode === "wot") {
-
-            icon =
-              "🪖";
-
-          }
-
-
-          if (directionCode === "dota2") {
-
-            icon =
-              "⚔️";
-
-          }
-
-
-          if (directionCode === "wow") {
-
-            icon =
-              "🐉";
-
-          }
-
-
-          if (isGlobal) {
-
-            icon =
-              "🇺🇦";
-
-          }
-
-
-          /*
-            ПЕРЕКЛАД РОЛЕЙ
-          */
-
-          const roleNames =
-            {
-
-              owner:
-                "Власник UA LEGION",
-
-              director:
-                "Директор",
-
-              ets2_director:
-                "Директор ETS2",
-
-              top_manager:
-                "Топ-менеджер",
-
-              ets2_top_manager:
-                "Топ-менеджер ETS2",
-
-              logistics_manager:
-                "Менеджер з логістики",
-
-              ets2_logistics_manager:
-                "Менеджер з логістики ETS2",
-
-              manager:
-                "Менеджер",
-
-              moderator:
-                "Модератор",
-
-              admin:
-                "Адміністратор",
-
-              administrator:
-                "Адміністратор",
-
-              member:
-                "Учасник"
-
-            };
-
-
-          /*
-            ЗБИРАЄМО ПОСАДИ
-          */
-
-          const roleLabels =
-            roles
-              .map(
-                item => {
-
-                  const code =
-                    (
-                      item.role ||
-                      ""
-                    )
-                    .toLowerCase();
-
-
-                  if (
-                    roleNames[
-                      code
-                    ]
-                  ) {
-
-                    return roleNames[
-                      code
-                    ];
-
-                  }
-
-
-                  /*
-                    Якщо в базі вже
-                    збережена готова назва
-                  */
-
-                  return (
-                    item.role ||
-                    ""
-                  );
-
-                }
-              )
-              .filter(
-                role =>
-                  role &&
-                  role.trim() !== ""
-              );
-
-
-          /*
-            HTML КАРТКИ
-          */
-
-          let content =
+          html +=
             `
-              <h3>
-                ${icon}
-                ${directionName}
-              </h3>
+              <p>
+                🏅 Посада${roleNames.length > 1 ? "и" : ""}:
+                ${roleNames.join(" + ")}
+              </p>
             `;
 
-
-          /*
-            ГЛОБАЛЬНА РОЛЬ
-          */
-
-          if (isGlobal) {
-
-            if (
-              roleLabels.length > 0
-            ) {
-
-              content =
-                `
-                  <h3>
-                    🇺🇦
-                    ${roleLabels.join(" / ")}
-                  </h3>
-
-                  <p>
-                    Глобальна роль
-                  </p>
-                `;
-
-            }
-
-          }
-
-
-          /*
-            ПОСАДИ НАПРЯМКУ
-
-            Рядок показується
-            ТІЛЬКИ якщо посади реально є.
-
-            Якщо посад немає —
-            нічого зайвого не показуємо.
-          */
-
-          if (
-            !isGlobal &&
-            roleLabels.length > 0
-          ) {
-
-            const positionTitle =
-              directionCode === "ets2"
-                ? "Посади ETS2"
-                : "Посади";
-
-
-            content =
-              `
-                <h3>
-                  ${icon}
-                  ${directionName}
-                </h3>
-
-                <p>
-                  ${positionTitle}: ${roleLabels.join(" + ")}
-                </p>
-              `;
-
-          }
-
-
-          /*
-            Якщо напрямок є,
-            але посади немає
-          */
-
-          if (
-            !isGlobal &&
-            roleLabels.length === 0
-          ) {
-
-            content =
-              `
-                <h3>
-                  ${icon}
-                  ${directionName}
-                </h3>
-              `;
-
-          }
-
-
-          roleCard.innerHTML =
-            content;
-
-
-          rolesList.appendChild(
-            roleCard
-          );
-
         }
-      );
+
+
+        roleCard.innerHTML =
+          html;
+
+
+        rolesList.appendChild(
+          roleCard
+        );
+
+      }
+    );
 
   }
 
@@ -1574,6 +1405,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           window.location.href =
             "login.html";
 
+
         } catch (error) {
 
           console.error(
@@ -1595,7 +1427,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
   /* =========================================
-     ЗАВАНТАЖЕННЯ СТОРІНКИ
+     ЗАВАНТАЖЕННЯ ВСІЄЇ ІНФОРМАЦІЇ
      ========================================= */
 
   await Promise.all(
