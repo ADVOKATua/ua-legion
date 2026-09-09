@@ -35,90 +35,75 @@ document.addEventListener("DOMContentLoaded", async () => {
       "profileForm"
     );
 
-
   const profileAvatar =
     document.getElementById(
       "profileAvatar"
     );
-
 
   const profileNamePreview =
     document.getElementById(
       "profileNamePreview"
     );
 
-
   const displayName =
     document.getElementById(
       "displayName"
     );
-
 
   const birthDate =
     document.getElementById(
       "birthDate"
     );
 
-
   const avatarInput =
     document.getElementById(
       "avatarUrl"
     );
-
 
   const discordUsername =
     document.getElementById(
       "discordUsername"
     );
 
-
   const discordUserId =
     document.getElementById(
       "discordUserId"
     );
-
 
   const steamId =
     document.getElementById(
       "steamId"
     );
 
-
   const gameNickname =
     document.getElementById(
       "gameNickname"
     );
-
 
   const applicationStatus =
     document.getElementById(
       "applicationStatus"
     );
 
-
   const rolesList =
     document.getElementById(
       "rolesList"
     );
-
 
   const joinButton =
     document.getElementById(
       "joinButton"
     );
 
-
   const logoutButton =
     document.getElementById(
       "logoutButton"
     );
 
-
   const profileMessage =
     document.getElementById(
       "profileMessage"
     );
-
 
   const saveProfileButton =
     document.getElementById(
@@ -299,9 +284,7 @@ document.addEventListener("DOMContentLoaded", async () => {
      БЕЗПЕЧНИЙ HTML
      ========================================= */
 
-  function escapeHtml(
-    value
-  ) {
+  function escapeHtml(value) {
 
     return String(
       value ?? ""
@@ -377,7 +360,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
           profileMessage.textContent =
             "";
-
 
           profileMessage.className =
             "profile-message";
@@ -633,8 +615,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       profile;
 
 
-    /* ПРОФІЛЬ ЩЕ НЕ СТВОРЕНИЙ */
-
     if (!profile) {
 
       if (displayName) {
@@ -668,8 +648,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    /* ІМ'Я */
-
     if (displayName) {
 
       displayName.value =
@@ -678,8 +656,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     }
 
-
-    /* ДАТА */
 
     if (birthDate) {
 
@@ -690,8 +666,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    /* DISCORD */
-
     if (discordUsername) {
 
       discordUsername.value =
@@ -700,8 +674,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     }
 
-
-    /* DISCORD ID */
 
     if (discordUserId) {
 
@@ -712,8 +684,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    /* STEAM */
-
     if (steamId) {
 
       steamId.value =
@@ -723,8 +693,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    /* GAME NICK */
-
     if (gameNickname) {
 
       gameNickname.value =
@@ -733,8 +701,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     }
 
-
-    /* ІМ'Я У ШАПЦІ */
 
     if (profileNamePreview) {
 
@@ -751,8 +717,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    /* АВАТАР */
-
     if (profileAvatar) {
 
       profileAvatar.src =
@@ -763,8 +727,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     }
 
-
-    /* НАПРЯМКИ */
 
     const selectedDirections =
       getDirectionsFromProfile();
@@ -814,8 +776,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     const file =
       avatarInput.files?.[0];
 
-
-    /* ФАЙЛ НЕ ВИБРАНИЙ */
 
     if (!file) {
 
@@ -896,7 +856,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         "Помилка завантаження аватара:",
         uploadError
       );
-
 
       throw new Error(
         "Не вдалося завантажити аватар."
@@ -1037,7 +996,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             saveProfileButton.disabled =
               true;
 
-
             saveProfileButton.textContent =
               "⏳ ЗБЕРІГАЄМО...";
 
@@ -1148,7 +1106,6 @@ document.addEventListener("DOMContentLoaded", async () => {
               error
             );
 
-
             throw new Error(
               error.message
             );
@@ -1202,7 +1159,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
           await loadRoles();
 
-
         }
 
         catch (error) {
@@ -1232,7 +1188,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             saveProfileButton.disabled =
               false;
 
-
             saveProfileButton.textContent =
               "💾 ЗБЕРЕГТИ ПРОФІЛЬ";
 
@@ -1260,7 +1215,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
     const {
-      data: application,
+      data: applications,
       error
     } =
       await supabaseClient
@@ -1288,9 +1243,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         .limit(
           1
-        )
-
-        .maybeSingle();
+        );
 
 
     if (error) {
@@ -1300,10 +1253,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         error
       );
 
-
       applicationStatus.className =
         "application-card none";
-
 
       applicationStatus.innerHTML =
         `
@@ -1311,25 +1262,39 @@ document.addEventListener("DOMContentLoaded", async () => {
           <p>Не вдалося завантажити інформацію про заявку.</p>
         `;
 
-
       return;
 
     }
 
 
-    /* ЗАЯВКИ НЕМАЄ */
+    const application =
+      applications &&
+      applications.length > 0
+        ? applications[0]
+        : null;
+
 
     if (!application) {
 
       applicationStatus.className =
         "application-card none";
 
-
       applicationStatus.innerHTML =
         `
           <h3>📄 Заявки немає</h3>
           <p>Ви ще не подавали заявку до UA LEGION.</p>
         `;
+
+
+      if (joinButton) {
+
+        joinButton.style.display =
+          "inline-flex";
+
+        joinButton.href =
+          "join.html";
+
+      }
 
 
       return;
@@ -1345,8 +1310,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         .toLowerCase();
 
 
-    /* ПРИЙНЯТО */
-
     if (
       status === "approved" ||
       status === "accepted"
@@ -1355,7 +1318,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       applicationStatus.className =
         "application-card approved";
 
-
       applicationStatus.innerHTML =
         `
           <h3>✓ Заявку прийнято</h3>
@@ -1363,12 +1325,18 @@ document.addEventListener("DOMContentLoaded", async () => {
         `;
 
 
+      if (joinButton) {
+
+        joinButton.style.display =
+          "none";
+
+      }
+
+
       return;
 
     }
 
-
-    /* ВІДХИЛЕНО */
 
     if (
       status === "rejected" ||
@@ -1378,7 +1346,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       applicationStatus.className =
         "application-card rejected";
 
-
       applicationStatus.innerHTML =
         `
           <h3>✕ Заявку відхилено</h3>
@@ -1386,22 +1353,38 @@ document.addEventListener("DOMContentLoaded", async () => {
         `;
 
 
+      if (joinButton) {
+
+        joinButton.style.display =
+          "inline-flex";
+
+        joinButton.href =
+          "join.html";
+
+      }
+
+
       return;
 
     }
 
 
-    /* НА РОЗГЛЯДІ */
-
     applicationStatus.className =
       "application-card pending";
-
 
     applicationStatus.innerHTML =
       `
         <h3>⏳ Заявка на розгляді</h3>
         <p>Ваша заявка очікує рішення адміністрації.</p>
       `;
+
+
+    if (joinButton) {
+
+      joinButton.style.display =
+        "none";
+
+    }
 
   }
 
@@ -1556,7 +1539,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                   code:
                     item?.roles?.code ||
                     "",
-
 
                   name:
                     item?.roles?.name ||
@@ -1761,7 +1743,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                 key
               );
 
-
               uniqueGlobalRoles.push(
                 item
               );
@@ -1906,12 +1887,15 @@ document.addEventListener("DOMContentLoaded", async () => {
               ];
 
 
-            /* ЗАГОЛОВОК */
+            /* =================================
+               ЗАГОЛОВОК
+
+               БЕЗ СЛОВА "НАПРЯМОК"
+               ================================= */
 
             let html =
               `
                 <h3>
-                  Напрямок:
                   ${escapeHtml(directionName)}
                 </h3>
               `;
@@ -2050,7 +2034,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       }
 
-
     }
 
     catch (error) {
@@ -2087,7 +2070,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
           logoutButton.disabled =
             true;
-
 
           logoutButton.textContent =
             "⏳ ВИХОДИМО...";
@@ -2133,7 +2115,6 @@ document.addEventListener("DOMContentLoaded", async () => {
           logoutButton.disabled =
             false;
 
-
           logoutButton.textContent =
             "🚪 ВИЙТИ";
 
@@ -2153,9 +2134,18 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     joinButton.addEventListener(
       "click",
-      () => {
+      event => {
 
-        /* Перехід виконується через href */
+        if (
+          joinButton.tagName !== "A"
+        ) {
+
+          event.preventDefault();
+
+          window.location.href =
+            "join.html";
+
+        }
 
       }
     );
@@ -2164,19 +2154,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
   /* =========================================
-     ПОЧАТКОВЕ ЗАВАНТАЖЕННЯ
+     ЗАПУСК
      ========================================= */
 
   await loadProfile();
 
+  await loadApplication();
 
-  await Promise.all([
-
-    loadApplication(),
-
-    loadRoles()
-
-  ]);
-
+  await loadRoles();
 
 });
