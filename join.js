@@ -7,7 +7,6 @@ document.addEventListener(
   "DOMContentLoaded",
   async () => {
 
-
     // ======================================
     // SUPABASE
     // ======================================
@@ -70,7 +69,9 @@ document.addEventListener(
       },
       error: authError
     } =
-      await supabase.auth.getUser();
+      await supabase
+        .auth
+        .getUser();
 
 
     if (
@@ -104,6 +105,92 @@ document.addEventListener(
 
 
     // ======================================
+    // MESSAGE
+    // ======================================
+
+    function showMessage(
+      text,
+      type
+    ) {
+
+      if (
+        !formMessage
+      ) {
+
+        return;
+
+      }
+
+
+      formMessage.textContent =
+        text;
+
+
+      formMessage.className =
+        type || "";
+
+    }
+
+
+    // ======================================
+    // GET VALUE
+    // ======================================
+
+    function getValue(
+      id
+    ) {
+
+      const element =
+        document.getElementById(
+          id
+        );
+
+
+      if (
+        !element
+      ) {
+
+        return "";
+
+      }
+
+
+      return (
+        element.value ||
+        ""
+      )
+        .trim();
+
+    }
+
+
+    // ======================================
+    // GET SELECTED DIRECTION
+    // ======================================
+
+    function getSelectedDirection() {
+
+      const selected =
+        document.querySelector(
+          'input[name="direction"]:checked'
+        );
+
+
+      if (
+        !selected
+      ) {
+
+        return null;
+
+      }
+
+
+      return selected.value;
+
+    }
+
+
+    // ======================================
     // HIDE ALL GAME FORMS
     // ======================================
 
@@ -124,9 +211,29 @@ document.addEventListener(
             gameForm
           ) {
 
+            // Ховаємо форму.
             gameForm.classList.remove(
               "active"
             );
+
+
+            // Вимикаємо всі поля,
+            // щоб браузер не перевіряв
+            // required поля прихованих ігор.
+            gameForm
+              .querySelectorAll(
+                "input, select, textarea"
+              )
+              .forEach(
+                function (
+                  element
+                ) {
+
+                  element.disabled =
+                    true;
+
+                }
+              );
 
           }
 
@@ -144,6 +251,8 @@ document.addEventListener(
       direction
     ) {
 
+      // Спочатку ховаємо
+      // та відключаємо всі форми.
       hideAllGameForms();
 
 
@@ -157,9 +266,27 @@ document.addEventListener(
         selectedForm
       ) {
 
+        // Показуємо вибрану форму.
         selectedForm.classList.add(
           "active"
         );
+
+
+        // Включаємо її поля.
+        selectedForm
+          .querySelectorAll(
+            "input, select, textarea"
+          )
+          .forEach(
+            function (
+              element
+            ) {
+
+              element.disabled =
+                false;
+
+            }
+          );
 
       }
 
@@ -197,85 +324,26 @@ document.addEventListener(
 
 
     // ======================================
-    // MESSAGE
+    // INITIAL FORM STATE
     // ======================================
 
-    function showMessage(
-      text,
-      type
+    const initiallySelected =
+      document.querySelector(
+        'input[name="direction"]:checked'
+      );
+
+
+    if (
+      initiallySelected
     ) {
 
-      if (
-        !formMessage
-      ) {
-        return;
-      }
+      showGameForm(
+        initiallySelected.value
+      );
 
+    } else {
 
-      formMessage.textContent =
-        text;
-
-
-      formMessage.className =
-        type || "";
-
-    }
-
-
-    // ======================================
-    // GET VALUE
-    // ======================================
-
-    function getValue(
-      id
-    ) {
-
-      const element =
-        document.getElementById(
-          id
-        );
-
-
-      if (
-        !element
-      ) {
-
-        return null;
-
-      }
-
-
-      return (
-        element.value ||
-        ""
-      )
-        .trim();
-
-    }
-
-
-    // ======================================
-    // GET SELECTED DIRECTION
-    // ======================================
-
-    function getSelectedDirection() {
-
-      const selected =
-        document.querySelector(
-          'input[name="direction"]:checked'
-        );
-
-
-      if (
-        !selected
-      ) {
-
-        return null;
-
-      }
-
-
-      return selected.value;
+      hideAllGameForms();
 
     }
 
@@ -340,25 +408,124 @@ document.addEventListener(
 
 
         // ================================
+        // APPLICATION NAME
+        // Обов'язкове поле таблиці
+        // applications.name
+        // ================================
+
+        let applicationName =
+          "";
+
+
+        if (
+          direction === "ets2"
+        ) {
+
+          applicationName =
+            getValue(
+              "truckersmpNick"
+            );
+
+        }
+
+
+        if (
+          direction === "wot"
+        ) {
+
+          applicationName =
+            getValue(
+              "wotNickname"
+            );
+
+        }
+
+
+        if (
+          direction === "dota2"
+        ) {
+
+          applicationName =
+            getValue(
+              "dotaNickname"
+            );
+
+        }
+
+
+        if (
+          direction === "wow"
+        ) {
+
+          applicationName =
+            getValue(
+              "battleTag"
+            );
+
+        }
+
+
+        // Додаткова перевірка,
+        // щоб не записувати NULL.
+        if (
+          !applicationName
+        ) {
+
+          showMessage(
+            "Будь ласка, заповніть нікнейм.",
+            "error"
+          );
+
+
+          if (
+            submitButton
+          ) {
+
+            submitButton.disabled =
+              false;
+
+
+            submitButton.textContent =
+              "НАДІСЛАТИ ЗАЯВКУ";
+
+          }
+
+
+          return;
+
+        }
+
+
+        // ================================
         // APPLICATION DATA
         // ================================
 
         const applicationData = {
 
+          // Обов'язкове старе поле
+          // таблиці applications.
+          name:
+            applicationName,
+
+          // Авторизований користувач.
           user_id:
             user.id,
 
+          // Напрямок.
           direction:
             direction,
 
+          // Статус нової заявки.
           status:
             "pending",
 
+          // Інформація про користувача.
           about:
             getValue(
               "about"
             ),
 
+          // ETS2
           truckersmp_nick:
             null,
 
@@ -371,6 +538,7 @@ document.addEventListener(
           truckershub_id:
             null,
 
+          // WoT
           wot_nickname:
             null,
 
@@ -380,6 +548,7 @@ document.addEventListener(
           wot_region:
             null,
 
+          // Dota 2
           dota_nickname:
             null,
 
@@ -389,6 +558,7 @@ document.addEventListener(
           dota_rank:
             null,
 
+          // WoW
           battletag:
             null,
 
@@ -572,6 +742,7 @@ document.addEventListener(
         ) {
 
           console.error(
+            "Помилка перевірки заявки:",
             checkError
           );
 
@@ -634,6 +805,7 @@ document.addEventListener(
         ) {
 
           console.error(
+            "Помилка надсилання заявки:",
             insertError
           );
 
