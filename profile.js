@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", async () => {
 
   /* =========================================
-     SUPABASE CLIENT
+     UA LEGION — PROFILE
      ========================================= */
 
   const supabaseClient =
@@ -17,7 +17,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   if (!supabaseClient) {
 
-    console.error("Supabase client не знайдено.");
+    console.error(
+      "Supabase client не знайдено."
+    );
 
     return;
 
@@ -29,52 +31,99 @@ document.addEventListener("DOMContentLoaded", async () => {
      ========================================= */
 
   const profileForm =
-    document.getElementById("profileForm");
+    document.getElementById(
+      "profileForm"
+    );
+
 
   const profileAvatar =
-    document.getElementById("profileAvatar");
+    document.getElementById(
+      "profileAvatar"
+    );
+
 
   const profileNamePreview =
-    document.getElementById("profileNamePreview");
+    document.getElementById(
+      "profileNamePreview"
+    );
+
 
   const displayName =
-    document.getElementById("displayName");
+    document.getElementById(
+      "displayName"
+    );
+
 
   const birthDate =
-    document.getElementById("birthDate");
+    document.getElementById(
+      "birthDate"
+    );
+
 
   const avatarInput =
-    document.getElementById("avatarUrl");
+    document.getElementById(
+      "avatarUrl"
+    );
+
 
   const discordUsername =
-    document.getElementById("discordUsername");
+    document.getElementById(
+      "discordUsername"
+    );
+
 
   const discordUserId =
-    document.getElementById("discordUserId");
+    document.getElementById(
+      "discordUserId"
+    );
+
 
   const steamId =
-    document.getElementById("steamId");
+    document.getElementById(
+      "steamId"
+    );
+
 
   const gameNickname =
-    document.getElementById("gameNickname");
+    document.getElementById(
+      "gameNickname"
+    );
+
 
   const applicationStatus =
-    document.getElementById("applicationStatus");
+    document.getElementById(
+      "applicationStatus"
+    );
+
 
   const rolesList =
-    document.getElementById("rolesList");
+    document.getElementById(
+      "rolesList"
+    );
+
 
   const joinButton =
-    document.getElementById("joinButton");
+    document.getElementById(
+      "joinButton"
+    );
+
 
   const logoutButton =
-    document.getElementById("logoutButton");
+    document.getElementById(
+      "logoutButton"
+    );
+
 
   const profileMessage =
-    document.getElementById("profileMessage");
+    document.getElementById(
+      "profileMessage"
+    );
+
 
   const saveProfileButton =
-    document.getElementById("saveProfile");
+    document.getElementById(
+      "saveProfile"
+    );
 
 
   /* =========================================
@@ -92,7 +141,10 @@ document.addEventListener("DOMContentLoaded", async () => {
       .getUser();
 
 
-  if (userError || !user) {
+  if (
+    userError ||
+    !user
+  ) {
 
     window.location.href =
       "login.html";
@@ -106,149 +158,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     user.id;
 
 
-  /* =========================================
-     БАЗОВИЙ АВАТАР
-     ========================================= */
-
   const defaultAvatar =
     "ua-legion-logo.png";
 
 
-  /* =========================================
-     ДАНІ ПРОФІЛЮ
-     ========================================= */
-
   let currentProfile =
     null;
-
-
-  /* =========================================
-     ПОВІДОМЛЕННЯ
-     ========================================= */
-
-  function showMessage(
-    text,
-    type = ""
-  ) {
-
-    if (!profileMessage) {
-
-      return;
-
-    }
-
-
-    profileMessage.textContent =
-      text;
-
-    profileMessage.className =
-      "profile-message";
-
-
-    if (type) {
-
-      profileMessage.classList.add(
-        type
-      );
-
-    }
-
-
-    if (type === "success") {
-
-      setTimeout(
-        () => {
-
-          profileMessage.textContent =
-            "";
-
-          profileMessage.className =
-            "profile-message";
-
-        },
-        4000
-      );
-
-    }
-
-  }
-
-
-  /* =========================================
-     ОНОВЛЕННЯ ІМЕНІ
-     ========================================= */
-
-  if (displayName) {
-
-    displayName.addEventListener(
-      "input",
-      () => {
-
-        const name =
-          displayName.value.trim();
-
-
-        if (profileNamePreview) {
-
-          profileNamePreview.textContent =
-            name ||
-            user.email ||
-            "UA LEGION Member";
-
-        }
-
-      }
-    );
-
-  }
-
-
-  /* =========================================
-     ПЕРЕГЛЯД АВАТАРА
-     ========================================= */
-
-  if (avatarInput) {
-
-    avatarInput.addEventListener(
-      "change",
-      () => {
-
-        const file =
-          avatarInput.files[0];
-
-
-        if (!file) {
-
-          return;
-
-        }
-
-
-        const reader =
-          new FileReader();
-
-
-        reader.onload =
-          event => {
-
-            if (profileAvatar) {
-
-              profileAvatar.src =
-                event.target.result;
-
-            }
-
-          };
-
-
-        reader.readAsDataURL(
-          file
-        );
-
-      }
-    );
-
-  }
 
 
   /* =========================================
@@ -275,11 +190,26 @@ document.addEventListener("DOMContentLoaded", async () => {
   };
 
 
+  const DIRECTION_ORDER = [
+
+    "ets2",
+
+    "trucksmp",
+
+    "wot",
+
+    "dota2",
+
+    "wow"
+
+  ];
+
+
   /* =========================================
-     НАЗВИ РОЛЕЙ ETS2
+     ПОСАДИ ETS2
      ========================================= */
 
-  const ROLE_LABELS = {
+  const ETS2_ROLE_LABELS = {
 
     director:
       "Топ-менеджер ETS2",
@@ -309,13 +239,16 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
   /* =========================================
-     НАЗВИ ГЛОБАЛЬНИХ РОЛЕЙ
+     ГЛОБАЛЬНІ РОЛІ
      ========================================= */
 
   const GLOBAL_ROLE_LABELS = {
 
     owner:
       "Власник UA LEGION",
+
+    deputy_owner:
+      "Заступник власника UA LEGION",
 
     director:
       "Директор UA LEGION",
@@ -326,10 +259,136 @@ document.addEventListener("DOMContentLoaded", async () => {
     admin:
       "Адміністратор UA LEGION",
 
+    top_manager:
+      "Топ-менеджер UA LEGION",
+
+    hr_manager:
+      "HR-менеджер UA LEGION",
+
     moderator:
       "Модератор UA LEGION"
 
   };
+
+
+  /* =========================================
+     КЛАСИ ETS2
+     ========================================= */
+
+  const ETS2_CLASS_LABELS = {
+
+    s:
+      "S — Елітний водій",
+
+    a:
+      "A — Професійний водій",
+
+    b:
+      "B — Старший водій",
+
+    c:
+      "C — Водій",
+
+    d:
+      "D — Молодший водій"
+
+  };
+
+
+  /* =========================================
+     БЕЗПЕЧНИЙ HTML
+     ========================================= */
+
+  function escapeHtml(
+    value
+  ) {
+
+    return String(
+      value ?? ""
+    )
+
+      .replace(
+        /&/g,
+        "&amp;"
+      )
+
+      .replace(
+        /</g,
+        "&lt;"
+      )
+
+      .replace(
+        />/g,
+        "&gt;"
+      )
+
+      .replace(
+        /"/g,
+        "&quot;"
+      )
+
+      .replace(
+        /'/g,
+        "&#039;"
+      );
+
+  }
+
+
+  /* =========================================
+     ПОВІДОМЛЕННЯ
+     ========================================= */
+
+  function showMessage(
+    text,
+    type = ""
+  ) {
+
+    if (!profileMessage) {
+
+      return;
+
+    }
+
+
+    profileMessage.textContent =
+      text;
+
+
+    profileMessage.className =
+      "profile-message";
+
+
+    if (type) {
+
+      profileMessage.classList.add(
+        type
+      );
+
+    }
+
+
+    if (
+      type === "success"
+    ) {
+
+      setTimeout(
+        () => {
+
+          profileMessage.textContent =
+            "";
+
+
+          profileMessage.className =
+            "profile-message";
+
+        },
+        4000
+      );
+
+    }
+
+  }
 
 
   /* =========================================
@@ -340,43 +399,44 @@ document.addEventListener("DOMContentLoaded", async () => {
     direction
   ) {
 
-    if (!direction) {
-
-      return "Невідомий напрямок";
-
-    }
+    const key =
+      String(
+        direction || ""
+      )
+        .trim()
+        .toLowerCase();
 
 
     return (
-      DIRECTION_LABELS[
-        direction
-      ] ||
-      direction.toUpperCase()
+      DIRECTION_LABELS[key] ||
+      direction ||
+      "Невідомий напрямок"
     );
 
   }
 
 
   /* =========================================
-     НАЗВА РОЛІ
+     НАЗВА ПОСАДИ ETS2
      ========================================= */
 
-  function getRoleLabel(
+  function getETS2RoleLabel(
     role
   ) {
 
-    if (!role) {
-
-      return "";
-
-    }
+    const key =
+      String(
+        role || ""
+      )
+        .trim()
+        .toLowerCase();
 
 
     return (
-      ROLE_LABELS[
-        role
-      ] ||
-      role
+      ETS2_ROLE_LABELS[key] ||
+      String(
+        role || ""
+      ).trim()
     );
 
   }
@@ -387,28 +447,42 @@ document.addEventListener("DOMContentLoaded", async () => {
      ========================================= */
 
   function getGlobalRoleLabel(
-    role
+    role,
+    name
   ) {
 
-    if (!role) {
+    if (
+      name &&
+      String(name).trim()
+    ) {
 
-      return "";
+      return String(
+        name
+      ).trim();
 
     }
 
 
+    const key =
+      String(
+        role || ""
+      )
+        .trim()
+        .toLowerCase();
+
+
     return (
-      GLOBAL_ROLE_LABELS[
-        role
-      ] ||
-      role
+      GLOBAL_ROLE_LABELS[key] ||
+      String(
+        role || ""
+      ).trim()
     );
 
   }
 
 
   /* =========================================
-     ОТРИМАННЯ КЛАСУ ETS2
+     КЛАС ETS2
      ========================================= */
 
   function getETS2Class() {
@@ -421,16 +495,21 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
     const value =
+
       currentProfile.ets2_class ||
+
       currentProfile.ets2_driver_class ||
+
       currentProfile.driver_class ||
+
       currentProfile.class ||
+
       null;
 
 
     if (
       !value ||
-      String(value).trim() === ""
+      !String(value).trim()
     ) {
 
       return null;
@@ -438,41 +517,74 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    return String(value).trim();
+    const text =
+      String(value).trim();
+
+
+    const key =
+      text.toLowerCase();
+
+
+    return (
+      ETS2_CLASS_LABELS[key] ||
+      text
+    );
 
   }
 
 
   /* =========================================
-     ОТРИМАННЯ ГЛОБАЛЬНОЇ РОЛІ
+     НАПРЯМКИ З ПРОФІЛЮ
      ========================================= */
 
-  function getGlobalRole() {
-
-    if (!currentProfile) {
-
-      return null;
-
-    }
-
-
-    const value =
-      currentProfile.global_role ||
-      currentProfile.globalRole ||
-      null;
-
+  function getDirectionsFromProfile() {
 
     if (
-      !value ||
-      String(value).trim() === ""
+      !currentProfile ||
+      !Array.isArray(
+        currentProfile.directions
+      )
     ) {
 
-      return null;
+      return [];
 
     }
 
 
-    return String(value).trim();
+    return currentProfile.directions
+
+      .filter(
+        Boolean
+      )
+
+      .map(
+        direction =>
+          String(direction)
+            .trim()
+            .toLowerCase()
+      );
+
+  }
+
+
+  /* =========================================
+     НАПРЯМКИ З ФОРМИ
+     ========================================= */
+
+  function getDirectionsFromForm() {
+
+    return Array.from(
+
+      document.querySelectorAll(
+        'input[name="direction"]:checked'
+      )
+
+    )
+
+      .map(
+        checkbox =>
+          checkbox.value
+      );
 
   }
 
@@ -488,12 +600,20 @@ document.addEventListener("DOMContentLoaded", async () => {
       error
     } =
       await supabaseClient
-        .from("profiles")
-        .select("*")
+
+        .from(
+          "profiles"
+        )
+
+        .select(
+          "*"
+        )
+
         .eq(
           "id",
           userId
         )
+
         .maybeSingle();
 
 
@@ -559,30 +679,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    if (profileNamePreview) {
+    /* ДАТА */
 
-      profileNamePreview.textContent =
-        profile.display_name ||
-        user.email ||
-        "UA LEGION Member";
-
-    }
-
-
-    /* ДАТА НАРОДЖЕННЯ */
-
-    if (
-      profile.birth_date &&
-      birthDate
-    ) {
+    if (birthDate) {
 
       birthDate.value =
-        profile.birth_date;
+        profile.birth_date ||
+        "";
 
     }
 
 
-    /* DISCORD USERNAME */
+    /* DISCORD */
 
     if (discordUsername) {
 
@@ -604,7 +712,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    /* STEAM ID */
+    /* STEAM */
 
     if (steamId) {
 
@@ -615,7 +723,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    /* GAME NICKNAME */
+    /* GAME NICK */
 
     if (gameNickname) {
 
@@ -626,12 +734,31 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
+    /* ІМ'Я У ШАПЦІ */
+
+    if (profileNamePreview) {
+
+      profileNamePreview.textContent =
+
+        profile.display_name ||
+
+        profile.game_nickname ||
+
+        user.email ||
+
+        "UA LEGION Member";
+
+    }
+
+
     /* АВАТАР */
 
     if (profileAvatar) {
 
       profileAvatar.src =
+
         profile.avatar_url ||
+
         defaultAvatar;
 
     }
@@ -639,32 +766,27 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     /* НАПРЯМКИ */
 
-    let selectedDirections =
-      [];
-
-
-    if (
-      Array.isArray(
-        profile.directions
-      )
-    ) {
-
-      selectedDirections =
-        profile.directions;
-
-    }
+    const selectedDirections =
+      getDirectionsFromProfile();
 
 
     document
+
       .querySelectorAll(
         'input[name="direction"]'
       )
+
       .forEach(
         checkbox => {
 
           checkbox.checked =
             selectedDirections.includes(
-              checkbox.value
+
+              String(
+                checkbox.value
+              )
+                .toLowerCase()
+
             );
 
         }
@@ -681,49 +803,41 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     if (!avatarInput) {
 
-      return null;
-
-    }
-
-
-    const file =
-      avatarInput.files[0];
-
-
-    /* ФАЙЛ НЕ ВИБРАНИЙ */
-
-    if (!file) {
-
-      const {
-        data: profile
-      } =
-        await supabaseClient
-          .from("profiles")
-          .select("avatar_url")
-          .eq(
-            "id",
-            userId
-          )
-          .maybeSingle();
-
-
       return (
-        profile?.avatar_url ||
+        currentProfile?.avatar_url ||
         null
       );
 
     }
 
 
-    /* ДОЗВОЛЕНІ ТИПИ */
+    const file =
+      avatarInput.files?.[0];
 
-    const allowedTypes =
-      [
-        "image/png",
-        "image/jpeg",
-        "image/jpg",
-        "image/webp"
-      ];
+
+    /* ФАЙЛ НЕ ВИБРАНИЙ */
+
+    if (!file) {
+
+      return (
+        currentProfile?.avatar_url ||
+        null
+      );
+
+    }
+
+
+    const allowedTypes = [
+
+      "image/png",
+
+      "image/jpeg",
+
+      "image/jpg",
+
+      "image/webp"
+
+    ];
 
 
     if (
@@ -746,29 +860,32 @@ document.addEventListener("DOMContentLoaded", async () => {
         .toLowerCase();
 
 
-    const fileName =
-      `avatar-${Date.now()}.${extension}`;
-
-
     const filePath =
-      `${userId}/${fileName}`;
+      `${userId}/avatar-${Date.now()}.${extension}`;
 
 
     const {
       error: uploadError
     } =
       await supabaseClient
+
         .storage
-        .from("avatars")
+
+        .from(
+          "avatars"
+        )
+
         .upload(
           filePath,
           file,
           {
+
             cacheControl:
               "3600",
 
             upsert:
               false
+
           }
         );
 
@@ -776,6 +893,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (uploadError) {
 
       console.error(
+        "Помилка завантаження аватара:",
         uploadError
       );
 
@@ -791,16 +909,20 @@ document.addEventListener("DOMContentLoaded", async () => {
       data: urlData
     } =
       supabaseClient
+
         .storage
-        .from("avatars")
+
+        .from(
+          "avatars"
+        )
+
         .getPublicUrl(
           filePath
         );
 
 
     if (
-      !urlData ||
-      !urlData.publicUrl
+      !urlData?.publicUrl
     ) {
 
       throw new Error(
@@ -816,31 +938,81 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
   /* =========================================
-     ЗБІР НАПРЯМКІВ
+     ОНОВЛЕННЯ ІМЕНІ
      ========================================= */
 
-  function getDirections() {
+  if (displayName) {
 
-    const directions =
-      [];
+    displayName.addEventListener(
+      "input",
+      () => {
 
+        if (!profileNamePreview) {
 
-    document
-      .querySelectorAll(
-        'input[name="direction"]:checked'
-      )
-      .forEach(
-        checkbox => {
-
-          directions.push(
-            checkbox.value
-          );
+          return;
 
         }
-      );
 
 
-    return directions;
+        profileNamePreview.textContent =
+
+          displayName.value.trim() ||
+
+          gameNickname?.value.trim() ||
+
+          user.email ||
+
+          "UA LEGION Member";
+
+      }
+    );
+
+  }
+
+
+  /* =========================================
+     ПЕРЕГЛЯД АВАТАРА
+     ========================================= */
+
+  if (avatarInput) {
+
+    avatarInput.addEventListener(
+      "change",
+      () => {
+
+        const file =
+          avatarInput.files?.[0];
+
+
+        if (
+          !file ||
+          !profileAvatar
+        ) {
+
+          return;
+
+        }
+
+
+        const reader =
+          new FileReader();
+
+
+        reader.onload =
+          event => {
+
+            profileAvatar.src =
+              event.target.result;
+
+          };
+
+
+        reader.readAsDataURL(
+          file
+        );
+
+      }
+    );
 
   }
 
@@ -865,13 +1037,16 @@ document.addEventListener("DOMContentLoaded", async () => {
             saveProfileButton.disabled =
               true;
 
+
             saveProfileButton.textContent =
               "⏳ ЗБЕРІГАЄМО...";
 
           }
 
 
-          showMessage("");
+          showMessage(
+            ""
+          );
 
 
           const avatarUrl =
@@ -879,62 +1054,89 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
           const directions =
-            getDirections();
+            getDirectionsFromForm();
 
 
-          const profileData =
-            {
+          const profileData = {
 
-              id:
-                userId,
+            id:
+              userId,
 
-              display_name:
-                displayName
-                  ? displayName.value.trim()
-                  : null,
 
-              birth_date:
-                birthDate?.value ||
-                null,
+            display_name:
 
-              discord_username:
-                discordUsername?.value.trim() ||
-                null,
+              displayName?.value.trim() ||
 
-              discord_user_id:
-                discordUserId?.value.trim() ||
-                null,
+              null,
 
-              steam_id:
-                steamId?.value.trim() ||
-                null,
 
-              game_nickname:
-                gameNickname?.value.trim() ||
-                null,
+            birth_date:
 
-              directions:
-                directions,
+              birthDate?.value ||
 
-              avatar_url:
-                avatarUrl,
+              null,
 
-              updated_at:
-                new Date().toISOString()
 
-            };
+            discord_username:
+
+              discordUsername?.value.trim() ||
+
+              null,
+
+
+            discord_user_id:
+
+              discordUserId?.value.trim() ||
+
+              null,
+
+
+            steam_id:
+
+              steamId?.value.trim() ||
+
+              null,
+
+
+            game_nickname:
+
+              gameNickname?.value.trim() ||
+
+              null,
+
+
+            directions:
+              directions,
+
+
+            avatar_url:
+              avatarUrl,
+
+
+            updated_at:
+
+              new Date()
+                .toISOString()
+
+          };
 
 
           const {
             error
           } =
             await supabaseClient
-              .from("profiles")
+
+              .from(
+                "profiles"
+              )
+
               .upsert(
                 profileData,
                 {
+
                   onConflict:
                     "id"
+
                 }
               );
 
@@ -942,6 +1144,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           if (error) {
 
             console.error(
+              "Помилка збереження профілю:",
               error
             );
 
@@ -953,16 +1156,21 @@ document.addEventListener("DOMContentLoaded", async () => {
           }
 
 
-          currentProfile =
-            {
-              ...(currentProfile || {}),
-              ...profileData
-            };
+          currentProfile = {
+
+            ...(
+              currentProfile ||
+              {}
+            ),
+
+            ...profileData
+
+          };
 
 
           if (
-            avatarUrl &&
-            profileAvatar
+            profileAvatar &&
+            avatarUrl
           ) {
 
             profileAvatar.src =
@@ -974,8 +1182,14 @@ document.addEventListener("DOMContentLoaded", async () => {
           if (profileNamePreview) {
 
             profileNamePreview.textContent =
-              displayName?.value.trim() ||
-              user.email;
+
+              profileData.display_name ||
+
+              profileData.game_nickname ||
+
+              user.email ||
+
+              "UA LEGION Member";
 
           }
 
@@ -989,26 +1203,35 @@ document.addEventListener("DOMContentLoaded", async () => {
           await loadRoles();
 
 
-        } catch (error) {
+        }
+
+        catch (error) {
 
           console.error(
-            "Помилка:",
+            "Помилка збереження профілю:",
             error
           );
 
 
           showMessage(
+
             error.message ||
+
             "Помилка збереження профілю.",
+
             "error"
+
           );
 
-        } finally {
+        }
+
+        finally {
 
           if (saveProfileButton) {
 
             saveProfileButton.disabled =
               false;
+
 
             saveProfileButton.textContent =
               "💾 ЗБЕРЕГТИ ПРОФІЛЬ";
@@ -1041,12 +1264,20 @@ document.addEventListener("DOMContentLoaded", async () => {
       error
     } =
       await supabaseClient
-        .from("applications")
-        .select("*")
+
+        .from(
+          "applications"
+        )
+
+        .select(
+          "*"
+        )
+
         .eq(
           "user_id",
           userId
         )
+
         .order(
           "created_at",
           {
@@ -1054,7 +1285,11 @@ document.addEventListener("DOMContentLoaded", async () => {
               false
           }
         )
-        .limit(1)
+
+        .limit(
+          1
+        )
+
         .maybeSingle();
 
 
@@ -1107,7 +1342,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         application.status ||
         ""
       )
-      .toLowerCase();
+        .toLowerCase();
 
 
     /* ПРИЙНЯТО */
@@ -1173,6 +1408,16 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   /* =========================================
      МОЇ РОЛІ
+
+     ГЛОБАЛЬНІ РОЛІ:
+     user_roles → roles
+     direction_id = NULL
+
+     ПОСАДИ НАПРЯМКІВ:
+     user_direction_roles
+
+     КЛАС:
+     тільки ETS2
      ========================================= */
 
   async function loadRoles() {
@@ -1194,61 +1439,157 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     try {
 
-      /* =====================================
-         ГОЛОВНИЙ ЗАПИТ ДО ТВОЄЇ ТАБЛИЦІ
-         ===================================== */
+      const [
 
-      const {
-        data: roleRows,
-        error
-      } =
-        await supabaseClient
-          .from("user_direction_roles")
-          .select(
-            "direction, role"
-          )
-          .eq(
-            "user_id",
-            userId
-          )
-          .order(
-            "created_at",
-            {
-              ascending:
-                true
-            }
-          );
+        globalRolesResult,
+
+        directionRolesResult
+
+      ] =
+        await Promise.all([
 
 
-      if (error) {
+          /* =================================
+             ГЛОБАЛЬНІ РОЛІ
+             ================================= */
+
+          supabaseClient
+
+            .from(
+              "user_roles"
+            )
+
+            .select(
+              `
+                direction_id,
+
+                roles (
+                  code,
+                  name
+                )
+              `
+            )
+
+            .eq(
+              "user_id",
+              userId
+            )
+
+            .is(
+              "direction_id",
+              null
+            ),
+
+
+          /* =================================
+             ПОСАДИ НАПРЯМКІВ
+             ================================= */
+
+          supabaseClient
+
+            .from(
+              "user_direction_roles"
+            )
+
+            .select(
+              "direction, role"
+            )
+
+            .eq(
+              "user_id",
+              userId
+            )
+
+            .order(
+              "created_at",
+              {
+                ascending:
+                  true
+              }
+            )
+
+        ]);
+
+
+      const globalRolesError =
+        globalRolesResult.error;
+
+
+      const directionRolesError =
+        directionRolesResult.error;
+
+
+      if (globalRolesError) {
 
         console.error(
-          "Помилка завантаження ролей:",
-          error
+          "Помилка завантаження глобальної ролі:",
+          globalRolesError
         );
-
-
-        rolesList.innerHTML =
-          `
-            <div class="roles-empty">
-              ⚠️ Не вдалося завантажити ролі.
-            </div>
-          `;
-
-
-        return;
 
       }
 
 
-      const rows =
-        Array.isArray(roleRows)
-          ? roleRows
+      if (directionRolesError) {
+
+        console.error(
+          "Помилка завантаження посад напрямків:",
+          directionRolesError
+        );
+
+      }
+
+
+      /* =====================================
+         ГЛОБАЛЬНІ РОЛІ
+         ===================================== */
+
+      const globalRoles =
+        Array.isArray(
+          globalRolesResult.data
+        )
+
+          ? globalRolesResult.data
+
+              .map(
+                item => ({
+
+                  code:
+                    item?.roles?.code ||
+                    "",
+
+
+                  name:
+                    item?.roles?.name ||
+                    ""
+
+                })
+              )
+
+              .filter(
+                item =>
+                  item.code ||
+                  item.name
+              )
+
           : [];
 
 
       /* =====================================
-         ЗБИРАЄМО ВСІ НАПРЯМКИ
+         ПОСАДИ НАПРЯМКІВ
+         ===================================== */
+
+      const directionRoleRows =
+        Array.isArray(
+          directionRolesResult.data
+        )
+
+          ? directionRolesResult.data
+
+          : [];
+
+
+      /* =====================================
+         ЗБИРАЄМО НАПРЯМКИ
          ===================================== */
 
       const directions =
@@ -1257,20 +1598,38 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       /* НАПРЯМКИ З ПРОФІЛЮ */
 
-      if (
-        currentProfile &&
-        Array.isArray(
-          currentProfile.directions
-        )
-      ) {
+      getDirectionsFromProfile()
 
-        currentProfile.directions.forEach(
+        .forEach(
           direction => {
 
-            if (direction) {
+            directions.add(
+              direction
+            );
+
+          }
+        );
+
+
+      /* НАПРЯМКИ З ПОСАД */
+
+      directionRoleRows
+
+        .forEach(
+          row => {
+
+            if (row?.direction) {
 
               directions.add(
-                direction
+
+                String(
+                  row.direction
+                )
+
+                  .trim()
+
+                  .toLowerCase()
+
               );
 
             }
@@ -1278,29 +1637,8 @@ document.addEventListener("DOMContentLoaded", async () => {
           }
         );
 
-      }
 
-
-      /* НАПРЯМКИ З РОЛЕЙ */
-
-      rows.forEach(
-        row => {
-
-          if (
-            row.direction
-          ) {
-
-            directions.add(
-              row.direction
-            );
-
-          }
-
-        }
-      );
-
-
-      /* ETS2 КЛАС ТЕЖ ОЗНАЧАЄ НАПРЯМОК ETS2 */
+      /* КЛАС ETS2 АВТОМАТИЧНО ДОДАЄ ETS2 */
 
       const ets2Class =
         getETS2Class();
@@ -1315,76 +1653,73 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
 
 
-      /* ЯКЩО НАПРЯМКІВ НЕМАЄ */
-
-      if (
-        directions.size === 0
-      ) {
-
-        rolesList.innerHTML =
-          `
-            <div class="roles-empty">
-              🏅 Ролі та посади ще не призначені.
-            </div>
-          `;
-
-
-        return;
-
-      }
-
-
       /* =====================================
-         ГРУПУЄМО ПОСАДИ ЗА НАПРЯМКАМИ
+         ГРУПУЄМО ПОСАДИ
          ===================================== */
 
       const rolesByDirection =
         {};
 
 
-      rows.forEach(
-        row => {
+      directionRoleRows
 
-          if (
-            !row.direction ||
-            !row.role
-          ) {
+        .forEach(
+          row => {
 
-            return;
+            const direction =
+              String(
+                row?.direction ||
+                ""
+              )
 
-          }
+                .trim()
+
+                .toLowerCase();
 
 
-          if (
-            !rolesByDirection[
-              row.direction
-            ]
-          ) {
+            const role =
+              String(
+                row?.role ||
+                ""
+              )
+
+                .trim();
+
+
+            if (
+              !direction ||
+              !role
+            ) {
+
+              return;
+
+            }
+
+
+            if (
+              !rolesByDirection[
+                direction
+              ]
+            ) {
+
+              rolesByDirection[
+                direction
+              ] =
+                [];
+
+            }
+
 
             rolesByDirection[
-              row.direction
-            ] =
-              [];
+              direction
+            ]
+
+              .push(
+                role
+              );
 
           }
-
-
-          rolesByDirection[
-            row.direction
-          ].push(
-            row.role
-          );
-
-        }
-      );
-
-
-      /* =====================================
-         ГЛОБАЛЬНА РОЛЬ
-         ===================================== */
-
-      const globalRole =
-        getGlobalRole();
+        );
 
 
       /* =====================================
@@ -1396,185 +1731,332 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
       /* =====================================
-         ГЛОБАЛЬНА КАРТКА
-         ПОКАЗУЄТЬСЯ ТІЛЬКИ ЯКЩО Є РОЛЬ
+         ВИДАЛЯЄМО ДУБЛІКАТИ ГЛОБАЛЬНИХ РОЛЕЙ
          ===================================== */
 
-      if (globalRole) {
-
-        const globalCard =
-          document.createElement(
-            "div"
-          );
+      const uniqueGlobalRoles =
+        [];
 
 
-        globalCard.className =
-          "role-card global";
+      const seenGlobalRoles =
+        new Set();
 
 
-        globalCard.innerHTML =
-          `
-            <h3>
-              ${getGlobalRoleLabel(globalRole)}
-            </h3>
+      globalRoles
 
-            <p>
-              Глобальна роль
-            </p>
-          `;
+        .forEach(
+          item => {
+
+            const key =
+              `${item.code}|${item.name}`;
 
 
-        rolesList.appendChild(
-          globalCard
+            if (
+              !seenGlobalRoles.has(
+                key
+              )
+            ) {
+
+              seenGlobalRoles.add(
+                key
+              );
+
+
+              uniqueGlobalRoles.push(
+                item
+              );
+
+            }
+
+          }
         );
 
-      }
+
+      /* =====================================
+         ГЛОБАЛЬНІ КАРТКИ
+         ===================================== */
+
+      uniqueGlobalRoles
+
+        .forEach(
+          item => {
+
+            const card =
+              document.createElement(
+                "div"
+              );
+
+
+            card.className =
+              "role-card global";
+
+
+            const label =
+              getGlobalRoleLabel(
+                item.code,
+                item.name
+              );
+
+
+            card.innerHTML =
+              `
+                <h3>
+                  ${escapeHtml(label)}
+                </h3>
+
+                <p>
+                  Глобальна роль
+                </p>
+              `;
+
+
+            rolesList.appendChild(
+              card
+            );
+
+          }
+        );
+
+
+      /* =====================================
+         СОРТУВАННЯ НАПРЯМКІВ
+         ===================================== */
+
+      const sortedDirections =
+        Array.from(
+          directions
+        )
+
+          .sort(
+            (
+              a,
+              b
+            ) => {
+
+              const aIndex =
+                DIRECTION_ORDER.indexOf(
+                  a
+                );
+
+
+              const bIndex =
+                DIRECTION_ORDER.indexOf(
+                  b
+                );
+
+
+              const safeA =
+                aIndex === -1
+                  ? 999
+                  : aIndex;
+
+
+              const safeB =
+                bIndex === -1
+                  ? 999
+                  : bIndex;
+
+
+              return (
+                safeA -
+                safeB
+              );
+
+            }
+          );
 
 
       /* =====================================
          КАРТКИ НАПРЯМКІВ
          ===================================== */
 
-      directions.forEach(
-        direction => {
+      sortedDirections
 
-          const card =
-            document.createElement(
-              "div"
-            );
+        .forEach(
+          direction => {
 
-
-          card.className =
-            "role-card";
+            const card =
+              document.createElement(
+                "div"
+              );
 
 
-          const directionName =
-            getDirectionLabel(
-              direction
-            );
+            card.className =
+              "role-card";
 
 
-          const directionRoles =
-            rolesByDirection[
-              direction
-            ] ||
-            [];
+            const directionName =
+              getDirectionLabel(
+                direction
+              );
 
 
-          /* УНІКАЛЬНІ ПОСАДИ */
+            const uniqueRoles =
+              [
 
-          const uniqueRoles =
-            [
-              ...new Set(
-                directionRoles
-              )
-            ];
+                ...new Set(
 
+                  rolesByDirection[
+                    direction
+                  ] ||
+                  []
 
-          /* =================================
-             ЗАГОЛОВОК
-             ================================= */
-
-          let html =
-            `
-              <h3>
-                Напрямок: ${directionName}
-              </h3>
-            `;
-
-
-          /* =================================
-             ПОСАДИ
-
-             ЯКЩО ЇХ НЕМАЄ —
-             РЯДОК НЕ ПОКАЗУЄМО
-             ================================= */
-
-          if (
-            uniqueRoles.length > 0
-          ) {
-
-            const rolesText =
-              uniqueRoles
-                .map(
-                  role =>
-                    getRoleLabel(
-                      role
-                    )
                 )
-                .join(
-                  " + "
-                );
+
+              ];
 
 
-            html +=
+            /* ЗАГОЛОВОК */
+
+            let html =
               `
-                <p>
-                  <strong>
-                    Посади ${directionName}:
-                  </strong>
-                  ${rolesText}
-                </p>
+                <h3>
+                  Напрямок:
+                  ${escapeHtml(directionName)}
+                </h3>
               `;
 
+
+            /* =================================
+               ПОСАДИ
+
+               ЯКЩО НЕМАЄ —
+               РЯДОК НЕ ПОКАЗУЄМО
+               ================================= */
+
+            if (
+              uniqueRoles.length > 0
+            ) {
+
+              const rolesText =
+                uniqueRoles
+
+                  .map(
+                    role => {
+
+                      if (
+
+                        direction === "ets2" ||
+
+                        direction === "trucksmp"
+
+                      ) {
+
+                        return escapeHtml(
+
+                          getETS2RoleLabel(
+                            role
+                          )
+
+                        );
+
+                      }
+
+
+                      return escapeHtml(
+                        role
+                      );
+
+                    }
+                  )
+
+                  .join(
+                    " + "
+                  );
+
+
+              const title =
+
+                direction === "ets2" ||
+
+                direction === "trucksmp"
+
+                  ? "Посади ETS2"
+
+                  : `Ролі ${directionName}`;
+
+
+              html +=
+                `
+                  <p>
+                    <strong>
+                      ${escapeHtml(title)}:
+                    </strong>
+
+                    ${rolesText}
+                  </p>
+                `;
+
+            }
+
+
+            /* =================================
+               КЛАС
+
+               ВИКЛЮЧНО ETS2
+               ================================= */
+
+            if (
+              direction === "ets2" &&
+              ets2Class
+            ) {
+
+              html +=
+                `
+                  <p style="margin-top: 8px;">
+
+                    <strong>
+                      Клас:
+                    </strong>
+
+                    ${escapeHtml(ets2Class)}
+
+                  </p>
+                `;
+
+            }
+
+
+            card.innerHTML =
+              html;
+
+
+            rolesList.appendChild(
+              card
+            );
+
           }
-
-
-          /* =================================
-             КЛАС
-
-             ТІЛЬКИ ДЛЯ ETS2
-             ================================= */
-
-          if (
-            direction === "ets2" &&
-            ets2Class
-          ) {
-
-            html +=
-              `
-                <p style="margin-top: 8px;">
-                  <strong>
-                    Клас:
-                  </strong>
-                  ${ets2Class}
-                </p>
-              `;
-
-          }
-
-
-          card.innerHTML =
-            html;
-
-
-          rolesList.appendChild(
-            card
-          );
-
-        }
-      );
+        );
 
 
       /* =====================================
-         ЯКЩО Є ГЛОБАЛЬНА РОЛЬ,
-         АЛЕ НЕМАЄ НАПРЯМКІВ
+         ЯКЩО РОЛЕЙ ВЗАГАЛІ НЕМАЄ
          ===================================== */
 
       if (
-        directions.size === 0 &&
-        globalRole
+
+        !uniqueGlobalRoles.length &&
+
+        !sortedDirections.length
+
       ) {
 
-        return;
+        rolesList.innerHTML =
+          `
+            <div class="roles-empty">
+              🏅 Ролі та посади ще не призначені.
+            </div>
+          `;
 
       }
 
 
-    } catch (error) {
+    }
+
+    catch (error) {
 
       console.error(
-        "Критична помилка ролей:",
+        "Критична помилка завантаження ролей:",
         error
       );
 
@@ -1603,22 +2085,59 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         try {
 
-          await supabaseClient
-            .auth
-            .signOut();
+          logoutButton.disabled =
+            true;
 
-        } catch (error) {
+
+          logoutButton.textContent =
+            "⏳ ВИХОДИМО...";
+
+
+          const {
+            error
+          } =
+            await supabaseClient
+              .auth
+              .signOut();
+
+
+          if (error) {
+
+            throw error;
+
+          }
+
+
+          window.location.href =
+            "index.html";
+
+        }
+
+        catch (error) {
 
           console.error(
             "Помилка виходу:",
             error
           );
 
+
+          showMessage(
+            "Не вдалося вийти з акаунта.",
+            "error"
+          );
+
         }
 
+        finally {
 
-        window.location.href =
-          "index.html";
+          logoutButton.disabled =
+            false;
+
+
+          logoutButton.textContent =
+            "🚪 ВИЙТИ";
+
+        }
 
       }
     );
@@ -1627,7 +2146,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
   /* =========================================
-     КНОПКА ПОДАЧІ ЗАЯВКИ
+     КНОПКА ПОДАТИ ЗАЯВКУ
      ========================================= */
 
   if (joinButton) {
@@ -1636,8 +2155,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       "click",
       () => {
 
-        window.location.href =
-          "applications.html";
+        /* Перехід виконується через href */
 
       }
     );
@@ -1646,24 +2164,19 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
   /* =========================================
-     ЗАПУСК
+     ПОЧАТКОВЕ ЗАВАНТАЖЕННЯ
      ========================================= */
 
-  try {
+  await loadProfile();
 
-    await loadProfile();
 
-    await loadApplication();
+  await Promise.all([
 
-    await loadRoles();
+    loadApplication(),
 
-  } catch (error) {
+    loadRoles()
 
-    console.error(
-      "Помилка ініціалізації профілю:",
-      error
-    );
+  ]);
 
-  }
 
 });
