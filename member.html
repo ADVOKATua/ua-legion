@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Кабінет учасника — UA LEGION</title>
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    .member-page {
+      min-height: calc(100vh - 76px);
+      padding: 50px 20px;
+      display: flex;
+      justify-content: center;
+      box-sizing: border-box;
+    }
+
+    .member-container {
+      width: 100%;
+      max-width: 900px;
+    }
+
+    .member-header {
+      margin-bottom: 25px;
+    }
+
+    .member-header h1 {
+      margin: 0 0 8px;
+    }
+
+    .member-header p {
+      margin: 0;
+      opacity: .65;
+    }
+
+    .member-card,
+    .management-card {
+      background: linear-gradient(
+        135deg,
+        rgba(255,255,255,.055),
+        rgba(255,255,255,.018)
+      );
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 18px;
+      padding: 25px;
+      margin-bottom: 20px;
+      box-sizing: border-box;
+    }
+
+    .member-main {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .member-avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: #171a20;
+      border: 3px solid rgba(255,255,255,.12);
+      flex-shrink: 0;
+    }
+
+    .member-avatar.avatar-empty {
+      opacity: .25;
+    }
+
+    .member-main h2 {
+      margin: 0 0 7px;
+    }
+
+    .member-nickname {
+      opacity: .65;
+    }
+
+    .ets2-summary {
+      margin-top: 25px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255,255,255,.1);
+    }
+
+    .ets2-summary h3 {
+      margin: 0 0 12px;
+    }
+
+    .role-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .role-badge {
+      display: inline-flex;
+      padding: 8px 11px;
+      border-radius: 9px;
+      background: rgba(255,211,77,.08);
+      border: 1px solid rgba(255,211,77,.25);
+    }
+
+    .empty-role {
+      opacity: .6;
+    }
+
+    .management-card h2 {
+      margin: 0 0 5px;
+    }
+
+    .management-head p {
+      margin: 0;
+      opacity: .6;
+    }
+
+    .management-block {
+      margin-top: 25px;
+    }
+
+    .management-block h3,
+    .management-block > label {
+      display: block;
+      margin: 0 0 12px;
+      font-weight: 700;
+    }
+
+    .role-checkboxes {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 10px;
+    }
+
+    .role-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 13px;
+      border-radius: 10px;
+      background: rgba(255,255,255,.035);
+      border: 1px solid rgba(255,255,255,.09);
+      cursor: pointer;
+    }
+
+    .role-option input {
+      width: 18px;
+      height: 18px;
+      accent-color: #ffd34d;
+    }
+
+    #ets2DriverClass {
+      width: 100%;
+      padding: 13px 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: #11151d;
+      color: white;
+      font-size: 15px;
+      box-sizing: border-box;
+    }
+
+    .save-management {
+      margin-top: 25px;
+      padding: 14px 22px;
+      border: 0;
+      border-radius: 10px;
+      background: #ffd34d;
+      color: #111;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .save-management:disabled {
+      opacity: .55;
+      cursor: wait;
+    }
+
+    .member-message {
+      margin-top: 15px;
+      min-height: 20px;
+    }
+
+    .member-message.error {
+      color: #ff8d8d;
+    }
+
+    .member-message.success {
+      color: #7df0ad;
+    }
+
+    .member-message.info {
+      opacity: .7;
+    }
+
+    .management-locked {
+      padding: 15px;
+      border-radius: 10px;
+      background: rgba(255,255,255,.035);
+      opacity: .7;
+    }
+
+    .back-link {
+      display: inline-flex;
+      margin-top: 10px;
+      padding: 11px 17px;
+      border-radius: 10px;
+      background: rgba(255,255,255,.06);
+      color: white;
+      text-decoration: none;
+    }
+
+    @media (max-width: 600px) {
+      .member-main {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="header">
+    <div class="header-container">
+      <a href="index.html" class="logo">UA LEGION</a>
+      <nav class="nav" id="mainNavigation">
+        <a href="index.html">Головна</a>
+        <a href="profile.html">Мій кабінет</a>
+        <a href="members.html">👥 Учасники</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="member-page">
+    <div class="member-container">
+      <div class="member-header">
+        <h1>👤 Кабінет учасника</h1>
+        <p>Перегляд учасника та керування ETS2 за наявності відповідних повноважень.</p>
+        <a class="back-link" href="members.html">← Повернутися до учасників</a>
+      </div>
+
+      <section class="member-card">
+        <div class="member-main">
+          <img id="memberAvatar" class="member-avatar" alt="Учасник">
+          <div>
+            <h2 id="memberName">Завантаження...</h2>
+            <div id="memberNickname" class="member-nickname"></div>
+          </div>
+        </div>
+
+        <div class="ets2-summary">
+          <h3>🚛 ETS2 / TruckersMP</h3>
+          <div id="memberRoles" class="role-badges"></div>
+        </div>
+      </section>
+
+      <section class="management-card">
+        <div id="ets2Management">
+          <div class="management-locked">⏳ Завантаження...</div>
+        </div>
+      </section>
+
+      <div id="memberError" class="member-message error"></div>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
+  <script src="member.js"></script>
+</body>
+</html>
