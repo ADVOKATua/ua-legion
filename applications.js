@@ -141,6 +141,47 @@ document.addEventListener(
 
 
     // ======================================
+    // ETS2 DRIVER CLASSES
+    // ======================================
+
+    /*
+     * Класи використовуються тільки для ETS2.
+     *
+     * Якщо пізніше захочеш змінити назви класів,
+     * достатньо змінити цей масив.
+     */
+
+    const ets2DriverClasses = [
+
+      {
+        code: "A",
+        name: "Клас A"
+      },
+
+      {
+        code: "B",
+        name: "Клас B — Старший водій"
+      },
+
+      {
+        code: "C",
+        name: "Клас C"
+      },
+
+      {
+        code: "D",
+        name: "Клас D"
+      },
+
+      {
+        code: "E",
+        name: "Клас E"
+      }
+
+    ];
+
+
+    // ======================================
     // MESSAGE
     // ======================================
 
@@ -214,15 +255,6 @@ document.addEventListener(
         .toLowerCase();
 
 
-      /*
-       * У системі можуть існувати
-       * старий статус "new"
-       * та новий статус "pending".
-       *
-       * Для UI вони означають:
-       * НОВА / НА РОЗГЛЯДІ
-       */
-
       if (
         value === "new" ||
         value === "pending"
@@ -264,13 +296,11 @@ document.addEventListener(
       application
     ) {
 
-      const status =
+      return (
         normalizeStatus(
           application?.status
-        );
-
-
-      return status === "pending";
+        ) === "pending"
+      );
 
     }
 
@@ -563,32 +593,26 @@ document.addEventListener(
 
       const newCount =
         allApplications.filter(
-
           item =>
             isNewApplication(item)
-
         ).length;
 
 
       const approvedCount =
         allApplications.filter(
-
           item =>
             normalizeStatus(
               item.status
             ) === "approved"
-
         ).length;
 
 
       const rejectedCount =
         allApplications.filter(
-
           item =>
             normalizeStatus(
               item.status
             ) === "rejected"
-
         ).length;
 
 
@@ -664,9 +688,7 @@ document.addEventListener(
 
 
       return allApplications.filter(
-
         application => {
-
 
           const normalizedApplicationStatus =
             normalizeStatus(
@@ -677,10 +699,6 @@ document.addEventListener(
           let statusMatch =
             false;
 
-
-          // --------------------------------
-          // STATUS FILTER
-          // --------------------------------
 
           if (
             status === "all"
@@ -709,10 +727,6 @@ document.addEventListener(
 
           }
 
-
-          // --------------------------------
-          // SEARCH
-          // --------------------------------
 
           const name =
             (
@@ -768,17 +782,11 @@ document.addEventListener(
 
 
           return (
-
-            statusMatch
-
-            &&
-
+            statusMatch &&
             searchMatch
-
           );
 
         }
-
       );
 
     }
@@ -836,22 +844,16 @@ document.addEventListener(
 
 
       return (
-
         statuses[normalized]
-
         ||
-
         {
-
           label:
             status ||
             "Невідомо",
 
           className:
             ""
-
         }
-
       );
 
     }
@@ -932,10 +934,6 @@ document.addEventListener(
       application
     ) {
 
-      // ------------------------------------
-      // Новий/основний direction
-      // ------------------------------------
-
       if (
         application?.direction
       ) {
@@ -944,10 +942,6 @@ document.addEventListener(
 
       }
 
-
-      // ------------------------------------
-      // directions
-      // ------------------------------------
 
       if (
         application?.directions
@@ -1083,7 +1077,7 @@ document.addEventListener(
 
             item =>
               String(
-                item.slug
+                item.slug || ""
               )
               .trim()
               .toLowerCase() ===
@@ -1099,10 +1093,6 @@ document.addEventListener(
 
       }
 
-
-      // ------------------------------------
-      // Пошук за назвою
-      // ------------------------------------
 
       const foundByName =
         allDirections.find(
@@ -1145,7 +1135,6 @@ document.addEventListener(
 
 
       allRoles.forEach(
-
         role => {
 
           html += `
@@ -1163,7 +1152,6 @@ document.addEventListener(
           `;
 
         }
-
       );
 
 
@@ -1219,6 +1207,7 @@ document.addEventListener(
 
             <option
               value="${direction.id}"
+              selected
             >
 
               📍 ${escapeHtml(
@@ -1235,6 +1224,329 @@ document.addEventListener(
 
 
       return html;
+
+    }
+
+
+    // ======================================
+    // DRIVER CLASS OPTIONS
+    // ======================================
+
+    function createDriverClassOptions() {
+
+      let html = `
+
+        <option value="">
+
+          🚛 Оберіть клас водія...
+
+        </option>
+
+      `;
+
+
+      ets2DriverClasses.forEach(
+        driverClass => {
+
+          html += `
+
+            <option
+              value="${escapeHtml(
+                driverClass.code
+              )}"
+            >
+
+              ${escapeHtml(
+                driverClass.name
+              )}
+
+            </option>
+
+          `;
+
+        }
+      );
+
+
+      return html;
+
+    }
+
+
+    // ======================================
+    // UPDATE DRIVER CLASS VISIBILITY
+    // ======================================
+
+    function updateDriverClassVisibility(
+      directionSelect,
+      driverClassSelect
+    ) {
+
+      if (
+        !directionSelect ||
+        !driverClassSelect
+      ) {
+
+        return;
+
+      }
+
+
+      const selectedDirection =
+        directionSelect.value;
+
+
+      const direction =
+        allDirections.find(
+          item =>
+            String(item.id) ===
+            String(selectedDirection)
+        );
+
+
+      const isETS2 =
+        direction?.slug ===
+        "ets2";
+
+
+      const wrapper =
+        driverClassSelect.closest(
+          ".driver-class-block"
+        );
+
+
+      if (isETS2) {
+
+        if (wrapper) {
+
+          wrapper.style.display =
+            "block";
+
+        }
+
+        driverClassSelect.disabled =
+          false;
+
+      }
+
+      else {
+
+        if (wrapper) {
+
+          wrapper.style.display =
+            "none";
+
+        }
+
+        driverClassSelect.value =
+          "";
+
+        driverClassSelect.disabled =
+          true;
+
+      }
+
+    }
+
+
+    // ======================================
+    // SAVE ETS2 DRIVER CLASS
+    // ======================================
+
+    async function saveETS2DriverClass(
+      application,
+      driverClass,
+      directionId
+    ) {
+
+      if (
+        !application?.user_id
+      ) {
+
+        throw new Error(
+          "Не знайдено користувача заявки."
+        );
+
+      }
+
+
+      if (!driverClass) {
+
+        throw new Error(
+          "Для ETS2 потрібно вибрати клас водія."
+        );
+
+      }
+
+
+      if (!directionId) {
+
+        throw new Error(
+          "Не знайдено напрямок ETS2."
+        );
+
+      }
+
+
+      const numericDirectionId =
+        Number(
+          directionId
+        );
+
+
+      if (
+        !Number.isFinite(
+          numericDirectionId
+        )
+      ) {
+
+        throw new Error(
+          "Некоректний ID напрямку ETS2."
+        );
+
+      }
+
+
+      console.log(
+        "Збереження класу ETS2:",
+        {
+          user_id:
+            application.user_id,
+
+          direction_id:
+            numericDirectionId,
+
+          driver_class:
+            driverClass
+        }
+      );
+
+
+      // ------------------------------------
+      // Шукаємо існуючий запис
+      // ------------------------------------
+
+      const {
+        data: existingDirection,
+        error: findError
+      } =
+        await supabase
+          .from("user_directions")
+          .select(
+            "user_id, direction_id, status, driver_class"
+          )
+          .eq(
+            "user_id",
+            application.user_id
+          )
+          .eq(
+            "direction_id",
+            numericDirectionId
+          )
+          .maybeSingle();
+
+
+      if (findError) {
+
+        console.error(
+          "Помилка пошуку user_directions:",
+          findError
+        );
+
+        throw findError;
+
+      }
+
+
+      // ------------------------------------
+      // UPDATE
+      // ------------------------------------
+
+      if (existingDirection) {
+
+        const {
+          error: updateError
+        } =
+          await supabase
+            .from("user_directions")
+            .update({
+
+              status:
+                "approved",
+
+              driver_class:
+                driverClass
+
+            })
+            .eq(
+              "user_id",
+              application.user_id
+            )
+            .eq(
+              "direction_id",
+              numericDirectionId
+            );
+
+
+        if (updateError) {
+
+          console.error(
+            "Помилка оновлення user_directions:",
+            updateError
+          );
+
+          throw updateError;
+
+        }
+
+      }
+
+      // ------------------------------------
+      // INSERT
+      // ------------------------------------
+
+      else {
+
+        const {
+          error: insertError
+        } =
+          await supabase
+            .from("user_directions")
+            .insert({
+
+              user_id:
+                application.user_id,
+
+              direction_id:
+                numericDirectionId,
+
+              status:
+                "approved",
+
+              driver_class:
+                driverClass
+
+            });
+
+
+        if (insertError) {
+
+          console.error(
+            "Помилка створення user_directions:",
+            insertError
+          );
+
+          throw insertError;
+
+        }
+
+      }
+
+
+      console.log(
+        "Клас водія успішно збережено:",
+        driverClass
+      );
 
     }
 
@@ -1279,9 +1591,7 @@ document.addEventListener(
 
 
       applications.forEach(
-
         application => {
-
 
           const card =
             document.createElement(
@@ -1307,6 +1617,12 @@ document.addEventListener(
 
           const applicationDirection =
             getApplicationDirection(
+              application
+            );
+
+
+          const applicationDirectionId =
+            getApplicationDirectionId(
               application
             );
 
@@ -1556,6 +1872,41 @@ document.addEventListener(
 
                 </select>
 
+
+                <div
+                  class="driver-class-block"
+                  data-id="${application.id}"
+                  style="${
+                    applicationDirectionId &&
+                    allDirections.find(
+                      item =>
+                        String(item.id) ===
+                        String(
+                          applicationDirectionId
+                        )
+                    )?.slug === "ets2"
+                      ? ""
+                      : "display:none;"
+                  }"
+                >
+
+                  <span>
+                    🚛 Клас водія ETS2
+                  </span>
+
+
+                  <select
+                    class="application-driver-class-select"
+                    data-id="${application.id}"
+                    ${isNew ? "" : "disabled"}
+                  >
+
+                    ${createDriverClassOptions()}
+
+                  </select>
+
+                </div>
+
               </div>
 
 
@@ -1711,9 +2062,7 @@ document.addEventListener(
 
 
               ${
-
                 application.review_comment
-
                   ?
 
                   `
@@ -1759,14 +2108,11 @@ document.addEventListener(
                     </div>
 
                   `
-
               }
 
 
               ${
-
                 application.reviewed_at
-
                   ?
 
                   `
@@ -1788,7 +2134,6 @@ document.addEventListener(
                   :
 
                   ""
-
               }
 
             `;
@@ -1801,7 +2146,6 @@ document.addEventListener(
           );
 
         }
-
       );
 
 
@@ -1826,12 +2170,13 @@ document.addEventListener(
 
       directionId,
 
+      driverClass,
+
       reviewComment,
 
       button
 
     ) {
-
 
       if (!roleId) {
 
@@ -1847,11 +2192,9 @@ document.addEventListener(
 
       const application =
         allApplications.find(
-
           item =>
             String(item.id) ===
             String(applicationId)
-
         );
 
 
@@ -1872,16 +2215,11 @@ document.addEventListener(
         button.disabled =
           true;
 
-
         button.textContent =
           "СХВАЛЕННЯ...";
 
       }
 
-
-      // ====================================
-      // FINAL DIRECTION ID
-      // ====================================
 
       const finalDirectionId =
 
@@ -1898,35 +2236,11 @@ document.addEventListener(
           );
 
 
-      console.log(
-        "Користувач:",
-        application.user_id
-      );
-
-
-      console.log(
-        "Роль:",
-        roleId
-      );
-
-
-      console.log(
-        "Напрямок:",
-        finalDirectionId
-      );
-
-
-      // ====================================
-      // GET SELECTED ROLE
-      // ====================================
-
       const selectedRole =
         allRoles.find(
-
           role =>
             String(role.id) ===
             String(roleId)
-
         );
 
 
@@ -1943,6 +2257,56 @@ document.addEventListener(
           button.disabled =
             false;
 
+          button.textContent =
+            "🟢 СХВАЛИТИ";
+
+        }
+
+
+        return;
+
+      }
+
+
+      // ====================================
+      // ETS2 CLASS VALIDATION
+      // ====================================
+
+      const selectedDirection =
+        finalDirectionId !== null
+          ?
+
+          allDirections.find(
+            direction =>
+              String(direction.id) ===
+              String(finalDirectionId)
+          )
+
+          :
+
+          null;
+
+
+      const isETS2 =
+        selectedDirection?.slug ===
+        "ets2";
+
+
+      if (
+        isETS2 &&
+        !driverClass
+      ) {
+
+        showMessage(
+          "Для ETS2 перед схваленням потрібно вибрати клас водія.",
+          "error"
+        );
+
+
+        if (button) {
+
+          button.disabled =
+            false;
 
           button.textContent =
             "🟢 СХВАЛИТИ";
@@ -2024,7 +2388,6 @@ document.addEventListener(
           button.disabled =
             false;
 
-
           button.textContent =
             "🟢 СХВАЛИТИ";
 
@@ -2045,26 +2408,19 @@ document.addEventListener(
         existingRoles.length === 0
       ) {
 
-
         const roleData = {
 
           user_id:
             application.user_id,
 
-
           role_id:
             Number(roleId),
-
 
           role:
             selectedRole.code
 
         };
 
-
-        // ==================================
-        // ADD DIRECTION ONLY IF SELECTED
-        // ==================================
 
         if (
           finalDirectionId !== null
@@ -2112,7 +2468,6 @@ document.addEventListener(
             button.disabled =
               false;
 
-
             button.textContent =
               "🟢 СХВАЛИТИ";
 
@@ -2132,6 +2487,58 @@ document.addEventListener(
 
 
       // ====================================
+      // SAVE ETS2 DRIVER CLASS
+      // ====================================
+
+      if (
+        isETS2 &&
+        driverClass
+      ) {
+
+        try {
+
+          await saveETS2DriverClass(
+            application,
+            driverClass,
+            finalDirectionId
+          );
+
+        }
+
+        catch (driverClassError) {
+
+          console.error(
+            "Помилка збереження класу водія:",
+            driverClassError
+          );
+
+
+          showMessage(
+            "Роль призначена, але клас водія не збережено: " +
+            driverClassError.message,
+            "error"
+          );
+
+
+          if (button) {
+
+            button.disabled =
+              false;
+
+            button.textContent =
+              "🟢 СХВАЛИТИ";
+
+          }
+
+
+          return;
+
+        }
+
+      }
+
+
+      // ====================================
       // UPDATE APPLICATION
       // ====================================
 
@@ -2145,10 +2552,8 @@ document.addEventListener(
             status:
               "approved",
 
-
             review_comment:
               reviewComment,
-
 
             reviewed_at:
               new Date()
@@ -2180,7 +2585,6 @@ document.addEventListener(
           button.disabled =
             false;
 
-
           button.textContent =
             "🟢 СХВАЛИТИ";
 
@@ -2193,7 +2597,15 @@ document.addEventListener(
 
 
       showMessage(
-        "🎉 Заявку схвалено. Роль призначено користувачу.",
+        isETS2
+          ?
+
+          `🎉 Заявку схвалено. Роль та клас ETS2 (${driverClass}) призначено користувачу.`
+
+          :
+
+          "🎉 Заявку схвалено. Роль призначено користувачу.",
+
         "success"
       );
 
@@ -2217,12 +2629,10 @@ document.addEventListener(
 
     ) {
 
-
       if (button) {
 
         button.disabled =
           true;
-
 
         button.textContent =
           "ВІДХИЛЕННЯ...";
@@ -2240,10 +2650,8 @@ document.addEventListener(
             status:
               "rejected",
 
-
             review_comment:
               reviewComment,
-
 
             reviewed_at:
               new Date()
@@ -2275,7 +2683,6 @@ document.addEventListener(
           button.disabled =
             false;
 
-
           button.textContent =
             "🔴 ВІДХИЛИТИ";
 
@@ -2304,6 +2711,42 @@ document.addEventListener(
 
     function attachApplicationEvents() {
 
+      // ====================================
+      // DIRECTION CHANGE
+      // ====================================
+
+      document
+        .querySelectorAll(
+          ".application-direction-select"
+        )
+        .forEach(
+          directionSelect => {
+
+            directionSelect.addEventListener(
+              "change",
+              () => {
+
+                const applicationId =
+                  directionSelect.dataset.id;
+
+
+                const driverClassSelect =
+                  document.querySelector(
+                    `.application-driver-class-select[data-id="${applicationId}"]`
+                  );
+
+
+                updateDriverClassVisibility(
+                  directionSelect,
+                  driverClassSelect
+                );
+
+              }
+            );
+
+          }
+        );
+
 
       // ====================================
       // APPROVE
@@ -2317,13 +2760,11 @@ document.addEventListener(
 
           button => {
 
-
             button.addEventListener(
 
               "click",
 
               async () => {
-
 
                 const applicationId =
                   button.dataset.id;
@@ -2341,6 +2782,14 @@ document.addEventListener(
                   document.querySelector(
 
                     `.application-direction-select[data-id="${applicationId}"]`
+
+                  );
+
+
+                const driverClassSelect =
+                  document.querySelector(
+
+                    `.application-driver-class-select[data-id="${applicationId}"]`
 
                   );
 
@@ -2363,13 +2812,16 @@ document.addEventListener(
                   "global";
 
 
+                const driverClass =
+                  driverClassSelect?.value ||
+                  "";
+
+
                 const reviewComment =
                   commentElement
                     ?.value
                     .trim()
-
                   ||
-
                   null;
 
 
@@ -2380,6 +2832,8 @@ document.addEventListener(
                   roleId,
 
                   directionId,
+
+                  driverClass,
 
                   reviewComment,
 
@@ -2408,13 +2862,11 @@ document.addEventListener(
 
           button => {
 
-
             button.addEventListener(
 
               "click",
 
               async () => {
-
 
                 const applicationId =
                   button.dataset.id;
@@ -2432,9 +2884,7 @@ document.addEventListener(
                   commentElement
                     ?.value
                     .trim()
-
                   ||
-
                   null;
 
 
@@ -2511,7 +2961,6 @@ document.addEventListener(
 
     if (isStaff) {
 
-
       if (applicationsKicker) {
 
         applicationsKicker.textContent =
@@ -2560,7 +3009,6 @@ document.addEventListener(
 
     else {
 
-
       if (adminApplicationsPanel) {
 
         adminApplicationsPanel.style.display =
@@ -2593,7 +3041,6 @@ document.addEventListener(
 
 
     await loadApplications();
-
 
   }
 
