@@ -350,10 +350,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    // --------------------------------------
-    // ПОЧАТКОВИЙ СТАН
-    // --------------------------------------
-
     applicationStatus.className =
       "application-card";
 
@@ -368,10 +364,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       </p>
     `;
 
-
-    // ======================================
-    // БЕРЕМО ТІЛЬКИ ОСТАННЮ ЗАЯВКУ
-    // ======================================
 
     const {
       data: applications,
@@ -397,10 +389,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       )
       .limit(1);
 
-
-    // ======================================
-    // ПОМИЛКА
-    // ======================================
 
     if (error) {
 
@@ -428,10 +416,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
     }
 
-
-    // ======================================
-    // ЗАЯВОК НЕМАЄ
-    // ======================================
 
     if (
       !applications ||
@@ -471,10 +455,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    // ======================================
-    // ОСТАННЯ ЗАЯВКА
-    // ======================================
-
     const application =
       applications[0];
 
@@ -491,11 +471,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     let direction = null;
 
-
-    // --------------------------------------
-    // НОВИЙ ФОРМАТ
-    // direction
-    // --------------------------------------
 
     if (
       application.direction !== null &&
@@ -515,11 +490,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    // --------------------------------------
-    // СТАРИЙ ФОРМАТ
-    // directions
-    // --------------------------------------
-
     if (
       !direction &&
       Array.isArray(
@@ -537,10 +507,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     }
 
-
-    // --------------------------------------
-    // JSON / TEXT
-    // --------------------------------------
 
     if (
       !direction &&
@@ -915,6 +881,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // ======================================
   // ЗАВАНТАЖЕННЯ РОЛЕЙ
+  // + НАПРЯМКІВ КОРИСТУВАЧА
+  // + КЛАСУ ВОДІЯ
   // ======================================
 
   async function loadUserRoles() {
@@ -930,6 +898,10 @@ document.addEventListener("DOMContentLoaded", async () => {
       </div>
     `;
 
+
+    // ======================================
+    // РОЛІ
+    // ======================================
 
     const {
       data: userRoles,
@@ -964,24 +936,67 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
+    // ======================================
+    // НАПРЯМКИ + КЛАСИ
+    // ======================================
+
+    const {
+      data: userDirections,
+      error: userDirectionsError
+    } = await supabase
+      .from("user_directions")
+      .select(
+        "direction_id, status, driver_class"
+      )
+      .eq(
+        "user_id",
+        user.id
+      );
+
+
+    if (userDirectionsError) {
+
+      console.error(
+        "Помилка user_directions:",
+        userDirectionsError
+      );
+
+    }
+
+
+    const safeUserDirections =
+      userDirections || [];
+
+
+    // ======================================
+    // ЯКЩО НЕМАЄ НІ РОЛЕЙ, НІ НАПРЯМКІВ
+    // ======================================
+
     if (
-      !userRoles ||
-      userRoles.length === 0
+      (!userRoles || userRoles.length === 0) &&
+      safeUserDirections.length === 0
     ) {
 
       window.currentUserRoles =
         [];
 
-      renderUserRoles([]);
+      renderUserRoles(
+        [],
+        safeUserDirections
+      );
 
       return;
     }
 
 
+    // ======================================
+    // ID РОЛЕЙ
+    // ======================================
+
     const roleIds =
       [
         ...new Set(
-          userRoles
+          (userRoles || [])
             .map(
               item =>
                 item.role_id
@@ -991,48 +1006,72 @@ document.addEventListener("DOMContentLoaded", async () => {
       ];
 
 
-    const {
-      data: roles,
-      error: rolesError
-    } = await supabase
-      .from("roles")
-      .select(
-        "id, code, name"
-      )
-      .in(
-        "id",
-        roleIds
-      );
+    let roles = [];
 
 
-    if (rolesError) {
+    if (
+      roleIds.length > 0
+    ) {
 
-      console.error(
-        "Помилка roles:",
-        rolesError
-      );
+      const {
+        data: rolesData,
+        error: rolesError
+      } = await supabase
+        .from("roles")
+        .select(
+          "id, code, name"
+        )
+        .in(
+          "id",
+          roleIds
+        );
 
 
-      rolesList.innerHTML = `
-        <div class="roles-empty">
-          Не вдалося завантажити інформацію про ролі.
-        </div>
-      `;
+      if (rolesError) {
 
+        console.error(
+          "Помилка roles:",
+          rolesError
+        );
 
-      return;
+      } else {
+
+        roles =
+          rolesData || [];
+      }
+
     }
 
+
+    // ======================================
+    // ВСІ ID НАПРЯМКІВ
+    // ======================================
 
     const directionIds =
       [
         ...new Set(
-          userRoles
-            .map(
-              item =>
-                item.direction_id
+          [
+            ...(userRoles || [])
+              .map(
+                item =>
+                  item.direction_id
+              ),
+
+            ...safeUserDirections
+              .map(
+                item =>
+                  item.direction_id
+              )
+          ]
+            .filter(
+              value =>
+                value !== null &&
+                value !== undefined
             )
-            .filter(Boolean)
+            .map(
+              value =>
+                String(value)
+            )
         )
       ];
 
@@ -1074,9 +1113,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
+    // ======================================
+    // MAP
+    // ======================================
+
     const rolesMap =
       new Map(
-        (roles || []).map(
+        roles.map(
           role => [
             String(
               role.id
@@ -1100,8 +1143,12 @@ document.addEventListener("DOMContentLoaded", async () => {
       );
 
 
+    // ======================================
+    // ПОВНІ РОЛІ
+    // ======================================
+
     const fullRoles =
-      userRoles.map(
+      (userRoles || []).map(
         item => ({
 
           role_id:
@@ -1162,7 +1209,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
     renderUserRoles(
-      fullRoles
+      fullRoles,
+      safeUserDirections
     );
 
   }
@@ -1170,10 +1218,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // ======================================
   // ВІДОБРАЖЕННЯ РОЛЕЙ
+  // + КЛАСІВ
   // ======================================
 
   function renderUserRoles(
-    roles
+    roles,
+    userDirections = []
   ) {
 
     if (!rolesList) {
@@ -1183,22 +1233,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     rolesList.innerHTML =
       "";
-
-
-    if (
-      !roles ||
-      roles.length === 0
-    ) {
-
-      rolesList.innerHTML = `
-        <div class="roles-empty">
-          У вас поки немає призначених ролей.
-        </div>
-      `;
-
-
-      return;
-    }
 
 
     // ======================================
@@ -1301,7 +1335,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
     // ======================================
-    // РОЛІ ЗА НАПРЯМКАМИ
+    // ГРУПИ РОЛЕЙ ЗА НАПРЯМКАМИ
     // ======================================
 
     const directionGroups =
@@ -1341,6 +1375,10 @@ document.addEventListener("DOMContentLoaded", async () => {
                 item.directions.name ||
                 "Невідомий напрямок",
 
+              slug:
+                item.directions.slug ||
+                "",
+
               roles: []
             }
           );
@@ -1368,12 +1406,171 @@ document.addEventListener("DOMContentLoaded", async () => {
     );
 
 
+    // ======================================
+    // ДОДАЄМО НАПРЯМКИ З user_directions
+    // ======================================
+
+    userDirections.forEach(
+      item => {
+
+        if (
+          item.direction_id === null ||
+          item.direction_id === undefined
+        ) {
+
+          return;
+        }
+
+
+        const directionId =
+          String(
+            item.direction_id
+          );
+
+
+        const direction =
+          directionsMapForRender(
+            directionId,
+            roles,
+            userDirections
+          );
+
+
+        if (
+          !direction
+        ) {
+
+          return;
+        }
+
+
+        if (
+          !directionGroups.has(
+            directionId
+          )
+        ) {
+
+          directionGroups.set(
+            directionId,
+            {
+              name:
+                direction.name ||
+                "Невідомий напрямок",
+
+              slug:
+                direction.slug ||
+                "",
+
+              roles: []
+            }
+          );
+
+        }
+
+      }
+    );
+
+
+    // ======================================
+    // КЛАСИ ВОДІЇВ
+    // ======================================
+
+    const driverClassNames = {
+
+      A:
+        "Клас A",
+
+      B:
+        "Клас B — Старший водій",
+
+      C:
+        "Клас C",
+
+      D:
+        "Клас D",
+
+      E:
+        "Клас E"
+
+    };
+
+
+    userDirections.forEach(
+      item => {
+
+        const driverClass =
+          String(
+            item.driver_class || ""
+          )
+            .trim()
+            .toUpperCase();
+
+
+        if (
+          !driverClass ||
+          !driverClassNames[driverClass]
+        ) {
+
+          return;
+        }
+
+
+        const directionId =
+          String(
+            item.direction_id
+          );
+
+
+        const group =
+          directionGroups.get(
+            directionId
+          );
+
+
+        if (!group) {
+          return;
+        }
+
+
+        // Клас водія потрібен тільки для ETS2
+        const slug =
+          String(
+            group.slug || ""
+          )
+            .trim()
+            .toLowerCase();
+
+
+        if (
+          slug !== "ets2"
+        ) {
+
+          return;
+        }
+
+
+        group.driverClass =
+          driverClassNames[
+            driverClass
+          ];
+
+      }
+    );
+
+
+    // ======================================
+    // ВІДОБРАЖЕННЯ НАПРЯМКІВ
+    // ======================================
+
     directionGroups.forEach(
       group => {
 
         if (
-          !group.roles ||
-          group.roles.length === 0
+          (
+            !group.roles ||
+            group.roles.length === 0
+          ) &&
+          !group.driverClass
         ) {
 
           return;
@@ -1390,16 +1587,43 @@ document.addEventListener("DOMContentLoaded", async () => {
           "role-card";
 
 
-        directionCard.innerHTML = `
+        let html = `
           <h3>
             ${group.name}
           </h3>
-
-          <p>
-            Посади ${group.name}:
-            ${group.roles.join(", ")}
-          </p>
         `;
+
+
+        if (
+          group.roles &&
+          group.roles.length > 0
+        ) {
+
+          html += `
+            <p>
+              Посади ${group.name}:
+              ${group.roles.join(", ")}
+            </p>
+          `;
+
+        }
+
+
+        if (
+          group.driverClass
+        ) {
+
+          html += `
+            <p>
+              Клас водія: <strong>${group.driverClass}</strong>
+            </p>
+          `;
+
+        }
+
+
+        directionCard.innerHTML =
+          html;
 
 
         rolesList.appendChild(
@@ -1409,6 +1633,10 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
     );
 
+
+    // ======================================
+    // ЯКЩО НІЧОГО НЕМАЄ
+    // ======================================
 
     if (
       !rolesList.children.length
@@ -1422,6 +1650,47 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     }
 
+  }
+
+
+  // ======================================
+  // ДОПОМІЖНА ФУНКЦІЯ
+  // ЗНАХОДИМО НАПРЯМОК ДЛЯ РЕНДЕРУ
+  // ======================================
+
+  function directionsMapForRender(
+    directionId,
+    roles,
+    userDirections
+  ) {
+
+    // Спочатку шукаємо напрямок серед
+    // уже завантажених ролей.
+    const roleItem =
+      roles.find(
+        item =>
+          item.direction_id !== null &&
+          item.direction_id !== undefined &&
+          String(
+            item.direction_id
+          ) === String(
+            directionId
+          ) &&
+          item.directions
+      );
+
+
+    if (
+      roleItem?.directions
+    ) {
+
+      return roleItem.directions;
+    }
+
+
+    // Якщо ролі немає, напрямок буде
+    // завантажений окремо нижче.
+    return null;
   }
 
 
