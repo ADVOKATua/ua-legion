@@ -144,13 +144,6 @@ document.addEventListener(
     // ETS2 DRIVER CLASSES
     // ======================================
 
-    /*
-     * Класи використовуються тільки для ETS2.
-     *
-     * Якщо пізніше захочеш змінити назви класів,
-     * достатньо змінити цей масив.
-     */
-
     const ets2DriverClasses = [
 
       {
@@ -1422,9 +1415,9 @@ document.addEventListener(
       );
 
 
-      // ------------------------------------
-      // Шукаємо існуючий запис
-      // ------------------------------------
+      // ====================================
+      // SEARCH EXISTING USER DIRECTION
+      // ====================================
 
       const {
         data: existingDirection,
@@ -1458,9 +1451,9 @@ document.addEventListener(
       }
 
 
-      // ------------------------------------
-      // UPDATE
-      // ------------------------------------
+      // ====================================
+      // UPDATE EXISTING
+      // ====================================
 
       if (existingDirection) {
 
@@ -1472,7 +1465,7 @@ document.addEventListener(
             .update({
 
               status:
-                "approved",
+                "active",
 
               driver_class:
                 driverClass
@@ -1501,9 +1494,10 @@ document.addEventListener(
 
       }
 
-      // ------------------------------------
-      // INSERT
-      // ------------------------------------
+
+      // ====================================
+      // INSERT NEW
+      // ====================================
 
       else {
 
@@ -1521,7 +1515,7 @@ document.addEventListener(
                 numericDirectionId,
 
               status:
-                "approved",
+                "active",
 
               driver_class:
                 driverClass
@@ -2063,6 +2057,7 @@ document.addEventListener(
 
               ${
                 application.review_comment
+
                   ?
 
                   `
@@ -2113,6 +2108,7 @@ document.addEventListener(
 
               ${
                 application.reviewed_at
+
                   ?
 
                   `
@@ -2269,11 +2265,12 @@ document.addEventListener(
 
 
       // ====================================
-      // ETS2 CLASS VALIDATION
+      // DETERMINE ETS2
       // ====================================
 
       const selectedDirection =
         finalDirectionId !== null
+
           ?
 
           allDirections.find(
@@ -2291,6 +2288,10 @@ document.addEventListener(
         selectedDirection?.slug ===
         "ets2";
 
+
+      // ====================================
+      // ETS2 CLASS REQUIRED
+      // ====================================
 
       if (
         isETS2 &&
@@ -2598,6 +2599,7 @@ document.addEventListener(
 
       showMessage(
         isETS2
+
           ?
 
           `🎉 Заявку схвалено. Роль та клас ETS2 (${driverClass}) призначено користувачу.`
