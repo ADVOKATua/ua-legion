@@ -3,885 +3,862 @@
 // join.js
 // ======================================
 
-document.addEventListener(
-  "DOMContentLoaded",
-  async () => {
+document.addEventListener("DOMContentLoaded", async () => {
 
-    // ======================================
-    // SUPABASE
-    // ======================================
+  // ======================================
+  // SUPABASE
+  // ======================================
 
-    const supabase =
-      window.supabaseClient;
+  const supabase = window.supabaseClient;
+
+  if (!supabase) {
+    console.error("Supabase не підключений");
+    return;
+  }
 
 
-    if (!supabase) {
+  // ======================================
+  // ELEMENTS
+  // ======================================
 
-      console.error(
-        "Supabase не підключений"
+  const form =
+    document.getElementById("applicationForm");
+
+  const formMessage =
+    document.getElementById("formMessage");
+
+  const submitButton =
+    document.getElementById("submitApplication");
+
+
+  if (!form) {
+    console.error("Форма заявки не знайдена");
+    return;
+  }
+
+
+  // ======================================
+  // CHECK AUTHORIZATION
+  // ======================================
+
+  const {
+    data: { user },
+    error: authError
+  } = await supabase.auth.getUser();
+
+
+  if (authError || !user) {
+    window.location.href = "login.html";
+    return;
+  }
+
+
+  // ======================================
+  // DIRECTIONS
+  // ======================================
+
+  const directions = [
+    "ets2",
+    "wot",
+    "dota2",
+    "wow"
+  ];
+
+
+  // ======================================
+  // HIDE ALL GAME FORMS
+  // ======================================
+
+  function hideAllGameForms() {
+
+    directions.forEach(direction => {
+
+      const gameForm =
+        document.getElementById(
+          direction + "Form"
+        );
+
+      if (gameForm) {
+        gameForm.classList.remove("active");
+      }
+
+    });
+
+  }
+
+
+  // ======================================
+  // SHOW SELECTED GAME FORM
+  // ======================================
+
+  function showGameForm(direction) {
+
+    hideAllGameForms();
+
+    const selectedForm =
+      document.getElementById(
+        direction + "Form"
       );
 
-      return;
-
+    if (selectedForm) {
+      selectedForm.classList.add("active");
     }
 
-
-    // ======================================
-    // ELEMENTS
-    // ======================================
-
-    const form =
-      document.getElementById(
-        "applicationForm"
-      );
+  }
 
 
-    const formMessage =
-      document.getElementById(
-        "formMessage"
-      );
+  // ======================================
+  // DIRECTION CHANGE
+  // ======================================
+
+  const directionInputs =
+    document.querySelectorAll(
+      'input[name="direction"]'
+    );
 
 
-    const submitButton =
-      document.getElementById(
-        "submitApplication"
-      );
+  directionInputs.forEach(input => {
+
+    input.addEventListener("change", function () {
+
+      showGameForm(this.value);
+
+    });
+
+  });
 
 
-    if (!form) {
+  // ======================================
+  // MESSAGE
+  // ======================================
 
-      console.error(
-        "Форма заявки не знайдена"
-      );
+  function showMessage(text, type = "") {
 
+    if (!formMessage) {
       return;
-
     }
 
+    formMessage.textContent = text;
+    formMessage.className = type;
 
-    // ======================================
-    // CHECK AUTHORIZATION
-    // ======================================
+  }
 
-    const {
-      data: {
-        user
-      },
-      error: authError
-    } =
-      await supabase
-        .auth
-        .getUser();
 
+  // ======================================
+  // GET VALUE
+  // ======================================
+
+  function getValue(id) {
+
+    const element =
+      document.getElementById(id);
+
+    if (!element) {
+      return "";
+    }
+
+    return (element.value || "").trim();
+
+  }
+
+
+  // ======================================
+  // GET SELECTED DIRECTION
+  // ======================================
+
+  function getSelectedDirection() {
+
+    const selected =
+      document.querySelector(
+        'input[name="direction"]:checked'
+      );
+
+    if (!selected) {
+      return null;
+    }
+
+    return selected.value;
+
+  }
+
+
+  // ======================================
+  // CALCULATE AGE
+  // ======================================
+
+  function calculateAge(birthDate) {
+
+    if (!birthDate) {
+      return "";
+    }
+
+    const birth =
+      new Date(birthDate);
+
+    if (Number.isNaN(birth.getTime())) {
+      return "";
+    }
+
+    const today =
+      new Date();
+
+    let age =
+      today.getFullYear() -
+      birth.getFullYear();
+
+    const month =
+      today.getMonth() -
+      birth.getMonth();
 
     if (
-      authError ||
-      !user
+      month < 0 ||
+      (
+        month === 0 &&
+        today.getDate() < birth.getDate()
+      )
     ) {
+      age--;
+    }
 
-      window.location.href =
-        "login.html";
+    return String(age);
 
-      return;
+  }
+
+
+  // ======================================
+  // LOAD MAIN PROFILE
+  // ======================================
+
+  async function loadMainProfile() {
+
+    const {
+      data: profile,
+      error
+    } = await supabase
+      .from("profiles")
+      .select(`
+        display_name,
+        birth_date,
+        discord_username,
+        discord_user_id,
+        steam_id
+      `)
+      .eq("id", user.id)
+      .maybeSingle();
+
+
+    if (error) {
+
+      console.error(
+        "Помилка завантаження профілю:",
+        error
+      );
+
+      return {
+        profile: null,
+        error
+      };
 
     }
 
 
-    // ======================================
-    // DIRECTIONS
-    // ======================================
+    return {
+      profile,
+      error: null
+    };
 
-    const directions = [
-
-      "ets2",
-
-      "wot",
-
-      "dota2",
-
-      "wow"
-
-    ];
+  }
 
 
-    // ======================================
-    // MESSAGE
-    // ======================================
+  // ======================================
+  // MAIN PROFILE
+  // ======================================
 
-    function showMessage(
-      text,
-      type
-    ) {
+  const {
+    profile,
+    error: profileLoadError
+  } = await loadMainProfile();
 
-      if (
-        !formMessage
-      ) {
+
+  if (profileLoadError) {
+
+    showMessage(
+      "Не вдалося завантажити ваш профіль.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  // ======================================
+  // PROFILE DATA
+  // ======================================
+
+  let profileName =
+    profile?.display_name ||
+    user.user_metadata?.display_name ||
+    user.user_metadata?.full_name ||
+    user.email ||
+    "Користувач";
+
+
+  let birthDate =
+    profile?.birth_date || "";
+
+
+  let age =
+    calculateAge(birthDate);
+
+
+  let discordUsername =
+    profile?.discord_username || "";
+
+
+  let discordUserId =
+    profile?.discord_user_id || "";
+
+
+  let steamId =
+    profile?.steam_id || "";
+
+
+  // ======================================
+  // SUBMIT APPLICATION
+  // ======================================
+
+  form.addEventListener(
+    "submit",
+    async event => {
+
+      event.preventDefault();
+
+
+      // ====================================
+      // SELECTED DIRECTION
+      // ====================================
+
+      const direction =
+        getSelectedDirection();
+
+
+      if (!direction) {
+
+        showMessage(
+          "Оберіть напрямок.",
+          "error"
+        );
 
         return;
 
       }
 
 
-      formMessage.textContent =
-        text;
+      // ====================================
+      // REFRESH PROFILE BEFORE SUBMIT
+      // ====================================
+
+      const {
+        data: freshProfile,
+        error: freshProfileError
+      } = await supabase
+        .from("profiles")
+        .select(`
+          display_name,
+          birth_date,
+          discord_username,
+          discord_user_id,
+          steam_id
+        `)
+        .eq("id", user.id)
+        .maybeSingle();
 
 
-      formMessage.className =
-        type || "";
+      if (freshProfileError) {
 
-    }
-
-
-    // ======================================
-    // GET VALUE
-    // ======================================
-
-    function getValue(
-      id
-    ) {
-
-      const element =
-        document.getElementById(
-          id
+        console.error(
+          "Помилка профілю:",
+          freshProfileError
         );
-
-
-      if (
-        !element
-      ) {
-
-        return "";
-
-      }
-
-
-      return (
-        element.value ||
-        ""
-      )
-        .trim();
-
-    }
-
-
-    // ======================================
-    // GET SELECTED DIRECTION
-    // ======================================
-
-    function getSelectedDirection() {
-
-      const selected =
-        document.querySelector(
-          'input[name="direction"]:checked'
-        );
-
-
-      if (
-        !selected
-      ) {
-
-        return null;
-
-      }
-
-
-      return selected.value;
-
-    }
-
-
-    // ======================================
-    // HIDE ALL GAME FORMS
-    // ======================================
-
-    function hideAllGameForms() {
-
-      directions.forEach(
-        function (
-          direction
-        ) {
-
-          const gameForm =
-            document.getElementById(
-              direction + "Form"
-            );
-
-
-          if (
-            gameForm
-          ) {
-
-            // Ховаємо форму.
-            gameForm.classList.remove(
-              "active"
-            );
-
-
-            // Вимикаємо всі поля,
-            // щоб браузер не перевіряв
-            // required поля прихованих ігор.
-            gameForm
-              .querySelectorAll(
-                "input, select, textarea"
-              )
-              .forEach(
-                function (
-                  element
-                ) {
-
-                  element.disabled =
-                    true;
-
-                }
-              );
-
-          }
-
-        }
-      );
-
-    }
-
-
-    // ======================================
-    // SHOW SELECTED GAME FORM
-    // ======================================
-
-    function showGameForm(
-      direction
-    ) {
-
-      // Спочатку ховаємо
-      // та відключаємо всі форми.
-      hideAllGameForms();
-
-
-      const selectedForm =
-        document.getElementById(
-          direction + "Form"
-        );
-
-
-      if (
-        selectedForm
-      ) {
-
-        // Показуємо вибрану форму.
-        selectedForm.classList.add(
-          "active"
-        );
-
-
-        // Включаємо її поля.
-        selectedForm
-          .querySelectorAll(
-            "input, select, textarea"
-          )
-          .forEach(
-            function (
-              element
-            ) {
-
-              element.disabled =
-                false;
-
-            }
-          );
-
-      }
-
-    }
-
-
-    // ======================================
-    // DIRECTION CHANGE
-    // ======================================
-
-    const directionInputs =
-      document.querySelectorAll(
-        'input[name="direction"]'
-      );
-
-
-    directionInputs.forEach(
-      function (
-        input
-      ) {
-
-        input.addEventListener(
-          "change",
-          function () {
-
-            showGameForm(
-              this.value
-            );
-
-          }
-        );
-
-      }
-    );
-
-
-    // ======================================
-    // INITIAL FORM STATE
-    // ======================================
-
-    const initiallySelected =
-      document.querySelector(
-        'input[name="direction"]:checked'
-      );
-
-
-    if (
-      initiallySelected
-    ) {
-
-      showGameForm(
-        initiallySelected.value
-      );
-
-    } else {
-
-      hideAllGameForms();
-
-    }
-
-
-    // ======================================
-    // SUBMIT APPLICATION
-    // ======================================
-
-    form.addEventListener(
-      "submit",
-      async function (
-        event
-      ) {
-
-        event.preventDefault();
-
-
-        // ================================
-        // SELECTED DIRECTION
-        // ================================
-
-        const direction =
-          getSelectedDirection();
-
-
-        if (
-          !direction
-        ) {
-
-          showMessage(
-            "Оберіть напрямок.",
-            "error"
-          );
-
-          return;
-
-        }
-
-
-        // ================================
-        // DISABLE BUTTON
-        // ================================
-
-        if (
-          submitButton
-        ) {
-
-          submitButton.disabled =
-            true;
-
-
-          submitButton.textContent =
-            "НАДСИЛАННЯ...";
-
-        }
-
 
         showMessage(
-          "Надсилаємо заявку...",
-          ""
+          "Не вдалося отримати дані профілю.",
+          "error"
         );
 
+        return;
 
-        // ================================
-        // APPLICATION NAME
-        // Обов'язкове поле таблиці
-        // applications.name
-        // ================================
+      }
 
-        let applicationName =
-          "";
 
+      // ====================================
+      // USE FRESH PROFILE DATA
+      // ====================================
 
-        if (
-          direction === "ets2"
-        ) {
+      profileName =
+        freshProfile?.display_name ||
+        user.user_metadata?.display_name ||
+        user.user_metadata?.full_name ||
+        user.email ||
+        "Користувач";
 
-          applicationName =
-            getValue(
-              "truckersmpNick"
-            );
 
-        }
+      birthDate =
+        freshProfile?.birth_date || "";
 
 
-        if (
-          direction === "wot"
-        ) {
+      age =
+        calculateAge(birthDate);
 
-          applicationName =
-            getValue(
-              "wotNickname"
-            );
 
-        }
+      discordUsername =
+        freshProfile?.discord_username || "";
 
 
-        if (
-          direction === "dota2"
-        ) {
+      discordUserId =
+        freshProfile?.discord_user_id || "";
 
-          applicationName =
-            getValue(
-              "dotaNickname"
-            );
 
-        }
+      steamId =
+        freshProfile?.steam_id || "";
 
 
-        if (
-          direction === "wow"
-        ) {
+      // ====================================
+      // CHECK REQUIRED NAME
+      // ====================================
 
-          applicationName =
-            getValue(
-              "battleTag"
-            );
+      if (!profileName) {
 
-        }
+        showMessage(
+          "Спочатку вкажіть ім'я у профілі.",
+          "error"
+        );
 
+        return;
 
-        // Додаткова перевірка,
-        // щоб не записувати NULL.
-        if (
-          !applicationName
-        ) {
+      }
 
-          showMessage(
-            "Будь ласка, заповніть нікнейм.",
-            "error"
-          );
 
+      // ====================================
+      // DISABLE BUTTON
+      // ====================================
 
-          if (
-            submitButton
-          ) {
+      if (submitButton) {
 
-            submitButton.disabled =
-              false;
+        submitButton.disabled = true;
 
+        submitButton.textContent =
+          "НАДСИЛАННЯ...";
 
-            submitButton.textContent =
-              "НАДІСЛАТИ ЗАЯВКУ";
+      }
 
-          }
 
+      showMessage(
+        "Надсилаємо заявку..."
+      );
 
-          return;
 
-        }
+      // ====================================
+      // CHECK EXISTING APPLICATION
+      // ====================================
 
+      const {
+        data: existingApplication,
+        error: checkError
+      } = await supabase
+        .from("applications")
+        .select("id, status")
+        .eq("user_id", user.id)
+        .eq("direction", direction)
+        .maybeSingle();
 
-        // ================================
-        // APPLICATION DATA
-        // ================================
 
-        const applicationData = {
+      if (checkError) {
 
-          // Обов'язкове старе поле
-          // таблиці applications.
-          name:
-            applicationName,
-
-          // Авторизований користувач.
-          user_id:
-            user.id,
-
-          // Напрямок.
-          direction:
-            direction,
-
-          // Статус нової заявки.
-          status:
-            "pending",
-
-          // Інформація про користувача.
-          about:
-            getValue(
-              "about"
-            ),
-
-          // ETS2
-          truckersmp_nick:
-            null,
-
-          truckersmp_id:
-            null,
-
-          truckershub_username:
-            null,
-
-          truckershub_id:
-            null,
-
-          // WoT
-          wot_nickname:
-            null,
-
-          wargaming_id:
-            null,
-
-          wot_region:
-            null,
-
-          // Dota 2
-          dota_nickname:
-            null,
-
-          dota_friend_id:
-            null,
-
-          dota_rank:
-            null,
-
-          // WoW
-          battletag:
-            null,
-
-          wow_character:
-            null,
-
-          wow_realm:
-            null,
-
-          wow_faction:
-            null,
-
-          wow_class:
-            null
-
-        };
-
-
-        // ================================
-        // ETS2 DATA
-        // ================================
-
-        if (
-          direction === "ets2"
-        ) {
-
-          applicationData.truckersmp_nick =
-            getValue(
-              "truckersmpNick"
-            );
-
-
-          applicationData.truckersmp_id =
-            getValue(
-              "truckersmpId"
-            );
-
-
-          applicationData.truckershub_username =
-            getValue(
-              "truckershubUsername"
-            );
-
-
-          applicationData.truckershub_id =
-            getValue(
-              "truckershubId"
-            );
-
-        }
-
-
-        // ================================
-        // WOT DATA
-        // ================================
-
-        if (
-          direction === "wot"
-        ) {
-
-          applicationData.wot_nickname =
-            getValue(
-              "wotNickname"
-            );
-
-
-          applicationData.wargaming_id =
-            getValue(
-              "wargamingId"
-            );
-
-
-          applicationData.wot_region =
-            getValue(
-              "wotRegion"
-            );
-
-        }
-
-
-        // ================================
-        // DOTA 2 DATA
-        // ================================
-
-        if (
-          direction === "dota2"
-        ) {
-
-          applicationData.dota_nickname =
-            getValue(
-              "dotaNickname"
-            );
-
-
-          applicationData.dota_friend_id =
-            getValue(
-              "dotaFriendId"
-            );
-
-
-          applicationData.dota_rank =
-            getValue(
-              "dotaRank"
-            );
-
-        }
-
-
-        // ================================
-        // WOW DATA
-        // ================================
-
-        if (
-          direction === "wow"
-        ) {
-
-          applicationData.battletag =
-            getValue(
-              "battleTag"
-            );
-
-
-          applicationData.wow_character =
-            getValue(
-              "wowCharacter"
-            );
-
-
-          applicationData.wow_realm =
-            getValue(
-              "wowRealm"
-            );
-
-
-          applicationData.wow_faction =
-            getValue(
-              "wowFaction"
-            );
-
-
-          applicationData.wow_class =
-            getValue(
-              "wowClass"
-            );
-
-        }
-
-
-        // ================================
-        // CHECK EXISTING APPLICATION
-        // ================================
-
-        const {
-          data:
-            existingApplication,
-
-          error:
-            checkError
-
-        } =
-          await supabase
-            .from(
-              "applications"
-            )
-            .select(
-              "id, status"
-            )
-            .eq(
-              "user_id",
-              user.id
-            )
-            .eq(
-              "direction",
-              direction
-            )
-            .maybeSingle();
-
-
-        if (
+        console.error(
+          "Помилка перевірки заявки:",
           checkError
-        ) {
-
-          console.error(
-            "Помилка перевірки заявки:",
-            checkError
-          );
-
-        }
-
-
-        if (
-          existingApplication
-        ) {
-
-          showMessage(
-            "Ви вже подавали заявку на цей напрямок.",
-            "error"
-          );
-
-
-          if (
-            submitButton
-          ) {
-
-            submitButton.disabled =
-              false;
-
-
-            submitButton.textContent =
-              "НАДІСЛАТИ ЗАЯВКУ";
-
-          }
-
-
-          return;
-
-        }
-
-
-        // ================================
-        // INSERT APPLICATION
-        // ================================
-
-        const {
-          error:
-            insertError
-
-        } =
-          await supabase
-            .from(
-              "applications"
-            )
-            .insert(
-              applicationData
-            );
-
-
-        // ================================
-        // ERROR
-        // ================================
-
-        if (
-          insertError
-        ) {
-
-          console.error(
-            "Помилка надсилання заявки:",
-            insertError
-          );
-
-
-          showMessage(
-            "Помилка при надсиланні заявки: " +
-            insertError.message,
-            "error"
-          );
-
-
-          if (
-            submitButton
-          ) {
-
-            submitButton.disabled =
-              false;
-
-
-            submitButton.textContent =
-              "НАДІСЛАТИ ЗАЯВКУ";
-
-          }
-
-
-          return;
-
-        }
-
-
-        // ================================
-        // SUCCESS
-        // ================================
+        );
 
         showMessage(
-          "Заявку успішно надіслано!",
-          "success"
+          "Не вдалося перевірити попередню заявку: " +
+          checkError.message,
+          "error"
         );
 
 
-        form.reset();
+        if (submitButton) {
 
-
-        hideAllGameForms();
-
-
-        if (
-          submitButton
-        ) {
-
-          submitButton.disabled =
-            true;
-
+          submitButton.disabled = false;
 
           submitButton.textContent =
-            "ЗАЯВКУ НАДІСЛАНО";
+            "НАДІСЛАТИ ЗАЯВКУ";
 
         }
 
-
-        // ================================
-        // REDIRECT
-        // ================================
-
-        setTimeout(
-          function () {
-
-            window.location.href =
-              "profile.html";
-
-          },
-          1500
-        );
+        return;
 
       }
-    );
 
-  }
-);
+
+      if (existingApplication) {
+
+        showMessage(
+          "Ви вже подавали заявку на цей напрямок.",
+          "error"
+        );
+
+
+        if (submitButton) {
+
+          submitButton.disabled = false;
+
+          submitButton.textContent =
+            "НАДІСЛАТИ ЗАЯВКУ";
+
+        }
+
+        return;
+
+      }
+
+
+      // ====================================
+      // APPLICATION DATA
+      // ====================================
+
+      const applicationData = {
+
+        // Основний користувач
+        user_id:
+          user.id,
+
+        // Ім'я з основного профілю
+        name:
+          profileName,
+
+        // Вік з основного профілю
+        age:
+          age || null,
+
+        // Discord з основного профілю
+        discord_nick:
+          discordUsername || null,
+
+        discord_id:
+          discordUserId || null,
+
+        // Steam з основного профілю
+        steam_id:
+          steamId || null,
+
+        // Напрямок
+        direction:
+          direction,
+
+        // Статус
+        status:
+          "pending",
+
+        // Опис
+        about:
+          getValue("about"),
+
+        // Старі / загальні поля
+        game_nick:
+          null,
+
+        game_nickname:
+          null,
+
+        truckersmp_nick:
+          null,
+
+        truckersmp_id:
+          null,
+
+        truckersmp_nickname:
+          null,
+
+        truckershub_username:
+          null,
+
+        truckershub_id:
+          null,
+
+        wot_nickname:
+          null,
+
+        wargaming_id:
+          null,
+
+        wot_region:
+          null,
+
+        dota_nickname:
+          null,
+
+        dota_friend_id:
+          null,
+
+        dota_rank:
+          null,
+
+        battletag:
+          null,
+
+        wow_character:
+          null,
+
+        wow_realm:
+          null,
+
+        wow_faction:
+          null,
+
+        wow_class:
+          null
+
+      };
+
+
+      // ====================================
+      // ETS2
+      // ====================================
+
+      if (direction === "ets2") {
+
+        applicationData.truckersmp_nick =
+          getValue("truckersmpNick");
+
+
+        applicationData.truckersmp_id =
+          getValue("truckersmpId");
+
+
+        applicationData.truckersmp_nickname =
+          getValue("truckersmpNick");
+
+
+        applicationData.truckershub_username =
+          getValue("truckershubUsername");
+
+
+        applicationData.truckershub_id =
+          getValue("truckershubId");
+
+
+        // Основний ігровий нік
+        applicationData.game_nick =
+          getValue("truckersmpNick");
+
+
+        applicationData.game_nickname =
+          getValue("truckersmpNick");
+
+      }
+
+
+      // ====================================
+      // WORLD OF TANKS
+      // ====================================
+
+      if (direction === "wot") {
+
+        applicationData.wot_nickname =
+          getValue("wotNickname");
+
+
+        applicationData.wargaming_id =
+          getValue("wargamingId");
+
+
+        applicationData.wot_region =
+          getValue("wotRegion");
+
+
+        applicationData.game_nick =
+          getValue("wotNickname");
+
+
+        applicationData.game_nickname =
+          getValue("wotNickname");
+
+      }
+
+
+      // ====================================
+      // DOTA 2
+      // ====================================
+
+      if (direction === "dota2") {
+
+        applicationData.dota_nickname =
+          getValue("dotaNickname");
+
+
+        applicationData.dota_friend_id =
+          getValue("dotaFriendId");
+
+
+        applicationData.dota_rank =
+          getValue("dotaRank");
+
+
+        applicationData.game_nick =
+          getValue("dotaNickname");
+
+
+        applicationData.game_nickname =
+          getValue("dotaNickname");
+
+      }
+
+
+      // ====================================
+      // WORLD OF WARCRAFT
+      // ====================================
+
+      if (direction === "wow") {
+
+        applicationData.battletag =
+          getValue("battleTag");
+
+
+        applicationData.wow_character =
+          getValue("wowCharacter");
+
+
+        applicationData.wow_realm =
+          getValue("wowRealm");
+
+
+        applicationData.wow_faction =
+          getValue("wowFaction");
+
+
+        applicationData.wow_class =
+          getValue("wowClass");
+
+
+        applicationData.game_nick =
+          getValue("wowCharacter");
+
+
+        applicationData.game_nickname =
+          getValue("wowCharacter");
+
+      }
+
+
+      // ====================================
+      // INSERT APPLICATION
+      // ====================================
+
+      console.log(
+        "UA LEGION APPLICATION:",
+        applicationData
+      );
+
+
+      const {
+        data: insertedApplication,
+        error: insertError
+      } = await supabase
+        .from("applications")
+        .insert(applicationData)
+        .select()
+        .single();
+
+
+      // ====================================
+      // INSERT ERROR
+      // ====================================
+
+      if (insertError) {
+
+        console.error(
+          "Помилка заявки:",
+          insertError
+        );
+
+
+        showMessage(
+          "Помилка при надсиланні заявки: " +
+          insertError.message,
+          "error"
+        );
+
+
+        if (submitButton) {
+
+          submitButton.disabled = false;
+
+          submitButton.textContent =
+            "НАДІСЛАТИ ЗАЯВКУ";
+
+        }
+
+        return;
+
+      }
+
+
+      // ====================================
+      // SUCCESS
+      // ====================================
+
+      console.log(
+        "Заявка створена:",
+        insertedApplication
+      );
+
+
+      showMessage(
+        "Заявку успішно надіслано!",
+        "success"
+      );
+
+
+      // ====================================
+      // RESET
+      // ====================================
+
+      form.reset();
+
+      hideAllGameForms();
+
+
+      // ====================================
+      // BUTTON
+      // ====================================
+
+      if (submitButton) {
+
+        submitButton.disabled = true;
+
+        submitButton.textContent =
+          "ЗАЯВКУ НАДІСЛАНО";
+
+      }
+
+
+      // ====================================
+      // REDIRECT
+      // ====================================
+
+      setTimeout(
+        () => {
+
+          window.location.href =
+            "profile.html";
+
+        },
+        1500
+      );
+
+    }
+  );
+
+});
