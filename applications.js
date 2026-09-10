@@ -9,7 +9,6 @@ document.addEventListener(
 
   async () => {
 
-
     // ======================================
     // SUPABASE
     // ======================================
@@ -195,6 +194,83 @@ document.addEventListener(
 
 
       return div.innerHTML;
+
+    }
+
+
+    // ======================================
+    // STATUS NORMALIZATION
+    // ======================================
+
+    function normalizeStatus(
+      status
+    ) {
+
+      const value =
+        String(
+          status || ""
+        )
+        .trim()
+        .toLowerCase();
+
+
+      /*
+       * У системі можуть існувати
+       * старий статус "new"
+       * та новий статус "pending".
+       *
+       * Для UI вони означають:
+       * НОВА / НА РОЗГЛЯДІ
+       */
+
+      if (
+        value === "new" ||
+        value === "pending"
+      ) {
+
+        return "pending";
+
+      }
+
+
+      if (
+        value === "approved"
+      ) {
+
+        return "approved";
+
+      }
+
+
+      if (
+        value === "rejected"
+      ) {
+
+        return "rejected";
+
+      }
+
+
+      return value;
+
+    }
+
+
+    // ======================================
+    // IS NEW APPLICATION
+    // ======================================
+
+    function isNewApplication(
+      application
+    ) {
+
+      const status =
+        normalizeStatus(
+          application?.status
+        );
+
+
+      return status === "pending";
 
     }
 
@@ -426,6 +502,12 @@ document.addEventListener(
         data || [];
 
 
+      console.log(
+        "Завантажені заявки:",
+        allApplications
+      );
+
+
       // ====================================
       // NO APPLICATIONS FOR USER
       // ====================================
@@ -483,7 +565,7 @@ document.addEventListener(
         allApplications.filter(
 
           item =>
-            item.status === "new"
+            isNewApplication(item)
 
         ).length;
 
@@ -492,7 +574,9 @@ document.addEventListener(
         allApplications.filter(
 
           item =>
-            item.status === "approved"
+            normalizeStatus(
+              item.status
+            ) === "approved"
 
         ).length;
 
@@ -501,7 +585,9 @@ document.addEventListener(
         allApplications.filter(
 
           item =>
-            item.status === "rejected"
+            normalizeStatus(
+              item.status
+            ) === "rejected"
 
         ).length;
 
@@ -582,15 +668,51 @@ document.addEventListener(
         application => {
 
 
-          const statusMatch =
+          const normalizedApplicationStatus =
+            normalizeStatus(
+              application.status
+            );
 
+
+          let statusMatch =
+            false;
+
+
+          // --------------------------------
+          // STATUS FILTER
+          // --------------------------------
+
+          if (
             status === "all"
+          ) {
 
-            ||
+            statusMatch =
+              true;
 
-            application.status ===
-            status;
+          }
 
+          else if (
+            status === "new"
+          ) {
+
+            statusMatch =
+              normalizedApplicationStatus ===
+              "pending";
+
+          }
+
+          else {
+
+            statusMatch =
+              normalizedApplicationStatus ===
+              status;
+
+          }
+
+
+          // --------------------------------
+          // SEARCH
+          // --------------------------------
 
           const name =
             (
@@ -603,6 +725,7 @@ document.addEventListener(
           const discord =
             (
               application.discord_nickname ||
+              application.discord_nick ||
               ""
             )
             .toLowerCase();
@@ -611,6 +734,11 @@ document.addEventListener(
           const gameNickname =
             (
               application.game_nickname ||
+              application.game_nick ||
+              application.truckersmp_nick ||
+              application.wot_nickname ||
+              application.dota_nickname ||
+              application.wow_character ||
               ""
             )
             .toLowerCase();
@@ -664,12 +792,18 @@ document.addEventListener(
       status
     ) {
 
+      const normalized =
+        normalizeStatus(
+          status
+        );
+
+
       const statuses = {
 
-        new: {
+        pending: {
 
           label:
-            "🟡 Нова",
+            "🟡 На розгляді",
 
           className:
             "status-new"
@@ -703,7 +837,7 @@ document.addEventListener(
 
       return (
 
-        statuses[status]
+        statuses[normalized]
 
         ||
 
@@ -769,6 +903,15 @@ document.addEventListener(
         )
       ) {
 
+        if (
+          directions.length === 0
+        ) {
+
+          return "-";
+
+        }
+
+
         return directions.join(
           ", "
         );
@@ -782,6 +925,91 @@ document.addEventListener(
 
 
     // ======================================
+    // GET APPLICATION DIRECTION
+    // ======================================
+
+    function getApplicationDirection(
+      application
+    ) {
+
+      // ------------------------------------
+      // Новий/основний direction
+      // ------------------------------------
+
+      if (
+        application?.direction
+      ) {
+
+        return application.direction;
+
+      }
+
+
+      // ------------------------------------
+      // directions
+      // ------------------------------------
+
+      if (
+        application?.directions
+      ) {
+
+        if (
+          Array.isArray(
+            application.directions
+          )
+        ) {
+
+          return (
+            application.directions[0] ||
+            null
+          );
+
+        }
+
+
+        if (
+          typeof application.directions ===
+          "string"
+        ) {
+
+          try {
+
+            const parsed =
+              JSON.parse(
+                application.directions
+              );
+
+
+            if (
+              Array.isArray(parsed)
+            ) {
+
+              return (
+                parsed[0] ||
+                null
+              );
+
+            }
+
+          }
+
+          catch {
+
+            return application.directions;
+
+          }
+
+        }
+
+      }
+
+
+      return null;
+
+    }
+
+
+    // ======================================
     // GET APPLICATION DIRECTION ID
     // ======================================
 
@@ -789,33 +1017,10 @@ document.addEventListener(
       application
     ) {
 
-      if (
-        !application.directions
-      ) {
-
-        return null;
-
-      }
-
-
-      const directions =
-        Array.isArray(
-          application.directions
-        )
-
-          ?
-
-          application.directions
-
-          :
-
-          [
-            application.directions
-          ];
-
-
       const applicationDirection =
-        directions[0];
+        getApplicationDirection(
+          application
+        );
 
 
       if (!applicationDirection) {
@@ -825,66 +1030,97 @@ document.addEventListener(
       }
 
 
+      const normalized =
+        String(
+          applicationDirection
+        )
+        .trim()
+        .toLowerCase();
+
+
       const directionMap = {
 
-        "ETS2":
+        "ets2":
           "ets2",
 
-        "ETS2 / TruckersMP":
+        "ets2 / truckersmp":
           "ets2",
 
-        "World of Tanks":
+        "world of tanks":
           "wot",
 
-        "Dota 2":
+        "wot":
+          "wot",
+
+        "dota 2":
           "dota2",
 
-        "World of Warcraft":
+        "dota2":
+          "dota2",
+
+        "dota":
+          "dota2",
+
+        "world of warcraft":
           "wow",
 
-        "Streaming":
-          "streaming"
+        "wow":
+          "wow"
 
       };
 
 
       const slug =
         directionMap[
-          applicationDirection
+          normalized
         ];
 
 
-      if (!slug) {
+      if (slug) {
 
-        const foundByName =
+        const direction =
           allDirections.find(
 
-            direction =>
-              direction.name ===
-              applicationDirection
+            item =>
+              String(
+                item.slug
+              )
+              .trim()
+              .toLowerCase() ===
+              slug
 
           );
 
 
         return (
-          foundByName?.id ||
+          direction?.id ||
           null
         );
 
       }
 
 
-      const direction =
+      // ------------------------------------
+      // Пошук за назвою
+      // ------------------------------------
+
+      const foundByName =
         allDirections.find(
 
-          item =>
-            item.slug === slug
+          direction =>
+
+            String(
+              direction.name || ""
+            )
+            .trim()
+            .toLowerCase() ===
+            normalized
 
         );
 
 
       return (
-        direction?.id ||
+        foundByName?.id ||
         null
       );
 
@@ -1064,8 +1300,15 @@ document.addEventListener(
 
 
           const isNew =
-            application.status ===
-            "new";
+            isNewApplication(
+              application
+            );
+
+
+          const applicationDirection =
+            getApplicationDirection(
+              application
+            );
 
 
           // ==================================
@@ -1100,6 +1343,11 @@ document.addEventListener(
 
                     ${escapeHtml(
                       application.game_nickname ||
+                      application.game_nick ||
+                      application.truckersmp_nick ||
+                      application.wot_nickname ||
+                      application.dota_nickname ||
+                      application.wow_character ||
                       "-"
                     )}
 
@@ -1154,6 +1402,7 @@ document.addEventListener(
 
                     ${escapeHtml(
                       application.discord_nickname ||
+                      application.discord_nick ||
                       "-"
                     )}
 
@@ -1211,6 +1460,7 @@ document.addEventListener(
                 <strong>
 
                   ${escapeHtml(
+                    applicationDirection ||
                     formatDirections(
                       application.directions
                     )
@@ -1398,6 +1648,11 @@ document.addEventListener(
 
                     ${escapeHtml(
                       application.game_nickname ||
+                      application.game_nick ||
+                      application.truckersmp_nick ||
+                      application.wot_nickname ||
+                      application.dota_nickname ||
+                      application.wow_character ||
                       "UA LEGION"
                     )}
 
@@ -1431,6 +1686,7 @@ document.addEventListener(
                 <strong>
 
                   ${escapeHtml(
+                    applicationDirection ||
                     formatDirections(
                       application.directions
                     )
