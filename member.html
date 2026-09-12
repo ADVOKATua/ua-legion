@@ -3,7 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Кабінет учасника — UA LEGION</title>
+
   <link rel="stylesheet" href="style.css">
 
   <style>
@@ -34,12 +36,14 @@
     }
 
     .member-card,
+    .directions-card,
     .management-card {
       background: linear-gradient(
         135deg,
         rgba(255,255,255,.055),
         rgba(255,255,255,.018)
       );
+
       border: 1px solid rgba(255,255,255,.12);
       border-radius: 18px;
       padding: 25px;
@@ -75,13 +79,13 @@
       opacity: .65;
     }
 
-    .ets2-summary {
+    .global-summary {
       margin-top: 25px;
       padding-top: 20px;
       border-top: 1px solid rgba(255,255,255,.1);
     }
 
-    .ets2-summary h3 {
+    .global-summary h3 {
       margin: 0 0 12px;
     }
 
@@ -103,13 +107,178 @@
       opacity: .6;
     }
 
+    .directions-card h2 {
+      margin: 0 0 6px;
+    }
+
+    .directions-description {
+      margin: 0 0 20px;
+      opacity: .6;
+    }
+
+    .directions-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .direction-card {
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: 14px;
+      padding: 18px;
+      background: rgba(255,255,255,.025);
+    }
+
+    .direction-card.direction-active {
+      border-color: rgba(255,211,77,.20);
+    }
+
+    .direction-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 15px;
+    }
+
+    .direction-title {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .direction-status {
+      font-size: 12px;
+      padding: 5px 9px;
+      border-radius: 8px;
+      background: rgba(255,255,255,.06);
+      opacity: .75;
+      white-space: nowrap;
+    }
+
+    .direction-status.active {
+      color: #7df0ad;
+      background: rgba(125,240,173,.08);
+    }
+
+    .direction-status.not-active {
+      opacity: .55;
+    }
+
+    .direction-content {
+      margin-top: 15px;
+    }
+
+    .direction-label {
+      font-size: 13px;
+      opacity: .55;
+      margin-bottom: 7px;
+    }
+
+    .direction-roles {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .direction-class {
+      margin-top: 14px;
+      font-size: 14px;
+      opacity: .85;
+    }
+
+    .direction-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-top: 17px;
+    }
+
+    .direction-button {
+      padding: 10px 14px;
+      border-radius: 9px;
+      border: 1px solid rgba(255,255,255,.13);
+      background: rgba(255,255,255,.055);
+      color: white;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .direction-button:hover {
+      background: rgba(255,255,255,.09);
+    }
+
+    .direction-button.primary {
+      background: #ffd34d;
+      color: #111;
+      border-color: #ffd34d;
+    }
+
+    .direction-button.danger {
+      border-color: rgba(255,100,100,.35);
+      color: #ff9b9b;
+    }
+
+    .direction-button:disabled {
+      opacity: .5;
+      cursor: wait;
+    }
+
+    .direction-management {
+      margin-top: 17px;
+      padding-top: 17px;
+      border-top: 1px solid rgba(255,255,255,.08);
+    }
+
+    .direction-management h4 {
+      margin: 0 0 12px;
+    }
+
+    .role-select {
+      width: 100%;
+      padding: 12px 13px;
+      border-radius: 9px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: #11151d;
+      color: white;
+      box-sizing: border-box;
+    }
+
+    .role-management-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-top: 10px;
+    }
+
+    .direction-message {
+      margin-top: 10px;
+      min-height: 18px;
+      font-size: 14px;
+    }
+
+    .direction-message.error {
+      color: #ff8d8d;
+    }
+
+    .direction-message.success {
+      color: #7df0ad;
+    }
+
+    .direction-message.info {
+      opacity: .7;
+    }
+
     .management-card h2 {
       margin: 0 0 5px;
     }
 
-    .management-head p {
-      margin: 0;
-      opacity: .6;
+    .management-locked {
+      padding: 15px;
+      border-radius: 10px;
+      background: rgba(255,255,255,.035);
+      opacity: .7;
     }
 
     .management-block {
@@ -190,13 +359,6 @@
       opacity: .7;
     }
 
-    .management-locked {
-      padding: 15px;
-      border-radius: 10px;
-      background: rgba(255,255,255,.035);
-      opacity: .7;
-    }
-
     .back-link {
       display: inline-flex;
       margin-top: 10px;
@@ -212,57 +374,162 @@
         align-items: flex-start;
         flex-direction: column;
       }
+
+      .direction-head {
+        flex-direction: column;
+      }
+
+      .direction-status {
+        align-self: flex-start;
+      }
     }
   </style>
 </head>
 
 <body>
+
   <header class="header">
     <div class="header-container">
-      <a href="index.html" class="logo">UA LEGION</a>
+
+      <a href="index.html" class="logo">
+        UA LEGION
+      </a>
+
       <nav class="nav" id="mainNavigation">
         <a href="index.html">Головна</a>
         <a href="profile.html">Мій кабінет</a>
         <a href="members.html">👥 Учасники</a>
       </nav>
+
     </div>
   </header>
 
+
   <main class="member-page">
+
     <div class="member-container">
+
       <div class="member-header">
+
         <h1>👤 Кабінет учасника</h1>
-        <p>Перегляд учасника та керування ETS2 за наявності відповідних повноважень.</p>
-        <a class="back-link" href="members.html">← Повернутися до учасників</a>
+
+        <p>
+          Перегляд учасника та керування його напрямками
+          за наявності відповідних повноважень.
+        </p>
+
+        <a
+          class="back-link"
+          href="members.html"
+        >
+          ← Повернутися до учасників
+        </a>
+
       </div>
 
+
+      <!-- ======================================
+           PROFILE
+      ======================================= -->
+
       <section class="member-card">
+
         <div class="member-main">
-          <img id="memberAvatar" class="member-avatar" alt="Учасник">
+
+          <img
+            id="memberAvatar"
+            class="member-avatar"
+            alt="Учасник"
+          >
+
           <div>
-            <h2 id="memberName">Завантаження...</h2>
-            <div id="memberNickname" class="member-nickname"></div>
+
+            <h2 id="memberName">
+              Завантаження...
+            </h2>
+
+            <div
+              id="memberNickname"
+              class="member-nickname"
+            ></div>
+
+          </div>
+
+        </div>
+
+
+        <div class="global-summary">
+
+          <h3>🌐 GLOBAL</h3>
+
+          <div
+            id="memberGlobalRoles"
+            class="role-badges"
+          ></div>
+
+        </div>
+
+      </section>
+
+
+      <!-- ======================================
+           DIRECTIONS
+      ======================================= -->
+
+      <section class="directions-card">
+
+        <h2>🎮 Напрямки</h2>
+
+        <p class="directions-description">
+          Участь у ігрових напрямках та керування посадами.
+        </p>
+
+        <div
+          id="directionsList"
+          class="directions-list"
+        >
+          <div class="management-locked">
+            ⏳ Завантаження напрямків...
           </div>
         </div>
 
-        <div class="ets2-summary">
-          <h3>🚛 ETS2 / TruckersMP</h3>
-          <div id="memberRoles" class="role-badges"></div>
-        </div>
       </section>
 
-      <section class="management-card">
+
+      <!-- ======================================
+           ETS2 LEGACY MANAGEMENT
+           Тимчасово залишаємо робочий блок.
+      ======================================= -->
+
+      <section
+        class="management-card"
+        id="ets2ManagementCard"
+      >
+
         <div id="ets2Management">
-          <div class="management-locked">⏳ Завантаження...</div>
+
+          <div class="management-locked">
+            ⏳ Завантаження ETS2...
+          </div>
+
         </div>
+
       </section>
 
-      <div id="memberError" class="member-message error"></div>
+
+      <div
+        id="memberError"
+        class="member-message error"
+      ></div>
+
     </div>
+
   </main>
+
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase.js"></script>
   <script src="member.js"></script>
+
 </body>
 </html>
