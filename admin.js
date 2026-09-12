@@ -9,13 +9,13 @@ document.addEventListener(
 
   async () => {
 
+    // ======================================
+    // SUPABASE
+    // ======================================
+
     const supabase =
       window.supabaseClient;
 
-
-    // ======================================
-    // SUPABASE CHECK
-    // ======================================
 
     if (!supabase) {
 
@@ -153,11 +153,21 @@ document.addEventListener(
 
 
     /*
-      Старий HTML ще може містити
-      assignDirection.
+      СТАРОЕ поле assignDirection
+      больше не используется.
 
-      У новій архітектурі він НЕ використовується,
-      тому прибираємо весь його блок з інтерфейсу.
+      В новой архитектуре:
+
+      GLOBAL role
+          ↓
+      user_roles
+
+      ETS2 position
+          ↓
+      user_direction_roles
+
+      Поэтому направление здесь
+      выбирать нельзя.
     */
 
     const assignDirection =
@@ -191,7 +201,7 @@ document.addEventListener(
 
 
     // ======================================
-    // REMOVE OLD DIRECTION ROLE SELECTOR
+    // REMOVE OLD DIRECTION SELECTOR
     // ======================================
 
     if (assignDirection) {
@@ -259,8 +269,15 @@ document.addEventListener(
       !user
     ) {
 
+      console.error(
+        "Користувач не авторизований:",
+        userError
+      );
+
+
       window.location.href =
         "login.html";
+
 
       return;
 
@@ -272,7 +289,7 @@ document.addEventListener(
 
 
     // ======================================
-    // LOAD PROFILE NAME
+    // LOAD PROFILE
     // ======================================
 
     async function loadAdminProfile() {
@@ -322,9 +339,15 @@ document.addEventListener(
     // CHECK ADMIN ACCESS
     // ======================================
     //
-    // Нова RBAC-архітектура.
+    // НОВА RBAC АРХІТЕКТУРА
     //
-    // Не перевіряємо конкретні назви ролей.
+    // Немає перевірки:
+    //
+    // owner
+    // deputy_owner
+    // top_manager
+    // hr_manager
+    //
     // Перевіряємо permission.
     //
     // ======================================
@@ -336,10 +359,13 @@ document.addEventListener(
         error
       } =
         await supabase.rpc(
-          "has_global_permission",
+          "has_permission",
           {
             p_permission:
-              "applications.view"
+              "applications.view",
+
+            p_direction_id:
+              null
           }
         );
 
@@ -347,13 +373,29 @@ document.addEventListener(
       if (error) {
 
         console.error(
-          "Помилка перевірки permission:",
+          "Помилка перевірки permission applications.view:",
           error
         );
+
 
         return false;
 
       }
+
+
+      console.log(
+        "ADMIN RBAC:",
+        {
+          permission:
+            "applications.view",
+
+          result:
+            data,
+
+          user_id:
+            currentUser.id
+        }
+      );
 
 
       return data === true;
@@ -365,19 +407,18 @@ document.addEventListener(
     // LOAD GLOBAL ROLES
     // ======================================
     //
-    // Тут показуємо ТІЛЬКИ глобальні ролі.
+    // ТІЛЬКИ GLOBAL.
     //
-    // ETS2 roles:
-    // ets2_director
-    // ets2_deputy_director
-    // ets2_top_manager
-    // ...
-    //
-    // сюди НЕ потрапляють.
+    // ETS2 ролі сюди НЕ потрапляють.
     //
     // ======================================
 
     async function loadRoles() {
+
+      if (!assignRole) {
+        return;
+      }
+
 
       const {
         data,
@@ -407,14 +448,16 @@ document.addEventListener(
       if (error) {
 
         console.error(
-          "Помилка завантаження глобальних ролей:",
+          "Помилка завантаження GLOBAL ролей:",
           error
         );
+
 
         showMessage(
           "Не вдалося завантажити глобальні ролі.",
           "error"
         );
+
 
         return;
 
@@ -423,11 +466,6 @@ document.addEventListener(
 
       availableRoles =
         data || [];
-
-
-      if (!assignRole) {
-        return;
-      }
 
 
       assignRole.innerHTML =
@@ -460,6 +498,12 @@ document.addEventListener(
           );
 
         }
+      );
+
+
+      console.log(
+        "GLOBAL roles:",
+        availableRoles
       );
 
     }
@@ -620,7 +664,7 @@ document.addEventListener(
 
 
     // ======================================
-    // STATUS
+    // STATUS INFO
     // ======================================
 
     function getStatusInfo(
@@ -664,8 +708,11 @@ document.addEventListener(
       return (
         statuses[status] ||
         {
-          label: status || "—",
-          className: ""
+          label:
+            status || "—",
+
+          className:
+            ""
         }
       );
 
@@ -673,7 +720,7 @@ document.addEventListener(
 
 
     // ======================================
-    // DATE FORMAT
+    // DATE
     // ======================================
 
     function formatDate(
@@ -681,7 +728,9 @@ document.addEventListener(
     ) {
 
       if (!value) {
+
         return "—";
+
       }
 
 
@@ -882,7 +931,6 @@ document.addEventListener(
                   </div>
 
                 </div>
-
 
               </div>
 
@@ -1203,15 +1251,6 @@ document.addEventListener(
       }
 
 
-      /*
-        assignDirection більше не скидаємо
-        і не використовуємо.
-
-        Напрямок ролі в новій архітектурі
-        не вибирається в GLOBAL admin panel.
-      */
-
-
       if (modal) {
 
         modal.classList.add(
@@ -1248,20 +1287,15 @@ document.addEventListener(
     // ASSIGN GLOBAL ROLE
     // ======================================
     //
-    // ВАЖНО:
+    // НІЯКОГО:
     //
-    // Ніякого прямого INSERT у user_roles.
+    // .from("user_roles").insert(...)
     //
-    // Запис виконується через:
+    // більше немає.
+    //
+    // Все йде через RPC:
     //
     // assign_global_role()
-    //
-    // RPC сама перевіряє:
-    // - авторизацію
-    // - permission
-    // - global role
-    // - hierarchy
-    // - duplicate
     //
     // ======================================
 
@@ -1296,35 +1330,55 @@ document.addEventListener(
           "error"
         );
 
+
         return false;
 
       }
 
 
-      /*
-        Додаткова перевірка на frontend:
-        вибрана роль повинна бути серед
-        завантажених GLOBAL ролей.
-      */
+      // ====================================
+      // FRONTEND VALIDATION
+      // ====================================
 
       const selectedRole =
         availableRoles.find(
           role =>
-            Number(role.id) === roleId
+            Number(role.id) ===
+            roleId
         );
 
 
       if (!selectedRole) {
 
         showMessage(
-          "Ця роль не є доступною глобальною роллю.",
+          "Вибрана роль не є глобальною.",
           "error"
         );
+
 
         return false;
 
       }
 
+
+      console.log(
+        "ASSIGN GLOBAL ROLE:",
+        {
+          user_id:
+            currentApplication.user_id,
+
+          role_id:
+            roleId,
+
+          role:
+            selectedRole
+        }
+      );
+
+
+      // ====================================
+      // RPC
+      // ====================================
 
       const {
         data,
@@ -1345,7 +1399,7 @@ document.addEventListener(
       if (error) {
 
         console.error(
-          "Помилка призначення GLOBAL ролі:",
+          "Помилка assign_global_role:",
           error
         );
 
@@ -1362,19 +1416,25 @@ document.addEventListener(
       }
 
 
+      console.log(
+        "assign_global_role result:",
+        data
+      );
+
+
       if (
         !data ||
         data.success !== true
       ) {
 
         console.error(
-          "RPC assign_global_role повернула:",
+          "Некоректна відповідь RPC:",
           data
         );
 
 
         showMessage(
-          "Не вдалося призначити глобальну роль.",
+          "Роль не була призначена.",
           "error"
         );
 
@@ -1384,18 +1444,12 @@ document.addEventListener(
       }
 
 
-      console.log(
-        "GLOBAL роль призначена:",
-        data
-      );
-
-
       if (
         data.already_exists === true
       ) {
 
         showMessage(
-          "У користувача ця глобальна роль вже є.",
+          "Ця глобальна роль вже є у користувача.",
           "info"
         );
 
@@ -1478,6 +1532,10 @@ document.addEventListener(
       };
 
 
+      // ====================================
+      // UPDATE APPLICATION
+      // ====================================
+
       const {
         error
       } =
@@ -1505,6 +1563,7 @@ document.addEventListener(
           error.message,
           "error"
         );
+
 
         return;
 
@@ -1549,7 +1608,6 @@ document.addEventListener(
       const filtered =
         allApplications.filter(
           application => {
-
 
             const name =
               (
@@ -1601,10 +1659,8 @@ document.addEventListener(
 
 
             return (
-
               matchesSearch &&
               matchesStatus
-
             );
 
           }
@@ -1619,7 +1675,7 @@ document.addEventListener(
 
 
     // ======================================
-    // EVENTS
+    // SEARCH
     // ======================================
 
     if (searchApplications) {
@@ -1632,6 +1688,10 @@ document.addEventListener(
     }
 
 
+    // ======================================
+    // STATUS FILTER
+    // ======================================
+
     if (statusFilter) {
 
       statusFilter.addEventListener(
@@ -1641,6 +1701,10 @@ document.addEventListener(
 
     }
 
+
+    // ======================================
+    // REFRESH
+    // ======================================
 
     if (refreshButton) {
 
@@ -1661,6 +1725,10 @@ document.addEventListener(
 
     }
 
+
+    // ======================================
+    // CLOSE MODAL
+    // ======================================
 
     if (closeModal) {
 
@@ -1696,6 +1764,10 @@ document.addEventListener(
     }
 
 
+    // ======================================
+    // PENDING
+    // ======================================
+
     if (markPending) {
 
       markPending.addEventListener(
@@ -1713,6 +1785,10 @@ document.addEventListener(
     }
 
 
+    // ======================================
+    // APPROVE
+    // ======================================
+
     if (approveApplication) {
 
       approveApplication.addEventListener(
@@ -1729,6 +1805,10 @@ document.addEventListener(
 
     }
 
+
+    // ======================================
+    // REJECT
+    // ======================================
 
     if (rejectApplication) {
 
@@ -1758,6 +1838,12 @@ document.addEventListener(
       await checkAdminAccess();
 
 
+    console.log(
+      "ADMIN ACCESS:",
+      hasAccess
+    );
+
+
     if (!hasAccess) {
 
       alert(
@@ -1774,11 +1860,14 @@ document.addEventListener(
     }
 
 
+    // ======================================
+    // LOAD DATA
+    // ======================================
+
     await loadRoles();
 
 
     await loadApplications();
-
 
   }
 );
