@@ -416,7 +416,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             roles
                 .map(role => `
                     <span class="role-badge">
-                        ${escapeHtml(role.name)}
+                        ${escapeHtml(
+                            role.name
+                        )}
                     </span>
                 `)
                 .join("");
@@ -491,17 +493,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     // ======================================
     // LOAD ROLE OPTIONS
     // ======================================
-    // ВАЖНО:
-    // RPC повертає:
-    //
-    // {
-    //   success: true,
-    //   direction_id: 1,
-    //   roles: [...]
-    // }
-    //
-    // Тому повертаємо data.roles
-    // ======================================
 
     async function loadRoleOptions(
         directionId
@@ -543,6 +534,15 @@ document.addEventListener("DOMContentLoaded", async () => {
             return [];
         }
 
+
+        // RPC returns:
+        //
+        // {
+        //     success: true,
+        //     direction_id: 1,
+        //     roles: [...]
+        // }
+        //
 
         return Array.isArray(data.roles)
             ? data.roles
@@ -746,6 +746,15 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
 
+        // ==================================
+        // IMPORTANT:
+        // assign_direction_role signature:
+        //
+        // p_user_id uuid
+        // p_direction_id bigint
+        // p_role_id bigint
+        // ==================================
+
         const {
             data,
             error
@@ -936,6 +945,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
 
+        // ==================================
+        // CURRENT ROLE IDS
+        // ==================================
+
         const roleIds =
             (membership.roles || [])
                 .map(
@@ -952,13 +965,45 @@ document.addEventListener("DOMContentLoaded", async () => {
                 );
 
 
+        // ==================================
+        // DEBUG
+        // ==================================
+
+        console.log(
+            "SAVE ETS2 MEMBER MANAGEMENT:",
+            {
+                p_target_user_id:
+                    targetUserId,
+
+                p_role_ids:
+                    roleIds,
+
+                p_driver_class:
+                    driverClass
+            }
+        );
+
+
+        // ==================================
+        // IMPORTANT:
+        //
+        // REAL FUNCTION SIGNATURE:
+        //
+        // save_ets2_member_management(
+        //     p_target_user_id uuid,
+        //     p_role_ids bigint[],
+        //     p_driver_class text
+        // )
+        //
+        // ==================================
+
         const {
             data,
             error
         } = await supabase.rpc(
             "save_ets2_member_management",
             {
-                p_user_id:
+                p_target_user_id:
                     targetUserId,
 
                 p_role_ids:
@@ -1008,6 +1053,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             return;
         }
+
+
+        console.log(
+            "ETS2 MEMBER MANAGEMENT SAVED:",
+            data
+        );
 
 
         await loadPage();
@@ -1061,6 +1112,10 @@ document.addEventListener("DOMContentLoaded", async () => {
                 direction.direction_id
             );
 
+
+        // ==================================
+        // FIND USER MEMBERSHIP
+        // ==================================
 
         const membership =
             (management.directions || [])
@@ -1132,7 +1187,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
         // ==================================
-        // CARD
+        // CREATE CARD
         // ==================================
 
         const card =
@@ -1677,7 +1732,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
         // ==================================
-        // ASSIGN ROLE
+        // ASSIGN ROLE BUTTON
         // ==================================
 
         const assignButton =
@@ -1710,7 +1765,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
         // ==================================
-        // REMOVE ROLE
+        // REMOVE ROLE BUTTONS
         // ==================================
 
         card
@@ -1934,7 +1989,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
             // ----------------------------------
-            // GLOBAL
+            // GLOBAL ROLES
             // ----------------------------------
 
             await loadGlobalRoles();
