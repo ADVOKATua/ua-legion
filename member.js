@@ -146,7 +146,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
         );
 
+
         if (error) {
+
             console.error(
                 "Permission error:",
                 permission,
@@ -155,6 +157,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             return false;
         }
+
 
         return data === true;
     }
@@ -195,6 +198,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
         if (profileName) {
+
             profileName.textContent =
                 data.display_name ||
                 "Без імені";
@@ -451,7 +455,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     ) {
 
         if (!roleId) {
+
             alert("Оберіть посаду");
+
             return;
         }
 
@@ -596,9 +602,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             membership?.status === "active";
 
 
-        // ----------------------------------
+        // ==================================
         // PERMISSIONS
-        // ----------------------------------
+        // ==================================
 
         const canManageMembers =
             await hasPermission(
@@ -630,9 +636,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                 : false;
 
 
-        // ----------------------------------
+        // ==================================
         // ROLE DATA
-        // ----------------------------------
+        // ==================================
 
         const roles =
             membership?.roles || [];
@@ -654,9 +660,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
 
-        // ----------------------------------
+        // ==================================
         // CARD
-        // ----------------------------------
+        // ==================================
 
         const card =
             document.createElement("div");
@@ -668,9 +674,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                 : "");
 
 
-        // ----------------------------------
+        // ==================================
         // HEADER
-        // ----------------------------------
+        // ==================================
 
         let html = `
 
@@ -702,9 +708,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         `;
 
 
-        // ----------------------------------
+        // ==================================
         // POSITIONS
-        // ----------------------------------
+        // ==================================
 
         html += `
 
@@ -754,9 +760,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
 
-        // ----------------------------------
+        // ==================================
         // NOT MEMBER
-        // ----------------------------------
+        // ==================================
 
         if (!isActive) {
 
@@ -777,7 +783,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                     </div>
 
                 `;
-
             }
 
 
@@ -811,9 +816,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
 
-        // ----------------------------------
+        // ==================================
         // ACTIVE MEMBER
-        // ----------------------------------
+        // ==================================
 
         if (
             canAssignRoles &&
@@ -876,9 +881,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
 
-        // ----------------------------------
+        // ==================================
         // CURRENT ROLES REMOVE
-        // ----------------------------------
+        // ==================================
 
         if (
             canRemoveRoles &&
@@ -917,9 +922,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
 
-        // ----------------------------------
+        // ==================================
         // ETS2 DRIVER CLASS
-        // ----------------------------------
+        // ==================================
 
         if (direction.code === "ets2") {
 
@@ -1041,9 +1046,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
 
-        // ----------------------------------
+        // ==================================
         // REMOVE FROM DIRECTION
-        // ----------------------------------
+        // ==================================
 
         if (canManageMembers) {
 
@@ -1067,18 +1072,18 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
 
-        // ----------------------------------
+        // ==================================
         // INSERT CARD
-        // ----------------------------------
+        // ==================================
 
         card.innerHTML = html;
 
         directionsContainer.appendChild(card);
 
 
-        // ----------------------------------
+        // ==================================
         // ASSIGN ROLE BUTTON
-        // ----------------------------------
+        // ==================================
 
         const assignButton =
             card.querySelector(
@@ -1097,6 +1102,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                             ".direction-role-select"
                         );
 
+
                     await assignDirectionRole(
                         direction,
                         select?.value
@@ -1107,9 +1113,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
 
-        // ----------------------------------
+        // ==================================
         // REMOVE ROLE BUTTONS
-        // ----------------------------------
+        // ==================================
 
         card
             .querySelectorAll(
@@ -1133,9 +1139,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             });
 
 
-        // ----------------------------------
+        // ==================================
         // REMOVE FROM DIRECTION
-        // ----------------------------------
+        // ==================================
 
         const removeDirectionButton =
             card.querySelector(
@@ -1159,9 +1165,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
 
-        // ----------------------------------
+        // ==================================
         // ETS2 CLASS
-        // ----------------------------------
+        // ==================================
 
         const saveClassButton =
             card.querySelector(
@@ -1207,13 +1213,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         ) {
 
             alert("Оберіть клас водія");
+
             return;
         }
 
 
-        // ----------------------------------
-        // Отримуємо поточні ролі ETS2
-        // ----------------------------------
+        // ==================================
+        // CURRENT ETS2 ROLES
+        // ==================================
 
         const {
             data,
@@ -1248,13 +1255,14 @@ document.addEventListener("DOMContentLoaded", async () => {
                         Number(role.role_id)
                 )
                 .filter(
-                    id => !Number.isNaN(id)
+                    id =>
+                        !Number.isNaN(id)
                 );
 
 
-        // ----------------------------------
+        // ==================================
         // SAVE
-        // ----------------------------------
+        // ==================================
 
         const {
             data: saveData,
@@ -1307,9 +1315,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     async function loadDirections() {
 
-        // ----------------------------------
+        // ==================================
         // ACTIVE DIRECTIONS
-        // ----------------------------------
+        // ==================================
 
         const {
             data: directions,
@@ -1324,9 +1332,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
 
-        // ----------------------------------
+        // ==================================
         // USER MANAGEMENT
-        // ----------------------------------
+        // ==================================
 
         const {
             data: management,
@@ -1334,7 +1342,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         } = await supabase.rpc(
             "get_user_direction_management",
             {
-                p_user_id: userId
+                // ВАЖНО:
+                // правильне ім'я параметра RPC
+                p_target_user_id: userId
             }
         );
 
@@ -1438,7 +1448,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
     // ======================================
-    // OLD ETS2 MANAGEMENT BLOCK
+    // OLD ETS2 MANAGEMENT
     // ======================================
 
     async function loadLegacyETS2Management() {
@@ -1448,34 +1458,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
 
-        const {
-            data,
-            error
-        } = await supabase.rpc(
-            "get_ets2_member_management",
-            {
-                p_user_id: userId
-            }
-        );
-
-
-        if (error) {
-
-            console.error(
-                "ETS2 management:",
-                error
-            );
-
-            ets2Management.innerHTML =
-                "";
-
-            return;
-        }
-
-
-        // Якщо універсальний блок уже
-        // відображає ETS2 — старий блок
-        // залишаємо прихованим.
         ets2Management.style.display =
             "none";
 
@@ -1508,6 +1490,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 "MEMBER PAGE ERROR:",
                 error
             );
+
 
             showError(
                 error?.message ||
