@@ -1,5 +1,5 @@
 // ======================================
-// UA LEGION — MEMBER MANAGEMENT
+// UA LEGION — MEMBER PAGE
 // member.js
 // ======================================
 
@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const supabase = window.supabaseClient;
 
     if (!supabase) {
-        console.error("Supabase не підключений");
+        console.error("UA LEGION: Supabase не підключений");
         return;
     }
 
@@ -21,26 +21,29 @@ document.addEventListener("DOMContentLoaded", async () => {
     // DOM
     // ======================================
 
-    const memberError =
-        document.getElementById("memberError");
+    const memberAvatar =
+        document.getElementById("memberAvatar");
 
-    const profileName =
-        document.getElementById("profileName");
+    const memberName =
+        document.getElementById("memberName");
 
-    const profileNickname =
-        document.getElementById("profileNickname");
+    const memberNickname =
+        document.getElementById("memberNickname");
 
-    const profileAvatar =
-        document.getElementById("profileAvatar");
+    const memberGlobalRoles =
+        document.getElementById("memberGlobalRoles");
 
-    const globalRoles =
-        document.getElementById("globalRoles");
-
-    const directionsContainer =
-        document.getElementById("directionsContainer");
+    const directionsList =
+        document.getElementById("directionsList");
 
     const ets2Management =
         document.getElementById("ets2Management");
+
+    const ets2ManagementCard =
+        document.getElementById("ets2ManagementCard");
+
+    const memberError =
+        document.getElementById("memberError");
 
 
     // ======================================
@@ -50,12 +53,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     const params =
         new URLSearchParams(window.location.search);
 
-    const userId =
+    const targetUserId =
         params.get("user_id");
 
 
-    if (!userId) {
-        showError("Не вказано user_id");
+    if (!targetUserId) {
+
+        showError(
+            "Не вказано user_id"
+        );
+
         return;
     }
 
@@ -73,7 +80,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
     if (authError || !user) {
-        showError("Користувач не авторизований");
+
+        showError(
+            "Користувач не авторизований"
+        );
+
         return;
     }
 
@@ -84,7 +95,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     function escapeHtml(value) {
 
-        if (value === null || value === undefined) {
+        if (
+            value === null ||
+            value === undefined
+        ) {
             return "";
         }
 
@@ -99,30 +113,48 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     function showError(message) {
 
-        console.error(message);
+        console.error(
+            "MEMBER PAGE ERROR:",
+            message
+        );
 
         if (memberError) {
-            memberError.textContent = message;
-            memberError.style.display = "block";
+
+            memberError.textContent =
+                message;
+
+            memberError.style.display =
+                "block";
         }
     }
 
 
-    function hideError() {
+    function clearError() {
 
         if (memberError) {
-            memberError.style.display = "none";
+
+            memberError.textContent = "";
+
+            memberError.style.display =
+                "none";
         }
     }
 
 
-    function directionIcon(direction) {
+    function setLoading(
+        element,
+        text
+    ) {
 
-        if (direction?.icon) {
-            return direction.icon;
+        if (!element) {
+            return;
         }
 
-        return "🎮";
+        element.innerHTML = `
+            <div class="management-locked">
+                ⏳ ${escapeHtml(text)}
+            </div>
+        `;
     }
 
 
@@ -131,7 +163,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // ======================================
 
     async function hasPermission(
-        permission,
+        permissionCode,
         directionId = null
     ) {
 
@@ -141,8 +173,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         } = await supabase.rpc(
             "has_permission",
             {
-                p_permission_code: permission,
-                p_direction_id: directionId
+                p_permission_code:
+                    permissionCode,
+
+                p_direction_id:
+                    directionId
             }
         );
 
@@ -151,7 +186,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             console.error(
                 "Permission error:",
-                permission,
+                permissionCode,
                 error
             );
 
@@ -164,7 +199,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
     // ======================================
-    // PROFILE
+    // LOAD PROFILE
     // ======================================
 
     async function loadProfile() {
@@ -181,7 +216,10 @@ document.addEventListener("DOMContentLoaded", async () => {
                 avatar_url,
                 discord_username
             `)
-            .eq("id", userId)
+            .eq(
+                "id",
+                targetUserId
+            )
             .maybeSingle();
 
 
@@ -191,43 +229,69 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
         if (!data) {
+
             throw new Error(
                 "Профіль користувача не знайдено"
             );
         }
 
 
-        if (profileName) {
+        // ----------------------------------
+        // NAME
+        // ----------------------------------
 
-            profileName.textContent =
+        if (memberName) {
+
+            memberName.textContent =
                 data.display_name ||
                 "Без імені";
         }
 
 
-        if (profileNickname) {
+        // ----------------------------------
+        // NICKNAME
+        // ----------------------------------
 
-            profileNickname.textContent =
+        if (memberNickname) {
+
+            const nickname =
                 data.game_nickname ||
                 data.discord_username ||
                 "";
+
+            memberNickname.textContent =
+                nickname;
         }
 
 
-        if (profileAvatar) {
+        // ----------------------------------
+        // AVATAR
+        // ----------------------------------
+
+        if (memberAvatar) {
 
             if (data.avatar_url) {
 
-                profileAvatar.src =
+                memberAvatar.src =
                     data.avatar_url;
+
+                memberAvatar.classList.remove(
+                    "avatar-empty"
+                );
 
             } else {
 
-                profileAvatar.src =
+                memberAvatar.src =
                     "https://ui-avatars.com/api/?name=" +
                     encodeURIComponent(
-                        data.display_name || "User"
-                    );
+                        data.display_name ||
+                        "User"
+                    ) +
+                    "&background=171a20&color=ffffff";
+
+                memberAvatar.classList.add(
+                    "avatar-empty"
+                );
             }
         }
 
@@ -235,56 +299,191 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
     // ======================================
-    // GLOBAL ROLES
+    // LOAD GLOBAL ROLES
     // ======================================
 
-    function renderGlobalRoles(roles) {
+    async function loadGlobalRoles() {
 
-        if (!globalRoles) {
+        if (!memberGlobalRoles) {
             return;
         }
 
 
-        if (
-            !roles ||
-            !roles.length
-        ) {
+        const {
+            data,
+            error
+        } = await supabase
+            .from("user_roles")
+            .select(`
+                role_id,
+                role,
+                direction_id,
+                roles (
+                    code,
+                    name,
+                    level,
+                    is_global,
+                    is_active
+                )
+            `)
+            .eq(
+                "user_id",
+                targetUserId
+            )
+            .is(
+                "direction_id",
+                null
+            );
 
-            globalRoles.innerHTML =
-                `<span class="muted">
-                    Глобальних посад немає
-                </span>`;
+
+        if (error) {
+
+            console.error(
+                "GLOBAL roles error:",
+                error
+            );
+
+            memberGlobalRoles.innerHTML = `
+                <span class="empty-role">
+                    Не вдалося завантажити глобальні посади
+                </span>
+            `;
 
             return;
         }
 
 
-        globalRoles.innerHTML =
-            roles
+        const roles =
+            (data || [])
+                .map(row => {
+
+                    const role =
+                        row.roles;
+
+                    if (
+                        !role ||
+                        role.is_global !== true ||
+                        role.is_active !== true
+                    ) {
+                        return null;
+                    }
+
+                    return {
+                        role_id:
+                            row.role_id,
+
+                        code:
+                            role.code,
+
+                        name:
+                            role.name,
+
+                        level:
+                            role.level
+                    };
+
+                })
+                .filter(Boolean)
                 .sort(
                     (a, b) =>
                         (b.level || 0) -
                         (a.level || 0)
-                )
-                .map(role => {
+                );
 
-                    return `
-                        <span class="role-badge">
-                            ${escapeHtml(role.name)}
-                        </span>
-                    `;
 
-                })
+        if (!roles.length) {
+
+            memberGlobalRoles.innerHTML = `
+                <span class="empty-role">
+                    Глобальних посад немає
+                </span>
+            `;
+
+            return;
+        }
+
+
+        memberGlobalRoles.innerHTML =
+            roles
+                .map(role => `
+                    <span class="role-badge">
+                        ${escapeHtml(role.name)}
+                    </span>
+                `)
                 .join("");
 
     }
 
 
     // ======================================
-    // LOAD DIRECTION ROLE OPTIONS
+    // LOAD ACTIVE DIRECTIONS
     // ======================================
 
-    async function loadDirectionRoleOptions(
+    async function loadActiveDirections() {
+
+        const {
+            data,
+            error
+        } = await supabase.rpc(
+            "get_active_directions"
+        );
+
+
+        if (error) {
+            throw error;
+        }
+
+
+        return Array.isArray(data)
+            ? data
+            : [];
+    }
+
+
+    // ======================================
+    // LOAD USER DIRECTION MANAGEMENT
+    // ======================================
+
+    async function loadDirectionManagement() {
+
+        const {
+            data,
+            error
+        } = await supabase.rpc(
+            "get_user_direction_management",
+            {
+                p_target_user_id:
+                    targetUserId
+            }
+        );
+
+
+        if (error) {
+            throw error;
+        }
+
+
+        if (
+            !data ||
+            data.success !== true
+        ) {
+
+            throw new Error(
+                data?.error ||
+                "Не вдалося отримати дані напрямків"
+            );
+        }
+
+
+        return data;
+    }
+
+
+    // ======================================
+    // LOAD ROLE OPTIONS
+    // ======================================
+
+    async function loadRoleOptions(
         directionId
     ) {
 
@@ -294,7 +493,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         } = await supabase.rpc(
             "get_direction_role_options",
             {
-                p_direction_id: directionId
+                p_direction_id:
+                    directionId
             }
         );
 
@@ -302,7 +502,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (error) {
 
             console.error(
-                "get_direction_role_options:",
+                "Role options error:",
                 error
             );
 
@@ -317,15 +517,16 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
     // ======================================
-    // ADD USER TO DIRECTION
+    // ADD TO DIRECTION
     // ======================================
 
     async function addToDirection(
-        direction
+        direction,
+        button
     ) {
 
         const confirmed =
-            confirm(
+            window.confirm(
                 `Додати користувача до напрямку "${direction.name}"?`
             );
 
@@ -335,13 +536,20 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
 
+        if (button) {
+            button.disabled = true;
+        }
+
+
         const {
             data,
             error
         } = await supabase.rpc(
             "add_user_to_direction",
             {
-                p_user_id: userId,
+                p_user_id:
+                    targetUserId,
+
                 p_direction_id:
                     direction.direction_id
             }
@@ -360,6 +568,10 @@ document.addEventListener("DOMContentLoaded", async () => {
                 error.message
             );
 
+            if (button) {
+                button.disabled = false;
+            }
+
             return;
         }
 
@@ -368,8 +580,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             alert(
                 data?.error ||
-                "Не вдалося додати користувача"
+                "Не вдалося додати користувача до напрямку"
             );
+
+            if (button) {
+                button.disabled = false;
+            }
 
             return;
         }
@@ -381,15 +597,16 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
     // ======================================
-    // REMOVE USER FROM DIRECTION
+    // REMOVE FROM DIRECTION
     // ======================================
 
     async function removeFromDirection(
-        direction
+        direction,
+        button
     ) {
 
         const confirmed =
-            confirm(
+            window.confirm(
                 `Виключити користувача з напрямку "${direction.name}"?\n\n` +
                 `Усі посади цього напрямку також будуть зняті.`
             );
@@ -400,13 +617,20 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
 
+        if (button) {
+            button.disabled = true;
+        }
+
+
         const {
             data,
             error
         } = await supabase.rpc(
             "remove_user_from_direction",
             {
-                p_user_id: userId,
+                p_user_id:
+                    targetUserId,
+
                 p_direction_id:
                     direction.direction_id
             }
@@ -425,6 +649,10 @@ document.addEventListener("DOMContentLoaded", async () => {
                 error.message
             );
 
+            if (button) {
+                button.disabled = false;
+            }
+
             return;
         }
 
@@ -435,6 +663,10 @@ document.addEventListener("DOMContentLoaded", async () => {
                 data?.error ||
                 "Не вдалося виключити користувача"
             );
+
+            if (button) {
+                button.disabled = false;
+            }
 
             return;
         }
@@ -451,14 +683,22 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     async function assignDirectionRole(
         direction,
-        roleId
+        roleId,
+        button
     ) {
 
         if (!roleId) {
 
-            alert("Оберіть посаду");
+            alert(
+                "Оберіть посаду"
+            );
 
             return;
+        }
+
+
+        if (button) {
+            button.disabled = true;
         }
 
 
@@ -468,9 +708,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         } = await supabase.rpc(
             "assign_direction_role",
             {
-                p_user_id: userId,
+                p_user_id:
+                    targetUserId,
+
                 p_direction_id:
                     direction.direction_id,
+
                 p_role_id:
                     Number(roleId)
             }
@@ -489,6 +732,10 @@ document.addEventListener("DOMContentLoaded", async () => {
                 error.message
             );
 
+            if (button) {
+                button.disabled = false;
+            }
+
             return;
         }
 
@@ -499,6 +746,10 @@ document.addEventListener("DOMContentLoaded", async () => {
                 data?.error ||
                 "Не вдалося призначити посаду"
             );
+
+            if (button) {
+                button.disabled = false;
+            }
 
             return;
         }
@@ -515,18 +766,23 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     async function removeDirectionRole(
         direction,
-        roleId,
-        roleName
+        role,
+        button
     ) {
 
         const confirmed =
-            confirm(
-                `Зняти посаду "${roleName}"?`
+            window.confirm(
+                `Зняти посаду "${role.name}"?`
             );
 
 
         if (!confirmed) {
             return;
+        }
+
+
+        if (button) {
+            button.disabled = true;
         }
 
 
@@ -536,11 +792,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         } = await supabase.rpc(
             "remove_direction_role",
             {
-                p_user_id: userId,
+                p_user_id:
+                    targetUserId,
+
                 p_direction_id:
                     direction.direction_id,
+
                 p_role_id:
-                    Number(roleId)
+                    Number(role.role_id)
             }
         );
 
@@ -557,6 +816,10 @@ document.addEventListener("DOMContentLoaded", async () => {
                 error.message
             );
 
+            if (button) {
+                button.disabled = false;
+            }
+
             return;
         }
 
@@ -568,6 +831,10 @@ document.addEventListener("DOMContentLoaded", async () => {
                 "Не вдалося зняти посаду"
             );
 
+            if (button) {
+                button.disabled = false;
+            }
+
             return;
         }
 
@@ -578,7 +845,109 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
     // ======================================
-    // RENDER ONE DIRECTION
+    // SAVE ETS2 DRIVER CLASS
+    // ======================================
+
+    async function saveETS2DriverClass(
+        direction,
+        membership,
+        select,
+        button
+    ) {
+
+        const driverClass =
+            select?.value || "";
+
+
+        if (
+            !["A", "B", "C", "D", "E"]
+                .includes(driverClass)
+        ) {
+
+            alert(
+                "Оберіть клас водія"
+            );
+
+            return;
+        }
+
+
+        if (button) {
+            button.disabled = true;
+        }
+
+
+        const roleIds =
+            (membership.roles || [])
+                .map(role =>
+                    Number(role.role_id)
+                )
+                .filter(
+                    roleId =>
+                        !Number.isNaN(roleId)
+                );
+
+
+        const {
+            data,
+            error
+        } = await supabase.rpc(
+            "save_ets2_member_management",
+            {
+                p_user_id:
+                    targetUserId,
+
+                p_role_ids:
+                    roleIds,
+
+                p_driver_class:
+                    driverClass
+            }
+        );
+
+
+        if (error) {
+
+            console.error(
+                "save_ets2_member_management:",
+                error
+            );
+
+            alert(
+                "Помилка збереження класу:\n" +
+                error.message
+            );
+
+            if (button) {
+                button.disabled = false;
+            }
+
+            return;
+        }
+
+
+        if (!data?.success) {
+
+            alert(
+                data?.error ||
+                "Не вдалося зберегти клас"
+            );
+
+            if (button) {
+                button.disabled = false;
+            }
+
+            return;
+        }
+
+
+        await loadPage();
+
+    }
+
+
+    // ======================================
+    // RENDER DIRECTION
     // ======================================
 
     async function renderDirection(
@@ -587,15 +956,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     ) {
 
         const directionId =
-            direction.direction_id;
+            Number(direction.direction_id);
 
 
         const membership =
-            management?.directions?.find(
-                item =>
+            (management.directions || [])
+                .find(item =>
                     Number(item.direction_id) ===
-                    Number(directionId)
-            );
+                    directionId
+                );
 
 
         const isActive =
@@ -627,7 +996,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             );
 
 
-        const canChangeClass =
+        const canChangeDriverClass =
             direction.code === "ets2"
                 ? await hasPermission(
                     "ets2.driver_class.change",
@@ -637,27 +1006,20 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
         // ==================================
-        // ROLE DATA
+        // ROLES
         // ==================================
 
         const roles =
-            membership?.roles || [];
+            Array.isArray(membership?.roles)
+                ? [...membership.roles]
+                : [];
 
 
-        let roleOptions = [];
-
-
-        if (
-            isActive &&
-            (canAssignRoles ||
-             canRemoveRoles)
-        ) {
-
-            roleOptions =
-                await loadDirectionRoleOptions(
-                    directionId
-                );
-        }
+        roles.sort(
+            (a, b) =>
+                (b.level || 0) -
+                (a.level || 0)
+        );
 
 
         // ==================================
@@ -669,80 +1031,88 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         card.className =
             "direction-card" +
-            (isActive
-                ? " direction-active"
-                : "");
+            (
+                isActive
+                    ? " direction-active"
+                    : ""
+            );
 
 
         // ==================================
         // HEADER
         // ==================================
 
+        const statusClass =
+            isActive
+                ? "active"
+                : "not-active";
+
+
+        const statusText =
+            isActive
+                ? "Активний"
+                : "Не приєднаний";
+
+
         let html = `
 
-            <div class="direction-header">
+            <div class="direction-head">
 
-                <div class="direction-title">
+                <div>
 
-                    ${directionIcon(direction)}
+                    <div class="direction-title">
 
-                    ${escapeHtml(direction.name)}
+                        ${escapeHtml(
+                            direction.icon || "🎮"
+                        )}
+
+                        ${escapeHtml(
+                            direction.name
+                        )}
+
+                    </div>
 
                 </div>
 
-                <span class="direction-status
-                    ${isActive
-                        ? "status-active"
-                        : "status-inactive"}">
 
-                    ${
-                        isActive
-                            ? "Активний"
-                            : "Не приєднаний"
-                    }
+                <span class="direction-status ${statusClass}">
+
+                    ${statusText}
 
                 </span>
 
             </div>
 
+
+            <div class="direction-content">
+
+                <div class="direction-label">
+                    Посади
+                </div>
+
         `;
 
 
         // ==================================
-        // POSITIONS
+        // ROLES
         // ==================================
-
-        html += `
-
-            <div class="direction-roles-title">
-                Посади
-            </div>
-
-        `;
-
 
         if (roles.length) {
 
             html += `
-                <div class="role-badges">
+                <div class="direction-roles">
             `;
 
 
-            roles
-                .sort(
-                    (a, b) =>
-                        (b.level || 0) -
-                        (a.level || 0)
-                )
-                .forEach(role => {
+            roles.forEach(role => {
 
-                    html += `
-                        <span class="role-badge">
-                            ${escapeHtml(role.name)}
-                        </span>
-                    `;
+                html += `
+                    <span class="role-badge">
+                        ${escapeHtml(role.name)}
+                    </span>
+                `;
 
-                });
+            });
 
 
             html += `
@@ -752,11 +1122,60 @@ document.addEventListener("DOMContentLoaded", async () => {
         } else {
 
             html += `
-                <div class="no-role">
+                <div class="empty-role">
                     Посад немає
                 </div>
             `;
+        }
 
+
+        // ==================================
+        // ETS2 CLASS — VIEW
+        // ==================================
+
+        if (
+            isActive &&
+            direction.code === "ets2"
+        ) {
+
+            const driverClass =
+                membership?.driver_class || "";
+
+
+            html += `
+
+                <div class="direction-class">
+
+                    🚛 Клас A — «Майстер водій»
+
+                </div>
+
+            `;
+
+
+            // Замінюємо текст класу нижче
+            // після створення картки через JS.
+            if (driverClass) {
+
+                html = html.replace(
+                    "🚛 Клас A — «Майстер водій»",
+                    "🚛 Клас " +
+                    escapeHtml(driverClass) +
+                    " — " +
+                    escapeHtml(
+                        getDriverClassName(
+                            driverClass
+                        )
+                    )
+                );
+
+            } else {
+
+                html = html.replace(
+                    "🚛 Клас A — «Майстер водій»",
+                    "🚛 Клас не визначений"
+                );
+            }
         }
 
 
@@ -773,8 +1192,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                     <div class="direction-actions">
 
                         <button
-                            class="btn-primary add-direction-btn"
-                            type="button">
+                            type="button"
+                            class="direction-button primary add-direction-button">
 
                             + ДОДАТИ ДО НАПРЯМКУ
 
@@ -787,18 +1206,21 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
             html += `
-                <div class="direction-divider"></div>
+                </div>
             `;
 
 
-            card.innerHTML = html;
+            card.innerHTML =
+                html;
 
-            directionsContainer.appendChild(card);
+            directionsList.appendChild(
+                card
+            );
 
 
             const addButton =
                 card.querySelector(
-                    ".add-direction-btn"
+                    ".add-direction-button"
                 );
 
 
@@ -806,9 +1228,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                 addButton.addEventListener(
                     "click",
-                    () => addToDirection(direction)
+                    () =>
+                        addToDirection(
+                            direction,
+                            addButton
+                        )
                 );
-
             }
 
 
@@ -817,103 +1242,137 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
         // ==================================
-        // ACTIVE MEMBER
+        // ROLE MANAGEMENT
         // ==================================
 
         if (
-            canAssignRoles &&
-            roleOptions.length
+            canAssignRoles ||
+            canRemoveRoles
         ) {
+
+            const roleOptions =
+                await loadRoleOptions(
+                    directionId
+                );
+
 
             html += `
 
-                <div class="direction-divider"></div>
+                <div class="direction-management">
 
-                <div class="management-title">
-                    🛠 Керування посадами
-                </div>
+                    <h4>
+                        🛠 Керування посадами
+                    </h4>
 
-                <select
-                    class="direction-role-select">
+            `;
 
-                    <option value="">
-                        Оберіть посаду
-                    </option>
 
-                    ${
-                        roleOptions
-                            .filter(
-                                option =>
-                                    !roles.some(
-                                        role =>
-                                            Number(
-                                                role.role_id
-                                            ) ===
-                                            Number(
-                                                option.role_id
-                                            )
+            // --------------------------------
+            // ASSIGN ROLE
+            // --------------------------------
+
+            if (
+                canAssignRoles &&
+                roleOptions.length
+            ) {
+
+                const availableRoles =
+                    roleOptions.filter(
+                        option =>
+                            !roles.some(
+                                role =>
+                                    Number(
+                                        role.role_id
+                                    ) ===
+                                    Number(
+                                        option.role_id
                                     )
                             )
-                            .map(option => `
-
-                                <option
-                                    value="${option.role_id}">
-
-                                    ${escapeHtml(option.name)}
-
-                                </option>
-
-                            `)
-                            .join("")
-                    }
-
-                </select>
-
-                <button
-                    class="btn-primary assign-role-btn"
-                    type="button">
-
-                    + ПРИЗНАЧИТИ ПОСАДУ
-
-                </button>
-
-            `;
-        }
+                    );
 
 
-        // ==================================
-        // CURRENT ROLES REMOVE
-        // ==================================
+                if (availableRoles.length) {
 
-        if (
-            canRemoveRoles &&
-            roles.length
-        ) {
+                    html += `
 
-            html += `
+                        <select
+                            class="role-select direction-role-select">
 
-                <div class="current-role-actions">
+                            <option value="">
+                                Оберіть посаду
+                            </option>
 
-            `;
+                            ${
+                                availableRoles
+                                    .map(
+                                        option => `
+                                            <option
+                                                value="${option.role_id}">
+                                                ${escapeHtml(option.name)}
+                                            </option>
+                                        `
+                                    )
+                                    .join("")
+                            }
+
+                        </select>
 
 
-            roles.forEach(role => {
+                        <div class="role-management-actions">
+
+                            <button
+                                type="button"
+                                class="direction-button primary assign-role-button">
+
+                                + ПРИЗНАЧИТИ ПОСАДУ
+
+                            </button>
+
+                        </div>
+
+                    `;
+                }
+            }
+
+
+            // --------------------------------
+            // REMOVE ROLES
+            // --------------------------------
+
+            if (
+                canRemoveRoles &&
+                roles.length
+            ) {
 
                 html += `
 
-                    <button
-                        type="button"
-                        class="btn-danger remove-role-btn"
-                        data-role-id="${role.role_id}"
-                        data-role-name="${escapeHtml(role.name)}">
-
-                        ✕ ${escapeHtml(role.name)}
-
-                    </button>
+                    <div class="role-management-actions">
 
                 `;
 
-            });
+
+                roles.forEach(role => {
+
+                    html += `
+
+                        <button
+                            type="button"
+                            class="direction-button danger remove-role-button"
+                            data-role-id="${role.role_id}">
+
+                            ✕ ${escapeHtml(role.name)}
+
+                        </button>
+
+                    `;
+
+                });
+
+
+                html += `
+                    </div>
+                `;
+            }
 
 
             html += `
@@ -923,93 +1382,98 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
         // ==================================
-        // ETS2 DRIVER CLASS
+        // ETS2 DRIVER CLASS MANAGEMENT
         // ==================================
 
-        if (direction.code === "ets2") {
+        if (
+            isActive &&
+            direction.code === "ets2" &&
+            canChangeDriverClass
+        ) {
 
             const driverClass =
                 membership?.driver_class || "";
 
 
-            if (canChangeClass) {
+            html += `
 
-                html += `
+                <div class="direction-management">
 
-                    <div class="driver-class-block">
+                    <h4>
+                        Клас водія ETS2
+                    </h4>
 
-                        <div class="management-title">
-                            Клас водія ETS2
-                        </div>
+                    <select
+                        class="role-select ets2-driver-class-select">
 
-                        <select
-                            class="driver-class-select">
-
-                            <option
-                                value=""
-                                ${driverClass === ""
+                        <option
+                            value=""
+                            ${
+                                !driverClass
                                     ? "selected"
-                                    : ""}>
+                                    : ""
+                            }>
+                            Оберіть клас
+                        </option>
 
-                                Оберіть клас
-
-                            </option>
-
-                            <option
-                                value="E"
-                                ${driverClass === "E"
+                        <option
+                            value="E"
+                            ${
+                                driverClass === "E"
                                     ? "selected"
-                                    : ""}>
+                                    : ""
+                            }>
+                            Клас E — «Стажер»
+                        </option>
 
-                                Клас E — «Стажер»
-
-                            </option>
-
-                            <option
-                                value="D"
-                                ${driverClass === "D"
+                        <option
+                            value="D"
+                            ${
+                                driverClass === "D"
                                     ? "selected"
-                                    : ""}>
+                                    : ""
+                            }>
+                            Клас D — «Водій»
+                        </option>
 
-                                Клас D — «Водій»
-
-                            </option>
-
-                            <option
-                                value="C"
-                                ${driverClass === "C"
+                        <option
+                            value="C"
+                            ${
+                                driverClass === "C"
                                     ? "selected"
-                                    : ""}>
+                                    : ""
+                            }>
+                            Клас C — «Досвідчений водій»
+                        </option>
 
-                                Клас C — «Досвідчений водій»
-
-                            </option>
-
-                            <option
-                                value="B"
-                                ${driverClass === "B"
+                        <option
+                            value="B"
+                            ${
+                                driverClass === "B"
                                     ? "selected"
-                                    : ""}>
+                                    : ""
+                            }>
+                            Клас B — «Старший водій»
+                        </option>
 
-                                Клас B — «Старший водій»
-
-                            </option>
-
-                            <option
-                                value="A"
-                                ${driverClass === "A"
+                        <option
+                            value="A"
+                            ${
+                                driverClass === "A"
                                     ? "selected"
-                                    : ""}>
+                                    : ""
+                            }>
+                            Клас A — «Майстер водій»
+                        </option>
 
-                                Клас A — «Майстер водій»
+                    </select>
 
-                            </option>
 
-                        </select>
+                    <div class="role-management-actions">
 
                         <button
                             type="button"
-                            class="btn-primary save-class-btn">
+                            class="direction-button primary save-driver-class-button">
 
                             💾 ЗБЕРЕГТИ КЛАС
 
@@ -1017,32 +1481,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                     </div>
 
-                `;
+                </div>
 
-            } else {
-
-                html += `
-
-                    <div class="driver-class-block">
-
-                        <div class="management-title">
-                            Клас водія ETS2
-                        </div>
-
-                        <div class="driver-class-value">
-
-                            ${
-                                driverClass
-                                    ? `Клас ${escapeHtml(driverClass)}`
-                                    : "Не визначений"
-                            }
-
-                        </div>
-
-                    </div>
-
-                `;
-            }
+            `;
         }
 
 
@@ -1054,13 +1495,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             html += `
 
-                <div class="direction-divider"></div>
-
                 <div class="direction-actions">
 
                     <button
                         type="button"
-                        class="btn-danger remove-direction-btn">
+                        class="direction-button danger remove-direction-button">
 
                         ✕ ВИКЛЮЧИТИ З НАПРЯМКУ
 
@@ -1072,22 +1511,30 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
 
-        // ==================================
-        // INSERT CARD
-        // ==================================
-
-        card.innerHTML = html;
-
-        directionsContainer.appendChild(card);
+        html += `
+            </div>
+        `;
 
 
         // ==================================
-        // ASSIGN ROLE BUTTON
+        // INSERT
+        // ==================================
+
+        card.innerHTML =
+            html;
+
+        directionsList.appendChild(
+            card
+        );
+
+
+        // ==================================
+        // ASSIGN ROLE
         // ==================================
 
         const assignButton =
             card.querySelector(
-                ".assign-role-btn"
+                ".assign-role-button"
             );
 
 
@@ -1105,7 +1552,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                     await assignDirectionRole(
                         direction,
-                        select?.value
+                        select?.value,
+                        assignButton
                     );
 
                 }
@@ -1114,12 +1562,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
         // ==================================
-        // REMOVE ROLE BUTTONS
+        // REMOVE ROLE
         // ==================================
 
         card
             .querySelectorAll(
-                ".remove-role-btn"
+                ".remove-role-button"
             )
             .forEach(button => {
 
@@ -1127,10 +1575,31 @@ document.addEventListener("DOMContentLoaded", async () => {
                     "click",
                     async () => {
 
+                        const roleId =
+                            Number(
+                                button.dataset.roleId
+                            );
+
+
+                        const role =
+                            roles.find(
+                                item =>
+                                    Number(
+                                        item.role_id
+                                    ) ===
+                                    roleId
+                            );
+
+
+                        if (!role) {
+                            return;
+                        }
+
+
                         await removeDirectionRole(
                             direction,
-                            button.dataset.roleId,
-                            button.dataset.roleName
+                            role,
+                            button
                         );
 
                     }
@@ -1140,12 +1609,46 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
         // ==================================
+        // ETS2 CLASS
+        // ==================================
+
+        const saveClassButton =
+            card.querySelector(
+                ".save-driver-class-button"
+            );
+
+
+        if (saveClassButton) {
+
+            const classSelect =
+                card.querySelector(
+                    ".ets2-driver-class-select"
+                );
+
+
+            saveClassButton.addEventListener(
+                "click",
+                async () => {
+
+                    await saveETS2DriverClass(
+                        direction,
+                        membership,
+                        classSelect,
+                        saveClassButton
+                    );
+
+                }
+            );
+        }
+
+
+        // ==================================
         // REMOVE FROM DIRECTION
         // ==================================
 
         const removeDirectionButton =
             card.querySelector(
-                ".remove-direction-btn"
+                ".remove-direction-button"
             );
 
 
@@ -1156,215 +1659,84 @@ document.addEventListener("DOMContentLoaded", async () => {
                 async () => {
 
                     await removeFromDirection(
-                        direction
+                        direction,
+                        removeDirectionButton
                     );
 
                 }
             );
-
-        }
-
-
-        // ==================================
-        // ETS2 CLASS
-        // ==================================
-
-        const saveClassButton =
-            card.querySelector(
-                ".save-class-btn"
-            );
-
-
-        if (saveClassButton) {
-
-            saveClassButton.addEventListener(
-                "click",
-                async () => {
-
-                    const select =
-                        card.querySelector(
-                            ".driver-class-select"
-                        );
-
-
-                    await saveETS2Class(
-                        select?.value
-                    );
-
-                }
-            );
-
         }
 
     }
 
 
     // ======================================
-    // SAVE ETS2 CLASS
+    // DRIVER CLASS NAME
     // ======================================
 
-    async function saveETS2Class(
+    function getDriverClassName(
         driverClass
     ) {
 
-        if (
-            !["A", "B", "C", "D", "E"]
-                .includes(driverClass)
-        ) {
+        const names = {
 
-            alert("Оберіть клас водія");
+            E:
+                "«Стажер»",
 
-            return;
-        }
+            D:
+                "«Водій»",
 
+            C:
+                "«Досвідчений водій»",
 
-        // ==================================
-        // CURRENT ETS2 ROLES
-        // ==================================
+            B:
+                "«Старший водій»",
 
-        const {
-            data,
-            error
-        } = await supabase.rpc(
-            "get_ets2_member_management",
-            {
-                p_user_id: userId
-            }
-        );
+            A:
+                "«Майстер водій»"
+        };
 
 
-        if (error) {
-
-            console.error(
-                "get_ets2_member_management:",
-                error
-            );
-
-            alert(
-                "Не вдалося отримати дані ETS2"
-            );
-
-            return;
-        }
-
-
-        const roleIds =
-            (data?.roles || [])
-                .map(
-                    role =>
-                        Number(role.role_id)
-                )
-                .filter(
-                    id =>
-                        !Number.isNaN(id)
-                );
-
-
-        // ==================================
-        // SAVE
-        // ==================================
-
-        const {
-            data: saveData,
-            error: saveError
-        } = await supabase.rpc(
-            "save_ets2_member_management",
-            {
-                p_user_id: userId,
-                p_role_ids: roleIds,
-                p_driver_class: driverClass
-            }
-        );
-
-
-        if (saveError) {
-
-            console.error(
-                "save_ets2_member_management:",
-                saveError
-            );
-
-            alert(
-                "Помилка збереження класу:\n" +
-                saveError.message
-            );
-
-            return;
-        }
-
-
-        if (!saveData?.success) {
-
-            alert(
-                saveData?.error ||
-                "Не вдалося зберегти клас"
-            );
-
-            return;
-        }
-
-
-        await loadPage();
-
+        return names[driverClass] ||
+            "";
     }
 
 
     // ======================================
-    // LOAD DIRECTIONS
+    // RENDER DIRECTIONS
     // ======================================
 
-    async function loadDirections() {
+    async function renderDirections(
+        directions,
+        management
+    ) {
 
-        // ==================================
-        // ACTIVE DIRECTIONS
-        // ==================================
-
-        const {
-            data: directions,
-            error: directionsError
-        } = await supabase.rpc(
-            "get_active_directions"
-        );
-
-
-        if (directionsError) {
-            throw directionsError;
+        if (!directionsList) {
+            throw new Error(
+                "У HTML не знайдено #directionsList"
+            );
         }
 
 
-        // ==================================
-        // USER MANAGEMENT
-        // ==================================
-
-        const {
-            data: management,
-            error: managementError
-        } = await supabase.rpc(
-            "get_user_direction_management",
-            {
-                // ВАЖНО:
-                // правильне ім'я параметра RPC
-                p_target_user_id: userId
-            }
-        );
+        directionsList.innerHTML =
+            "";
 
 
-        if (managementError) {
-            throw managementError;
-        }
+        if (!directions.length) {
 
+            directionsList.innerHTML = `
+                <div class="management-locked">
+                    Немає активних напрямків.
+                </div>
+            `;
 
-        if (!directionsContainer) {
             return;
         }
-
-
-        directionsContainer.innerHTML = "";
 
 
         for (
             const direction
-            of (directions || [])
+            of directions
         ) {
 
             await renderDirection(
@@ -1378,89 +1750,23 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
     // ======================================
-    // LOAD GLOBAL ROLES
+    // HIDE OLD ETS2 BLOCK
     // ======================================
 
-    async function loadGlobalRoles() {
+    function hideLegacyETS2Block() {
 
-        const {
-            data,
-            error
-        } = await supabase
-            .from("user_roles")
-            .select(`
-                role_id,
-                role,
-                roles (
-                    code,
-                    name,
-                    level,
-                    is_global,
-                    is_active
-                )
-            `)
-            .eq("user_id", userId)
-            .is("direction_id", null);
+        if (ets2ManagementCard) {
 
-
-        if (error) {
-
-            console.error(
-                "Global roles:",
-                error
-            );
-
-            return;
+            ets2ManagementCard.style.display =
+                "none";
         }
 
 
-        const roles =
-            (data || [])
-                .map(row => {
+        if (ets2Management) {
 
-                    const role =
-                        row.roles;
-
-                    if (
-                        !role ||
-                        !role.is_global ||
-                        !role.is_active
-                    ) {
-                        return null;
-                    }
-
-
-                    return {
-
-                        code: role.code,
-                        name: role.name,
-                        level: role.level
-
-                    };
-
-                })
-                .filter(Boolean);
-
-
-        renderGlobalRoles(roles);
-
-    }
-
-
-    // ======================================
-    // OLD ETS2 MANAGEMENT
-    // ======================================
-
-    async function loadLegacyETS2Management() {
-
-        if (!ets2Management) {
-            return;
+            ets2Management.innerHTML =
+                "";
         }
-
-
-        ets2Management.style.display =
-            "none";
-
     }
 
 
@@ -1472,16 +1778,74 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         try {
 
-            hideError();
+            clearError();
 
+
+            // --------------------------------
+            // Loading states
+            // --------------------------------
+
+            if (memberName) {
+
+                memberName.textContent =
+                    "Завантаження...";
+            }
+
+
+            if (memberGlobalRoles) {
+
+                memberGlobalRoles.innerHTML = `
+                    <span class="empty-role">
+                        Завантаження...
+                    </span>
+                `;
+            }
+
+
+            setLoading(
+                directionsList,
+                "Завантаження напрямків..."
+            );
+
+
+            // --------------------------------
+            // Profile
+            // --------------------------------
 
             await loadProfile();
 
+
+            // --------------------------------
+            // Global roles
+            // --------------------------------
+
             await loadGlobalRoles();
 
-            await loadDirections();
 
-            await loadLegacyETS2Management();
+            // --------------------------------
+            // Directions
+            // --------------------------------
+
+            const [
+                directions,
+                management
+            ] = await Promise.all([
+                loadActiveDirections(),
+                loadDirectionManagement()
+            ]);
+
+
+            await renderDirections(
+                directions,
+                management
+            );
+
+
+            // --------------------------------
+            // Legacy block
+            // --------------------------------
+
+            hideLegacyETS2Block();
 
         }
         catch (error) {
@@ -1496,6 +1860,16 @@ document.addEventListener("DOMContentLoaded", async () => {
                 error?.message ||
                 "Не вдалося завантажити сторінку"
             );
+
+
+            if (directionsList) {
+
+                directionsList.innerHTML = `
+                    <div class="management-locked">
+                        Не вдалося завантажити напрямки.
+                    </div>
+                `;
+            }
 
         }
 
