@@ -4,1171 +4,911 @@
 // members.js
 // ==========================================
 
-document.addEventListener(
-  "DOMContentLoaded",
-  async () => {
+document.addEventListener("DOMContentLoaded", async () => {
 
-    // ======================================
-    // SUPABASE
-    // ======================================
+  const supabase = window.supabaseClient;
 
-    const supabase =
-      window.supabaseClient;
+  if (!supabase) {
+    console.error("Supabase не підключений");
+    return;
+  }
 
 
-    if (!supabase) {
+  // ==========================================
+  // HTML ELEMENTS
+  // ==========================================
 
-      console.error(
-        "Supabase не підключений"
-      );
+  const membersList =
+    document.getElementById("membersList");
 
-      return;
-    }
+  const membersSearch =
+    document.getElementById("membersSearch");
 
+  const membersCount =
+    document.getElementById("membersCount");
 
-    // ======================================
-    // ELEMENTS
-    // ======================================
-
-    const membersList =
-      document.getElementById(
-        "membersList"
-      );
-
-    const membersSearch =
-      document.getElementById(
-        "membersSearch"
-      );
-
-    const membersCount =
-      document.getElementById(
-        "membersCount"
-      );
-
-    const membersMessage =
-      document.getElementById(
-        "membersMessage"
-      );
+  const membersMessage =
+    document.getElementById("membersMessage");
 
 
-    // ======================================
-    // DATA
-    // ======================================
-
-    let allMembers = [];
+  let allMembers = [];
 
 
-    // ======================================
-    // MESSAGE
-    // ======================================
+  // ==========================================
+  // HELPERS
+  // ==========================================
 
-    function showMessage(
-      message,
-      type = "info"
-    ) {
+  function showMessage(message, type = "info") {
 
-      if (!membersMessage) {
-        return;
-      }
+    if (!membersMessage) return;
 
+    membersMessage.textContent = message;
 
-      membersMessage.textContent =
-        message;
+    membersMessage.className =
+      "members-message " + type;
+  }
 
 
-      membersMessage.className =
-        "members-message " +
-        type;
-
-    }
-
-
-    // ======================================
-    // ESCAPE HTML
-    // ======================================
-
-    function escapeHtml(
-      value
-    ) {
-
-      if (
-        value === null ||
-        value === undefined
-      ) {
-
-        return "";
-
-      }
-
-
-      const div =
-        document.createElement(
-          "div"
-        );
-
-
-      div.textContent =
-        String(value);
-
-
-      return div.innerHTML;
-
-    }
-
-
-    // ======================================
-    // ARRAY HELPER
-    // ======================================
-
-    function normalizeArray(
-      value
-    ) {
-
-      if (
-        value === null ||
-        value === undefined
-      ) {
-
-        return [];
-
-      }
-
-
-      if (
-        Array.isArray(value)
-      ) {
-
-        return value;
-
-      }
-
-
-      return [];
-
-    }
-
-
-    // ======================================
-    // AUTH
-    // ======================================
-
-    const {
-      data: {
-        user
-      },
-      error: userError
-    } =
-      await supabase.auth.getUser();
-
+  function escapeHtml(value) {
 
     if (
-      userError ||
-      !user
+      value === null ||
+      value === undefined
     ) {
+      return "";
+    }
 
-      window.location.href =
-        "login.html";
+    const div =
+      document.createElement("div");
 
-      return;
+    div.textContent =
+      String(value);
+
+    return div.innerHTML;
+  }
+
+
+  // ==========================================
+  // DRIVER CLASS
+  // ==========================================
+
+  function getDriverClassName(driverClass) {
+
+    const classes = {
+
+      E: 'Клас E — «Стажер»',
+
+      D: 'Клас D — «Водій»',
+
+      C: 'Клас C — «Досвідчений водій»',
+
+      B: 'Клас B — «Старший водій»',
+
+      A: 'Клас A — «Майстер водій»'
+
+    };
+
+    return (
+      classes[driverClass] ||
+      `Клас ${driverClass || "—"}`
+    );
+  }
+
+
+  // ==========================================
+  // DIRECTION ICON
+  // ==========================================
+
+  function getDirectionIcon(direction) {
+
+    if (!direction) {
+      return "🎮";
     }
 
 
-    // ======================================
-    // ACCESS
-    // ======================================
+    // First priority:
+    // icon from Supabase directions table
 
-    async function checkAccess() {
+    if (direction.icon) {
 
-      const {
-        data,
-        error
-      } =
-        await supabase.rpc(
-          "can_view_ua_legion_members"
-        );
-
-
-      if (error) {
-
-        console.error(
-          "Помилка перевірки доступу:",
-          error
-        );
-
-        return false;
-      }
-
-
-      return data === true;
-
+      return direction.icon;
     }
 
 
-    const hasAccess =
-      await checkAccess();
+    const code =
+      String(
+        direction.code ||
+        direction.slug ||
+        direction.name ||
+        ""
+      )
+        .trim()
+        .toLowerCase();
 
 
-    if (!hasAccess) {
+    const icons = {
 
-      if (membersList) {
+      ets2: "🚛",
 
-        membersList.innerHTML = `
-          <div class="members-empty">
-            🔒 Доступ до списку учасників доступний тільки учасникам UA LEGION.
+      wot: "🛡",
+
+      "world of tanks": "🛡",
+
+      dota: "🎯",
+
+      "dota 2": "🎯",
+
+      wow: "⚔️",
+
+      "world of warcraft": "⚔️",
+
+      ats: "🇺🇸🚛",
+
+      cs2: "🔫",
+
+      minecraft: "⛏️",
+
+      fortnite: "🏗️",
+
+      stream: "📺",
+
+      streaming: "📺",
+
+      youtube: "▶️",
+
+      tiktok: "🎵"
+
+    };
+
+
+    return icons[code] || "🎮";
+  }
+
+
+  // ==========================================
+  // AVATAR
+  // ==========================================
+
+  function getAvatarLetter(member) {
+
+    const name =
+      String(
+        member.display_name ||
+        member.game_nickname ||
+        member.name ||
+        "U"
+      ).trim();
+
+
+    return (
+      name.charAt(0).toUpperCase() ||
+      "U"
+    );
+  }
+
+
+  function renderAvatar(member) {
+
+    const avatarUrl =
+      member.avatar_url ||
+      member.avatar ||
+      "";
+
+
+    if (avatarUrl) {
+
+      return `
+        <img
+          src="${escapeHtml(avatarUrl)}"
+          alt="${escapeHtml(
+            member.name ||
+            "Учасник UA LEGION"
+          )}"
+          class="member-avatar-image"
+        >
+      `;
+    }
+
+
+    return `
+      <span class="member-avatar-letter">
+        ${escapeHtml(
+          getAvatarLetter(member)
+        )}
+      </span>
+    `;
+  }
+
+
+  // ==========================================
+  // GLOBAL ROLES
+  // ==========================================
+
+  function getGlobalRoles(member) {
+
+    if (
+      !member ||
+      !Array.isArray(member.global_roles)
+    ) {
+      return [];
+    }
+
+
+    return member.global_roles
+      .filter(role =>
+        role &&
+        typeof role === "object"
+      );
+  }
+
+
+  function renderGlobalRoles(member) {
+
+    const roles =
+      getGlobalRoles(member);
+
+
+    if (!roles.length) {
+
+      return `
+        <span class="member-role member-role-empty">
+          🛡 Без ролі
+        </span>
+      `;
+    }
+
+
+    return roles
+      .map(role => {
+
+        const roleName =
+          role.name ||
+          role.code ||
+          "Роль";
+
+
+        return `
+          <span class="member-role">
+            👑 ${escapeHtml(roleName)}
+          </span>
+        `;
+
+      })
+      .join("");
+  }
+
+
+  // ==========================================
+  // DIRECTIONS
+  // ==========================================
+
+  function getDirections(member) {
+
+    if (
+      !member ||
+      !Array.isArray(member.directions)
+    ) {
+      return [];
+    }
+
+
+    return member.directions
+      .filter(direction =>
+        direction &&
+        typeof direction === "object"
+      );
+  }
+
+
+  // ==========================================
+  // DIRECTION ROLES
+  // ==========================================
+
+  function renderDirectionRoles(direction) {
+
+    const roles =
+      Array.isArray(direction.roles)
+        ? direction.roles
+        : [];
+
+
+    if (!roles.length) {
+
+      return `
+        <div class="member-direction-roles">
+          <span class="member-direction-role-empty">
+            Посади: немає
+          </span>
+        </div>
+      `;
+    }
+
+
+    return `
+      <div class="member-direction-roles">
+
+        <span class="member-direction-label">
+          Посади:
+        </span>
+
+        <div class="member-direction-role-list">
+
+          ${roles
+            .map(role => {
+
+              const roleName =
+                role.name ||
+                role.code ||
+                "Посада";
+
+
+              return `
+                <span class="member-direction-role">
+                  ${escapeHtml(roleName)}
+                </span>
+              `;
+
+            })
+            .join("")}
+
+        </div>
+
+      </div>
+    `;
+  }
+
+
+  // ==========================================
+  // DRIVER CLASS
+  // ==========================================
+
+  function renderDriverClass(direction) {
+
+    if (!direction) {
+      return "";
+    }
+
+
+    // Only ETS2 has driver class
+
+    const code =
+      String(
+        direction.code ||
+        direction.slug ||
+        ""
+      ).toLowerCase();
+
+
+    if (code !== "ets2") {
+      return "";
+    }
+
+
+    if (!direction.driver_class) {
+      return "";
+    }
+
+
+    return `
+      <div class="member-driver-class">
+
+        🚛
+        ${escapeHtml(
+          getDriverClassName(
+            direction.driver_class
+          )
+        )}
+
+      </div>
+    `;
+  }
+
+
+  // ==========================================
+  // DIRECTION BADGES / BLOCKS
+  // ==========================================
+
+  function renderDirections(member) {
+
+    const directions =
+      getDirections(member);
+
+
+    if (!directions.length) {
+
+      return `
+        <span class="member-direction member-direction-empty">
+          🎮 Не вказано
+        </span>
+      `;
+    }
+
+
+    return directions
+      .map(direction => {
+
+        const directionName =
+          direction.name ||
+          direction.code ||
+          direction.slug ||
+          "Напрямок";
+
+
+        const icon =
+          getDirectionIcon(direction);
+
+
+        return `
+          <div class="member-direction-card">
+
+            <div class="member-direction-title">
+
+              ${escapeHtml(icon)}
+              ${escapeHtml(directionName)}
+
+            </div>
+
+            ${renderDirectionRoles(direction)}
+
+            ${renderDriverClass(direction)}
+
           </div>
         `;
 
-      }
+      })
+      .join("");
+  }
 
 
+  // ==========================================
+  // SEARCH TEXT
+  // ==========================================
+
+  function getSearchText(member) {
+
+    const parts = [];
+
+
+    parts.push(
+      member.name || ""
+    );
+
+
+    parts.push(
+      member.display_name || ""
+    );
+
+
+    parts.push(
+      member.game_nickname || ""
+    );
+
+
+    // Global roles
+
+    getGlobalRoles(member)
+      .forEach(role => {
+
+        parts.push(
+          role.name || "",
+          role.code || ""
+        );
+
+      });
+
+
+    // Directions
+
+    getDirections(member)
+      .forEach(direction => {
+
+        parts.push(
+          direction.name || "",
+          direction.code || "",
+          direction.slug || "",
+          direction.driver_class || ""
+        );
+
+
+        const roles =
+          Array.isArray(direction.roles)
+            ? direction.roles
+            : [];
+
+
+        roles.forEach(role => {
+
+          parts.push(
+            role.name || "",
+            role.code || ""
+          );
+
+        });
+
+      });
+
+
+    return parts
+      .join(" ")
+      .toLowerCase();
+  }
+
+
+  // ==========================================
+  // FILTER
+  // ==========================================
+
+  function getFilteredMembers() {
+
+    const search =
+      (
+        membersSearch?.value ||
+        ""
+      )
+        .trim()
+        .toLowerCase();
+
+
+    if (!search) {
+      return allMembers;
+    }
+
+
+    return allMembers.filter(
+      member =>
+        getSearchText(member)
+          .includes(search)
+    );
+  }
+
+
+  // ==========================================
+  // CABINET LINK
+  // ==========================================
+
+  function renderCabinetLink(member) {
+
+    if (!member.user_id) {
+      return "";
+    }
+
+
+    return `
+      <a
+        href="member.html?user_id=${encodeURIComponent(
+          member.user_id
+        )}"
+        class="member-cabinet-link"
+        style="
+          display:inline-flex;
+          margin-top:15px;
+          padding:10px 15px;
+          border-radius:9px;
+          background:#ffd34d;
+          color:#111;
+          text-decoration:none;
+          font-weight:700;
+        "
+      >
+        👤 ВІДКРИТИ КАБІНЕТ
+      </a>
+    `;
+  }
+
+
+  // ==========================================
+  // RENDER MEMBERS
+  // ==========================================
+
+  function renderMembers() {
+
+    if (!membersList) {
       return;
     }
 
 
-    // ======================================
-    // LOAD MEMBERS
-    // ======================================
+    const members =
+      getFilteredMembers();
 
-    async function loadMembers() {
 
-      if (!membersList) {
-        return;
-      }
+    membersList.innerHTML = "";
 
+
+    // Count
+
+    if (membersCount) {
+
+      membersCount.textContent =
+        `Учасників: ${members.length}`;
+    }
+
+
+    // Empty
+
+    if (!members.length) {
 
       membersList.innerHTML = `
-        <div class="members-loading">
-          ⏳ Завантаження учасників...
+        <div class="members-empty">
+          👤 Учасників не знайдено.
         </div>
       `;
 
-
-      const {
-        data,
-        error
-      } =
-        await supabase.rpc(
-          "get_ua_legion_members"
-        );
-
-
-      if (error) {
-
-        console.error(
-          "Помилка завантаження учасників:",
-          error
-        );
-
-
-        showMessage(
-          "❌ Не вдалося завантажити список учасників.",
-          "error"
-        );
-
-
-        membersList.innerHTML =
-          "";
-
-
-        return;
-      }
-
-
-      allMembers =
-        Array.isArray(data)
-          ? data
-          : [];
-
-
-      console.log(
-        "MEMBERS: RBAC data:",
-        allMembers
-      );
-
-
-      renderMembers();
-
+      return;
     }
 
 
-    // ======================================
-    // GLOBAL ROLE ICON
-    // ======================================
+    // Cards
 
-    function getGlobalRoleIcon(
-      code
-    ) {
+    members.forEach(member => {
 
-      switch (code) {
+      const card =
+        document.createElement("article");
 
-        case "owner":
-          return "👑";
 
-        case "deputy_owner":
-          return "🛡️";
+      card.className =
+        "member-card";
 
-        case "general_top_manager":
-          return "🏆";
 
-        case "general_hr_manager":
-          return "👥";
+      card.innerHTML = `
 
-        case "general_pr_manager":
-          return "📢";
+        <div class="member-avatar">
 
-        case "general_smm_manager":
-          return "📱";
+          ${renderAvatar(member)}
 
-        case "general_event_manager":
-          return "🎯";
+        </div>
 
-        case "general_technical_manager":
-          return "🔧";
 
-        default:
-          return "👤";
+        <div class="member-info">
 
-      }
+          <!-- ==================================
+               NAME
+          ================================== -->
 
-    }
+          <div class="member-main-info">
 
+            <h2>
+              ${escapeHtml(
+                member.name ||
+                member.display_name ||
+                "Учасник UA LEGION"
+              )}
+            </h2>
 
-    // ======================================
-    // DIRECTION ICON
-    // ======================================
 
-    function getDirectionIcon(
-      direction
-    ) {
+            <div class="member-nickname">
 
-      const value =
-        String(
-          direction || ""
-        )
-          .trim()
-          .toLowerCase();
-
-
-      const icons = {
-
-        ets2:
-          "🚛",
-
-        "ets2 / truckersmp":
-          "🚛",
-
-        wot:
-          "🛡️",
-
-        "world of tanks":
-          "🛡️",
-
-        dota2:
-          "🎮",
-
-        dota:
-          "🎮",
-
-        "dota 2":
-          "🎮",
-
-        wow:
-          "⚔️",
-
-        "world of warcraft":
-          "⚔️"
-
-      };
-
-
-      return (
-        icons[value] ||
-        "🎮"
-      );
-
-    }
-
-
-    // ======================================
-    // DRIVER CLASS
-    // ======================================
-
-    function getDriverClassName(
-      driverClass
-    ) {
-
-      const names = {
-
-        A:
-          "A — «Майстер водій»",
-
-        B:
-          "B — «Старший водій»",
-
-        C:
-          "C — «Досвідчений водій»",
-
-        D:
-          "D — «Водій»",
-
-        E:
-          "E — «Стажер»"
-
-      };
-
-
-      return (
-        names[driverClass] ||
-        `Клас ${driverClass}`
-      );
-
-    }
-
-
-    // ======================================
-    // AVATAR LETTER
-    // ======================================
-
-    function getAvatarLetter(
-      member
-    ) {
-
-      const name =
-        String(
-          member.name ||
-          member.game_nickname ||
-          "U"
-        ).trim();
-
-
-      return (
-        name.charAt(0)
-          .toUpperCase() ||
-        "U"
-      );
-
-    }
-
-
-    // ======================================
-    // AVATAR
-    // ======================================
-
-    function renderAvatar(
-      member
-    ) {
-
-      const avatarUrl =
-        member.avatar_url ||
-        "";
-
-
-      if (avatarUrl) {
-
-        return `
-          <img
-            src="${escapeHtml(
-              avatarUrl
-            )}"
-            alt="${escapeHtml(
-              member.name ||
-              "Учасник"
-            )}"
-            class="member-avatar-image"
-          >
-        `;
-
-      }
-
-
-      return `
-        <span class="member-avatar-letter">
-          ${escapeHtml(
-            getAvatarLetter(
-              member
-            )
-          )}
-        </span>
-      `;
-
-    }
-
-
-    // ======================================
-    // GLOBAL ROLES
-    // ======================================
-
-    function renderGlobalRoles(
-      member
-    ) {
-
-      const roles =
-        normalizeArray(
-          member.global_roles
-        );
-
-
-      if (
-        roles.length === 0
-      ) {
-
-        return "";
-
-      }
-
-
-      return roles
-        .map(
-          role => {
-
-            const icon =
-              getGlobalRoleIcon(
-                role.code
-              );
-
-
-            return `
-              <span class="member-role member-role-global">
-
-                ${icon}
-
-                ${escapeHtml(
-                  role.name ||
-                  role.code ||
-                  "Роль"
-                )}
-
-              </span>
-            `;
-
-          }
-        )
-        .join("");
-
-    }
-
-
-    // ======================================
-    // DIRECTIONS
-    // ======================================
-
-    function renderDirections(
-      member
-    ) {
-
-      const directions =
-        normalizeArray(
-          member.directions
-        );
-
-
-      if (
-        directions.length === 0
-      ) {
-
-        return `
-          <div class="member-empty-info">
-            Напрямків немає
-          </div>
-        `;
-
-      }
-
-
-      return directions
-        .map(
-          direction => {
-
-            // ------------------------------
-            // DIRECTION DATA
-            // ------------------------------
-
-            const icon =
-              getDirectionIcon(
-                direction.slug ||
-                direction.code ||
-                direction.name
-              );
-
-
-            const directionName =
-              escapeHtml(
-                direction.name ||
-                direction.slug ||
-                "Напрямок"
-              );
-
-
-            const roles =
-              normalizeArray(
-                direction.roles
-              );
-
-
-            let html = `
-
-              <div class="member-direction-block">
-
-                <div class="member-direction-title">
-
-                  ${icon}
-
-                  ${directionName}
-
-                </div>
-
-            `;
-
-
-            // ------------------------------
-            // ROLES
-            // ------------------------------
-
-            if (
-              roles.length > 0
-            ) {
-
-              html += `
-
-                <div class="member-direction-roles">
-
-              `;
-
-
-              roles.forEach(
-                role => {
-
-                  html += `
-
-                    <span class="member-role">
-
-                      🛡️
-
-                      ${escapeHtml(
-                        role.name ||
-                        role.code ||
-                        "Посада"
-                      )}
-
-                    </span>
-
-                  `;
-
-                }
-              );
-
-
-              html += `
-
-                </div>
-
-              `;
-
-            } else {
-
-              html += `
-
-                <div class="member-direction-member">
-
-                  Учасник напрямку
-
-                </div>
-
-              `;
-
-            }
-
-
-            // ------------------------------
-            // ETS2 DRIVER CLASS
-            // ------------------------------
-
-            const slug =
-              String(
-                direction.slug ||
-                direction.code ||
-                ""
-              )
-                .trim()
-                .toLowerCase();
-
-
-            if (
-              slug === "ets2" &&
-              direction.driver_class
-            ) {
-
-              const driverClass =
-                String(
-                  direction.driver_class
-                )
-                  .trim()
-                  .toUpperCase();
-
-
-              html += `
-
-                <div class="member-driver-class">
-
-                  🏅
-
-                  Клас водія:
-
-                  <strong>
-
-                    ${escapeHtml(
-                      getDriverClassName(
-                        driverClass
-                      )
-                    )}
-
-                  </strong>
-
-                </div>
-
-              `;
-
-            }
-
-
-            html += `
-
-              </div>
-
-            `;
-
-
-            return html;
-
-          }
-        )
-        .join("");
-
-    }
-
-
-    // ======================================
-    // SEARCH
-    // ======================================
-
-    function getFilteredMembers() {
-
-      const search =
-        (
-          membersSearch?.value ||
-          ""
-        )
-          .trim()
-          .toLowerCase();
-
-
-      if (!search) {
-
-        return allMembers;
-
-      }
-
-
-      return allMembers.filter(
-        member => {
-
-          // ------------------------------
-          // NAME
-          // ------------------------------
-
-          const name =
-            String(
-              member.name ||
-              ""
-            ).toLowerCase();
-
-
-          // ------------------------------
-          // NICKNAME
-          // ------------------------------
-
-          const nickname =
-            String(
-              member.game_nickname ||
-              ""
-            ).toLowerCase();
-
-
-          // ------------------------------
-          // GLOBAL ROLES
-          // ------------------------------
-
-          const globalRoles =
-            normalizeArray(
-              member.global_roles
-            )
-              .map(
-                role =>
-                  role.name ||
-                  role.code ||
-                  ""
-              )
-              .join(" ")
-              .toLowerCase();
-
-
-          // ------------------------------
-          // DIRECTIONS
-          // ------------------------------
-
-          const directions =
-            normalizeArray(
-              member.directions
-            );
-
-
-          const directionText =
-            directions
-              .map(
-                direction => {
-
-                  const roleText =
-                    normalizeArray(
-                      direction.roles
-                    )
-                      .map(
-                        role =>
-                          role.name ||
-                          role.code ||
-                          ""
-                      )
-                      .join(" ");
-
-
-                  const directionName =
-                    direction.name ||
-                    direction.slug ||
-                    "";
-
-
-                  return (
-                    directionName +
-                    " " +
-                    roleText
-                  );
-
-                }
-              )
-              .join(" ")
-              .toLowerCase();
-
-
-          // ------------------------------
-          // RESULT
-          // ------------------------------
-
-          return (
-
-            name.includes(
-              search
-            ) ||
-
-            nickname.includes(
-              search
-            ) ||
-
-            globalRoles.includes(
-              search
-            ) ||
-
-            directionText.includes(
-              search
-            )
-
-          );
-
-        }
-      );
-
-    }
-
-
-    // ======================================
-    // CABINET LINK
-    // ======================================
-
-    function renderCabinetLink(
-      member
-    ) {
-
-      if (
-        !member.user_id
-      ) {
-
-        return "";
-
-      }
-
-
-      return `
-
-        <a
-          href="member.html?user_id=${encodeURIComponent(
-            member.user_id
-          )}"
-          class="member-cabinet-link"
-        >
-
-          👤 ВІДКРИТИ КАБІНЕТ
-
-        </a>
-
-      `;
-
-    }
-
-
-    // ======================================
-    // RENDER MEMBERS
-    // ======================================
-
-    function renderMembers() {
-
-      if (!membersList) {
-        return;
-      }
-
-
-      const members =
-        getFilteredMembers();
-
-
-      membersList.innerHTML =
-        "";
-
-
-      // ==================================
-      // COUNT
-      // ==================================
-
-      if (membersCount) {
-
-        membersCount.textContent =
-          `Учасників: ${members.length}`;
-
-      }
-
-
-      // ==================================
-      // EMPTY
-      // ==================================
-
-      if (
-        members.length === 0
-      ) {
-
-        membersList.innerHTML = `
-
-          <div class="members-empty">
-
-            👤 Учасників не знайдено.
-
-          </div>
-
-        `;
-
-        return;
-
-      }
-
-
-      // ==================================
-      // CARDS
-      // ==================================
-
-      members.forEach(
-        member => {
-
-          const card =
-            document.createElement(
-              "article"
-            );
-
-
-          card.className =
-            "member-card";
-
-
-          // ==================================
-          // GLOBAL ROLES
-          // ==================================
-
-          const globalRolesHtml =
-            renderGlobalRoles(
-              member
-            );
-
-
-          // ==================================
-          // DIRECTIONS
-          // ==================================
-
-          const directionsHtml =
-            renderDirections(
-              member
-            );
-
-
-          // ==================================
-          // CABINET
-          // ==================================
-
-          const cabinetLink =
-            renderCabinetLink(
-              member
-            );
-
-
-          // ==================================
-          // CARD HTML
-          // ==================================
-
-          card.innerHTML = `
-
-            <div class="member-avatar">
-
-              ${renderAvatar(
-                member
+              🎮
+              ${escapeHtml(
+                member.game_nickname ||
+                "Не вказано"
               )}
 
             </div>
 
-
-            <div class="member-info">
-
-
-              <!-- ==========================
-                   NAME
-              =========================== -->
-
-              <div class="member-main-info">
-
-                <h2>
-
-                  ${escapeHtml(
-                    member.name ||
-                    "Учасник UA LEGION"
-                  )}
-
-                </h2>
+          </div>
 
 
-                <div class="member-nickname">
+          <!-- ==================================
+               GLOBAL ROLES
+          ================================== -->
 
-                  🎮
+          <div class="member-section">
 
-                  ${escapeHtml(
-                    member.game_nickname ||
-                    "Не вказано"
-                  )}
+            <div class="member-section-title">
 
-                </div>
-
-              </div>
-
-
-              <!-- ==========================
-                   GLOBAL
-              =========================== -->
-
-              ${
-                globalRolesHtml
-                  ? `
-
-                    <div class="member-section">
-
-                      <div class="member-section-title">
-
-                        🌐 GLOBAL
-
-                      </div>
-
-
-                      <div class="member-badges">
-
-                        ${globalRolesHtml}
-
-                      </div>
-
-                    </div>
-
-                  `
-                  : ""
-              }
-
-
-              <!-- ==========================
-                   DIRECTIONS
-              =========================== -->
-
-              <div class="member-section">
-
-                <div class="member-section-title">
-
-                  🎯 Напрямки
-
-                </div>
-
-
-                <div class="member-directions">
-
-                  ${directionsHtml}
-
-                </div>
-
-              </div>
-
-
-              <!-- ==========================
-                   CABINET
-              =========================== -->
-
-              ${cabinetLink}
-
+              🌐 РОЛІ
 
             </div>
 
-          `;
+
+            <div class="member-badges">
+
+              ${renderGlobalRoles(member)}
+
+            </div>
+
+          </div>
 
 
-          membersList.appendChild(
-            card
-          );
+          <!-- ==================================
+               DIRECTIONS
+          ================================== -->
 
-        }
-      );
+          <div class="member-section">
 
-    }
+            <div class="member-section-title">
 
+              🎯 НАПРЯМКИ
 
-    // ======================================
-    // SEARCH EVENT
-    // ======================================
-
-    if (membersSearch) {
-
-      membersSearch.addEventListener(
-        "input",
-        () => {
-
-          renderMembers();
-
-        }
-      );
-
-    }
+            </div>
 
 
-    // ======================================
-    // INITIAL LOAD
-    // ======================================
+            <div class="member-badges member-directions-list">
 
-    await loadMembers();
+              ${renderDirections(member)}
+
+            </div>
+
+          </div>
+
+
+          <!-- ==================================
+               CABINET
+          ================================== -->
+
+          ${renderCabinetLink(member)}
+
+        </div>
+
+      `;
+
+
+      membersList.appendChild(card);
+
+    });
 
   }
-);
+
+
+  // ==========================================
+  // AUTH
+  // ==========================================
+
+  const {
+    data: { user },
+    error: userError
+  } =
+    await supabase.auth.getUser();
+
+
+  if (userError || !user) {
+
+    window.location.href =
+      "login.html";
+
+    return;
+  }
+
+
+  // ==========================================
+  // ACCESS CHECK
+  // ==========================================
+
+  async function checkAccess() {
+
+    const {
+      data,
+      error
+    } =
+      await supabase.rpc(
+        "can_view_ua_legion_members"
+      );
+
+
+    if (error) {
+
+      console.error(
+        "Помилка перевірки доступу:",
+        error
+      );
+
+      return false;
+    }
+
+
+    return data === true;
+  }
+
+
+  const hasAccess =
+    await checkAccess();
+
+
+  if (!hasAccess) {
+
+    if (membersList) {
+
+      membersList.innerHTML = `
+
+        <div class="members-empty">
+
+          🔒 Доступ до списку учасників
+          доступний тільки учасникам UA LEGION.
+
+        </div>
+
+      `;
+    }
+
+    return;
+  }
+
+
+  // ==========================================
+  // LOAD MEMBERS
+  // ==========================================
+
+  async function loadMembers() {
+
+    if (!membersList) {
+      return;
+    }
+
+
+    membersList.innerHTML = `
+
+      <div class="members-loading">
+
+        ⏳ Завантаження учасників...
+
+      </div>
+
+    `;
+
+
+    const {
+      data,
+      error
+    } =
+      await supabase.rpc(
+        "get_ua_legion_members"
+      );
+
+
+    if (error) {
+
+      console.error(
+        "Помилка завантаження учасників:",
+        error
+      );
+
+
+      showMessage(
+        "❌ Не вдалося завантажити список учасників.",
+        "error"
+      );
+
+
+      membersList.innerHTML = "";
+
+      return;
+    }
+
+
+    console.log(
+      "UA LEGION MEMBERS:",
+      data
+    );
+
+
+    allMembers =
+      Array.isArray(data)
+        ? data
+        : [];
+
+
+    renderMembers();
+  }
+
+
+  // ==========================================
+  // SEARCH
+  // ==========================================
+
+  membersSearch?.addEventListener(
+    "input",
+    () => {
+
+      renderMembers();
+
+    }
+  );
+
+
+  // ==========================================
+  // START
+  // ==========================================
+
+  await loadMembers();
+
+});
