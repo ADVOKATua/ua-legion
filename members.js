@@ -1,343 +1,918 @@
-// ==========================================
-// UA LEGION
-// MEMBERS SYSTEM
+// ======================================
+// UA LEGION — MEMBERS SYSTEM
 // members.js
-// ==========================================
+// ======================================
 
 document.addEventListener("DOMContentLoaded", async () => {
 
-  const supabase = window.supabaseClient;
+    // ======================================
+    // SUPABASE
+    // ======================================
 
-  if (!supabase) {
-    console.error("Supabase не підключений");
-    return;
-  }
+    const supabase = window.supabaseClient;
 
-  const membersList = document.getElementById("membersList");
-  const membersSearch = document.getElementById("membersSearch");
-  const membersCount = document.getElementById("membersCount");
-  const membersMessage = document.getElementById("membersMessage");
+    if (!supabase) {
 
-  let allMembers = [];
+        console.error(
+            "UA LEGION: Supabase не підключений"
+        );
 
-  function showMessage(message, type = "info") {
-    if (!membersMessage) return;
-    membersMessage.textContent = message;
-    membersMessage.className = "members-message " + type;
-  }
-
-  function escapeHtml(value) {
-    if (value === null || value === undefined) return "";
-    const div = document.createElement("div");
-    div.textContent = String(value);
-    return div.innerHTML;
-  }
-
-  function normalizeArray(value) {
-    if (value === null || value === undefined) return [];
-
-    if (Array.isArray(value)) {
-      return value
-        .filter(item => item !== null && item !== undefined && String(item).trim() !== "")
-        .map(item => String(item).trim());
+        return;
     }
 
-    if (typeof value === "string") {
-      const trimmed = value.trim();
-      if (!trimmed) return [];
 
-      try {
-        const parsed = JSON.parse(trimmed);
-        if (Array.isArray(parsed)) {
-          return parsed
-            .filter(item => item !== null && item !== undefined && String(item).trim() !== "")
-            .map(item => String(item).trim());
+    // ======================================
+    // DOM
+    // ======================================
+
+    const membersList =
+        document.getElementById("membersList");
+
+    const membersSearch =
+        document.getElementById("membersSearch");
+
+    const membersCount =
+        document.getElementById("membersCount");
+
+    const membersMessage =
+        document.getElementById("membersMessage");
+
+
+    // ======================================
+    // STATE
+    // ======================================
+
+    let members = [];
+
+
+    // ======================================
+    // HELPERS
+    // ======================================
+
+    function escapeHtml(value) {
+
+        if (
+            value === null ||
+            value === undefined
+        ) {
+
+            return "";
         }
-      } catch (error) {
-        // Not JSON
-      }
 
-      if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
-        return trimmed
-          .slice(1, -1)
-          .split(",")
-          .map(item => item.trim().replace(/^"|"$/g, ""))
-          .filter(Boolean);
-      }
-
-      if (trimmed.includes(",")) {
-        return trimmed.split(",").map(item => item.trim()).filter(Boolean);
-      }
-
-      return [trimmed];
+        return String(value)
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll('"', "&quot;")
+            .replaceAll("'", "&#039;");
     }
 
-    if (typeof value === "object") {
-      return Object.values(value)
-        .filter(item => item !== null && item !== undefined && String(item).trim() !== "")
-        .map(item => String(item).trim());
+
+    function showMessage(message) {
+
+        if (!membersMessage) {
+            return;
+        }
+
+        membersMessage.textContent =
+            message || "";
+
+        membersMessage.style.display =
+            message ? "block" : "none";
     }
 
-    return [String(value)];
-  }
 
-  const {
-    data: { user },
-    error: userError
-  } = await supabase.auth.getUser();
+    function getAvatarUrl(member) {
 
-  if (userError || !user) {
-    window.location.href = "login.html";
-    return;
-  }
+        if (member?.avatar_url) {
 
-  async function checkAccess() {
-    const { data, error } = await supabase.rpc("can_view_ua_legion_members");
+            return member.avatar_url;
+        }
 
-    if (error) {
-      console.error("Помилка перевірки доступу:", error);
-      return false;
+
+        const name =
+            member?.display_name ||
+            member?.name ||
+            "User";
+
+
+        return (
+            "https://ui-avatars.com/api/?" +
+            "name=" +
+            encodeURIComponent(name) +
+            "&background=171a20&color=ffffff"
+        );
     }
 
-    return data === true;
-  }
 
-  const hasAccess = await checkAccess();
+    // ======================================
+    // FORMAT GLOBAL ROLES
+    // ======================================
 
-  if (!hasAccess) {
-    if (membersList) {
-      membersList.innerHTML = `
-        <div class="members-empty">
-          🔒 Доступ до списку учасників доступний тільки учасникам UA LEGION.
-        </div>
-      `;
-    }
-    return;
-  }
+    function formatGlobalRoles(
+        globalRoles
+    ) {
 
-  async function loadMembers() {
-    if (!membersList) return;
+        if (
+            !Array.isArray(globalRoles) ||
+            !globalRoles.length
+        ) {
 
-    membersList.innerHTML = `
-      <div class="members-loading">
-        ⏳ Завантаження учасників...
-      </div>
-    `;
+            return `
+                <span class="member-empty">
+                    Без глобальної посади
+                </span>
+            `;
+        }
 
-    const { data, error } = await supabase.rpc("get_ua_legion_members");
 
-    if (error) {
-      console.error("Помилка завантаження учасників:", error);
-      showMessage("❌ Не вдалося завантажити список учасників.", "error");
-      membersList.innerHTML = "";
-      return;
-    }
+        return globalRoles
+            .map(role => {
 
-    allMembers = Array.isArray(data) ? data : [];
-    renderMembers();
-  }
+                if (
+                    !role ||
+                    typeof role !== "object"
+                ) {
 
-  function getMemberRoles(member) {
-    return normalizeArray(member.roles);
-  }
+                    return "";
+                }
 
-  function getMemberDirections(member) {
-    return normalizeArray(member.directions);
-  }
 
-  function getDirectionIcon(direction) {
-    const value = String(direction || "").trim().toLowerCase();
+                return `
+                    <span class="member-role-badge">
+                        ${escapeHtml(
+                            role.name ||
+                            role.code ||
+                            "Без назви"
+                        )}
+                    </span>
+                `;
 
-    const icons = {
-      "ets2": "🚛",
-      "euro truck simulator 2": "🚛",
-      "ats": "🇺🇸🚛",
-      "american truck simulator": "🇺🇸🚛",
-      "wot": "🛡",
-      "world of tanks": "🛡",
-      "wow": "⚔️",
-      "world of warcraft": "⚔️",
-      "dota": "🎯",
-      "dota 2": "🎯",
-      "cs2": "🔫",
-      "counter-strike 2": "🔫",
-      "minecraft": "⛏️",
-      "fortnite": "🏗️",
-      "stream": "📺",
-      "streaming": "📺",
-      "youtube": "▶️",
-      "tiktok": "🎵"
-    };
-
-    return icons[value] || "🎮";
-  }
-
-  function getAvatarLetter(member) {
-    const name = String(member.name || member.game_nickname || "U").trim();
-    return name.charAt(0).toUpperCase() || "U";
-  }
-
-  function renderAvatar(member) {
-    const avatarUrl = member.avatar_url || member.avatar || "";
-
-    if (avatarUrl) {
-      return `
-        <img
-          src="${escapeHtml(avatarUrl)}"
-          alt="${escapeHtml(member.name || "Учасник")}"
-          class="member-avatar-image"
-        >
-      `;
+            })
+            .filter(Boolean)
+            .join("");
     }
 
-    return `
-      <span class="member-avatar-letter">
-        ${escapeHtml(getAvatarLetter(member))}
-      </span>
-    `;
-  }
 
-  function getFilteredMembers() {
-    const search = (membersSearch?.value || "").trim().toLowerCase();
+    // ======================================
+    // FORMAT DIRECTIONS
+    // ======================================
 
-    if (!search) return allMembers;
+    function formatDirections(
+        directions
+    ) {
 
-    return allMembers.filter(member => {
-      const name = String(member.name || "").toLowerCase();
-      const nickname = String(member.game_nickname || "").toLowerCase();
-      const roles = getMemberRoles(member).join(" ").toLowerCase();
-      const directions = getMemberDirections(member).join(" ").toLowerCase();
+        if (
+            !Array.isArray(directions) ||
+            !directions.length
+        ) {
 
-      return (
-        name.includes(search) ||
-        nickname.includes(search) ||
-        roles.includes(search) ||
-        directions.includes(search)
-      );
-    });
-  }
+            return `
+                <div class="member-empty">
+                    Не приєднаний до напрямків
+                </div>
+            `;
+        }
 
-  function renderRoleBadges(items) {
-    if (!items || items.length === 0) {
-      return `
-        <span class="member-role member-role-empty">
-          🛡 Без ролі
-        </span>
-      `;
+
+        return directions
+            .map(direction => {
+
+                if (
+                    !direction ||
+                    typeof direction !== "object"
+                ) {
+
+                    return "";
+                }
+
+
+                const icon =
+                    direction.icon ||
+                    "🎮";
+
+
+                const name =
+                    direction.name ||
+                    direction.code ||
+                    "Без назви";
+
+
+                const status =
+                    direction.status ||
+                    "";
+
+
+                const driverClass =
+                    direction.driver_class ||
+                    "";
+
+
+                const roles =
+                    Array.isArray(
+                        direction.roles
+                    )
+                        ? direction.roles
+                        : [];
+
+
+                let rolesHtml = "";
+
+
+                if (roles.length) {
+
+                    rolesHtml = roles
+                        .map(role => {
+
+                            if (
+                                !role ||
+                                typeof role !== "object"
+                            ) {
+
+                                return "";
+                            }
+
+
+                            return `
+                                <span class="member-direction-role">
+                                    ${escapeHtml(
+                                        role.name ||
+                                        role.code ||
+                                        "Без назви"
+                                    )}
+                                </span>
+                            `;
+
+                        })
+                        .filter(Boolean)
+                        .join("");
+                }
+
+
+                return `
+                    <div class="member-direction">
+
+                        <div class="member-direction-header">
+
+                            <span class="member-direction-name">
+                                ${escapeHtml(icon)}
+                                ${escapeHtml(name)}
+                            </span>
+
+                            ${
+                                status
+                                    ? `
+                                        <span class="member-direction-status">
+                                            ${escapeHtml(status)}
+                                        </span>
+                                    `
+                                    : ""
+                            }
+
+                        </div>
+
+
+                        ${
+                            rolesHtml
+                                ? `
+                                    <div class="member-direction-roles">
+                                        ${rolesHtml}
+                                    </div>
+                                `
+                                : `
+                                    <div class="member-empty">
+                                        Посад немає
+                                    </div>
+                                `
+                        }
+
+
+                        ${
+                            direction.code === "ets2" &&
+                            driverClass
+                                ? `
+                                    <div class="member-driver-class">
+                                        🚛 Клас водія:
+                                        <strong>
+                                            ${escapeHtml(
+                                                driverClass
+                                            )}
+                                        </strong>
+                                    </div>
+                                `
+                                : ""
+                        }
+
+                    </div>
+                `;
+
+            })
+            .filter(Boolean)
+            .join("");
     }
 
-    return items.map(item => `
-      <span class="member-role">
-        🛡 ${escapeHtml(item)}
-      </span>
-    `).join("");
-  }
 
-  function renderDirectionBadges(items) {
-    if (!items || items.length === 0) {
-      return `
-        <span class="member-direction member-direction-empty">
-          🎮 Не вказано
-        </span>
-      `;
+    // ======================================
+    // SEARCH TEXT
+    // ======================================
+
+    function getMemberSearchText(
+        member
+    ) {
+
+        const parts = [];
+
+
+        parts.push(
+            member?.display_name || ""
+        );
+
+
+        parts.push(
+            member?.name || ""
+        );
+
+
+        parts.push(
+            member?.game_nickname || ""
+        );
+
+
+        parts.push(
+            member?.discord_username || ""
+        );
+
+
+        // GLOBAL ROLES
+
+        if (
+            Array.isArray(
+                member?.global_roles
+            )
+        ) {
+
+            member.global_roles
+                .forEach(role => {
+
+                    if (!role) {
+                        return;
+                    }
+
+
+                    parts.push(
+                        role.name || ""
+                    );
+
+
+                    parts.push(
+                        role.code || ""
+                    );
+
+                });
+        }
+
+
+        // DIRECTIONS
+
+        if (
+            Array.isArray(
+                member?.directions
+            )
+        ) {
+
+            member.directions
+                .forEach(direction => {
+
+                    if (!direction) {
+                        return;
+                    }
+
+
+                    parts.push(
+                        direction.name || ""
+                    );
+
+
+                    parts.push(
+                        direction.code || ""
+                    );
+
+
+                    parts.push(
+                        direction.slug || ""
+                    );
+
+
+                    parts.push(
+                        direction.driver_class || ""
+                    );
+
+
+                    if (
+                        Array.isArray(
+                            direction.roles
+                        )
+                    ) {
+
+                        direction.roles
+                            .forEach(role => {
+
+                                if (!role) {
+                                    return;
+                                }
+
+
+                                parts.push(
+                                    role.name || ""
+                                );
+
+
+                                parts.push(
+                                    role.code || ""
+                                );
+
+                            });
+                    }
+
+                });
+        }
+
+
+        return parts
+            .join(" ")
+            .toLowerCase();
     }
 
-    return items.map(item => `
-      <span class="member-direction">
-        ${getDirectionIcon(item)} ${escapeHtml(item)}
-      </span>
-    `).join("");
-  }
 
-  // get_ua_legion_members() returns user_id, so the cabinet
-  // link is created directly from the same member object.
-  function renderCabinetLink(member) {
-    if (!member.user_id) return "";
+    // ======================================
+    // RENDER ONE MEMBER
+    // ======================================
 
-    return `
-      <a
-        href="member.html?user_id=${encodeURIComponent(member.user_id)}"
-        class="member-cabinet-link"
-        style="display:inline-flex;margin-top:15px;padding:10px 15px;border-radius:9px;background:#ffd34d;color:#111;text-decoration:none;font-weight:700;"
-      >
-        👤 ВІДКРИТИ КАБІНЕТ
-      </a>
-    `;
-  }
+    function renderMember(
+        member
+    ) {
 
-  function renderMembers() {
-    if (!membersList) return;
+        const userId =
+            member?.user_id ||
+            member?.id ||
+            "";
 
-    const members = getFilteredMembers();
-    membersList.innerHTML = "";
 
-    if (membersCount) {
-      membersCount.textContent = `Учасників: ${members.length}`;
-    }
+        const displayName =
+            member?.display_name ||
+            member?.name ||
+            "Без імені";
 
-    if (members.length === 0) {
-      membersList.innerHTML = `
-        <div class="members-empty">
-          👤 Учасників не знайдено.
-        </div>
-      `;
-      return;
-    }
 
-    members.forEach(member => {
-      const roles = getMemberRoles(member);
-      const directions = getMemberDirections(member);
+        const nickname =
+            member?.game_nickname ||
+            "";
 
-      const card = document.createElement("article");
-      card.className = "member-card";
 
-      card.innerHTML = `
-        <div class="member-avatar">
-          ${renderAvatar(member)}
-        </div>
+        const avatarUrl =
+            getAvatarUrl(member);
 
-        <div class="member-info">
-          <div class="member-main-info">
-            <h2>
-              ${escapeHtml(member.name || "Учасник UA LEGION")}
-            </h2>
 
-            <div class="member-nickname">
-              🎮 ${escapeHtml(member.game_nickname || "Не вказано")}
+        const globalRolesHtml =
+            formatGlobalRoles(
+                member?.global_roles
+            );
+
+
+        const directionsHtml =
+            formatDirections(
+                member?.directions
+            );
+
+
+        const card =
+            document.createElement(
+                "div"
+            );
+
+
+        card.className =
+            "member-card";
+
+
+        card.innerHTML = `
+
+            <div class="member-card-header">
+
+                <img
+                    class="member-avatar"
+                    src="${escapeHtml(
+                        avatarUrl
+                    )}"
+                    alt=""
+                >
+
+
+                <div class="member-main-info">
+
+                    <div class="member-name">
+
+                        ${escapeHtml(
+                            displayName
+                        )}
+
+                    </div>
+
+
+                    ${
+                        nickname
+                            ? `
+                                <div class="member-nickname">
+
+                                    🎮
+                                    ${escapeHtml(
+                                        nickname
+                                    )}
+
+                                </div>
+                            `
+                            : ""
+                    }
+
+                </div>
+
             </div>
-          </div>
 
-          <div class="member-section">
-            <div class="member-section-title">
-              🛡 Ролі
+
+            <div class="member-section">
+
+                <div class="member-section-title">
+
+                    ГЛОБАЛЬНІ ПОСАДИ
+
+                </div>
+
+
+                <div class="member-roles">
+
+                    ${globalRolesHtml}
+
+                </div>
+
             </div>
 
-            <div class="member-badges">
-              ${renderRoleBadges(roles)}
+
+            <div class="member-section">
+
+                <div class="member-section-title">
+
+                    НАПРЯМКИ
+
+                </div>
+
+
+                <div class="member-directions">
+
+                    ${directionsHtml}
+
+                </div>
+
             </div>
-          </div>
 
-          <div class="member-section">
-            <div class="member-section-title">
-              🎯 Напрямки
-            </div>
 
-            <div class="member-badges">
-              ${renderDirectionBadges(directions)}
-            </div>
-          </div>
+            ${
+                userId
+                    ? `
+                        <div class="member-actions">
 
-          ${renderCabinetLink(member)}
-        </div>
-      `;
+                            <a
+                                class="member-open-button"
+                                href="member.html?user_id=${encodeURIComponent(
+                                    userId
+                                )}"
+                            >
+                                ВІДКРИТИ КАБІНЕТ
+                            </a>
 
-      membersList.appendChild(card);
-    });
-  }
+                        </div>
+                    `
+                    : ""
+            }
 
-  membersSearch?.addEventListener("input", () => {
-    renderMembers();
-  });
+        `;
 
-  await loadMembers();
+
+        return card;
+    }
+
+
+    // ======================================
+    // RENDER MEMBERS
+    // ======================================
+
+    function renderMembers(
+        list
+    ) {
+
+        if (!membersList) {
+            return;
+        }
+
+
+        membersList.innerHTML =
+            "";
+
+
+        if (!list.length) {
+
+            membersList.innerHTML = `
+
+                <div class="members-empty">
+
+                    Користувачів не знайдено.
+
+                </div>
+
+            `;
+
+
+            if (membersCount) {
+
+                membersCount.textContent =
+                    "0";
+            }
+
+
+            return;
+        }
+
+
+        list.forEach(member => {
+
+            membersList.appendChild(
+                renderMember(member)
+            );
+
+        });
+
+
+        if (membersCount) {
+
+            membersCount.textContent =
+                String(list.length);
+        }
+    }
+
+
+    // ======================================
+    // APPLY SEARCH
+    // ======================================
+
+    function applySearch() {
+
+        const query =
+            (
+                membersSearch?.value ||
+                ""
+            )
+                .trim()
+                .toLowerCase();
+
+
+        if (!query) {
+
+            renderMembers(
+                members
+            );
+
+            return;
+        }
+
+
+        const filtered =
+            members.filter(member => {
+
+                return getMemberSearchText(
+                    member
+                ).includes(query);
+
+            });
+
+
+        renderMembers(
+            filtered
+        );
+    }
+
+
+    // ======================================
+    // LOAD MEMBERS
+    // ======================================
+
+    async function loadMembers() {
+
+        try {
+
+            showMessage(
+                "Завантаження учасників..."
+            );
+
+
+            // ----------------------------------
+            // AUTH
+            // ----------------------------------
+
+            const {
+                data: {
+                    user
+                },
+                error: authError
+            } = await supabase.auth.getUser();
+
+
+            if (
+                authError ||
+                !user
+            ) {
+
+                throw new Error(
+                    "Користувач не авторизований"
+                );
+            }
+
+
+            // ----------------------------------
+            // PERMISSION
+            // ----------------------------------
+
+            const {
+                data: canView,
+                error: permissionError
+            } = await supabase.rpc(
+                "can_view_ua_legion_members"
+            );
+
+
+            if (permissionError) {
+
+                console.error(
+                    "Members permission error:",
+                    permissionError
+                );
+
+
+                throw permissionError;
+            }
+
+
+            if (canView !== true) {
+
+                throw new Error(
+                    "У вас немає доступу до списку учасників"
+                );
+            }
+
+
+            // ----------------------------------
+            // LOAD MEMBERS
+            // ----------------------------------
+
+            const {
+                data,
+                error
+            } = await supabase.rpc(
+                "get_ua_legion_members"
+            );
+
+
+            if (error) {
+
+                console.error(
+                    "get_ua_legion_members error:",
+                    error
+                );
+
+
+                throw error;
+            }
+
+
+            // ----------------------------------
+            // NORMALIZE RESPONSE
+            // ----------------------------------
+
+            let result =
+                data;
+
+
+            if (
+                data &&
+                typeof data === "object" &&
+                !Array.isArray(data)
+            ) {
+
+                if (
+                    Array.isArray(
+                        data.members
+                    )
+                ) {
+
+                    result =
+                        data.members;
+
+                } else if (
+                    Array.isArray(
+                        data.data
+                    )
+                ) {
+
+                    result =
+                        data.data;
+
+                } else {
+
+                    result = [];
+                }
+            }
+
+
+            if (
+                !Array.isArray(result)
+            ) {
+
+                result = [];
+            }
+
+
+            members =
+                result;
+
+
+            // ----------------------------------
+            // DONE
+            // ----------------------------------
+
+            showMessage("");
+
+
+            renderMembers(
+                members
+            );
+
+        }
+        catch (error) {
+
+            console.error(
+                "MEMBERS PAGE ERROR:",
+                error
+            );
+
+
+            members = [];
+
+
+            if (membersList) {
+
+                membersList.innerHTML = `
+
+                    <div class="members-empty">
+
+                        Не вдалося завантажити
+                        список учасників.
+
+                    </div>
+
+                `;
+            }
+
+
+            if (membersCount) {
+
+                membersCount.textContent =
+                    "0";
+            }
+
+
+            showMessage(
+                error?.message ||
+                "Помилка завантаження"
+            );
+        }
+    }
+
+
+    // ======================================
+    // SEARCH EVENT
+    // ======================================
+
+    if (membersSearch) {
+
+        membersSearch.addEventListener(
+            "input",
+            applySearch
+        );
+    }
+
+
+    // ======================================
+    // START
+    // ======================================
+
+    await loadMembers();
+
 });
