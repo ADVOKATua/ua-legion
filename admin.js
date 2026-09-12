@@ -153,21 +153,14 @@ document.addEventListener(
 
 
     /*
-      СТАРОЕ поле assignDirection
+      Старое поле "Напрямок ролі"
       больше не используется.
 
-      В новой архитектуре:
+      GLOBAL роль:
+        user_roles
 
-      GLOBAL role
-          ↓
-      user_roles
-
-      ETS2 position
-          ↓
-      user_direction_roles
-
-      Поэтому направление здесь
-      выбирать нельзя.
+      ETS2 роль:
+        user_direction_roles
     */
 
     const assignDirection =
@@ -289,7 +282,7 @@ document.addEventListener(
 
 
     // ======================================
-    // LOAD PROFILE
+    // LOAD ADMIN PROFILE
     // ======================================
 
     async function loadAdminProfile() {
@@ -341,14 +334,13 @@ document.addEventListener(
     //
     // НОВА RBAC АРХІТЕКТУРА
     //
-    // Немає перевірки:
+    // Перевіряємо permission:
     //
-    // owner
-    // deputy_owner
-    // top_manager
-    // hr_manager
+    // applications.view
     //
-    // Перевіряємо permission.
+    // ВАЖНО:
+    // параметр функції називається
+    // p_permission_code
     //
     // ======================================
 
@@ -361,7 +353,7 @@ document.addEventListener(
         await supabase.rpc(
           "has_permission",
           {
-            p_permission:
+            p_permission_code:
               "applications.view",
 
             p_direction_id:
@@ -407,9 +399,9 @@ document.addEventListener(
     // LOAD GLOBAL ROLES
     // ======================================
     //
-    // ТІЛЬКИ GLOBAL.
+    // Загружаем ТОЛЬКО GLOBAL роли.
     //
-    // ETS2 ролі сюди НЕ потрапляють.
+    // ETS2 роли сюда не попадут.
     //
     // ======================================
 
@@ -440,7 +432,8 @@ document.addEventListener(
           .order(
             "level",
             {
-              ascending: false
+              ascending:
+                false
             }
           );
 
@@ -664,7 +657,7 @@ document.addEventListener(
 
 
     // ======================================
-    // STATUS INFO
+    // STATUS
     // ======================================
 
     function getStatusInfo(
@@ -720,7 +713,7 @@ document.addEventListener(
 
 
     // ======================================
-    // DATE
+    // DATE FORMAT
     // ======================================
 
     function formatDate(
@@ -1287,13 +1280,12 @@ document.addEventListener(
     // ASSIGN GLOBAL ROLE
     // ======================================
     //
-    // НІЯКОГО:
+    // ВАЖНО:
     //
-    // .from("user_roles").insert(...)
+    // Прямого INSERT в user_roles
+    // здесь больше нет.
     //
-    // більше немає.
-    //
-    // Все йде через RPC:
+    // Используем:
     //
     // assign_global_role()
     //
@@ -1337,7 +1329,7 @@ document.addEventListener(
 
 
       // ====================================
-      // FRONTEND VALIDATION
+      // CHECK SELECTED ROLE
       // ====================================
 
       const selectedRole =
@@ -1462,7 +1454,7 @@ document.addEventListener(
 
 
     // ======================================
-    // UPDATE APPLICATION
+    // UPDATE APPLICATION STATUS
     // ======================================
 
     async function updateApplicationStatus(
@@ -1765,7 +1757,7 @@ document.addEventListener(
 
 
     // ======================================
-    // PENDING
+    // MARK PENDING
     // ======================================
 
     if (markPending) {
