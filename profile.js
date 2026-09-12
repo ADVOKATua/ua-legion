@@ -5,10 +5,18 @@
 
 document.addEventListener("DOMContentLoaded", async () => {
 
+  // ======================================
+  // SUPABASE
+  // ======================================
+
   const supabase = window.supabaseClient;
 
   if (!supabase) {
-    console.error("Supabase не підключений");
+
+    console.error(
+      "Supabase не підключений"
+    );
+
     return;
   }
 
@@ -26,7 +34,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
   if (userError || !user) {
-    window.location.href = "login.html";
+
+    window.location.href =
+      "login.html";
+
     return;
   }
 
@@ -36,52 +47,87 @@ document.addEventListener("DOMContentLoaded", async () => {
   // ======================================
 
   const profileForm =
-    document.getElementById("profileForm");
+    document.getElementById(
+      "profileForm"
+    );
 
   const displayName =
-    document.getElementById("displayName");
+    document.getElementById(
+      "displayName"
+    );
 
   const birthDate =
-    document.getElementById("birthDate");
+    document.getElementById(
+      "birthDate"
+    );
 
   const avatarUrl =
-    document.getElementById("avatarUrl");
+    document.getElementById(
+      "avatarUrl"
+    );
 
   const discordUsername =
-    document.getElementById("discordUsername");
+    document.getElementById(
+      "discordUsername"
+    );
 
   const discordUserId =
-    document.getElementById("discordUserId");
+    document.getElementById(
+      "discordUserId"
+    );
 
   const steamId =
-    document.getElementById("steamId");
+    document.getElementById(
+      "steamId"
+    );
 
   const gameNickname =
-    document.getElementById("gameNickname");
+    document.getElementById(
+      "gameNickname"
+    );
 
   const profileAvatar =
-    document.getElementById("profileAvatar");
+    document.getElementById(
+      "profileAvatar"
+    );
 
   const profileNamePreview =
-    document.getElementById("profileNamePreview");
+    document.getElementById(
+      "profileNamePreview"
+    );
 
   const messageBox =
-    document.getElementById("profileMessage");
+    document.getElementById(
+      "profileMessage"
+    );
 
   const logoutButton =
-    document.getElementById("logoutButton");
+    document.getElementById(
+      "logoutButton"
+    );
 
   const rolesList =
-    document.getElementById("rolesList");
+    document.getElementById(
+      "rolesList"
+    );
 
   const applicationStatus =
-    document.getElementById("applicationStatus");
+    document.getElementById(
+      "applicationStatus"
+    );
 
   const joinButton =
-    document.getElementById("joinButton");
+    document.getElementById(
+      "joinButton"
+    );
 
+
+  // ======================================
+  // ЗМІННІ
+  // ======================================
 
   let currentAvatarUrl = null;
+
   let previewObjectUrl = null;
 
 
@@ -102,7 +148,119 @@ document.addEventListener("DOMContentLoaded", async () => {
       message;
 
     messageBox.className =
-      "profile-message " + type;
+      "profile-message " +
+      type;
+  }
+
+
+  // ======================================
+  // БЕЗПЕЧНИЙ HTML
+  // ======================================
+
+  function escapeHtml(value) {
+
+    return String(
+      value ?? ""
+    )
+      .replace(
+        /&/g,
+        "&amp;"
+      )
+      .replace(
+        /</g,
+        "&lt;"
+      )
+      .replace(
+        />/g,
+        "&gt;"
+      )
+      .replace(
+        /"/g,
+        "&quot;"
+      )
+      .replace(
+        /'/g,
+        "&#039;"
+      );
+
+  }
+
+
+  // ======================================
+  // ІКОНКА GLOBAL РОЛІ
+  // ======================================
+
+  function getGlobalRoleIcon(
+    roleCode
+  ) {
+
+    switch (roleCode) {
+
+      case "owner":
+        return "👑";
+
+      case "deputy_owner":
+        return "🛡️";
+
+      case "general_top_manager":
+        return "🏆";
+
+      case "general_hr_manager":
+        return "👥";
+
+      case "general_pr_manager":
+        return "📢";
+
+      case "general_smm_manager":
+        return "📱";
+
+      case "general_event_manager":
+        return "🎯";
+
+      case "general_technical_manager":
+        return "🔧";
+
+      default:
+        return "👤";
+
+    }
+
+  }
+
+
+  // ======================================
+  // НАЗВА КЛАСУ ETS2
+  // ======================================
+
+  function getDriverClassName(
+    driverClass
+  ) {
+
+    const names = {
+
+      A:
+        "Клас A — «Майстер водій»",
+
+      B:
+        "Клас B — «Старший водій»",
+
+      C:
+        "Клас C — «Досвідчений водій»",
+
+      D:
+        "Клас D — «Водій»",
+
+      E:
+        "Клас E — «Стажер»"
+
+    };
+
+
+    return (
+      names[driverClass] ||
+      `Клас ${driverClass}`
+    );
+
   }
 
 
@@ -125,6 +283,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
 
+        // -------------------------------
+        // ПЕРЕВІРКА ТИПУ
+        // -------------------------------
+
         if (
           !file.type.startsWith(
             "image/"
@@ -136,11 +298,16 @@ document.addEventListener("DOMContentLoaded", async () => {
             "error"
           );
 
-          avatarUrl.value = "";
+          avatarUrl.value =
+            "";
 
           return;
         }
 
+
+        // -------------------------------
+        // ПЕРЕВІРКА РОЗМІРУ
+        // -------------------------------
 
         if (
           file.size >
@@ -152,19 +319,29 @@ document.addEventListener("DOMContentLoaded", async () => {
             "error"
           );
 
-          avatarUrl.value = "";
+          avatarUrl.value =
+            "";
 
           return;
         }
 
+
+        // -------------------------------
+        // СТАРИЙ PREVIEW
+        // -------------------------------
 
         if (previewObjectUrl) {
 
           URL.revokeObjectURL(
             previewObjectUrl
           );
+
         }
 
+
+        // -------------------------------
+        // НОВИЙ PREVIEW
+        // -------------------------------
 
         previewObjectUrl =
           URL.createObjectURL(
@@ -176,6 +353,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
           profileAvatar.src =
             previewObjectUrl;
+
         }
 
       }
@@ -185,7 +363,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
   // ======================================
-  // ЗАВАНТАЖЕННЯ ПРОФІЛЮ
+  // ЗАВАНТАЖЕННЯ ОСОБИСТОГО ПРОФІЛЮ
   // ======================================
 
   async function loadProfile() {
@@ -206,7 +384,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (error) {
 
       console.error(
-        "Помилка завантаження профілю:",
+        "PROFILE: Помилка завантаження профілю:",
         error
       );
 
@@ -224,45 +402,42 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    // --------------------------------------
+    // ==================================
     // ІМ'Я
-    // --------------------------------------
+    // ==================================
 
-    if (
-      profile.display_name &&
-      displayName
-    ) {
+    if (displayName) {
 
       displayName.value =
-        profile.display_name;
-
-
-      if (profileNamePreview) {
-
-        profileNamePreview.textContent =
-          profile.display_name;
-      }
+        profile.display_name || "";
 
     }
 
 
-    // --------------------------------------
-    // ДАТА НАРОДЖЕННЯ
-    // --------------------------------------
+    if (profileNamePreview) {
 
-    if (
-      profile.birth_date &&
-      birthDate
-    ) {
+      profileNamePreview.textContent =
+        profile.display_name ||
+        "Учасник UA LEGION";
+
+    }
+
+
+    // ==================================
+    // ДАТА НАРОДЖЕННЯ
+    // ==================================
+
+    if (birthDate) {
 
       birthDate.value =
-        profile.birth_date;
+        profile.birth_date || "";
+
     }
 
 
-    // --------------------------------------
+    // ==================================
     // АВАТАР
-    // --------------------------------------
+    // ==================================
 
     currentAvatarUrl =
       profile.avatar_url ||
@@ -276,63 +451,513 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       profileAvatar.src =
         currentAvatarUrl;
+
     }
 
 
-    // --------------------------------------
+    // ==================================
     // DISCORD
-    // --------------------------------------
+    // ==================================
 
-    if (
-      profile.discord_username &&
-      discordUsername
-    ) {
+    if (discordUsername) {
 
       discordUsername.value =
-        profile.discord_username;
+        profile.discord_username ||
+        "";
+
     }
 
 
-    // --------------------------------------
+    // ==================================
     // DISCORD ID
-    // --------------------------------------
+    // ==================================
 
-    if (
-      profile.discord_user_id &&
-      discordUserId
-    ) {
+    if (discordUserId) {
 
       discordUserId.value =
-        profile.discord_user_id;
+        profile.discord_user_id ||
+        "";
+
     }
 
 
-    // --------------------------------------
+    // ==================================
     // STEAM ID
-    // --------------------------------------
+    // ==================================
 
-    if (
-      profile.steam_id &&
-      steamId
-    ) {
+    if (steamId) {
 
       steamId.value =
-        profile.steam_id;
+        profile.steam_id ||
+        "";
+
     }
 
 
-    // --------------------------------------
+    // ==================================
     // ІГРОВИЙ НІК
-    // --------------------------------------
+    // ==================================
 
-    if (
-      profile.game_nickname &&
-      gameNickname
-    ) {
+    if (gameNickname) {
 
       gameNickname.value =
-        profile.game_nickname;
+        profile.game_nickname ||
+        "";
+
     }
+
+  }
+
+
+  // ======================================
+  // ЗАВАНТАЖЕННЯ RBAC
+  //
+  // ЄДИНЕ ДЖЕРЕЛО:
+  // get_user_direction_management()
+  // ======================================
+
+  async function loadUserManagement() {
+
+    if (!rolesList) {
+      return null;
+    }
+
+
+    rolesList.innerHTML = `
+      <div class="roles-empty">
+        Завантаження ролей...
+      </div>
+    `;
+
+
+    const {
+      data,
+      error
+    } = await supabase.rpc(
+      "get_user_direction_management",
+      {
+        p_target_user_id:
+          user.id
+      }
+    );
+
+
+    if (error) {
+
+      console.error(
+        "PROFILE: Помилка get_user_direction_management:",
+        error
+      );
+
+      rolesList.innerHTML = `
+        <div class="roles-empty">
+          Не вдалося завантажити ролі та напрямки.
+        </div>
+      `;
+
+      return null;
+    }
+
+
+    if (
+      !data ||
+      data.success === false
+    ) {
+
+      console.error(
+        "PROFILE: Некоректна відповідь RBAC:",
+        data
+      );
+
+      rolesList.innerHTML = `
+        <div class="roles-empty">
+          Не вдалося отримати інформацію про ролі.
+        </div>
+      `;
+
+      return null;
+    }
+
+
+    console.log(
+      "PROFILE: RBAC:",
+      data
+    );
+
+
+    // ----------------------------------
+    // ЗБЕРІГАЄМО СТАН
+    // ----------------------------------
+
+    window.currentUserRoles =
+      data;
+
+
+    // ----------------------------------
+    // РЕНДЕР
+    // ----------------------------------
+
+    renderUserRoles(
+      data.global_roles || [],
+      data.directions || []
+    );
+
+
+    // ----------------------------------
+    // ОНОВЛЮЄМО НАПРЯМКИ
+    // ----------------------------------
+
+    renderManagedDirections(
+      data.directions || []
+    );
+
+
+    return data;
+
+  }
+
+
+  // ======================================
+  // ВІДОБРАЖЕННЯ РОЛЕЙ
+  // + НАПРЯМКІВ
+  // + КЛАСУ ETS2
+  // ======================================
+
+  function renderUserRoles(
+    globalRoles = [],
+    directions = []
+  ) {
+
+    if (!rolesList) {
+      return;
+    }
+
+
+    rolesList.innerHTML =
+      "";
+
+
+    // ==================================
+    // GLOBAL РОЛІ
+    // ==================================
+
+    globalRoles.forEach(
+      role => {
+
+        const roleCard =
+          document.createElement(
+            "div"
+          );
+
+
+        roleCard.className =
+          "role-card global";
+
+
+        const roleIcon =
+          getGlobalRoleIcon(
+            role.code
+          );
+
+
+        const roleName =
+          escapeHtml(
+            role.name ||
+            "Невідома роль"
+          );
+
+
+        roleCard.innerHTML = `
+          <h3>
+            ${roleIcon}
+            ${roleName}
+          </h3>
+
+          <p>
+            Глобальна роль
+          </p>
+        `;
+
+
+        rolesList.appendChild(
+          roleCard
+        );
+
+      }
+    );
+
+
+    // ==================================
+    // НАПРЯМКИ
+    // ==================================
+
+    directions.forEach(
+      direction => {
+
+        // --------------------------------
+        // ВРАХОВУЄМО ТІЛЬКИ ACTIVE
+        // --------------------------------
+
+        if (
+          direction.status &&
+          direction.status !== "active"
+        ) {
+
+          return;
+        }
+
+
+        const directionCard =
+          document.createElement(
+            "div"
+          );
+
+
+        directionCard.className =
+          "role-card";
+
+
+        const icon =
+          escapeHtml(
+            direction.icon ||
+            "📍"
+          );
+
+
+        const name =
+          escapeHtml(
+            direction.name ||
+            direction.slug ||
+            "Невідомий напрямок"
+          );
+
+
+        let html = `
+          <h3>
+            ${icon}
+            ${name}
+          </h3>
+        `;
+
+
+        // --------------------------------
+        // ПОСАДИ
+        // --------------------------------
+
+        const directionRoles =
+          Array.isArray(
+            direction.roles
+          )
+            ? direction.roles
+            : [];
+
+
+        if (
+          directionRoles.length > 0
+        ) {
+
+          const roleNames =
+            directionRoles
+              .map(
+                role =>
+                  escapeHtml(
+                    role.name ||
+                    role.code ||
+                    "Невідома посада"
+                  )
+              )
+              .join(
+                ", "
+              );
+
+
+          html += `
+            <p>
+              Посади:
+              ${roleNames}
+            </p>
+          `;
+
+        } else {
+
+          html += `
+            <p>
+              Учасник напрямку
+            </p>
+          `;
+
+        }
+
+
+        // --------------------------------
+        // КЛАС ETS2
+        // --------------------------------
+
+        const directionSlug =
+          String(
+            direction.slug ||
+            direction.code ||
+            ""
+          )
+            .trim()
+            .toLowerCase();
+
+
+        if (
+          directionSlug === "ets2" &&
+          direction.driver_class
+        ) {
+
+          const driverClass =
+            String(
+              direction.driver_class
+            )
+              .trim()
+              .toUpperCase();
+
+
+          const driverClassName =
+            getDriverClassName(
+              driverClass
+            );
+
+
+          html += `
+            <p>
+              Клас водія:
+              <strong>
+                ${escapeHtml(
+                  driverClassName
+                )}
+              </strong>
+            </p>
+          `;
+
+        }
+
+
+        directionCard.innerHTML =
+          html;
+
+
+        rolesList.appendChild(
+          directionCard
+        );
+
+      }
+    );
+
+
+    // ==================================
+    // НІЧОГО НЕМАЄ
+    // ==================================
+
+    if (
+      !rolesList.children.length
+    ) {
+
+      rolesList.innerHTML = `
+        <div class="roles-empty">
+          У вас поки немає призначених ролей.
+        </div>
+      `;
+
+    }
+
+  }
+
+
+  // ======================================
+  // НАПРЯМКИ В ОСОБИСТОМУ ПРОФІЛІ
+  //
+  // ТЕПЕР ЦЕ ТІЛЬКИ ВІДОБРАЖЕННЯ.
+  //
+  // КЕРУВАННЯ ЧЛЕНСТВОМ:
+  // member.html
+  //
+  // ДЖЕРЕЛО:
+  // user_directions
+  // ======================================
+
+  function renderManagedDirections(
+    directions = []
+  ) {
+
+    const checkboxes =
+      document.querySelectorAll(
+        'input[name="direction"]'
+      );
+
+
+    if (!checkboxes.length) {
+      return;
+    }
+
+
+    // ----------------------------------
+    // ОЧИЩАЄМО СТАН
+    // ----------------------------------
+
+    checkboxes.forEach(
+      checkbox => {
+
+        checkbox.checked =
+          false;
+
+        // Напрямками керує адміністрація
+        checkbox.disabled =
+          true;
+
+      }
+    );
+
+
+    // ----------------------------------
+    // ВСТАНОВЛЮЄМО ACTIVE
+    // ----------------------------------
+
+    directions.forEach(
+      direction => {
+
+        if (
+          direction.status &&
+          direction.status !== "active"
+        ) {
+
+          return;
+        }
+
+
+        const slug =
+          String(
+            direction.slug ||
+            direction.code ||
+            ""
+          )
+            .trim()
+            .toLowerCase();
+
+
+        if (!slug) {
+          return;
+        }
+
+
+        const checkbox =
+          document.querySelector(
+            `input[name="direction"][value="${CSS.escape(slug)}"]`
+          );
+
+
+        if (checkbox) {
+
+          checkbox.checked =
+            true;
+
+        }
+
+      }
+    );
 
   }
 
@@ -340,7 +965,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // ======================================
   // СТАТУС ЗАЯВКИ
   //
-  // ПОКАЗУЄМО ТІЛЬКИ ОСТАННЮ ЗАЯВКУ
+  // ПОКАЗУЄМО ОСТАННЮ ЗАЯВКУ
   // ======================================
 
   async function loadApplicationStatus() {
@@ -408,7 +1033,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         </h3>
 
         <p>
-          ${error.message}
+          ${escapeHtml(
+            error.message
+          )}
         </p>
       `;
 
@@ -416,6 +1043,10 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
     }
 
+
+    // ==================================
+    // ЗАЯВОК НЕМАЄ
+    // ==================================
 
     if (
       !applications ||
@@ -448,6 +1079,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         joinButton.textContent =
           "📝 ПОДАТИ ЗАЯВКУ";
+
       }
 
 
@@ -465,16 +1097,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     );
 
 
-    // ======================================
+    // ==================================
     // ВИЗНАЧАЄМО НАПРЯМОК
-    // ======================================
+    // ==================================
 
-    let direction = null;
+    let direction =
+      null;
 
 
     if (
-      application.direction !== null &&
-      application.direction !== undefined &&
+      application.direction !==
+        null &&
+      application.direction !==
+        undefined &&
       String(
         application.direction
       ).trim() !== ""
@@ -495,7 +1130,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       Array.isArray(
         application.directions
       ) &&
-      application.directions.length > 0
+      application.directions.length >
+        0
     ) {
 
       direction =
@@ -534,9 +1170,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    // ======================================
+    // ==================================
     // НАЗВИ НАПРЯМКІВ
-    // ======================================
+    // ==================================
 
     const directionNames = {
 
@@ -556,19 +1192,19 @@ document.addEventListener("DOMContentLoaded", async () => {
         "🪖 World of Tanks",
 
       dota2:
-        "⚔️ Dota 2",
+        "🎮 Dota 2",
 
       dota:
-        "⚔️ Dota 2",
+        "🎮 Dota 2",
 
       "dota 2":
-        "⚔️ Dota 2",
+        "🎮 Dota 2",
 
       wow:
-        "🐉 World of Warcraft",
+        "⚔️ World of Warcraft",
 
       "world of warcraft":
-        "🐉 World of Warcraft"
+        "⚔️ World of Warcraft"
 
     };
 
@@ -591,13 +1227,14 @@ document.addEventListener("DOMContentLoaded", async () => {
       );
 
 
-    // ======================================
+    // ==================================
     // СТАТУС
-    // ======================================
+    // ==================================
 
     const status =
       String(
-        application.status || ""
+        application.status ||
+        ""
       )
         .trim()
         .toLowerCase();
@@ -608,15 +1245,16 @@ document.addEventListener("DOMContentLoaded", async () => {
       direction
     );
 
+
     console.log(
       "PROFILE: Статус:",
       status
     );
 
 
-    // ======================================
+    // ==================================
     // PENDING
-    // ======================================
+    // ==================================
 
     if (
       status === "pending"
@@ -628,7 +1266,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       applicationStatus.innerHTML = `
         <h3>
-          ${directionName}
+          ${escapeHtml(
+            directionName
+          )}
         </h3>
 
         <p>
@@ -646,6 +1286,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         joinButton.style.display =
           "none";
+
       }
 
 
@@ -653,9 +1294,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    // ======================================
+    // ==================================
     // APPROVED
-    // ======================================
+    // ==================================
 
     if (
       status === "approved"
@@ -667,7 +1308,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       applicationStatus.innerHTML = `
         <h3>
-          ${directionName}
+          ${escapeHtml(
+            directionName
+          )}
         </h3>
 
         <p>
@@ -692,6 +1335,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         joinButton.style.display =
           "none";
+
       }
 
 
@@ -699,9 +1343,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    // ======================================
+    // ==================================
     // REJECTED
-    // ======================================
+    // ==================================
 
     if (
       status === "rejected"
@@ -713,7 +1357,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       applicationStatus.innerHTML = `
         <h3>
-          ${directionName}
+          ${escapeHtml(
+            directionName
+          )}
         </h3>
 
         <p>
@@ -737,6 +1383,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         joinButton.textContent =
           "📝 ПОДАТИ ЗАЯВКУ НА ІНШИЙ НАПРЯМОК";
+
       }
 
 
@@ -744,9 +1391,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    // ======================================
+    // ==================================
     // ІНШИЙ СТАТУС
-    // ======================================
+    // ==================================
 
     applicationStatus.className =
       "application-card";
@@ -754,12 +1401,17 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     applicationStatus.innerHTML = `
       <h3>
-        ${directionName}
+        ${escapeHtml(
+          directionName
+        )}
       </h3>
 
       <p>
         ℹ️ Поточний статус заявки:
-        ${application.status || "невідомий"}
+        ${escapeHtml(
+          application.status ||
+          "невідомий"
+        )}
       </p>
     `;
 
@@ -767,937 +1419,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
   // ======================================
-  // ЗАВАНТАЖЕННЯ НАПРЯМКІВ
-  // ======================================
-
-  async function loadDirections() {
-
-    const {
-      data: allDirections,
-      error: directionsError
-    } = await supabase
-      .from("directions")
-      .select(
-        "id, slug"
-      );
-
-
-    if (directionsError) {
-
-      console.error(
-        "Помилка читання directions:",
-        directionsError
-      );
-
-      return;
-    }
-
-
-    const directionMap =
-      new Map(
-        (allDirections || []).map(
-          direction => [
-            String(
-              direction.id
-            ),
-            direction.slug
-          ]
-        )
-      );
-
-
-    const {
-      data: selectedRows,
-      error: selectedError
-    } = await supabase
-      .from("profile_directions")
-      .select(
-        "direction_id"
-      )
-      .eq(
-        "profile_id",
-        user.id
-      );
-
-
-    if (selectedError) {
-
-      console.error(
-        "Помилка завантаження напрямків:",
-        selectedError
-      );
-
-      return;
-    }
-
-
-    document
-      .querySelectorAll(
-        'input[name="direction"]'
-      )
-      .forEach(
-        checkbox => {
-
-          checkbox.checked =
-            false;
-
-        }
-      );
-
-
-    (selectedRows || []).forEach(
-      row => {
-
-        const slug =
-          directionMap.get(
-            String(
-              row.direction_id
-            )
-          );
-
-
-        if (!slug) {
-          return;
-        }
-
-
-        const checkbox =
-          document.querySelector(
-            `input[name="direction"][value="${slug}"]`
-          );
-
-
-        if (checkbox) {
-
-          checkbox.checked =
-            true;
-        }
-
-      }
-    );
-
-  }
-
-
-  // ======================================
-  // ЗАВАНТАЖЕННЯ РОЛЕЙ
-  // + НАПРЯМКІВ КОРИСТУВАЧА
-  // + КЛАСУ ВОДІЯ
-  // ======================================
-
-  async function loadUserRoles() {
-
-    if (!rolesList) {
-      return;
-    }
-
-
-    rolesList.innerHTML = `
-      <div class="roles-empty">
-        Завантаження ролей...
-      </div>
-    `;
-
-
-    // ======================================
-    // РОЛІ
-    // ======================================
-
-    const {
-      data: userRoles,
-      error: userRolesError
-    } = await supabase
-      .from("user_roles")
-      .select(
-        "role_id, direction_id"
-      )
-      .eq(
-        "user_id",
-        user.id
-      );
-
-
-    if (userRolesError) {
-
-      console.error(
-        "Помилка user_roles:",
-        userRolesError
-      );
-
-
-      rolesList.innerHTML = `
-        <div class="roles-empty">
-          Не вдалося завантажити ролі.
-        </div>
-      `;
-
-
-      return;
-    }
-
-
-    // ======================================
-    // НАПРЯМКИ + КЛАСИ
-    // ======================================
-
-    const {
-      data: userDirections,
-      error: userDirectionsError
-    } = await supabase
-      .from("user_directions")
-      .select(
-        "direction_id, status, driver_class"
-      )
-      .eq(
-        "user_id",
-        user.id
-      );
-
-
-    if (userDirectionsError) {
-
-      console.error(
-        "Помилка user_directions:",
-        userDirectionsError
-      );
-
-    }
-
-
-    const safeUserDirections =
-      userDirections || [];
-
-
-    // ======================================
-    // ЯКЩО НЕМАЄ НІ РОЛЕЙ, НІ НАПРЯМКІВ
-    // ======================================
-
-    if (
-      (!userRoles || userRoles.length === 0) &&
-      safeUserDirections.length === 0
-    ) {
-
-      window.currentUserRoles =
-        [];
-
-      renderUserRoles(
-        [],
-        safeUserDirections
-      );
-
-      return;
-    }
-
-
-    // ======================================
-    // ID РОЛЕЙ
-    // ======================================
-
-    const roleIds =
-      [
-        ...new Set(
-          (userRoles || [])
-            .map(
-              item =>
-                item.role_id
-            )
-            .filter(Boolean)
-        )
-      ];
-
-
-    let roles = [];
-
-
-    if (
-      roleIds.length > 0
-    ) {
-
-      const {
-        data: rolesData,
-        error: rolesError
-      } = await supabase
-        .from("roles")
-        .select(
-          "id, code, name"
-        )
-        .in(
-          "id",
-          roleIds
-        );
-
-
-      if (rolesError) {
-
-        console.error(
-          "Помилка roles:",
-          rolesError
-        );
-
-      } else {
-
-        roles =
-          rolesData || [];
-      }
-
-    }
-
-
-    // ======================================
-    // ВСІ ID НАПРЯМКІВ
-    // ======================================
-
-    const directionIds =
-      [
-        ...new Set(
-          [
-            ...(userRoles || [])
-              .map(
-                item =>
-                  item.direction_id
-              ),
-
-            ...safeUserDirections
-              .map(
-                item =>
-                  item.direction_id
-              )
-          ]
-            .filter(
-              value =>
-                value !== null &&
-                value !== undefined
-            )
-            .map(
-              value =>
-                String(value)
-            )
-        )
-      ];
-
-
-    let directions = [];
-
-
-    if (
-      directionIds.length > 0
-    ) {
-
-      const {
-        data: directionsData,
-        error: directionsError
-      } = await supabase
-        .from("directions")
-        .select(
-          "id, name, slug"
-        )
-        .in(
-          "id",
-          directionIds
-        );
-
-
-      if (directionsError) {
-
-        console.error(
-          "Помилка directions:",
-          directionsError
-        );
-
-      } else {
-
-        directions =
-          directionsData || [];
-      }
-
-    }
-
-
-    // ======================================
-    // MAP
-    // ======================================
-
-    const rolesMap =
-      new Map(
-        roles.map(
-          role => [
-            String(
-              role.id
-            ),
-            role
-          ]
-        )
-      );
-
-
-    const directionsMap =
-      new Map(
-        directions.map(
-          direction => [
-            String(
-              direction.id
-            ),
-            direction
-          ]
-        )
-      );
-
-
-    // ======================================
-    // ПОВНІ РОЛІ
-    // ======================================
-
-    const fullRoles =
-      (userRoles || []).map(
-        item => ({
-
-          role_id:
-            item.role_id,
-
-          direction_id:
-            item.direction_id,
-
-          roles:
-            rolesMap.get(
-              String(
-                item.role_id
-              )
-            ) || null,
-
-          directions:
-            item.direction_id
-              ? directionsMap.get(
-                  String(
-                    item.direction_id
-                  )
-                ) || null
-              : null
-
-        })
-      );
-
-
-    fullRoles.sort(
-      (a, b) => {
-
-        if (
-          a.direction_id === null &&
-          b.direction_id !== null
-        ) {
-
-          return -1;
-        }
-
-
-        if (
-          a.direction_id !== null &&
-          b.direction_id === null
-        ) {
-
-          return 1;
-        }
-
-
-        return 0;
-
-      }
-    );
-
-
-    window.currentUserRoles =
-      fullRoles;
-
-
-    renderUserRoles(
-      fullRoles,
-      safeUserDirections
-    );
-
-  }
-
-
-  // ======================================
-  // ВІДОБРАЖЕННЯ РОЛЕЙ
-  // + КЛАСІВ
-  // ======================================
-
-  function renderUserRoles(
-    roles,
-    userDirections = []
-  ) {
-
-    if (!rolesList) {
-      return;
-    }
-
-
-    rolesList.innerHTML =
-      "";
-
-
-    // ======================================
-    // ГЛОБАЛЬНІ РОЛІ
-    // ======================================
-
-    const globalRoles =
-      roles.filter(
-        item =>
-          (
-            item.direction_id === null ||
-            item.direction_id === undefined
-          ) &&
-          item.roles
-      );
-
-
-    globalRoles.forEach(
-      item => {
-
-        const roleCard =
-          document.createElement(
-            "div"
-          );
-
-
-        roleCard.className =
-          "role-card global";
-
-
-        const roleName =
-          item.roles?.name ||
-          "Невідома роль";
-
-
-        const roleCode =
-          item.roles?.code ||
-          "";
-
-
-        let roleIcon =
-          "👤";
-
-
-        if (
-          roleCode === "owner"
-        ) {
-
-          roleIcon =
-            "👑";
-
-        } else if (
-          roleCode === "deputy_owner"
-        ) {
-
-          roleIcon =
-            "🛡️";
-
-        } else if (
-          roleCode === "top_manager"
-        ) {
-
-          roleIcon =
-            "🏆";
-
-        } else if (
-          roleCode === "hr_manager"
-        ) {
-
-          roleIcon =
-            "👥";
-
-        } else if (
-          roleCode === "logistics_manager"
-        ) {
-
-          roleIcon =
-            "🚛";
-        }
-
-
-        roleCard.innerHTML = `
-          <h3>
-            ${roleIcon}
-            ${roleName}
-          </h3>
-
-          <p>
-            Глобальна роль
-          </p>
-        `;
-
-
-        rolesList.appendChild(
-          roleCard
-        );
-
-      }
-    );
-
-
-    // ======================================
-    // ГРУПИ РОЛЕЙ ЗА НАПРЯМКАМИ
-    // ======================================
-
-    const directionGroups =
-      new Map();
-
-
-    roles.forEach(
-      item => {
-
-        if (
-          item.direction_id === null ||
-          item.direction_id === undefined ||
-          !item.directions ||
-          !item.roles
-        ) {
-
-          return;
-        }
-
-
-        const directionId =
-          String(
-            item.direction_id
-          );
-
-
-        if (
-          !directionGroups.has(
-            directionId
-          )
-        ) {
-
-          directionGroups.set(
-            directionId,
-            {
-              name:
-                item.directions.name ||
-                "Невідомий напрямок",
-
-              slug:
-                item.directions.slug ||
-                "",
-
-              roles: []
-            }
-          );
-
-        }
-
-
-        const group =
-          directionGroups.get(
-            directionId
-          );
-
-
-        if (
-          item.roles?.name
-        ) {
-
-          group.roles.push(
-            item.roles.name
-          );
-
-        }
-
-      }
-    );
-
-
-    // ======================================
-    // ДОДАЄМО НАПРЯМКИ З user_directions
-    // ======================================
-
-    userDirections.forEach(
-      item => {
-
-        if (
-          item.direction_id === null ||
-          item.direction_id === undefined
-        ) {
-
-          return;
-        }
-
-
-        const directionId =
-          String(
-            item.direction_id
-          );
-
-
-        const direction =
-          directionsMapForRender(
-            directionId,
-            roles,
-            userDirections
-          );
-
-
-        if (
-          !direction
-        ) {
-
-          return;
-        }
-
-
-        if (
-          !directionGroups.has(
-            directionId
-          )
-        ) {
-
-          directionGroups.set(
-            directionId,
-            {
-              name:
-                direction.name ||
-                "Невідомий напрямок",
-
-              slug:
-                direction.slug ||
-                "",
-
-              roles: []
-            }
-          );
-
-        }
-
-      }
-    );
-
-
-    // ======================================
-    // КЛАСИ ВОДІЇВ
-    // ======================================
-
-    const driverClassNames = {
-
-      A:
-        "Клас A",
-
-      B:
-        "Клас B — Старший водій",
-
-      C:
-        "Клас C",
-
-      D:
-        "Клас D",
-
-      E:
-        "Клас E"
-
-    };
-
-
-    userDirections.forEach(
-      item => {
-
-        const driverClass =
-          String(
-            item.driver_class || ""
-          )
-            .trim()
-            .toUpperCase();
-
-
-        if (
-          !driverClass ||
-          !driverClassNames[driverClass]
-        ) {
-
-          return;
-        }
-
-
-        const directionId =
-          String(
-            item.direction_id
-          );
-
-
-        const group =
-          directionGroups.get(
-            directionId
-          );
-
-
-        if (!group) {
-          return;
-        }
-
-
-        // Клас водія потрібен тільки для ETS2
-        const slug =
-          String(
-            group.slug || ""
-          )
-            .trim()
-            .toLowerCase();
-
-
-        if (
-          slug !== "ets2"
-        ) {
-
-          return;
-        }
-
-
-        group.driverClass =
-          driverClassNames[
-            driverClass
-          ];
-
-      }
-    );
-
-
-    // ======================================
-    // ВІДОБРАЖЕННЯ НАПРЯМКІВ
-    // ======================================
-
-    directionGroups.forEach(
-      group => {
-
-        if (
-          (
-            !group.roles ||
-            group.roles.length === 0
-          ) &&
-          !group.driverClass
-        ) {
-
-          return;
-        }
-
-
-        const directionCard =
-          document.createElement(
-            "div"
-          );
-
-
-        directionCard.className =
-          "role-card";
-
-
-        let html = `
-          <h3>
-            ${group.name}
-          </h3>
-        `;
-
-
-        if (
-          group.roles &&
-          group.roles.length > 0
-        ) {
-
-          html += `
-            <p>
-              Посади ${group.name}:
-              ${group.roles.join(", ")}
-            </p>
-          `;
-
-        }
-
-
-        if (
-          group.driverClass
-        ) {
-
-          html += `
-            <p>
-              Клас водія: <strong>${group.driverClass}</strong>
-            </p>
-          `;
-
-        }
-
-
-        directionCard.innerHTML =
-          html;
-
-
-        rolesList.appendChild(
-          directionCard
-        );
-
-      }
-    );
-
-
-    // ======================================
-    // ЯКЩО НІЧОГО НЕМАЄ
-    // ======================================
-
-    if (
-      !rolesList.children.length
-    ) {
-
-      rolesList.innerHTML = `
-        <div class="roles-empty">
-          У вас поки немає призначених ролей.
-        </div>
-      `;
-
-    }
-
-  }
-
-
-  // ======================================
-  // ДОПОМІЖНА ФУНКЦІЯ
-  // ЗНАХОДИМО НАПРЯМОК ДЛЯ РЕНДЕРУ
-  // ======================================
-
-  function directionsMapForRender(
-    directionId,
-    roles,
-    userDirections
-  ) {
-
-    // Спочатку шукаємо напрямок серед
-    // уже завантажених ролей.
-    const roleItem =
-      roles.find(
-        item =>
-          item.direction_id !== null &&
-          item.direction_id !== undefined &&
-          String(
-            item.direction_id
-          ) === String(
-            directionId
-          ) &&
-          item.directions
-      );
-
-
-    if (
-      roleItem?.directions
-    ) {
-
-      return roleItem.directions;
-    }
-
-
-    // Якщо ролі немає, напрямок буде
-    // завантажений окремо нижче.
-    return null;
-  }
-
-
-  // ======================================
-  // ЗБЕРЕЖЕННЯ ПРОФІЛЮ
-  // + АВАТАР
-  // + НАПРЯМКИ
+  // СОХРАНЕНИЕ ЛИЧНОГО ПРОФИЛЯ
+  //
+  // ВАЖНО:
+  // НЕ СОХРАНЯЕМ ЗДЕСЬ РОЛИ И ЧЛЕНСТВО
+  // В НАПРЯМКАХ.
+  //
+  // ИМИ УПРАВЛЯЕТ member.html
   // ======================================
 
   if (profileForm) {
@@ -1712,17 +1440,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         showMessage(
           "Збереження профілю..."
         );
-
-
-        const selectedSlugs =
-          Array.from(
-            document.querySelectorAll(
-              'input[name="direction"]:checked'
-            )
-          ).map(
-            checkbox =>
-              checkbox.value
-          );
 
 
         let uploadedAvatarUrl =
@@ -1773,6 +1490,10 @@ document.addEventListener("DOMContentLoaded", async () => {
           );
 
 
+          // -------------------------------
+          // РОЗШИРЕННЯ
+          // -------------------------------
+
           const originalExtension =
             avatarFile.name
               .split(".")
@@ -1789,9 +1510,17 @@ document.addEventListener("DOMContentLoaded", async () => {
               : "png";
 
 
+          // -------------------------------
+          // ШЛЯХ
+          // -------------------------------
+
           const filePath =
             `${user.id}/avatar-${Date.now()}.${fileExtension}`;
 
+
+          // -------------------------------
+          // UPLOAD
+          // -------------------------------
 
           const {
             error: uploadError
@@ -1818,7 +1547,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           if (uploadError) {
 
             console.error(
-              "Помилка завантаження аватара:",
+              "PROFILE: Помилка завантаження аватара:",
               uploadError
             );
 
@@ -1833,6 +1562,10 @@ document.addEventListener("DOMContentLoaded", async () => {
             return;
           }
 
+
+          // -------------------------------
+          // PUBLIC URL
+          // -------------------------------
 
           const {
             data:
@@ -1868,13 +1601,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             profileAvatar.src =
               uploadedAvatarUrl;
+
           }
 
         }
 
 
         // ==================================
-        // ЗБЕРЕЖЕННЯ ПРОФІЛЮ
+        // АВАТАР ДЛЯ ЗБЕРЕЖЕННЯ
         // ==================================
 
         const avatarToSave =
@@ -1882,6 +1616,10 @@ document.addEventListener("DOMContentLoaded", async () => {
           currentAvatarUrl ||
           null;
 
+
+        // ==================================
+        // ЗБЕРЕЖЕННЯ PROFILES
+        // ==================================
 
         const {
           error:
@@ -1896,7 +1634,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                   user.id,
 
                 display_name:
-                  displayName?.value.trim() ||
+                  displayName?.value
+                    .trim() ||
                   null,
 
                 birth_date:
@@ -1907,23 +1646,28 @@ document.addEventListener("DOMContentLoaded", async () => {
                   avatarToSave,
 
                 discord_username:
-                  discordUsername?.value.trim() ||
+                  discordUsername?.value
+                    .trim() ||
                   null,
 
                 discord_user_id:
-                  discordUserId?.value.trim() ||
+                  discordUserId?.value
+                    .trim() ||
                   null,
 
                 steam_id:
-                  steamId?.value.trim() ||
+                  steamId?.value
+                    .trim() ||
                   null,
 
                 game_nickname:
-                  gameNickname?.value.trim() ||
+                  gameNickname?.value
+                    .trim() ||
                   null,
 
                 updated_at:
-                  new Date().toISOString()
+                  new Date()
+                    .toISOString()
 
               },
               {
@@ -1936,7 +1680,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (profileError) {
 
           console.error(
-            "Помилка профілю:",
+            "PROFILE: Помилка профілю:",
             profileError
           );
 
@@ -1952,134 +1696,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
         // ==================================
-        // ЗБЕРЕЖЕННЯ НАПРЯМКІВ
-        // ==================================
-
-        let selectedDirections =
-          [];
-
-
-        if (
-          selectedSlugs.length > 0
-        ) {
-
-          const {
-            data:
-              directions,
-            error:
-              directionsError
-          } =
-            await supabase
-              .from("directions")
-              .select(
-                "id, slug"
-              )
-              .in(
-                "slug",
-                selectedSlugs
-              );
-
-
-          if (directionsError) {
-
-            showMessage(
-              "Не вдалося зберегти напрямки: " +
-              directionsError.message,
-              "error"
-            );
-
-
-            return;
-          }
-
-
-          selectedDirections =
-            directions || [];
-        }
-
-
-        // ----------------------------------
-        // ВИДАЛЯЄМО СТАРІ НАПРЯМКИ
-        // ----------------------------------
-
-        const {
-          error:
-            deleteError
-        } =
-          await supabase
-            .from(
-              "profile_directions"
-            )
-            .delete()
-            .eq(
-              "profile_id",
-              user.id
-            );
-
-
-        if (deleteError) {
-
-          showMessage(
-            deleteError.message,
-            "error"
-          );
-
-
-          return;
-        }
-
-
-        // ----------------------------------
-        // ДОДАЄМО НОВІ НАПРЯМКИ
-        // ----------------------------------
-
-        if (
-          selectedDirections.length > 0
-        ) {
-
-          const rowsToInsert =
-            selectedDirections.map(
-              direction => ({
-
-                profile_id:
-                  user.id,
-
-                direction_id:
-                  direction.id
-
-              })
-            );
-
-
-          const {
-            error:
-              insertError
-          } =
-            await supabase
-              .from(
-                "profile_directions"
-              )
-              .insert(
-                rowsToInsert
-              );
-
-
-          if (insertError) {
-
-            showMessage(
-              insertError.message,
-              "error"
-            );
-
-
-            return;
-          }
-
-        }
-
-
-        // ==================================
-        // ОНОВЛЕННЯ СТАНУ
+        // ОНОВЛЕННЯ СТАНУ АВАТАРА
         // ==================================
 
         if (
@@ -2100,6 +1717,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             previewObjectUrl =
               null;
+
           }
 
 
@@ -2107,10 +1725,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             avatarUrl.value =
               "";
+
           }
 
         }
 
+
+        // ==================================
+        // ОНОВЛЕННЯ ІМЕНІ
+        // ==================================
 
         if (
           displayName?.value.trim() &&
@@ -2119,7 +1742,18 @@ document.addEventListener("DOMContentLoaded", async () => {
 
           profileNamePreview.textContent =
             displayName.value.trim();
+
         }
+
+
+        // ==================================
+        // ПОВТОРНО ЧИТАЄМО RBAC
+        //
+        // НА ВИПАДОК, ЯКЩО ДАНІ ЗМІНИЛИСЯ
+        // В ІНШІЙ ВКЛАДЦІ.
+        // ==================================
+
+        await loadUserManagement();
 
 
         showMessage(
@@ -2154,7 +1788,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (error) {
 
           console.error(
-            "Помилка виходу:",
+            "PROFILE: Помилка виходу:",
             error
           );
 
@@ -2177,10 +1811,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   await loadProfile();
 
-  await loadDirections();
+  await loadUserManagement();
 
   await loadApplicationStatus();
 
-  await loadUserRoles();
 
 });
