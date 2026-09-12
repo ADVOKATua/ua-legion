@@ -9,7 +9,6 @@ document.addEventListener(
 
   async () => {
 
-
     const supabase =
       window.supabaseClient;
 
@@ -46,10 +45,6 @@ document.addEventListener(
 
 
     let availableRoles =
-      [];
-
-
-    let availableDirections =
       [];
 
 
@@ -123,7 +118,9 @@ document.addEventListener(
       );
 
 
+    // ======================================
     // MODAL
+    // ======================================
 
     const modal =
       document.getElementById(
@@ -155,6 +152,14 @@ document.addEventListener(
       );
 
 
+    /*
+      Старий HTML ще може містити
+      assignDirection.
+
+      У новій архітектурі він НЕ використовується,
+      тому прибираємо весь його блок з інтерфейсу.
+    */
+
     const assignDirection =
       document.getElementById(
         "assignDirection"
@@ -183,6 +188,26 @@ document.addEventListener(
       document.getElementById(
         "rejectApplication"
       );
+
+
+    // ======================================
+    // REMOVE OLD DIRECTION ROLE SELECTOR
+    // ======================================
+
+    if (assignDirection) {
+
+      const directionGroup =
+        assignDirection.closest(
+          ".admin-form-group"
+        );
+
+      if (directionGroup) {
+
+        directionGroup.remove();
+
+      }
+
+    }
 
 
     // ======================================
@@ -253,7 +278,8 @@ document.addEventListener(
     async function loadAdminProfile() {
 
       const {
-        data: profile
+        data: profile,
+        error
       } =
         await supabase
           .from("profiles")
@@ -265,6 +291,16 @@ document.addEventListener(
             currentUser.id
           )
           .maybeSingle();
+
+
+      if (error) {
+
+        console.error(
+          "Помилка завантаження профілю:",
+          error
+        );
+
+      }
 
 
       if (
@@ -283,7 +319,14 @@ document.addEventListener(
 
 
     // ======================================
-    // CHECK ADMIN ROLE
+    // CHECK ADMIN ACCESS
+    // ======================================
+    //
+    // Нова RBAC-архітектура.
+    //
+    // Не перевіряємо конкретні назви ролей.
+    // Перевіряємо permission.
+    //
     // ======================================
 
     async function checkAdminAccess() {
@@ -292,26 +335,19 @@ document.addEventListener(
         data,
         error
       } =
-        await supabase
-          .from("user_roles")
-          .select(`
-            role_id,
-
-            roles (
-              code,
-              name
-            )
-          `)
-          .eq(
-            "user_id",
-            currentUser.id
-          );
+        await supabase.rpc(
+          "has_global_permission",
+          {
+            p_permission:
+              "applications.view"
+          }
+        );
 
 
       if (error) {
 
         console.error(
-          "Помилка перевірки ролей:",
+          "Помилка перевірки permission:",
           error
         );
 
@@ -320,36 +356,25 @@ document.addEventListener(
       }
 
 
-      const allowedRoles = [
-
-        "owner",
-
-        "deputy_owner",
-
-        "top_manager",
-
-        "hr_manager"
-
-      ];
-
-
-      const hasAccess =
-        data.some(
-          item =>
-
-            allowedRoles.includes(
-              item.roles?.code
-            )
-        );
-
-
-      return hasAccess;
+      return data === true;
 
     }
 
 
     // ======================================
-    // LOAD ROLES
+    // LOAD GLOBAL ROLES
+    // ======================================
+    //
+    // Тут показуємо ТІЛЬКИ глобальні ролі.
+    //
+    // ETS2 roles:
+    // ets2_director
+    // ets2_deputy_director
+    // ets2_top_manager
+    // ...
+    //
+    // сюди НЕ потрапляють.
+    //
     // ======================================
 
     async function loadRoles() {
@@ -361,18 +386,34 @@ document.addEventListener(
         await supabase
           .from("roles")
           .select(
-            "id, code, name"
+            "id, code, name, level"
+          )
+          .eq(
+            "is_global",
+            true
+          )
+          .eq(
+            "is_active",
+            true
           )
           .order(
-            "id"
+            "level",
+            {
+              ascending: false
+            }
           );
 
 
       if (error) {
 
         console.error(
-          "Помилка завантаження ролей:",
+          "Помилка завантаження глобальних ролей:",
           error
+        );
+
+        showMessage(
+          "Не вдалося завантажити глобальні ролі.",
+          "error"
         );
 
         return;
@@ -415,82 +456,6 @@ document.addEventListener(
 
 
           assignRole.appendChild(
-            option
-          );
-
-        }
-      );
-
-    }
-
-
-    // ======================================
-    // LOAD DIRECTIONS
-    // ======================================
-
-    async function loadDirections() {
-
-      const {
-        data,
-        error
-      } =
-        await supabase
-          .from("directions")
-          .select(
-            "id, slug, name"
-          )
-          .order(
-            "id"
-          );
-
-
-      if (error) {
-
-        console.error(
-          "Помилка завантаження напрямків:",
-          error
-        );
-
-        return;
-
-      }
-
-
-      availableDirections =
-        data || [];
-
-
-      if (!assignDirection) {
-        return;
-      }
-
-
-      assignDirection.innerHTML =
-        `
-          <option value="">
-            Глобальна роль
-          </option>
-        `;
-
-
-      availableDirections.forEach(
-        direction => {
-
-          const option =
-            document.createElement(
-              "option"
-            );
-
-
-          option.value =
-            direction.id;
-
-
-          option.textContent =
-            direction.name;
-
-
-          assignDirection.appendChild(
             option
           );
 
@@ -699,7 +664,7 @@ document.addEventListener(
       return (
         statuses[status] ||
         {
-          label: status,
+          label: status || "—",
           className: ""
         }
       );
@@ -952,11 +917,15 @@ document.addEventListener(
             `;
 
 
-          card
-            .querySelector(
+          const viewButton =
+            card.querySelector(
               ".view-application"
-            )
-            .addEventListener(
+            );
+
+
+          if (viewButton) {
+
+            viewButton.addEventListener(
               "click",
 
               function () {
@@ -967,6 +936,8 @@ document.addEventListener(
 
               }
             );
+
+          }
 
 
           applicationsList.appendChild(
@@ -1232,12 +1203,13 @@ document.addEventListener(
       }
 
 
-      if (assignDirection) {
+      /*
+        assignDirection більше не скидаємо
+        і не використовуємо.
 
-        assignDirection.value =
-          "";
-
-      }
+        Напрямок ролі в новій архітектурі
+        не вибирається в GLOBAL admin panel.
+      */
 
 
       if (modal) {
@@ -1273,13 +1245,31 @@ document.addEventListener(
 
 
     // ======================================
-    // ASSIGN ROLE
+    // ASSIGN GLOBAL ROLE
+    // ======================================
+    //
+    // ВАЖНО:
+    //
+    // Ніякого прямого INSERT у user_roles.
+    //
+    // Запис виконується через:
+    //
+    // assign_global_role()
+    //
+    // RPC сама перевіряє:
+    // - авторизацію
+    // - permission
+    // - global role
+    // - hierarchy
+    // - duplicate
+    //
     // ======================================
 
     async function assignSelectedRole() {
 
       if (
         !currentApplication ||
+        !assignRole ||
         !assignRole.value
       ) {
 
@@ -1294,69 +1284,16 @@ document.addEventListener(
         );
 
 
-      const directionId =
-        assignDirection.value
-
-          ? Number(
-              assignDirection.value
-            )
-
-          : null;
-
-
-      // Перевіряємо,
-      // чи вже існує така роль
-
-      let query =
-        supabase
-          .from("user_roles")
-          .select(
-            "user_id"
-          )
-          .eq(
-            "user_id",
-            currentApplication.user_id
-          )
-          .eq(
-            "role_id",
-            roleId
-          );
-
-
       if (
-        directionId === null
+        !Number.isInteger(
+          roleId
+        ) ||
+        roleId <= 0
       ) {
 
-        query =
-          query.is(
-            "direction_id",
-            null
-          );
-
-      }
-
-      else {
-
-        query =
-          query.eq(
-            "direction_id",
-            directionId
-          );
-
-      }
-
-
-      const {
-        data: existing,
-        error: existingError
-      } =
-        await query;
-
-
-      if (existingError) {
-
-        console.error(
-          existingError
+        showMessage(
+          "Некоректна глобальна роль.",
+          "error"
         );
 
         return false;
@@ -1364,43 +1301,51 @@ document.addEventListener(
       }
 
 
-      if (
-        existing &&
-        existing.length > 0
-      ) {
+      /*
+        Додаткова перевірка на frontend:
+        вибрана роль повинна бути серед
+        завантажених GLOBAL ролей.
+      */
 
-        return true;
+      const selectedRole =
+        availableRoles.find(
+          role =>
+            Number(role.id) === roleId
+        );
+
+
+      if (!selectedRole) {
+
+        showMessage(
+          "Ця роль не є доступною глобальною роллю.",
+          "error"
+        );
+
+        return false;
 
       }
 
 
-      // ДОДАЄМО РОЛЬ
-
       const {
+        data,
         error
       } =
-        await supabase
-          .from("user_roles")
-          .insert({
-
-            user_id:
+        await supabase.rpc(
+          "assign_global_role",
+          {
+            p_user_id:
               currentApplication.user_id,
 
-
-            role_id:
-              roleId,
-
-
-            direction_id:
-              directionId
-
-          });
+            p_role_id:
+              roleId
+          }
+        );
 
 
       if (error) {
 
         console.error(
-          "Помилка призначення ролі:",
+          "Помилка призначення GLOBAL ролі:",
           error
         );
 
@@ -1413,6 +1358,46 @@ document.addEventListener(
 
 
         return false;
+
+      }
+
+
+      if (
+        !data ||
+        data.success !== true
+      ) {
+
+        console.error(
+          "RPC assign_global_role повернула:",
+          data
+        );
+
+
+        showMessage(
+          "Не вдалося призначити глобальну роль.",
+          "error"
+        );
+
+
+        return false;
+
+      }
+
+
+      console.log(
+        "GLOBAL роль призначена:",
+        data
+      );
+
+
+      if (
+        data.already_exists === true
+      ) {
+
+        showMessage(
+          "У користувача ця глобальна роль вже є.",
+          "info"
+        );
 
       }
 
@@ -1439,8 +1424,9 @@ document.addEventListener(
       }
 
 
-      // При схваленні
-      // спочатку призначаємо роль
+      // ====================================
+      // APPROVE
+      // ====================================
 
       if (
         newStatus === "approved"
@@ -1581,6 +1567,14 @@ document.addEventListener(
               .toLowerCase();
 
 
+            const gameNickname =
+              (
+                application.game_nickname ||
+                ""
+              )
+              .toLowerCase();
+
+
             const matchesSearch =
 
               !search ||
@@ -1590,6 +1584,10 @@ document.addEventListener(
               ) ||
 
               discord.includes(
+                search
+              ) ||
+
+              gameNickname.includes(
                 search
               );
 
@@ -1778,7 +1776,6 @@ document.addEventListener(
 
     await loadRoles();
 
-    await loadDirections();
 
     await loadApplications();
 
