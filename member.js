@@ -12,7 +12,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     const supabase = window.supabaseClient;
 
     if (!supabase) {
-        console.error("UA LEGION: Supabase не підключений");
+        console.error(
+            "UA LEGION: Supabase не підключений"
+        );
         return;
     }
 
@@ -51,7 +53,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     // ======================================
 
     const params =
-        new URLSearchParams(window.location.search);
+        new URLSearchParams(
+            window.location.search
+        );
 
     const targetUserId =
         params.get("user_id");
@@ -118,6 +122,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             message
         );
 
+
         if (memberError) {
 
             memberError.textContent =
@@ -133,7 +138,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         if (memberError) {
 
-            memberError.textContent = "";
+            memberError.textContent =
+                "";
 
             memberError.style.display =
                 "none";
@@ -149,6 +155,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (!element) {
             return;
         }
+
 
         element.innerHTML = `
             <div class="management-locked">
@@ -254,13 +261,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         if (memberNickname) {
 
-            const nickname =
+            memberNickname.textContent =
                 data.game_nickname ||
                 data.discord_username ||
                 "";
-
-            memberNickname.textContent =
-                nickname;
         }
 
 
@@ -343,6 +347,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 error
             );
 
+
             memberGlobalRoles.innerHTML = `
                 <span class="empty-role">
                     Не вдалося завантажити глобальні посади
@@ -360,15 +365,19 @@ document.addEventListener("DOMContentLoaded", async () => {
                     const role =
                         row.roles;
 
+
                     if (
                         !role ||
                         role.is_global !== true ||
                         role.is_active !== true
                     ) {
+
                         return null;
                     }
 
+
                     return {
+
                         role_id:
                             row.role_id,
 
@@ -482,6 +491,17 @@ document.addEventListener("DOMContentLoaded", async () => {
     // ======================================
     // LOAD ROLE OPTIONS
     // ======================================
+    // ВАЖНО:
+    // RPC повертає:
+    //
+    // {
+    //   success: true,
+    //   direction_id: 1,
+    //   roles: [...]
+    // }
+    //
+    // Тому повертаємо data.roles
+    // ======================================
 
     async function loadRoleOptions(
         directionId
@@ -510,14 +530,28 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
 
-        return Array.isArray(data)
-            ? data
+        if (
+            !data ||
+            data.success !== true
+        ) {
+
+            console.error(
+                "Role options response:",
+                data
+            );
+
+            return [];
+        }
+
+
+        return Array.isArray(data.roles)
+            ? data.roles
             : [];
     }
 
 
     // ======================================
-    // ADD TO DIRECTION
+    // ADD USER TO DIRECTION
     // ======================================
 
     async function addToDirection(
@@ -563,14 +597,17 @@ document.addEventListener("DOMContentLoaded", async () => {
                 error
             );
 
+
             alert(
                 "Помилка додавання до напрямку:\n" +
                 error.message
             );
 
+
             if (button) {
                 button.disabled = false;
             }
+
 
             return;
         }
@@ -583,9 +620,11 @@ document.addEventListener("DOMContentLoaded", async () => {
                 "Не вдалося додати користувача до напрямку"
             );
 
+
             if (button) {
                 button.disabled = false;
             }
+
 
             return;
         }
@@ -597,7 +636,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
     // ======================================
-    // REMOVE FROM DIRECTION
+    // REMOVE USER FROM DIRECTION
     // ======================================
 
     async function removeFromDirection(
@@ -644,14 +683,17 @@ document.addEventListener("DOMContentLoaded", async () => {
                 error
             );
 
+
             alert(
                 "Помилка виключення:\n" +
                 error.message
             );
 
+
             if (button) {
                 button.disabled = false;
             }
+
 
             return;
         }
@@ -664,9 +706,11 @@ document.addEventListener("DOMContentLoaded", async () => {
                 "Не вдалося виключити користувача"
             );
 
+
             if (button) {
                 button.disabled = false;
             }
+
 
             return;
         }
@@ -727,14 +771,17 @@ document.addEventListener("DOMContentLoaded", async () => {
                 error
             );
 
+
             alert(
                 "Помилка призначення посади:\n" +
                 error.message
             );
 
+
             if (button) {
                 button.disabled = false;
             }
+
 
             return;
         }
@@ -747,9 +794,11 @@ document.addEventListener("DOMContentLoaded", async () => {
                 "Не вдалося призначити посаду"
             );
 
+
             if (button) {
                 button.disabled = false;
             }
+
 
             return;
         }
@@ -811,14 +860,17 @@ document.addEventListener("DOMContentLoaded", async () => {
                 error
             );
 
+
             alert(
                 "Помилка зняття посади:\n" +
                 error.message
             );
 
+
             if (button) {
                 button.disabled = false;
             }
+
 
             return;
         }
@@ -831,9 +883,11 @@ document.addEventListener("DOMContentLoaded", async () => {
                 "Не вдалося зняти посаду"
             );
 
+
             if (button) {
                 button.disabled = false;
             }
+
 
             return;
         }
@@ -860,8 +914,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
         if (
-            !["A", "B", "C", "D", "E"]
-                .includes(driverClass)
+            ![
+                "A",
+                "B",
+                "C",
+                "D",
+                "E"
+            ].includes(driverClass)
         ) {
 
             alert(
@@ -879,12 +938,17 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         const roleIds =
             (membership.roles || [])
-                .map(role =>
-                    Number(role.role_id)
+                .map(
+                    role =>
+                        Number(
+                            role.role_id
+                        )
                 )
                 .filter(
                     roleId =>
-                        !Number.isNaN(roleId)
+                        !Number.isNaN(
+                            roleId
+                        )
                 );
 
 
@@ -913,14 +977,17 @@ document.addEventListener("DOMContentLoaded", async () => {
                 error
             );
 
+
             alert(
                 "Помилка збереження класу:\n" +
                 error.message
             );
 
+
             if (button) {
                 button.disabled = false;
             }
+
 
             return;
         }
@@ -933,9 +1000,11 @@ document.addEventListener("DOMContentLoaded", async () => {
                 "Не вдалося зберегти клас"
             );
 
+
             if (button) {
                 button.disabled = false;
             }
+
 
             return;
         }
@@ -947,7 +1016,39 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
     // ======================================
-    // RENDER DIRECTION
+    // DRIVER CLASS NAME
+    // ======================================
+
+    function getDriverClassName(
+        driverClass
+    ) {
+
+        const names = {
+
+            E:
+                "«Стажер»",
+
+            D:
+                "«Водій»",
+
+            C:
+                "«Досвідчений водій»",
+
+            B:
+                "«Старший водій»",
+
+            A:
+                "«Майстер водій»"
+        };
+
+
+        return names[driverClass] ||
+            "";
+    }
+
+
+    // ======================================
+    // RENDER ONE DIRECTION
     // ======================================
 
     async function renderDirection(
@@ -956,19 +1057,25 @@ document.addEventListener("DOMContentLoaded", async () => {
     ) {
 
         const directionId =
-            Number(direction.direction_id);
+            Number(
+                direction.direction_id
+            );
 
 
         const membership =
             (management.directions || [])
-                .find(item =>
-                    Number(item.direction_id) ===
-                    directionId
+                .find(
+                    item =>
+                        Number(
+                            item.direction_id
+                        ) ===
+                        directionId
                 );
 
 
         const isActive =
-            membership?.status === "active";
+            membership?.status ===
+            "active";
 
 
         // ==================================
@@ -1006,11 +1113,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
         // ==================================
-        // ROLES
+        // CURRENT ROLES
         // ==================================
 
         const roles =
-            Array.isArray(membership?.roles)
+            Array.isArray(
+                membership?.roles
+            )
                 ? [...membership.roles]
                 : [];
 
@@ -1027,7 +1136,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         // ==================================
 
         const card =
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
+
 
         card.className =
             "direction-card" +
@@ -1063,7 +1175,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                     <div class="direction-title">
 
                         ${escapeHtml(
-                            direction.icon || "🎮"
+                            direction.icon ||
+                            "🎮"
                         )}
 
                         ${escapeHtml(
@@ -1108,7 +1221,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                 html += `
                     <span class="role-badge">
-                        ${escapeHtml(role.name)}
+                        ${escapeHtml(
+                            role.name
+                        )}
                     </span>
                 `;
 
@@ -1130,7 +1245,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
         // ==================================
-        // ETS2 CLASS — VIEW
+        // ETS2 DRIVER CLASS — VIEW
         // ==================================
 
         if (
@@ -1139,42 +1254,42 @@ document.addEventListener("DOMContentLoaded", async () => {
         ) {
 
             const driverClass =
-                membership?.driver_class || "";
+                membership?.driver_class ||
+                "";
 
 
-            html += `
-
-                <div class="direction-class">
-
-                    🚛 Клас A — «Майстер водій»
-
-                </div>
-
-            `;
-
-
-            // Замінюємо текст класу нижче
-            // після створення картки через JS.
             if (driverClass) {
 
-                html = html.replace(
-                    "🚛 Клас A — «Майстер водій»",
-                    "🚛 Клас " +
-                    escapeHtml(driverClass) +
-                    " — " +
-                    escapeHtml(
-                        getDriverClassName(
+                html += `
+
+                    <div class="direction-class">
+
+                        🚛 Клас
+                        ${escapeHtml(
                             driverClass
-                        )
-                    )
-                );
+                        )}
+                        —
+                        ${escapeHtml(
+                            getDriverClassName(
+                                driverClass
+                            )
+                        )}
+
+                    </div>
+
+                `;
 
             } else {
 
-                html = html.replace(
-                    "🚛 Клас A — «Майстер водій»",
-                    "🚛 Клас не визначений"
-                );
+                html += `
+
+                    <div class="direction-class">
+
+                        🚛 Клас не визначений
+
+                    </div>
+
+                `;
             }
         }
 
@@ -1212,6 +1327,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             card.innerHTML =
                 html;
+
 
             directionsList.appendChild(
                 card
@@ -1267,9 +1383,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             `;
 
 
-            // --------------------------------
+            // ==================================
             // ASSIGN ROLE
-            // --------------------------------
+            // ==================================
 
             if (
                 canAssignRoles &&
@@ -1291,7 +1407,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                     );
 
 
-                if (availableRoles.length) {
+                if (
+                    availableRoles.length
+                ) {
 
                     html += `
 
@@ -1308,7 +1426,11 @@ document.addEventListener("DOMContentLoaded", async () => {
                                         option => `
                                             <option
                                                 value="${option.role_id}">
-                                                ${escapeHtml(option.name)}
+
+                                                ${escapeHtml(
+                                                    option.name
+                                                )}
+
                                             </option>
                                         `
                                     )
@@ -1335,9 +1457,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
 
 
-            // --------------------------------
-            // REMOVE ROLES
-            // --------------------------------
+            // ==================================
+            // REMOVE CURRENT ROLES
+            // ==================================
 
             if (
                 canRemoveRoles &&
@@ -1360,7 +1482,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                             class="direction-button danger remove-role-button"
                             data-role-id="${role.role_id}">
 
-                            ✕ ${escapeHtml(role.name)}
+                            ✕ ${escapeHtml(
+                                role.name
+                            )}
 
                         </button>
 
@@ -1392,7 +1516,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         ) {
 
             const driverClass =
-                membership?.driver_class || "";
+                membership?.driver_class ||
+                "";
 
 
             html += `
@@ -1402,6 +1527,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     <h4>
                         Клас водія ETS2
                     </h4>
+
 
                     <select
                         class="role-select ets2-driver-class-select">
@@ -1413,8 +1539,11 @@ document.addEventListener("DOMContentLoaded", async () => {
                                     ? "selected"
                                     : ""
                             }>
+
                             Оберіть клас
+
                         </option>
+
 
                         <option
                             value="E"
@@ -1423,8 +1552,11 @@ document.addEventListener("DOMContentLoaded", async () => {
                                     ? "selected"
                                     : ""
                             }>
+
                             Клас E — «Стажер»
+
                         </option>
+
 
                         <option
                             value="D"
@@ -1433,8 +1565,11 @@ document.addEventListener("DOMContentLoaded", async () => {
                                     ? "selected"
                                     : ""
                             }>
+
                             Клас D — «Водій»
+
                         </option>
+
 
                         <option
                             value="C"
@@ -1443,8 +1578,11 @@ document.addEventListener("DOMContentLoaded", async () => {
                                     ? "selected"
                                     : ""
                             }>
+
                             Клас C — «Досвідчений водій»
+
                         </option>
+
 
                         <option
                             value="B"
@@ -1453,8 +1591,11 @@ document.addEventListener("DOMContentLoaded", async () => {
                                     ? "selected"
                                     : ""
                             }>
+
                             Клас B — «Старший водій»
+
                         </option>
+
 
                         <option
                             value="A"
@@ -1463,7 +1604,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                                     ? "selected"
                                     : ""
                             }>
+
                             Клас A — «Майстер водій»
+
                         </option>
 
                     </select>
@@ -1511,17 +1654,22 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
 
+        // ==================================
+        // CLOSE CONTENT
+        // ==================================
+
         html += `
             </div>
         `;
 
 
         // ==================================
-        // INSERT
+        // INSERT CARD
         // ==================================
 
         card.innerHTML =
             html;
+
 
         directionsList.appendChild(
             card
@@ -1609,7 +1757,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
         // ==================================
-        // ETS2 CLASS
+        // SAVE ETS2 CLASS
         // ==================================
 
         const saveClassButton =
@@ -1671,39 +1819,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
     // ======================================
-    // DRIVER CLASS NAME
-    // ======================================
-
-    function getDriverClassName(
-        driverClass
-    ) {
-
-        const names = {
-
-            E:
-                "«Стажер»",
-
-            D:
-                "«Водій»",
-
-            C:
-                "«Досвідчений водій»",
-
-            B:
-                "«Старший водій»",
-
-            A:
-                "«Майстер водій»"
-        };
-
-
-        return names[driverClass] ||
-            "";
-    }
-
-
-    // ======================================
-    // RENDER DIRECTIONS
+    // RENDER ALL DIRECTIONS
     // ======================================
 
     async function renderDirections(
@@ -1712,6 +1828,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     ) {
 
         if (!directionsList) {
+
             throw new Error(
                 "У HTML не знайдено #directionsList"
             );
@@ -1767,6 +1884,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             ets2Management.innerHTML =
                 "";
         }
+
     }
 
 
@@ -1781,9 +1899,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             clearError();
 
 
-            // --------------------------------
-            // Loading states
-            // --------------------------------
+            // ----------------------------------
+            // LOADING
+            // ----------------------------------
 
             if (memberName) {
 
@@ -1808,32 +1926,39 @@ document.addEventListener("DOMContentLoaded", async () => {
             );
 
 
-            // --------------------------------
-            // Profile
-            // --------------------------------
+            // ----------------------------------
+            // PROFILE
+            // ----------------------------------
 
             await loadProfile();
 
 
-            // --------------------------------
-            // Global roles
-            // --------------------------------
+            // ----------------------------------
+            // GLOBAL
+            // ----------------------------------
 
             await loadGlobalRoles();
 
 
-            // --------------------------------
-            // Directions
-            // --------------------------------
+            // ----------------------------------
+            // DIRECTIONS + MANAGEMENT
+            // ----------------------------------
 
             const [
                 directions,
                 management
             ] = await Promise.all([
+
                 loadActiveDirections(),
+
                 loadDirectionManagement()
+
             ]);
 
+
+            // ----------------------------------
+            // RENDER
+            // ----------------------------------
 
             await renderDirections(
                 directions,
@@ -1841,9 +1966,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             );
 
 
-            // --------------------------------
-            // Legacy block
-            // --------------------------------
+            // ----------------------------------
+            // OLD ETS2 BLOCK
+            // ----------------------------------
 
             hideLegacyETS2Block();
 
