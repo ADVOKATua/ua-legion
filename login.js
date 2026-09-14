@@ -1,8 +1,10 @@
 // ==========================================
 // UA LEGION — Авторизація
+// login.js
 // ==========================================
 
 let isRegistration = false;
+let oauthRedirectStarted = false;
 
 
 // ==========================================
@@ -41,11 +43,22 @@ const discordLoginButton =
 
 
 // ==========================================
+// SUPABASE
+// ==========================================
+
+const supabase =
+  window.supabaseClient;
+
+
+// ==========================================
 // АДРЕСИ
 // ==========================================
 
 const HOME_URL =
   window.location.origin + "/ua-legion/";
+
+const LOGIN_URL =
+  window.location.origin + "/ua-legion/login.html";
 
 const PROFILE_URL =
   window.location.origin + "/ua-legion/profile.html";
@@ -55,15 +68,21 @@ const PROFILE_URL =
 // ПОВІДОМЛЕННЯ
 // ==========================================
 
-function showMessage(text, type = "success") {
+function showMessage(
+  text,
+  type = "success"
+) {
 
   if (!messageBox) {
     console.log(text);
     return;
   }
 
-  messageBox.textContent = text;
-  messageBox.className = "message " + type;
+  messageBox.textContent =
+    text;
+
+  messageBox.className =
+    "message " + type;
 
 }
 
@@ -72,9 +91,11 @@ function showMessage(text, type = "success") {
 // ПЕРЕВІРКА SUPABASE
 // ==========================================
 
-if (!window.supabaseClient) {
+if (!supabase) {
 
-  console.error("Supabase не підключений");
+  console.error(
+    "Supabase не підключений"
+  );
 
   showMessage(
     "Помилка підключення до сервера",
@@ -82,6 +103,220 @@ if (!window.supabaseClient) {
   );
 
 }
+
+
+// ==========================================
+// OAUTH CALLBACK
+//
+// Google / Discord
+// → login.html?oauth=1
+// → відновлення сесії
+// → profile.html
+// ==========================================
+
+async function handleOAuthCallback() {
+
+  if (!supabase) {
+    return;
+  }
+
+  const params =
+    new URLSearchParams(
+      window.location.search
+    );
+
+  const isOAuthCallback =
+    params.get("oauth") === "1";
+
+  if (!isOAuthCallback) {
+    return;
+  }
+
+  if (oauthRedirectStarted) {
+    return;
+  }
+
+  console.log(
+    "UA LEGION: OAuth callback"
+  );
+
+  showMessage(
+    "Завершення входу...",
+    "success"
+  );
+
+
+  // ----------------------------------------
+  // ЧЕКАЄМО НА ВІДНОВЛЕННЯ СЕСІЇ
+  // ----------------------------------------
+
+  const {
+    data,
+    error
+  } =
+    await supabase.auth.getSession();
+
+
+  if (error) {
+
+    console.error(
+      "OAuth session error:",
+      error
+    );
+
+    showMessage(
+      "Не вдалося відновити сесію.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  // ----------------------------------------
+  // СЕСІЯ ВЖЕ Є
+  // ----------------------------------------
+
+  if (data && data.session) {
+
+    oauthRedirectStarted =
+      true;
+
+    console.log(
+      "UA LEGION: OAuth session restored"
+    );
+
+    window.location.replace(
+      PROFILE_URL
+    );
+
+    return;
+  }
+
+
+  // ----------------------------------------
+  // ЯКЩО СЕСІЯ ЩЕ НЕ ВСТИГЛА
+  // ВИКОРИСТОВУЄМО onAuthStateChange
+  // ----------------------------------------
+
+  const {
+    data: authListener
+  } =
+    supabase.auth.onAuthStateChange(
+      (
+        event,
+        session
+      ) => {
+
+        console.log(
+          "UA LEGION AUTH EVENT:",
+          event
+        );
+
+
+        if (
+          session &&
+          !oauthRedirectStarted
+        ) {
+
+          oauthRedirectStarted =
+            true;
+
+          window.location.replace(
+            PROFILE_URL
+          );
+
+        }
+
+      }
+    );
+
+
+  // ----------------------------------------
+  // ДОДАТКОВЕ ОЧІКУВАННЯ
+  // ----------------------------------------
+
+  let attempts = 0;
+
+  const maxAttempts = 20;
+
+  const waitForSession =
+    setInterval(
+      async () => {
+
+        attempts++;
+
+
+        if (
+          oauthRedirectStarted
+        ) {
+
+          clearInterval(
+            waitForSession
+          );
+
+          return;
+        }
+
+
+        const {
+          data: sessionData
+        } =
+          await supabase.auth.getSession();
+
+
+        if (
+          sessionData &&
+          sessionData.session
+        ) {
+
+          clearInterval(
+            waitForSession
+          );
+
+          oauthRedirectStarted =
+            true;
+
+          window.location.replace(
+            PROFILE_URL
+          );
+
+          return;
+        }
+
+
+        if (
+          attempts >=
+          maxAttempts
+        ) {
+
+          clearInterval(
+            waitForSession
+          );
+
+          console.error(
+            "UA LEGION: OAuth session timeout"
+          );
+
+          showMessage(
+            "Не вдалося завершити вхід через Google. Спробуйте ще раз.",
+            "error"
+          );
+
+        }
+
+      },
+      500
+    );
+
+}
+
+
+// ==========================================
+// ЗАПУСК OAUTH CALLBACK
+// ==========================================
+
+handleOAuthCallback();
 
 
 // ==========================================
@@ -95,7 +330,8 @@ if (switchModeButton) {
     "click",
     function () {
 
-      isRegistration = !isRegistration;
+      isRegistration =
+        !isRegistration;
 
 
       if (isRegistration) {
@@ -129,8 +365,15 @@ if (switchModeButton) {
       }
 
 
-      messageBox.className = "message";
-      messageBox.textContent = "";
+      if (messageBox) {
+
+        messageBox.className =
+          "message";
+
+        messageBox.textContent =
+          "";
+
+      }
 
     }
   );
@@ -151,7 +394,7 @@ if (authForm) {
       event.preventDefault();
 
 
-      if (!window.supabaseClient) {
+      if (!supabase) {
         return;
       }
 
@@ -163,7 +406,10 @@ if (authForm) {
         passwordInput.value;
 
 
-      if (!email || !password) {
+      if (
+        !email ||
+        !password
+      ) {
 
         showMessage(
           "Заповніть email та пароль",
@@ -171,16 +417,16 @@ if (authForm) {
         );
 
         return;
-
       }
 
 
-      submitButton.disabled = true;
+      submitButton.disabled =
+        true;
 
 
-      // ======================================
+      // ====================================
       // РЕЄСТРАЦІЯ
-      // ======================================
+      // ====================================
 
       if (isRegistration) {
 
@@ -188,15 +434,19 @@ if (authForm) {
           data,
           error
         } =
-          await window.supabaseClient.auth.signUp({
+          await supabase.auth.signUp({
 
-            email: email,
-            password: password
+            email:
+              email,
+
+            password:
+              password
 
           });
 
 
-        submitButton.disabled = false;
+        submitButton.disabled =
+          false;
 
 
         if (error) {
@@ -207,14 +457,17 @@ if (authForm) {
           );
 
           return;
-
         }
 
 
-        // Якщо після реєстрації Supabase
-        // одразу створив сесію
+        // ----------------------------------
+        // СЕСІЯ СТВОРЕНА ОДРАЗУ
+        // ----------------------------------
 
-        if (data.user && data.session) {
+        if (
+          data.user &&
+          data.session
+        ) {
 
           showMessage(
             "Акаунт створено! Ласкаво просимо до UA LEGION.",
@@ -222,49 +475,56 @@ if (authForm) {
           );
 
 
-          setTimeout(() => {
+          setTimeout(
+            () => {
 
-            window.location.href =
-              PROFILE_URL;
+              window.location.replace(
+                PROFILE_URL
+              );
 
-          }, 500);
+            },
+            500
+          );
 
 
           return;
-
         }
 
 
-        // Якщо потрібне підтвердження email
+        // ----------------------------------
+        // ПОТРІБНЕ ПІДТВЕРДЖЕННЯ EMAIL
+        // ----------------------------------
 
         showMessage(
           "Акаунт створено! Перевірте свою електронну пошту та підтвердіть акаунт.",
           "success"
         );
 
-
         return;
-
       }
 
 
-      // ======================================
+      // ====================================
       // ВХІД
-      // ======================================
+      // ====================================
 
       const {
         data,
         error
       } =
-        await window.supabaseClient.auth.signInWithPassword({
+        await supabase.auth.signInWithPassword({
 
-          email: email,
-          password: password
+          email:
+            email,
+
+          password:
+            password
 
         });
 
 
-      submitButton.disabled = false;
+      submitButton.disabled =
+        false;
 
 
       if (error) {
@@ -275,7 +535,20 @@ if (authForm) {
         );
 
         return;
+      }
 
+
+      if (
+        !data ||
+        !data.session
+      ) {
+
+        showMessage(
+          "Не вдалося створити сесію.",
+          "error"
+        );
+
+        return;
       }
 
 
@@ -285,16 +558,20 @@ if (authForm) {
       );
 
 
-      // ======================================
+      // ====================================
       // ПІСЛЯ ВХОДУ → ПРОФІЛЬ
-      // ======================================
+      // ====================================
 
-      setTimeout(() => {
+      setTimeout(
+        () => {
 
-        window.location.href =
-          PROFILE_URL;
+          window.location.replace(
+            PROFILE_URL
+          );
 
-      }, 500);
+        },
+        500
+      );
 
     }
   );
@@ -312,26 +589,33 @@ if (googleLoginButton) {
     "click",
     async function () {
 
-      if (!window.supabaseClient) {
+      if (!supabase) {
         return;
       }
 
 
+      googleLoginButton.disabled =
+        true;
+
+
       const {
-        data,
         error
       } =
-        await window.supabaseClient.auth.signInWithOAuth({
+        await supabase.auth.signInWithOAuth({
 
-          provider: "google",
+          provider:
+            "google",
 
           options: {
 
-            // Після входу через Google
-            // повертаємо одразу у профіль
+            // ВАЖЛИВО:
+            // Google повертає нас
+            // спочатку на login.html
+            // для обробки OAuth-сесії.
 
             redirectTo:
-              PROFILE_URL
+              LOGIN_URL +
+              "?oauth=1"
 
           }
 
@@ -339,6 +623,9 @@ if (googleLoginButton) {
 
 
       if (error) {
+
+        googleLoginButton.disabled =
+          false;
 
         showMessage(
           error.message,
@@ -363,26 +650,32 @@ if (discordLoginButton) {
     "click",
     async function () {
 
-      if (!window.supabaseClient) {
+      if (!supabase) {
         return;
       }
 
 
+      discordLoginButton.disabled =
+        true;
+
+
       const {
-        data,
         error
       } =
-        await window.supabaseClient.auth.signInWithOAuth({
+        await supabase.auth.signInWithOAuth({
 
-          provider: "discord",
+          provider:
+            "discord",
 
           options: {
 
-            // Після входу через Discord
-            // повертаємо одразу у профіль
+            // Аналогічно Google:
+            // спочатку login.html,
+            // потім profile.html.
 
             redirectTo:
-              PROFILE_URL
+              LOGIN_URL +
+              "?oauth=1"
 
           }
 
@@ -390,6 +683,9 @@ if (discordLoginButton) {
 
 
       if (error) {
+
+        discordLoginButton.disabled =
+          false;
 
         showMessage(
           error.message,
