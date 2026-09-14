@@ -107,17 +107,17 @@ if (!client) {
 
 
 // ==========================================
-// OAUTH / AUTH SESSION
+// AUTH SESSION
 //
-// Google
-//    ↓
+// OAuth
+//   ↓
 // Supabase
-//    ↓
-// login.html#access_token...
-//    ↓
-// Supabase автоматично обробляє session
-//    ↓
-// profile.html
+//   ↓
+// profile.html#access_token...
+//   ↓
+// Supabase обробляє session
+//   ↓
+// особистий кабінет
 // ==========================================
 
 if (client) {
@@ -478,14 +478,13 @@ if (googleLoginButton) {
 
           options: {
 
+            // =================================
             // ВАЖНО:
-            // НИКАКОГО ?oauth=1
-            //
-            // Supabase вернёт пользователя
-            // сюда с #access_token...
-            //
+            // ПОСЛЕ GOOGLE СРАЗУ В PROFILE
+            // =================================
+
             redirectTo:
-              LOGIN_URL
+              PROFILE_URL
 
           }
 
@@ -564,7 +563,7 @@ if (discordLoginButton) {
           options: {
 
             redirectTo:
-              LOGIN_URL
+              PROFILE_URL
 
           }
 
