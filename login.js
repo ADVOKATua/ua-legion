@@ -15,7 +15,8 @@ let isRegistration = false;
 // SUPABASE
 // ==========================================
 
-const client = window.supabaseClient;
+const client =
+  window.supabaseClient;
 
 
 // ==========================================
@@ -106,122 +107,71 @@ if (!client) {
 
 
 // ==========================================
-// OAUTH CALLBACK
+// OAUTH / AUTH SESSION
 //
-// Google / Discord
-//        ↓
-// login.html?oauth=1
-//        ↓
-// Supabase session
-//        ↓
+// Google
+//    ↓
+// Supabase
+//    ↓
+// login.html#access_token...
+//    ↓
+// Supabase автоматично обробляє session
+//    ↓
 // profile.html
 // ==========================================
 
-async function checkOAuthCallback() {
+if (client) {
 
-  if (!client) {
-    return;
-  }
+  client.auth.onAuthStateChange(
+    (
+      event,
+      session
+    ) => {
 
-
-  const params =
-    new URLSearchParams(
-      window.location.search
-    );
-
-
-  if (
-    params.get("oauth") !== "1"
-  ) {
-
-    return;
-  }
+      console.log(
+        "UA LEGION AUTH:",
+        event
+      );
 
 
-  console.log(
-    "UA LEGION: OAuth callback"
-  );
+      // ------------------------------------
+      // КОРИСТУВАЧ УСПІШНО УВІЙШОВ
+      // ------------------------------------
 
+      if (
+        session &&
+        (
+          event === "SIGNED_IN" ||
+          event === "INITIAL_SESSION"
+        )
+      ) {
 
-  showMessage(
-    "Завершення входу...",
-    "success"
-  );
-
-
-  // ----------------------------------------
-  // ОТРИМУЄМО ПОТОЧНУ СЕСІЮ
-  // ----------------------------------------
-
-  const {
-    data,
-    error
-  } =
-    await client.auth.getSession();
-
-
-  if (error) {
-
-    console.error(
-      "UA LEGION: OAuth session error:",
-      error
-    );
-
-    showMessage(
-      "Помилка авторизації.",
-      "error"
-    );
-
-    return;
-  }
-
-
-  // ----------------------------------------
-  // СЕСІЯ Є
-  // ----------------------------------------
-
-  if (
-    data &&
-    data.session
-  ) {
-
-    console.log(
-      "UA LEGION: OAuth session OK"
-    );
-
-
-    window.location.replace(
-      PROFILE_URL
-    );
-
-
-    return;
-  }
-
-
-  // ----------------------------------------
-  // СЕСІЯ МОЖЕ БУТИ ЩЕ НЕ ГОТОВА
-  // ЧЕКАЄМО НА AUTH EVENT
-  // ----------------------------------------
-
-  const {
-    data: authData
-  } =
-    client.auth.onAuthStateChange(
-      (
-        event,
-        session
-      ) => {
-
-        console.log(
-          "UA LEGION AUTH:",
-          event
-        );
-
+        // Якщо ми вже на profile.html —
+        // нікуди не переходимо.
 
         if (
-          session
+          window.location.pathname.endsWith(
+            "/profile.html"
+          )
         ) {
+
+          return;
+        }
+
+
+        // Якщо ми на login.html —
+        // переходимо в особистий кабінет.
+
+        if (
+          window.location.pathname.endsWith(
+            "/login.html"
+          )
+        ) {
+
+          console.log(
+            "UA LEGION: session detected → profile"
+          );
+
 
           window.location.replace(
             PROFILE_URL
@@ -230,16 +180,11 @@ async function checkOAuthCallback() {
         }
 
       }
-    );
+
+    }
+  );
 
 }
-
-
-// ==========================================
-// ЗАПУСК OAUTH CALLBACK
-// ==========================================
-
-checkOAuthCallback();
 
 
 // ==========================================
@@ -388,7 +333,7 @@ if (authForm) {
 
 
         // ------------------------------------
-        // СЕСІЯ СТВОРЕНА
+        // СЕСІЯ СТВОРЕНА ОДРАЗУ
         // ------------------------------------
 
         if (
@@ -402,15 +347,8 @@ if (authForm) {
           );
 
 
-          setTimeout(
-            function () {
-
-              window.location.replace(
-                PROFILE_URL
-              );
-
-            },
-            500
+          window.location.replace(
+            PROFILE_URL
           );
 
 
@@ -490,15 +428,8 @@ if (authForm) {
       // ПРОФІЛЬ
       // --------------------------------------
 
-      setTimeout(
-        function () {
-
-          window.location.replace(
-            PROFILE_URL
-          );
-
-        },
-        500
+      window.location.replace(
+        PROFILE_URL
       );
 
     }
@@ -532,6 +463,10 @@ if (googleLoginButton) {
       );
 
 
+      // ====================================
+      // GOOGLE OAUTH
+      // ====================================
+
       const {
         data,
         error
@@ -543,9 +478,14 @@ if (googleLoginButton) {
 
           options: {
 
+            // ВАЖНО:
+            // НИКАКОГО ?oauth=1
+            //
+            // Supabase вернёт пользователя
+            // сюда с #access_token...
+            //
             redirectTo:
-              LOGIN_URL +
-              "?oauth=1"
+              LOGIN_URL
 
           }
 
@@ -563,10 +503,12 @@ if (googleLoginButton) {
         googleLoginButton.disabled =
           false;
 
+
         showMessage(
           error.message,
           "error"
         );
+
 
         console.error(
           "UA LEGION GOOGLE ERROR:",
@@ -606,6 +548,10 @@ if (discordLoginButton) {
       );
 
 
+      // ====================================
+      // DISCORD OAUTH
+      // ====================================
+
       const {
         data,
         error
@@ -618,8 +564,7 @@ if (discordLoginButton) {
           options: {
 
             redirectTo:
-              LOGIN_URL +
-              "?oauth=1"
+              LOGIN_URL
 
           }
 
@@ -637,10 +582,12 @@ if (discordLoginButton) {
         discordLoginButton.disabled =
           false;
 
+
         showMessage(
           error.message,
           "error"
         );
+
 
         console.error(
           "UA LEGION DISCORD ERROR:",
