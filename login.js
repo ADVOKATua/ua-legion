@@ -1,10 +1,34 @@
 // ==========================================
-// UA LEGION — Авторизація
+// UA LEGION — АВТОРИЗАЦІЯ
 // login.js
 // ==========================================
 
+
+// ==========================================
+// РЕЖИМ
+// ==========================================
+
 let isRegistration = false;
-let oauthRedirectStarted = false;
+
+
+// ==========================================
+// SUPABASE
+// ==========================================
+
+const client = window.supabaseClient;
+
+
+// ==========================================
+// АДРЕСИ
+// ==========================================
+
+const LOGIN_URL =
+  window.location.origin +
+  "/ua-legion/login.html";
+
+const PROFILE_URL =
+  window.location.origin +
+  "/ua-legion/profile.html";
 
 
 // ==========================================
@@ -43,28 +67,6 @@ const discordLoginButton =
 
 
 // ==========================================
-// SUPABASE
-// ==========================================
-
-const client =
-  window.supabaseClient;
-
-
-// ==========================================
-// АДРЕСИ
-// ==========================================
-
-const HOME_URL =
-  window.location.origin + "/ua-legion/";
-
-const LOGIN_URL =
-  window.location.origin + "/ua-legion/login.html";
-
-const PROFILE_URL =
-  window.location.origin + "/ua-legion/profile.html";
-
-
-// ==========================================
 // ПОВІДОМЛЕННЯ
 // ==========================================
 
@@ -83,7 +85,6 @@ function showMessage(
 
   messageBox.className =
     "message " + type;
-
 }
 
 
@@ -94,14 +95,13 @@ function showMessage(
 if (!client) {
 
   console.error(
-    "Supabase не підключений"
+    "UA LEGION: Supabase не підключений"
   );
 
   showMessage(
     "Помилка підключення до сервера",
     "error"
   );
-
 }
 
 
@@ -112,12 +112,12 @@ if (!client) {
 //        ↓
 // login.html?oauth=1
 //        ↓
-// відновлення сесії
+// Supabase session
 //        ↓
 // profile.html
 // ==========================================
 
-async function handleOAuthCallback() {
+async function checkOAuthCallback() {
 
   if (!client) {
     return;
@@ -130,16 +130,10 @@ async function handleOAuthCallback() {
     );
 
 
-  const isOAuthCallback =
-    params.get("oauth") === "1";
+  if (
+    params.get("oauth") !== "1"
+  ) {
 
-
-  if (!isOAuthCallback) {
-    return;
-  }
-
-
-  if (oauthRedirectStarted) {
     return;
   }
 
@@ -155,9 +149,9 @@ async function handleOAuthCallback() {
   );
 
 
-  // ========================================
-  // ПЕРЕВІРЯЄМО СЕСІЮ
-  // ========================================
+  // ----------------------------------------
+  // ОТРИМУЄМО ПОТОЧНУ СЕСІЮ
+  // ----------------------------------------
 
   const {
     data,
@@ -174,7 +168,7 @@ async function handleOAuthCallback() {
     );
 
     showMessage(
-      "Не вдалося відновити сесію.",
+      "Помилка авторизації.",
       "error"
     );
 
@@ -182,21 +176,17 @@ async function handleOAuthCallback() {
   }
 
 
-  // ========================================
-  // СЕСІЯ ВЖЕ Є
-  // ========================================
+  // ----------------------------------------
+  // СЕСІЯ Є
+  // ----------------------------------------
 
   if (
     data &&
     data.session
   ) {
 
-    oauthRedirectStarted =
-      true;
-
-
     console.log(
-      "UA LEGION: OAuth session restored"
+      "UA LEGION: OAuth session OK"
     );
 
 
@@ -209,13 +199,13 @@ async function handleOAuthCallback() {
   }
 
 
-  // ========================================
-  // СЕСІЇ ЩЕ НЕМАЄ
-  // ЧЕКАЄМО AUTH EVENT
-  // ========================================
+  // ----------------------------------------
+  // СЕСІЯ МОЖЕ БУТИ ЩЕ НЕ ГОТОВА
+  // ЧЕКАЄМО НА AUTH EVENT
+  // ----------------------------------------
 
   const {
-    data: authListener
+    data: authData
   } =
     client.auth.onAuthStateChange(
       (
@@ -224,19 +214,14 @@ async function handleOAuthCallback() {
       ) => {
 
         console.log(
-          "UA LEGION AUTH EVENT:",
+          "UA LEGION AUTH:",
           event
         );
 
 
         if (
-          session &&
-          !oauthRedirectStarted
+          session
         ) {
-
-          oauthRedirectStarted =
-            true;
-
 
           window.location.replace(
             PROFILE_URL
@@ -247,102 +232,6 @@ async function handleOAuthCallback() {
       }
     );
 
-
-  // ========================================
-  // ДОДАТКОВЕ ОЧІКУВАННЯ
-  // ========================================
-
-  let attempts = 0;
-
-  const maxAttempts = 20;
-
-
-  const waitForSession =
-    setInterval(
-      async () => {
-
-        attempts++;
-
-
-        // -------------------------------
-        // ВЖЕ ПЕРЕЙШЛИ
-        // -------------------------------
-
-        if (
-          oauthRedirectStarted
-        ) {
-
-          clearInterval(
-            waitForSession
-          );
-
-          return;
-        }
-
-
-        // -------------------------------
-        // ПЕРЕВІРЯЄМО СЕСІЮ
-        // -------------------------------
-
-        const {
-          data: sessionData
-        } =
-          await client.auth.getSession();
-
-
-        if (
-          sessionData &&
-          sessionData.session
-        ) {
-
-          clearInterval(
-            waitForSession
-          );
-
-
-          oauthRedirectStarted =
-            true;
-
-
-          window.location.replace(
-            PROFILE_URL
-          );
-
-
-          return;
-        }
-
-
-        // -------------------------------
-        // TIMEOUT
-        // -------------------------------
-
-        if (
-          attempts >=
-          maxAttempts
-        ) {
-
-          clearInterval(
-            waitForSession
-          );
-
-
-          console.error(
-            "UA LEGION: OAuth session timeout"
-          );
-
-
-          showMessage(
-            "Не вдалося завершити вхід через Google. Спробуйте ще раз.",
-            "error"
-          );
-
-        }
-
-      },
-      500
-    );
-
 }
 
 
@@ -350,7 +239,7 @@ async function handleOAuthCallback() {
 // ЗАПУСК OAUTH CALLBACK
 // ==========================================
 
-handleOAuthCallback();
+checkOAuthCallback();
 
 
 // ==========================================
@@ -373,14 +262,11 @@ if (switchModeButton) {
         formTitle.textContent =
           "Реєстрація UA LEGION";
 
-
         submitButton.textContent =
           "СТВОРИТИ АКАУНТ";
 
-
         switchText.textContent =
           "Вже маєте акаунт?";
-
 
         switchModeButton.textContent =
           "Увійти";
@@ -390,14 +276,11 @@ if (switchModeButton) {
         formTitle.textContent =
           "Вхід до UA LEGION";
 
-
         submitButton.textContent =
           "УВІЙТИ";
 
-
         switchText.textContent =
           "Ще немає акаунта?";
-
 
         switchModeButton.textContent =
           "Реєстрація";
@@ -409,7 +292,6 @@ if (switchModeButton) {
 
         messageBox.className =
           "message";
-
 
         messageBox.textContent =
           "";
@@ -443,14 +325,13 @@ if (authForm) {
       const email =
         emailInput.value.trim();
 
-
       const password =
         passwordInput.value;
 
 
-      // ====================================
+      // --------------------------------------
       // ПЕРЕВІРКА
-      // ====================================
+      // --------------------------------------
 
       if (
         !email ||
@@ -470,9 +351,9 @@ if (authForm) {
         true;
 
 
-      // ====================================
+      // ======================================
       // РЕЄСТРАЦІЯ
-      // ====================================
+      // ======================================
 
       if (isRegistration) {
 
@@ -506,23 +387,23 @@ if (authForm) {
         }
 
 
-        // ----------------------------------
-        // СЕСІЯ СТВОРЕНА ОДРАЗУ
-        // ----------------------------------
+        // ------------------------------------
+        // СЕСІЯ СТВОРЕНА
+        // ------------------------------------
 
         if (
-          data.user &&
+          data &&
           data.session
         ) {
 
           showMessage(
-            "Акаунт створено! Ласкаво просимо до UA LEGION.",
+            "Акаунт створено!",
             "success"
           );
 
 
           setTimeout(
-            () => {
+            function () {
 
               window.location.replace(
                 PROFILE_URL
@@ -537,12 +418,12 @@ if (authForm) {
         }
 
 
-        // ----------------------------------
+        // ------------------------------------
         // ПОТРІБНЕ ПІДТВЕРДЖЕННЯ EMAIL
-        // ----------------------------------
+        // ------------------------------------
 
         showMessage(
-          "Акаунт створено! Перевірте свою електронну пошту та підтвердіть акаунт.",
+          "Акаунт створено! Перевірте електронну пошту та підтвердіть акаунт.",
           "success"
         );
 
@@ -551,9 +432,9 @@ if (authForm) {
       }
 
 
-      // ====================================
+      // ======================================
       // ВХІД
-      // ====================================
+      // ======================================
 
       const {
         data,
@@ -585,17 +466,13 @@ if (authForm) {
       }
 
 
-      // ====================================
-      // ПЕРЕВІРКА СЕСІЇ
-      // ====================================
-
       if (
         !data ||
         !data.session
       ) {
 
         showMessage(
-          "Не вдалося створити сесію.",
+          "Сесію не створено.",
           "error"
         );
 
@@ -609,12 +486,12 @@ if (authForm) {
       );
 
 
-      // ====================================
+      // --------------------------------------
       // ПРОФІЛЬ
-      // ====================================
+      // --------------------------------------
 
       setTimeout(
-        () => {
+        function () {
 
           window.location.replace(
             PROFILE_URL
@@ -631,7 +508,7 @@ if (authForm) {
 
 
 // ==========================================
-// GOOGLE / GMAIL LOGIN
+// GOOGLE
 // ==========================================
 
 if (googleLoginButton) {
@@ -656,6 +533,7 @@ if (googleLoginButton) {
 
 
       const {
+        data,
         error
       } =
         await client.auth.signInWithOAuth({
@@ -663,18 +541,7 @@ if (googleLoginButton) {
           provider:
             "google",
 
-
           options: {
-
-            // --------------------------------
-            // ВАЖЛИВО
-            //
-            // Спочатку повертаємося
-            // на login.html
-            //
-            // Після відновлення session
-            // login.js відкриє profile.html
-            // --------------------------------
 
             redirectTo:
               LOGIN_URL +
@@ -685,15 +552,25 @@ if (googleLoginButton) {
         });
 
 
+      console.log(
+        "UA LEGION GOOGLE:",
+        data
+      );
+
+
       if (error) {
 
         googleLoginButton.disabled =
           false;
 
-
         showMessage(
           error.message,
           "error"
+        );
+
+        console.error(
+          "UA LEGION GOOGLE ERROR:",
+          error
         );
 
       }
@@ -705,7 +582,7 @@ if (googleLoginButton) {
 
 
 // ==========================================
-// DISCORD LOGIN
+// DISCORD
 // ==========================================
 
 if (discordLoginButton) {
@@ -730,13 +607,13 @@ if (discordLoginButton) {
 
 
       const {
+        data,
         error
       } =
         await client.auth.signInWithOAuth({
 
           provider:
             "discord",
-
 
           options: {
 
@@ -749,15 +626,25 @@ if (discordLoginButton) {
         });
 
 
+      console.log(
+        "UA LEGION DISCORD:",
+        data
+      );
+
+
       if (error) {
 
         discordLoginButton.disabled =
           false;
 
-
         showMessage(
           error.message,
           "error"
+        );
+
+        console.error(
+          "UA LEGION DISCORD ERROR:",
+          error
         );
 
       }
