@@ -46,7 +46,7 @@ const discordLoginButton =
 // SUPABASE
 // ==========================================
 
-const supabase =
+const client =
   window.supabaseClient;
 
 
@@ -91,7 +91,7 @@ function showMessage(
 // ПЕРЕВІРКА SUPABASE
 // ==========================================
 
-if (!supabase) {
+if (!client) {
 
   console.error(
     "Supabase не підключений"
@@ -109,36 +109,45 @@ if (!supabase) {
 // OAUTH CALLBACK
 //
 // Google / Discord
-// → login.html?oauth=1
-// → відновлення сесії
-// → profile.html
+//        ↓
+// login.html?oauth=1
+//        ↓
+// відновлення сесії
+//        ↓
+// profile.html
 // ==========================================
 
 async function handleOAuthCallback() {
 
-  if (!supabase) {
+  if (!client) {
     return;
   }
+
 
   const params =
     new URLSearchParams(
       window.location.search
     );
 
+
   const isOAuthCallback =
     params.get("oauth") === "1";
+
 
   if (!isOAuthCallback) {
     return;
   }
 
+
   if (oauthRedirectStarted) {
     return;
   }
 
+
   console.log(
     "UA LEGION: OAuth callback"
   );
+
 
   showMessage(
     "Завершення входу...",
@@ -146,21 +155,21 @@ async function handleOAuthCallback() {
   );
 
 
-  // ----------------------------------------
-  // ЧЕКАЄМО НА ВІДНОВЛЕННЯ СЕСІЇ
-  // ----------------------------------------
+  // ========================================
+  // ПЕРЕВІРЯЄМО СЕСІЮ
+  // ========================================
 
   const {
     data,
     error
   } =
-    await supabase.auth.getSession();
+    await client.auth.getSession();
 
 
   if (error) {
 
     console.error(
-      "OAuth session error:",
+      "UA LEGION: OAuth session error:",
       error
     );
 
@@ -173,36 +182,42 @@ async function handleOAuthCallback() {
   }
 
 
-  // ----------------------------------------
+  // ========================================
   // СЕСІЯ ВЖЕ Є
-  // ----------------------------------------
+  // ========================================
 
-  if (data && data.session) {
+  if (
+    data &&
+    data.session
+  ) {
 
     oauthRedirectStarted =
       true;
+
 
     console.log(
       "UA LEGION: OAuth session restored"
     );
 
+
     window.location.replace(
       PROFILE_URL
     );
+
 
     return;
   }
 
 
-  // ----------------------------------------
-  // ЯКЩО СЕСІЯ ЩЕ НЕ ВСТИГЛА
-  // ВИКОРИСТОВУЄМО onAuthStateChange
-  // ----------------------------------------
+  // ========================================
+  // СЕСІЇ ЩЕ НЕМАЄ
+  // ЧЕКАЄМО AUTH EVENT
+  // ========================================
 
   const {
     data: authListener
   } =
-    supabase.auth.onAuthStateChange(
+    client.auth.onAuthStateChange(
       (
         event,
         session
@@ -222,6 +237,7 @@ async function handleOAuthCallback() {
           oauthRedirectStarted =
             true;
 
+
           window.location.replace(
             PROFILE_URL
           );
@@ -232,13 +248,14 @@ async function handleOAuthCallback() {
     );
 
 
-  // ----------------------------------------
+  // ========================================
   // ДОДАТКОВЕ ОЧІКУВАННЯ
-  // ----------------------------------------
+  // ========================================
 
   let attempts = 0;
 
   const maxAttempts = 20;
+
 
   const waitForSession =
     setInterval(
@@ -246,6 +263,10 @@ async function handleOAuthCallback() {
 
         attempts++;
 
+
+        // -------------------------------
+        // ВЖЕ ПЕРЕЙШЛИ
+        // -------------------------------
 
         if (
           oauthRedirectStarted
@@ -259,10 +280,14 @@ async function handleOAuthCallback() {
         }
 
 
+        // -------------------------------
+        // ПЕРЕВІРЯЄМО СЕСІЮ
+        // -------------------------------
+
         const {
           data: sessionData
         } =
-          await supabase.auth.getSession();
+          await client.auth.getSession();
 
 
         if (
@@ -274,16 +299,23 @@ async function handleOAuthCallback() {
             waitForSession
           );
 
+
           oauthRedirectStarted =
             true;
+
 
           window.location.replace(
             PROFILE_URL
           );
 
+
           return;
         }
 
+
+        // -------------------------------
+        // TIMEOUT
+        // -------------------------------
 
         if (
           attempts >=
@@ -294,9 +326,11 @@ async function handleOAuthCallback() {
             waitForSession
           );
 
+
           console.error(
             "UA LEGION: OAuth session timeout"
           );
+
 
           showMessage(
             "Не вдалося завершити вхід через Google. Спробуйте ще раз.",
@@ -339,11 +373,14 @@ if (switchModeButton) {
         formTitle.textContent =
           "Реєстрація UA LEGION";
 
+
         submitButton.textContent =
           "СТВОРИТИ АКАУНТ";
 
+
         switchText.textContent =
           "Вже маєте акаунт?";
+
 
         switchModeButton.textContent =
           "Увійти";
@@ -353,11 +390,14 @@ if (switchModeButton) {
         formTitle.textContent =
           "Вхід до UA LEGION";
 
+
         submitButton.textContent =
           "УВІЙТИ";
 
+
         switchText.textContent =
           "Ще немає акаунта?";
+
 
         switchModeButton.textContent =
           "Реєстрація";
@@ -369,6 +409,7 @@ if (switchModeButton) {
 
         messageBox.className =
           "message";
+
 
         messageBox.textContent =
           "";
@@ -394,7 +435,7 @@ if (authForm) {
       event.preventDefault();
 
 
-      if (!supabase) {
+      if (!client) {
         return;
       }
 
@@ -402,9 +443,14 @@ if (authForm) {
       const email =
         emailInput.value.trim();
 
+
       const password =
         passwordInput.value;
 
+
+      // ====================================
+      // ПЕРЕВІРКА
+      // ====================================
 
       if (
         !email ||
@@ -434,7 +480,7 @@ if (authForm) {
           data,
           error
         } =
-          await supabase.auth.signUp({
+          await client.auth.signUp({
 
             email:
               email,
@@ -500,6 +546,7 @@ if (authForm) {
           "success"
         );
 
+
         return;
       }
 
@@ -512,7 +559,7 @@ if (authForm) {
         data,
         error
       } =
-        await supabase.auth.signInWithPassword({
+        await client.auth.signInWithPassword({
 
           email:
             email,
@@ -538,6 +585,10 @@ if (authForm) {
       }
 
 
+      // ====================================
+      // ПЕРЕВІРКА СЕСІЇ
+      // ====================================
+
       if (
         !data ||
         !data.session
@@ -559,7 +610,7 @@ if (authForm) {
 
 
       // ====================================
-      // ПІСЛЯ ВХОДУ → ПРОФІЛЬ
+      // ПРОФІЛЬ
       // ====================================
 
       setTimeout(
@@ -589,7 +640,7 @@ if (googleLoginButton) {
     "click",
     async function () {
 
-      if (!supabase) {
+      if (!client) {
         return;
       }
 
@@ -598,20 +649,32 @@ if (googleLoginButton) {
         true;
 
 
+      showMessage(
+        "Переходимо до Google...",
+        "success"
+      );
+
+
       const {
         error
       } =
-        await supabase.auth.signInWithOAuth({
+        await client.auth.signInWithOAuth({
 
           provider:
             "google",
 
+
           options: {
 
-            // ВАЖЛИВО:
-            // Google повертає нас
-            // спочатку на login.html
-            // для обробки OAuth-сесії.
+            // --------------------------------
+            // ВАЖЛИВО
+            //
+            // Спочатку повертаємося
+            // на login.html
+            //
+            // Після відновлення session
+            // login.js відкриє profile.html
+            // --------------------------------
 
             redirectTo:
               LOGIN_URL +
@@ -626,6 +689,7 @@ if (googleLoginButton) {
 
         googleLoginButton.disabled =
           false;
+
 
         showMessage(
           error.message,
@@ -650,7 +714,7 @@ if (discordLoginButton) {
     "click",
     async function () {
 
-      if (!supabase) {
+      if (!client) {
         return;
       }
 
@@ -659,19 +723,22 @@ if (discordLoginButton) {
         true;
 
 
+      showMessage(
+        "Переходимо до Discord...",
+        "success"
+      );
+
+
       const {
         error
       } =
-        await supabase.auth.signInWithOAuth({
+        await client.auth.signInWithOAuth({
 
           provider:
             "discord",
 
-          options: {
 
-            // Аналогічно Google:
-            // спочатку login.html,
-            // потім profile.html.
+          options: {
 
             redirectTo:
               LOGIN_URL +
@@ -686,6 +753,7 @@ if (discordLoginButton) {
 
         discordLoginButton.disabled =
           false;
+
 
         showMessage(
           error.message,
