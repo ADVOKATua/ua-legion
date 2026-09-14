@@ -41,6 +41,14 @@ const discordLoginButton =
 
 
 // ==========================================
+// ГОЛОВНА СТОРІНКА
+// ==========================================
+
+const HOME_URL =
+  window.location.origin + "/ua-legion/";
+
+
+// ==========================================
 // ПОВІДОМЛЕННЯ
 // ==========================================
 
@@ -214,7 +222,7 @@ if (authForm) {
           setTimeout(() => {
 
             window.location.href =
-              "index.html";
+              HOME_URL;
 
           }, 500);
 
@@ -281,7 +289,7 @@ if (authForm) {
       setTimeout(() => {
 
         window.location.href =
-          "index.html";
+          HOME_URL;
 
       }, 500);
 
@@ -320,8 +328,7 @@ if (googleLoginButton) {
             // повертаємо на головну
 
             redirectTo:
-              window.location.origin +
-              "/ua-legion/index.html"
+              HOME_URL
 
           }
 
@@ -372,8 +379,7 @@ if (discordLoginButton) {
             // повертаємо на головну
 
             redirectTo:
-              window.location.origin +
-              "/ua-legion/index.html"
+              HOME_URL
 
           }
 
