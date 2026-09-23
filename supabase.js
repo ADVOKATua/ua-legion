@@ -4,7 +4,7 @@
 
 // URL проєкту Supabase
 const SUPABASE_URL =
-  "https://trjneluohyxcmmyfufd.supabase.co";
+  "https://trjneluohyxcumnyfufd.supabase.co";
 
 // Publishable key Supabase
 const SUPABASE_ANON_KEY =
