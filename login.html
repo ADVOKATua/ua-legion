@@ -10,11 +10,17 @@
     content="width=device-width, initial-scale=1.0"
   >
 
-  <meta name="theme-color" content="#05070b">
+  <meta
+    name="theme-color"
+    content="#05070b"
+  >
 
   <title>Вхід — UA LEGION</title>
 
-  <link rel="stylesheet" href="style.css">
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
 
   <style>
 
@@ -26,6 +32,7 @@
       font-family: Arial, sans-serif;
     }
 
+
     .login-page {
       min-height: calc(100vh - 76px);
       display: flex;
@@ -34,6 +41,7 @@
       padding: 30px;
       box-sizing: border-box;
     }
+
 
     .login-box {
       width: 100%;
@@ -44,10 +52,12 @@
       box-sizing: border-box;
     }
 
+
     .login-logo {
       text-align: center;
       margin-bottom: 25px;
     }
+
 
     .login-logo img {
       width: 90px;
@@ -55,10 +65,12 @@
       object-fit: contain;
     }
 
+
     .login-box h1 {
       text-align: center;
       margin-bottom: 10px;
     }
+
 
     .login-description {
       text-align: center;
@@ -66,11 +78,13 @@
       margin-bottom: 30px;
     }
 
+
     .login-form {
       display: flex;
       flex-direction: column;
       gap: 15px;
     }
+
 
     .login-form input {
       width: 100%;
@@ -82,10 +96,12 @@
       font-size: 15px;
     }
 
+
     .login-form input:focus {
       outline: none;
       border-color: #f5b400;
     }
+
 
     .login-button {
       padding: 15px;
@@ -96,6 +112,13 @@
       color: #000;
       font-size: 15px;
     }
+
+
+    .login-button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
 
     .google-button {
       width: 100%;
@@ -109,6 +132,13 @@
       font-size: 15px;
     }
 
+
+    .google-button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+
     .divider {
       display: flex;
       align-items: center;
@@ -116,6 +146,7 @@
       margin: 25px 0;
       color: #777;
     }
+
 
     .divider::before,
     .divider::after {
@@ -125,11 +156,13 @@
       background: #2b3340;
     }
 
+
     .login-switch {
       text-align: center;
       margin-top: 20px;
       color: #aaa;
     }
+
 
     .login-switch button {
       background: none;
@@ -139,6 +172,7 @@
       font-weight: bold;
     }
 
+
     .message {
       margin-top: 20px;
       padding: 12px;
@@ -147,12 +181,14 @@
       font-size: 14px;
     }
 
+
     .message.error {
       display: block;
       background: rgba(220, 38, 38, 0.15);
       border: 1px solid #dc2626;
       color: #ff8a8a;
     }
+
 
     .message.success {
       display: block;
@@ -161,11 +197,21 @@
       color: #86efac;
     }
 
+
+    .message.info {
+      display: block;
+      background: rgba(245, 180, 0, 0.12);
+      border: 1px solid #f5b400;
+      color: #f5b400;
+    }
+
+
     @media (max-width: 600px) {
 
       .login-page {
         padding: 15px;
       }
+
 
       .login-box {
         padding: 25px;
@@ -181,9 +227,12 @@
 <body>
 
 
+  <!-- ====================================== -->
   <!-- ВЕРХНЄ МЕНЮ -->
+  <!-- ====================================== -->
 
   <header class="topbar">
+
 
     <a
       class="brand"
@@ -212,17 +261,35 @@
 
     <nav class="nav">
 
-      <a href="index.html">Головна</a>
 
-      <a href="about.html">Про нас</a>
+      <a href="index.html">
+        Головна
+      </a>
 
-      <a href="games.html">Ігри</a>
 
-      <a href="events.html">Події</a>
+      <a href="about.html">
+        Про нас
+      </a>
 
-      <a href="media.html">Медіа</a>
 
-      <a href="gallery.html">Галерея</a>
+      <a href="games.html">
+        Ігри
+      </a>
+
+
+      <a href="events.html">
+        Події
+      </a>
+
+
+      <a href="media.html">
+        Медіа
+      </a>
+
+
+      <a href="gallery.html">
+        Галерея
+      </a>
 
 
       <a
@@ -253,16 +320,23 @@
         Увійти / Реєстрація
       </a>
 
+
     </nav>
 
   </header>
 
 
+  <!-- ====================================== -->
   <!-- СТОРІНКА ВХОДУ -->
+  <!-- ====================================== -->
 
   <main class="login-page">
 
+
     <section class="login-box">
+
+
+      <!-- ЛОГОТИП -->
 
       <div class="login-logo">
 
@@ -274,6 +348,8 @@
       </div>
 
 
+      <!-- ЗАГОЛОВОК -->
+
       <h1 id="form-title">
         Вхід до UA LEGION
       </h1>
@@ -284,17 +360,21 @@
       </p>
 
 
+      <!-- ====================================== -->
       <!-- EMAIL / ПАРОЛЬ -->
+      <!-- ====================================== -->
 
       <form
         class="login-form"
         id="auth-form"
       >
 
+
         <input
           type="email"
           id="email"
           placeholder="Email"
+          autocomplete="email"
           required
         >
 
@@ -303,6 +383,7 @@
           type="password"
           id="password"
           placeholder="Пароль"
+          autocomplete="current-password"
           minlength="6"
           required
         >
@@ -316,15 +397,22 @@
           УВІЙТИ
         </button>
 
+
       </form>
 
+
+      <!-- ====================================== -->
+      <!-- РОЗДІЛЮВАЧ -->
+      <!-- ====================================== -->
 
       <div class="divider">
         або
       </div>
 
 
+      <!-- ====================================== -->
       <!-- GOOGLE -->
+      <!-- ====================================== -->
 
       <button
         type="button"
@@ -335,7 +423,12 @@
       </button>
 
 
+      <!-- ====================================== -->
+      <!-- ПЕРЕМИКАННЯ ВХІД / РЕЄСТРАЦІЯ -->
+      <!-- ====================================== -->
+
       <div class="login-switch">
+
 
         <span id="switch-text">
           Ще немає акаунта?
@@ -349,8 +442,13 @@
           Реєстрація
         </button>
 
+
       </div>
 
+
+      <!-- ====================================== -->
+      <!-- ПОВІДОМЛЕННЯ -->
+      <!-- ====================================== -->
 
       <div
         class="message"
@@ -363,17 +461,25 @@
   </main>
 
 
+  <!-- ====================================== -->
   <!-- SUPABASE -->
+  <!-- ====================================== -->
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+
   <script src="supabase.js"></script>
+
 
   <script src="auth-menu.js"></script>
 
-  <!-- CACHE BUSTING: завантажуємо новий login.js -->
 
-  <script src="login.js?v=3"></script>
+  <!-- ====================================== -->
+  <!-- LOGIN SYSTEM -->
+  <!-- CACHE BUSTING v4 -->
+  <!-- ====================================== -->
+
+  <script src="login.js?v=4"></script>
 
 
 </body>
