@@ -1,216 +1,508 @@
 // ======================================
-// UA LEGION — LOGIN SYSTEM
+// UA LEGION — LOGIN / REGISTER
 // login.js
 // ======================================
 
-document.addEventListener(
-  "DOMContentLoaded",
-  async () => {
+document.addEventListener("DOMContentLoaded", async () => {
 
-    // ======================================
-    // SUPABASE
-    // ======================================
+  // ======================================
+  // SUPABASE
+  // ======================================
 
-    const client = window.supabaseClient;
+  const client = window.supabaseClient;
 
-    if (!client) {
-      console.error(
-        "UA LEGION: Supabase не підключений"
-      );
+  if (!client) {
+    console.error(
+      "UA LEGION: Supabase не підключений"
+    );
+
+    return;
+  }
+
+
+  // ======================================
+  // URL
+  // ======================================
+
+  const HOME_URL =
+    window.location.origin +
+    "/ua-legion/";
+
+  const LOGIN_URL =
+    window.location.origin +
+    "/ua-legion/login.html";
+
+
+  // ======================================
+  // ELEMENTS
+  // ======================================
+
+  const authForm =
+    document.getElementById("auth-form");
+
+  const emailInput =
+    document.getElementById("email");
+
+  const passwordInput =
+    document.getElementById("password");
+
+  const submitButton =
+    document.getElementById("submit-button");
+
+  const googleButton =
+    document.getElementById("google-login");
+
+  const switchButton =
+    document.getElementById("switch-mode");
+
+  const switchText =
+    document.getElementById("switch-text");
+
+  const formTitle =
+    document.getElementById("form-title");
+
+  const message =
+    document.getElementById("message");
+
+
+  // ======================================
+  // MODE
+  // ======================================
+
+  let registerMode = false;
+
+
+  // ======================================
+  // MESSAGE
+  // ======================================
+
+  function showMessage(
+    text,
+    type = "error"
+  ) {
+
+    if (!message) {
       return;
     }
 
+    message.textContent = text;
 
-    // ======================================
-    // URL
-    // ======================================
+    message.className =
+      "message " + type;
 
-    const HOME_URL =
-      window.location.origin +
-      "/ua-legion/";
-
-    const LOGIN_URL =
-      window.location.origin +
-      "/ua-legion/login.html";
+  }
 
 
-    // ======================================
-    // ELEMENTS
-    // ======================================
+  function clearMessage() {
 
-    const loginForm =
-      document.getElementById("loginForm");
+    if (!message) {
+      return;
+    }
 
-    const registerForm =
-      document.getElementById("registerForm");
+    message.textContent = "";
 
-    const googleButton =
-      document.getElementById("googleLogin");
+    message.className =
+      "message";
 
-    const discordButton =
-      document.getElementById("discordLogin");
-
-    const message =
-      document.getElementById("message");
+  }
 
 
-    // ======================================
-    // MESSAGE
-    // ======================================
+  // ======================================
+  // UPDATE FORM MODE
+  // ======================================
 
-    function showMessage(
-      text,
-      type = "error"
+  function updateFormMode() {
+
+    clearMessage();
+
+
+    if (registerMode) {
+
+      if (formTitle) {
+        formTitle.textContent =
+          "Реєстрація в UA LEGION";
+      }
+
+      if (submitButton) {
+        submitButton.textContent =
+          "ЗАРЕЄСТРУВАТИСЯ";
+      }
+
+      if (switchText) {
+        switchText.textContent =
+          "Вже маєте акаунт?";
+      }
+
+      if (switchButton) {
+        switchButton.textContent =
+          "Увійти";
+      }
+
+    } else {
+
+      if (formTitle) {
+        formTitle.textContent =
+          "Вхід до UA LEGION";
+      }
+
+      if (submitButton) {
+        submitButton.textContent =
+          "УВІЙТИ";
+      }
+
+      if (switchText) {
+        switchText.textContent =
+          "Ще немає акаунта?";
+      }
+
+      if (switchButton) {
+        switchButton.textContent =
+          "Реєстрація";
+      }
+
+    }
+
+  }
+
+
+  // ======================================
+  // CHECK CURRENT SESSION
+  // ======================================
+
+  try {
+
+    const {
+      data,
+      error
+    } = await client.auth.getSession();
+
+
+    if (error) {
+
+      console.error(
+        "UA LEGION SESSION ERROR:",
+        error
+      );
+
+    } else if (
+      data &&
+      data.session
     ) {
 
-      if (!message) {
+      console.log(
+        "UA LEGION: existing session → homepage"
+      );
+
+      window.location.replace(
+        HOME_URL
+      );
+
+      return;
+
+    }
+
+  } catch (error) {
+
+    console.error(
+      "UA LEGION SESSION CHECK ERROR:",
+      error
+    );
+
+  }
+
+
+  // ======================================
+  // AUTH STATE CHANGE
+  // ======================================
+
+  client.auth.onAuthStateChange(
+    (event, session) => {
+
+      console.log(
+        "UA LEGION AUTH:",
+        event,
+        session
+      );
+
+
+      if (!session) {
         return;
       }
 
-      message.textContent = text;
 
-      message.className =
-        "message " + type;
-    }
+      // ------------------------------------
+      // If user is on login page
+      // ------------------------------------
 
-
-    // ======================================
-    // AUTH STATE
-    // ======================================
-
-    client.auth.onAuthStateChange(
-      (event, session) => {
+      if (
+        window.location.pathname.endsWith(
+          "/login.html"
+        )
+      ) {
 
         console.log(
-          "UA LEGION AUTH:",
-          event,
-          session
+          "UA LEGION: authenticated → homepage"
         );
 
+        window.location.replace(
+          HOME_URL
+        );
+
+      }
+
+    }
+  );
+
+
+  // ======================================
+  // SWITCH LOGIN / REGISTER
+  // ======================================
+
+  if (switchButton) {
+
+    switchButton.addEventListener(
+      "click",
+      () => {
+
+        registerMode =
+          !registerMode;
+
+        updateFormMode();
+
+      }
+    );
+
+  }
+
+
+  // ======================================
+  // EMAIL / PASSWORD
+  // ======================================
+
+  if (authForm) {
+
+    authForm.addEventListener(
+      "submit",
+      async (event) => {
+
+        event.preventDefault();
+
+        clearMessage();
+
+
+        const email =
+          emailInput
+            ? emailInput.value.trim()
+            : "";
+
+        const password =
+          passwordInput
+            ? passwordInput.value
+            : "";
+
+
+        // --------------------------------
+        // Validation
+        // --------------------------------
+
+        if (!email) {
+
+          showMessage(
+            "Введіть email.",
+            "error"
+          );
+
+          return;
+
+        }
+
+
+        if (!password) {
+
+          showMessage(
+            "Введіть пароль.",
+            "error"
+          );
+
+          return;
+
+        }
+
+
+        if (password.length < 6) {
+
+          showMessage(
+            "Пароль повинен містити щонайменше 6 символів.",
+            "error"
+          );
+
+          return;
+
+        }
+
 
         // ==================================
-        // USER LOGGED IN
+        // REGISTER
         // ==================================
 
-        if (
-          session &&
-          (
-            event === "SIGNED_IN" ||
-            event === "INITIAL_SESSION"
-          )
-        ) {
+        if (registerMode) {
 
-          const path =
-            window.location.pathname;
-
-
-          // --------------------------------
-          // Already on homepage
-          // --------------------------------
-
-          if (
-            path.endsWith(
-              "/ua-legion/"
-            ) ||
-            path.endsWith(
-              "/ua-legion/index.html"
-            )
-          ) {
-            return;
+          if (submitButton) {
+            submitButton.disabled = true;
+            submitButton.textContent =
+              "РЕЄСТРАЦІЯ...";
           }
 
 
-          // --------------------------------
-          // Login page → homepage
-          // --------------------------------
+          showMessage(
+            "Створення акаунта...",
+            "info"
+          );
 
-          if (
-            path.endsWith(
-              "/login.html"
-            )
-          ) {
+
+          try {
+
+            const {
+              data,
+              error
+            } =
+              await client.auth.signUp({
+
+                email,
+                password,
+
+                options: {
+
+                  emailRedirectTo:
+                    LOGIN_URL
+
+                }
+
+              });
+
+
+            if (error) {
+
+              console.error(
+                "UA LEGION REGISTER ERROR:",
+                error
+              );
+
+              showMessage(
+                error.message,
+                "error"
+              );
+
+              return;
+
+            }
+
 
             console.log(
-              "UA LEGION: session detected → homepage"
+              "UA LEGION REGISTER SUCCESS:",
+              data
             );
+
+
+            // --------------------------------
+            // Email confirmation enabled
+            // --------------------------------
+
+            if (
+              data &&
+              data.user &&
+              !data.session
+            ) {
+
+              showMessage(
+                "Реєстрацію виконано. Перевірте email та підтвердіть адресу.",
+                "success"
+              );
+
+              return;
+
+            }
+
+
+            // --------------------------------
+            // Session already created
+            // --------------------------------
+
+            showMessage(
+              "Реєстрацію виконано!",
+              "success"
+            );
+
 
             window.location.replace(
               HOME_URL
             );
 
-          }
+          } catch (error) {
 
-        }
-
-      }
-    );
-
-
-    // ======================================
-    // EMAIL / PASSWORD LOGIN
-    // ======================================
-
-    if (loginForm) {
-
-      loginForm.addEventListener(
-        "submit",
-        async (event) => {
-
-          event.preventDefault();
-
-
-          const emailInput =
-            document.getElementById(
-              "loginEmail"
+            console.error(
+              "UA LEGION REGISTER EXCEPTION:",
+              error
             );
-
-          const passwordInput =
-            document.getElementById(
-              "loginPassword"
-            );
-
-
-          const email =
-            emailInput
-              ? emailInput.value.trim()
-              : "";
-
-          const password =
-            passwordInput
-              ? passwordInput.value
-              : "";
-
-
-          if (
-            !email ||
-            !password
-          ) {
 
             showMessage(
-              "Введіть email та пароль.",
+              "Сталася помилка під час реєстрації.",
               "error"
             );
 
-            return;
+          } finally {
+
+            if (submitButton) {
+
+              submitButton.disabled =
+                false;
+
+              submitButton.textContent =
+                "ЗАРЕЄСТРУВАТИСЯ";
+
+            }
+
           }
 
 
-          showMessage(
-            "Виконується вхід...",
-            "info"
-          );
+          return;
 
+        }
+
+
+        // ==================================
+        // LOGIN
+        // ==================================
+
+        if (submitButton) {
+
+          submitButton.disabled =
+            true;
+
+          submitButton.textContent =
+            "ВХІД...";
+
+        }
+
+
+        showMessage(
+          "Виконується вхід...",
+          "info"
+        );
+
+
+        try {
 
           const {
             data,
             error
           } =
-            await client.auth.signInWithPassword(
-              {
-                email,
-                password
-              }
-            );
+            await client.auth.signInWithPassword({
+
+              email,
+              password
+
+            });
 
 
           if (error) {
@@ -226,6 +518,7 @@ document.addEventListener(
             );
 
             return;
+
           }
 
 
@@ -242,237 +535,133 @@ document.addEventListener(
 
 
           // ==================================
-          // EMAIL LOGIN → HOMEPAGE
+          // LOGIN → HOMEPAGE
           // ==================================
 
           window.location.replace(
             HOME_URL
           );
 
-        }
-      );
+        } catch (error) {
 
-    }
-
-
-    // ======================================
-    // GOOGLE LOGIN
-    // ======================================
-
-    if (googleButton) {
-
-      googleButton.addEventListener(
-        "click",
-        async () => {
-
-          showMessage(
-            "Перенаправлення до Google...",
-            "info"
-          );
-
-
-          const {
+          console.error(
+            "UA LEGION LOGIN EXCEPTION:",
             error
-          } =
-            await client.auth.signInWithOAuth(
-              {
-                provider: "google",
+          );
 
-                options: {
-                  redirectTo: HOME_URL
-                }
+          showMessage(
+            "Сталася помилка під час входу.",
+            "error"
+          );
 
-              }
-            );
+        } finally {
 
+          if (submitButton) {
 
-          if (error) {
+            submitButton.disabled =
+              false;
 
-            console.error(
-              "UA LEGION GOOGLE LOGIN ERROR:",
-              error
-            );
-
-            showMessage(
-              error.message,
-              "error"
-            );
+            submitButton.textContent =
+              registerMode
+                ? "ЗАРЕЄСТРУВАТИСЯ"
+                : "УВІЙТИ";
 
           }
 
         }
-      );
 
-    }
-
-
-    // ======================================
-    // DISCORD LOGIN
-    // ======================================
-
-    if (discordButton) {
-
-      discordButton.addEventListener(
-        "click",
-        async () => {
-
-          showMessage(
-            "Перенаправлення до Discord...",
-            "info"
-          );
-
-
-          const {
-            error
-          } =
-            await client.auth.signInWithOAuth(
-              {
-                provider: "discord",
-
-                options: {
-                  redirectTo: HOME_URL
-                }
-
-              }
-            );
-
-
-          if (error) {
-
-            console.error(
-              "UA LEGION DISCORD LOGIN ERROR:",
-              error
-            );
-
-            showMessage(
-              error.message,
-              "error"
-            );
-
-          }
-
-        }
-      );
-
-    }
-
-
-    // ======================================
-    // REGISTER
-    // ======================================
-
-    if (registerForm) {
-
-      registerForm.addEventListener(
-        "submit",
-        async (event) => {
-
-          event.preventDefault();
-
-
-          const emailInput =
-            document.getElementById(
-              "registerEmail"
-            );
-
-          const passwordInput =
-            document.getElementById(
-              "registerPassword"
-            );
-
-
-          const email =
-            emailInput
-              ? emailInput.value.trim()
-              : "";
-
-          const password =
-            passwordInput
-              ? passwordInput.value
-              : "";
-
-
-          if (
-            !email ||
-            !password
-          ) {
-
-            showMessage(
-              "Введіть email та пароль.",
-              "error"
-            );
-
-            return;
-          }
-
-
-          if (
-            password.length < 6
-          ) {
-
-            showMessage(
-              "Пароль повинен містити щонайменше 6 символів.",
-              "error"
-            );
-
-            return;
-          }
-
-
-          showMessage(
-            "Створення облікового запису...",
-            "info"
-          );
-
-
-          const {
-            data,
-            error
-          } =
-            await client.auth.signUp(
-              {
-                email,
-                password,
-
-                options: {
-                  emailRedirectTo:
-                    LOGIN_URL
-                }
-              }
-            );
-
-
-          if (error) {
-
-            console.error(
-              "UA LEGION REGISTER ERROR:",
-              error
-            );
-
-            showMessage(
-              error.message,
-              "error"
-            );
-
-            return;
-          }
-
-
-          console.log(
-            "UA LEGION REGISTER SUCCESS:",
-            data
-          );
-
-
-          showMessage(
-            "Реєстрацію виконано. Перевірте email для підтвердження.",
-            "success"
-          );
-
-        }
-      );
-
-    }
+      }
+    );
 
   }
-);
+
+
+  // ======================================
+  // GOOGLE LOGIN
+  // ======================================
+
+  if (googleButton) {
+
+    googleButton.addEventListener(
+      "click",
+      async () => {
+
+        clearMessage();
+
+
+        googleButton.disabled =
+          true;
+
+
+        showMessage(
+          "Перенаправлення до Google...",
+          "info"
+        );
+
+
+        try {
+
+          const {
+            error
+          } =
+            await client.auth.signInWithOAuth({
+
+              provider: "google",
+
+              options: {
+
+                redirectTo:
+                  HOME_URL
+
+              }
+
+            });
+
+
+          if (error) {
+
+            console.error(
+              "UA LEGION GOOGLE ERROR:",
+              error
+            );
+
+            showMessage(
+              error.message,
+              "error"
+            );
+
+            googleButton.disabled =
+              false;
+
+          }
+
+        } catch (error) {
+
+          console.error(
+            "UA LEGION GOOGLE EXCEPTION:",
+            error
+          );
+
+          showMessage(
+            "Не вдалося виконати вхід через Google.",
+            "error"
+          );
+
+          googleButton.disabled =
+            false;
+
+        }
+
+      }
+    );
+
+  }
+
+
+  // ======================================
+  // INITIAL FORM
+  // ======================================
+
+  updateFormMode();
+
+});
