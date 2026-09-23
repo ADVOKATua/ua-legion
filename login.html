@@ -327,6 +327,7 @@
       <!-- GOOGLE -->
 
       <button
+        type="button"
         class="google-button"
         id="google-login"
       >
@@ -341,7 +342,10 @@
         </span>
 
 
-        <button id="switch-mode">
+        <button
+          type="button"
+          id="switch-mode"
+        >
           Реєстрація
         </button>
 
@@ -367,7 +371,9 @@
 
   <script src="auth-menu.js"></script>
 
-  <script src="login.js"></script>
+  <!-- CACHE BUSTING: завантажуємо новий login.js -->
+
+  <script src="login.js?v=3"></script>
 
 
 </body>
