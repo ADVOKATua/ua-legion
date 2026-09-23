@@ -17,7 +17,6 @@ document.addEventListener(
       console.error(
         "UA LEGION: Supabase не підключений"
       );
-
       return;
     }
 
@@ -72,7 +71,6 @@ document.addEventListener(
 
       message.className =
         "message " + type;
-
     }
 
 
@@ -118,9 +116,7 @@ document.addEventListener(
               "/ua-legion/index.html"
             )
           ) {
-
             return;
-
           }
 
 
@@ -164,10 +160,14 @@ document.addEventListener(
 
 
           const emailInput =
-            document.getElementById("loginEmail");
+            document.getElementById(
+              "loginEmail"
+            );
 
           const passwordInput =
-            document.getElementById("loginPassword");
+            document.getElementById(
+              "loginPassword"
+            );
 
 
           const email =
@@ -192,7 +192,6 @@ document.addEventListener(
             );
 
             return;
-
           }
 
 
@@ -227,7 +226,6 @@ document.addEventListener(
             );
 
             return;
-
           }
 
 
@@ -281,10 +279,7 @@ document.addEventListener(
                 provider: "google",
 
                 options: {
-
-                  redirectTo:
-                    HOME_URL
-
+                  redirectTo: HOME_URL
                 }
 
               }
@@ -335,10 +330,7 @@ document.addEventListener(
                 provider: "discord",
 
                 options: {
-
-                  redirectTo:
-                    HOME_URL
-
+                  redirectTo: HOME_URL
                 }
 
               }
@@ -379,10 +371,14 @@ document.addEventListener(
 
 
           const emailInput =
-            document.getElementById("registerEmail");
+            document.getElementById(
+              "registerEmail"
+            );
 
           const passwordInput =
-            document.getElementById("registerPassword");
+            document.getElementById(
+              "registerPassword"
+            );
 
 
           const email =
@@ -407,7 +403,6 @@ document.addEventListener(
             );
 
             return;
-
           }
 
 
@@ -421,7 +416,6 @@ document.addEventListener(
             );
 
             return;
-
           }
 
 
@@ -437,17 +431,13 @@ document.addEventListener(
           } =
             await client.auth.signUp(
               {
-
                 email,
                 password,
 
                 options: {
-
                   emailRedirectTo:
                     LOGIN_URL
-
                 }
-
               }
             );
 
@@ -465,7 +455,6 @@ document.addEventListener(
             );
 
             return;
-
           }
 
 
