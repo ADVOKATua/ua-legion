@@ -15,8 +15,7 @@ let isRegistration = false;
 // SUPABASE
 // ==========================================
 
-const client =
-  window.supabaseClient;
+const client = window.supabaseClient;
 
 
 // ==========================================
@@ -81,8 +80,7 @@ function showMessage(
     return;
   }
 
-  messageBox.textContent =
-    text;
+  messageBox.textContent = text;
 
   messageBox.className =
     "message " + type;
@@ -108,16 +106,19 @@ if (!client) {
 
 // ==========================================
 // AUTH SESSION
+// ==========================================
 //
-// OAuth
+// OAuth:
+// Google
 //   ↓
 // Supabase
 //   ↓
 // profile.html#access_token...
 //   ↓
-// Supabase обробляє session
+// Supabase створює session
 //   ↓
-// особистий кабінет
+// profile.html
+//
 // ==========================================
 
 if (client) {
@@ -134,9 +135,9 @@ if (client) {
       );
 
 
-      // ------------------------------------
-      // КОРИСТУВАЧ УСПІШНО УВІЙШОВ
-      // ------------------------------------
+      // ====================================
+      // Є СЕСІЯ
+      // ====================================
 
       if (
         session &&
@@ -146,8 +147,9 @@ if (client) {
         )
       ) {
 
-        // Якщо ми вже на profile.html —
-        // нікуди не переходимо.
+        // ----------------------------------
+        // Ми вже в profile.html
+        // ----------------------------------
 
         if (
           window.location.pathname.endsWith(
@@ -156,11 +158,14 @@ if (client) {
         ) {
 
           return;
+
         }
 
 
-        // Якщо ми на login.html —
-        // переходимо в особистий кабінет.
+        // ----------------------------------
+        // Якщо знаходимось на login.html
+        // → переходимо в профіль
+        // ----------------------------------
 
         if (
           window.location.pathname.endsWith(
@@ -171,7 +176,6 @@ if (client) {
           console.log(
             "UA LEGION: session detected → profile"
           );
-
 
           window.location.replace(
             PROFILE_URL
@@ -202,36 +206,75 @@ if (switchModeButton) {
         !isRegistration;
 
 
+      // ====================================
+      // РЕЄСТРАЦІЯ
+      // ====================================
+
       if (isRegistration) {
 
-        formTitle.textContent =
-          "Реєстрація UA LEGION";
+        if (formTitle) {
 
-        submitButton.textContent =
-          "СТВОРИТИ АКАУНТ";
+          formTitle.textContent =
+            "Реєстрація UA LEGION";
 
-        switchText.textContent =
-          "Вже маєте акаунт?";
+        }
+
+        if (submitButton) {
+
+          submitButton.textContent =
+            "СТВОРИТИ АКАУНТ";
+
+        }
+
+        if (switchText) {
+
+          switchText.textContent =
+            "Вже маєте акаунт?";
+
+        }
 
         switchModeButton.textContent =
           "Увійти";
 
-      } else {
+      }
 
-        formTitle.textContent =
-          "Вхід до UA LEGION";
 
-        submitButton.textContent =
-          "УВІЙТИ";
+      // ====================================
+      // ВХІД
+      // ====================================
 
-        switchText.textContent =
-          "Ще немає акаунта?";
+      else {
+
+        if (formTitle) {
+
+          formTitle.textContent =
+            "Вхід до UA LEGION";
+
+        }
+
+        if (submitButton) {
+
+          submitButton.textContent =
+            "УВІЙТИ";
+
+        }
+
+        if (switchText) {
+
+          switchText.textContent =
+            "Ще немає акаунта?";
+
+        }
 
         switchModeButton.textContent =
           "Реєстрація";
 
       }
 
+
+      // ====================================
+      // ОЧИЩЕННЯ ПОВІДОМЛЕННЯ
+      // ====================================
 
       if (messageBox) {
 
@@ -268,15 +311,19 @@ if (authForm) {
 
 
       const email =
-        emailInput.value.trim();
+        emailInput
+          ? emailInput.value.trim()
+          : "";
 
       const password =
-        passwordInput.value;
+        passwordInput
+          ? passwordInput.value
+          : "";
 
 
-      // --------------------------------------
-      // ПЕРЕВІРКА
-      // --------------------------------------
+      // ====================================
+      // ПРОВЕРКА
+      // ====================================
 
       if (
         !email ||
@@ -289,16 +336,21 @@ if (authForm) {
         );
 
         return;
+
       }
 
 
-      submitButton.disabled =
-        true;
+      if (submitButton) {
+
+        submitButton.disabled =
+          true;
+
+      }
 
 
-      // ======================================
+      // ====================================
       // РЕЄСТРАЦІЯ
-      // ======================================
+      // ====================================
 
       if (isRegistration) {
 
@@ -317,8 +369,12 @@ if (authForm) {
           });
 
 
-        submitButton.disabled =
-          false;
+        if (submitButton) {
+
+          submitButton.disabled =
+            false;
+
+        }
 
 
         if (error) {
@@ -328,13 +384,19 @@ if (authForm) {
             "error"
           );
 
+          console.error(
+            "UA LEGION REGISTRATION ERROR:",
+            error
+          );
+
           return;
+
         }
 
 
-        // ------------------------------------
-        // СЕСІЯ СТВОРЕНА ОДРАЗУ
-        // ------------------------------------
+        // ----------------------------------
+        // СЕСІЯ СТВОРЕНА
+        // ----------------------------------
 
         if (
           data &&
@@ -353,12 +415,13 @@ if (authForm) {
 
 
           return;
+
         }
 
 
-        // ------------------------------------
+        // ----------------------------------
         // ПОТРІБНЕ ПІДТВЕРДЖЕННЯ EMAIL
-        // ------------------------------------
+        // ----------------------------------
 
         showMessage(
           "Акаунт створено! Перевірте електронну пошту та підтвердіть акаунт.",
@@ -367,12 +430,13 @@ if (authForm) {
 
 
         return;
+
       }
 
 
-      // ======================================
+      // ====================================
       // ВХІД
-      // ======================================
+      // ====================================
 
       const {
         data,
@@ -389,8 +453,12 @@ if (authForm) {
         });
 
 
-      submitButton.disabled =
-        false;
+      if (submitButton) {
+
+        submitButton.disabled =
+          false;
+
+      }
 
 
       if (error) {
@@ -400,7 +468,13 @@ if (authForm) {
           "error"
         );
 
+        console.error(
+          "UA LEGION LOGIN ERROR:",
+          error
+        );
+
         return;
+
       }
 
 
@@ -415,6 +489,7 @@ if (authForm) {
         );
 
         return;
+
       }
 
 
@@ -424,9 +499,9 @@ if (authForm) {
       );
 
 
-      // --------------------------------------
-      // ПРОФІЛЬ
-      // --------------------------------------
+      // ------------------------------------
+      // ОСНОВНИЙ КАБІНЕТ
+      // ------------------------------------
 
       window.location.replace(
         PROFILE_URL
@@ -480,7 +555,7 @@ if (googleLoginButton) {
 
             // =================================
             // ВАЖНО:
-            // ПОСЛЕ GOOGLE СРАЗУ В PROFILE
+            // ПОСЛЕ GOOGLE СРАЗУ PROFILE
             // =================================
 
             redirectTo:
