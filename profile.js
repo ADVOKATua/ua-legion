@@ -3,1461 +3,2029 @@
 // profile.js
 // ======================================
 
-document.addEventListener("DOMContentLoaded", async () => {
+document.addEventListener(
+  "DOMContentLoaded",
+  async () => {
 
-  // ======================================
-  // SUPABASE
-  // ======================================
+    // ======================================
+    // SUPABASE
+    // ======================================
 
-  const supabase = window.supabaseClient;
+    const supabase =
+      window.supabaseClient;
 
-  if (!supabase) {
+    if (!supabase) {
 
-    console.error(
-      "Supabase не підключений"
-    );
+      console.error(
+        "PROFILE: Supabase не підключений"
+      );
 
-    return;
-  }
+      return;
+    }
 
 
-  // ======================================
-  // ПЕРЕВІРКА АВТОРИЗАЦІЇ
-  // ======================================
+    // ======================================
+    // ПЕРЕВІРКА АВТОРИЗАЦІЇ
+    // ======================================
 
-  const {
-    data: {
+    const {
+      data: {
+        user
+      },
+      error: userError
+    } =
+      await supabase.auth.getUser();
+
+
+    if (
+      userError ||
+      !user
+    ) {
+
+      window.location.href =
+        "login.html";
+
+      return;
+    }
+
+
+    console.log(
+      "PROFILE: Auth user:",
       user
-    },
-    error: userError
-  } = await supabase.auth.getUser();
-
-
-  if (userError || !user) {
-
-    window.location.href =
-      "login.html";
-
-    return;
-  }
-
-
-  // ======================================
-  // ЕЛЕМЕНТИ СТОРІНКИ
-  // ======================================
-
-  const profileForm =
-    document.getElementById(
-      "profileForm"
-    );
-
-  const displayName =
-    document.getElementById(
-      "displayName"
-    );
-
-  const birthDate =
-    document.getElementById(
-      "birthDate"
-    );
-
-  const avatarUrl =
-    document.getElementById(
-      "avatarUrl"
-    );
-
-  const discordUsername =
-    document.getElementById(
-      "discordUsername"
-    );
-
-  const discordUserId =
-    document.getElementById(
-      "discordUserId"
-    );
-
-  const steamId =
-    document.getElementById(
-      "steamId"
-    );
-
-  const gameNickname =
-    document.getElementById(
-      "gameNickname"
-    );
-
-  const profileAvatar =
-    document.getElementById(
-      "profileAvatar"
-    );
-
-  const profileNamePreview =
-    document.getElementById(
-      "profileNamePreview"
-    );
-
-  const messageBox =
-    document.getElementById(
-      "profileMessage"
-    );
-
-  const logoutButton =
-    document.getElementById(
-      "logoutButton"
-    );
-
-  const rolesList =
-    document.getElementById(
-      "rolesList"
-    );
-
-  const applicationStatus =
-    document.getElementById(
-      "applicationStatus"
-    );
-
-  const joinButton =
-    document.getElementById(
-      "joinButton"
     );
 
 
-  // ======================================
-  // ЗМІННІ
-  // ======================================
+    // ======================================
+    // ЕЛЕМЕНТИ СТОРІНКИ
+    // ======================================
 
-  let currentAvatarUrl = null;
-
-  let previewObjectUrl = null;
-
-
-  // ======================================
-  // ПОВІДОМЛЕННЯ
-  // ======================================
-
-  function showMessage(
-    message,
-    type = "success"
-  ) {
-
-    if (!messageBox) {
-      return;
-    }
-
-    messageBox.textContent =
-      message;
-
-    messageBox.className =
-      "profile-message " +
-      type;
-  }
-
-
-  // ======================================
-  // БЕЗПЕЧНИЙ HTML
-  // ======================================
-
-  function escapeHtml(value) {
-
-    return String(
-      value ?? ""
-    )
-      .replace(
-        /&/g,
-        "&amp;"
-      )
-      .replace(
-        /</g,
-        "&lt;"
-      )
-      .replace(
-        />/g,
-        "&gt;"
-      )
-      .replace(
-        /"/g,
-        "&quot;"
-      )
-      .replace(
-        /'/g,
-        "&#039;"
+    const profileForm =
+      document.getElementById(
+        "profileForm"
       );
 
-  }
-
-
-  // ======================================
-  // ІКОНКА GLOBAL РОЛІ
-  // ======================================
-
-  function getGlobalRoleIcon(
-    roleCode
-  ) {
-
-    switch (roleCode) {
-
-      case "owner":
-        return "👑";
-
-      case "deputy_owner":
-        return "🛡️";
-
-      case "general_top_manager":
-        return "🏆";
-
-      case "general_hr_manager":
-        return "👥";
-
-      case "general_pr_manager":
-        return "📢";
-
-      case "general_smm_manager":
-        return "📱";
-
-      case "general_event_manager":
-        return "🎯";
-
-      case "general_technical_manager":
-        return "🔧";
-
-      default:
-        return "👤";
-
-    }
-
-  }
-
-
-  // ======================================
-  // НАЗВА КЛАСУ ETS2
-  // ======================================
-
-  function getDriverClassName(
-    driverClass
-  ) {
-
-    const names = {
-
-      A:
-        "Клас A — «Майстер водій»",
-
-      B:
-        "Клас B — «Старший водій»",
-
-      C:
-        "Клас C — «Досвідчений водій»",
-
-      D:
-        "Клас D — «Водій»",
-
-      E:
-        "Клас E — «Стажер»"
-
-    };
-
-
-    return (
-      names[driverClass] ||
-      `Клас ${driverClass}`
-    );
-
-  }
-
-
-  // ======================================
-  // ПОПЕРЕДНІЙ ПЕРЕГЛЯД АВАТАРА
-  // ======================================
-
-  if (avatarUrl) {
-
-    avatarUrl.addEventListener(
-      "change",
-      () => {
-
-        const file =
-          avatarUrl.files?.[0];
-
-
-        if (!file) {
-          return;
-        }
-
-
-        // -------------------------------
-        // ПЕРЕВІРКА ТИПУ
-        // -------------------------------
-
-        if (
-          !file.type.startsWith(
-            "image/"
-          )
-        ) {
-
-          showMessage(
-            "Будь ласка, виберіть файл зображення.",
-            "error"
-          );
-
-          avatarUrl.value =
-            "";
-
-          return;
-        }
-
-
-        // -------------------------------
-        // ПЕРЕВІРКА РОЗМІРУ
-        // -------------------------------
-
-        if (
-          file.size >
-          10 * 1024 * 1024
-        ) {
-
-          showMessage(
-            "Розмір аватара не повинен перевищувати 10 MB.",
-            "error"
-          );
-
-          avatarUrl.value =
-            "";
-
-          return;
-        }
-
-
-        // -------------------------------
-        // СТАРИЙ PREVIEW
-        // -------------------------------
-
-        if (previewObjectUrl) {
-
-          URL.revokeObjectURL(
-            previewObjectUrl
-          );
-
-        }
-
-
-        // -------------------------------
-        // НОВИЙ PREVIEW
-        // -------------------------------
-
-        previewObjectUrl =
-          URL.createObjectURL(
-            file
-          );
-
-
-        if (profileAvatar) {
-
-          profileAvatar.src =
-            previewObjectUrl;
-
-        }
-
-      }
-    );
-
-  }
-
-
-  // ======================================
-  // ЗАВАНТАЖЕННЯ ОСОБИСТОГО ПРОФІЛЮ
-  // ======================================
-
-  async function loadProfile() {
-
-    const {
-      data: profile,
-      error
-    } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq(
-        "id",
-        user.id
-      )
-      .maybeSingle();
-
-
-    if (error) {
-
-      console.error(
-        "PROFILE: Помилка завантаження профілю:",
-        error
+    const displayName =
+      document.getElementById(
+        "displayName"
       );
 
-      showMessage(
-        error.message,
-        "error"
+    const birthDate =
+      document.getElementById(
+        "birthDate"
       );
 
-      return;
-    }
+    const avatarUrl =
+      document.getElementById(
+        "avatarUrl"
+      );
+
+    const discordUsername =
+      document.getElementById(
+        "discordUsername"
+      );
+
+    const discordUserId =
+      document.getElementById(
+        "discordUserId"
+      );
+
+    const steamId =
+      document.getElementById(
+        "steamId"
+      );
+
+    const gameNickname =
+      document.getElementById(
+        "gameNickname"
+      );
+
+    const profileAvatar =
+      document.getElementById(
+        "profileAvatar"
+      );
+
+    const profileNamePreview =
+      document.getElementById(
+        "profileNamePreview"
+      );
+
+    const messageBox =
+      document.getElementById(
+        "profileMessage"
+      );
+
+    const logoutButton =
+      document.getElementById(
+        "logoutButton"
+      );
+
+    const rolesList =
+      document.getElementById(
+        "rolesList"
+      );
+
+    const applicationStatus =
+      document.getElementById(
+        "applicationStatus"
+      );
+
+    const joinButton =
+      document.getElementById(
+        "joinButton"
+      );
 
 
-    if (!profile) {
-      return;
-    }
+    // ======================================
+    // ЗМІННІ
+    // ======================================
 
-
-    // ==================================
-    // ІМ'Я
-    // ==================================
-
-    if (displayName) {
-
-      displayName.value =
-        profile.display_name || "";
-
-    }
-
-
-    if (profileNamePreview) {
-
-      profileNamePreview.textContent =
-        profile.display_name ||
-        "Учасник UA LEGION";
-
-    }
-
-
-    // ==================================
-    // ДАТА НАРОДЖЕННЯ
-    // ==================================
-
-    if (birthDate) {
-
-      birthDate.value =
-        profile.birth_date || "";
-
-    }
-
-
-    // ==================================
-    // АВАТАР
-    // ==================================
-
-    currentAvatarUrl =
-      profile.avatar_url ||
+    let currentAvatarUrl =
       null;
 
-
-    if (
-      currentAvatarUrl &&
-      profileAvatar
-    ) {
-
-      profileAvatar.src =
-        currentAvatarUrl;
-
-    }
-
-
-    // ==================================
-    // DISCORD
-    // ==================================
-
-    if (discordUsername) {
-
-      discordUsername.value =
-        profile.discord_username ||
-        "";
-
-    }
-
-
-    // ==================================
-    // DISCORD ID
-    // ==================================
-
-    if (discordUserId) {
-
-      discordUserId.value =
-        profile.discord_user_id ||
-        "";
-
-    }
-
-
-    // ==================================
-    // STEAM ID
-    // ==================================
-
-    if (steamId) {
-
-      steamId.value =
-        profile.steam_id ||
-        "";
-
-    }
-
-
-    // ==================================
-    // ІГРОВИЙ НІК
-    // ==================================
-
-    if (gameNickname) {
-
-      gameNickname.value =
-        profile.game_nickname ||
-        "";
-
-    }
-
-  }
-
-
-  // ======================================
-  // ЗАВАНТАЖЕННЯ RBAC
-  //
-  // ЄДИНЕ ДЖЕРЕЛО:
-  // get_user_direction_management()
-  // ======================================
-
-  async function loadUserManagement() {
-
-    if (!rolesList) {
-      return null;
-    }
-
-
-    rolesList.innerHTML = `
-      <div class="roles-empty">
-        Завантаження ролей...
-      </div>
-    `;
-
-
-    const {
-      data,
-      error
-    } = await supabase.rpc(
-      "get_user_direction_management",
-      {
-        p_target_user_id:
-          user.id
-      }
-    );
-
-
-    if (error) {
-
-      console.error(
-        "PROFILE: Помилка get_user_direction_management:",
-        error
-      );
-
-      rolesList.innerHTML = `
-        <div class="roles-empty">
-          Не вдалося завантажити ролі та напрямки.
-        </div>
-      `;
-
-      return null;
-    }
-
-
-    if (
-      !data ||
-      data.success === false
-    ) {
-
-      console.error(
-        "PROFILE: Некоректна відповідь RBAC:",
-        data
-      );
-
-      rolesList.innerHTML = `
-        <div class="roles-empty">
-          Не вдалося отримати інформацію про ролі.
-        </div>
-      `;
-
-      return null;
-    }
-
-
-    console.log(
-      "PROFILE: RBAC:",
-      data
-    );
-
-
-    // ----------------------------------
-    // ЗБЕРІГАЄМО СТАН
-    // ----------------------------------
-
-    window.currentUserRoles =
-      data;
-
-
-    // ----------------------------------
-    // РЕНДЕР
-    // ----------------------------------
-
-    renderUserRoles(
-      data.global_roles || [],
-      data.directions || []
-    );
-
-
-    // ----------------------------------
-    // ОНОВЛЮЄМО НАПРЯМКИ
-    // ----------------------------------
-
-    renderManagedDirections(
-      data.directions || []
-    );
-
-
-    return data;
-
-  }
-
-
-  // ======================================
-  // ВІДОБРАЖЕННЯ РОЛЕЙ
-  // + НАПРЯМКІВ
-  // + КЛАСУ ETS2
-  // ======================================
-
-  function renderUserRoles(
-    globalRoles = [],
-    directions = []
-  ) {
-
-    if (!rolesList) {
-      return;
-    }
-
-
-    rolesList.innerHTML =
-      "";
-
-
-    // ==================================
-    // GLOBAL РОЛІ
-    // ==================================
-
-    globalRoles.forEach(
-      role => {
-
-        const roleCard =
-          document.createElement(
-            "div"
-          );
-
-
-        roleCard.className =
-          "role-card global";
-
-
-        const roleIcon =
-          getGlobalRoleIcon(
-            role.code
-          );
-
-
-        const roleName =
-          escapeHtml(
-            role.name ||
-            "Невідома роль"
-          );
-
-
-        roleCard.innerHTML = `
-          <h3>
-            ${roleIcon}
-            ${roleName}
-          </h3>
-
-          <p>
-            Глобальна роль
-          </p>
-        `;
-
-
-        rolesList.appendChild(
-          roleCard
-        );
-
-      }
-    );
-
-
-    // ==================================
-    // НАПРЯМКИ
-    // ==================================
-
-    directions.forEach(
-      direction => {
-
-        // --------------------------------
-        // ВРАХОВУЄМО ТІЛЬКИ ACTIVE
-        // --------------------------------
-
-        if (
-          direction.status &&
-          direction.status !== "active"
-        ) {
-
-          return;
-        }
-
-
-        const directionCard =
-          document.createElement(
-            "div"
-          );
-
-
-        directionCard.className =
-          "role-card";
-
-
-        const icon =
-          escapeHtml(
-            direction.icon ||
-            "📍"
-          );
-
-
-        const name =
-          escapeHtml(
-            direction.name ||
-            direction.slug ||
-            "Невідомий напрямок"
-          );
-
-
-        let html = `
-          <h3>
-            ${icon}
-            ${name}
-          </h3>
-        `;
-
-
-        // --------------------------------
-        // ПОСАДИ
-        // --------------------------------
-
-        const directionRoles =
-          Array.isArray(
-            direction.roles
-          )
-            ? direction.roles
-            : [];
-
-
-        if (
-          directionRoles.length > 0
-        ) {
-
-          const roleNames =
-            directionRoles
-              .map(
-                role =>
-                  escapeHtml(
-                    role.name ||
-                    role.code ||
-                    "Невідома посада"
-                  )
-              )
-              .join(
-                ", "
-              );
-
-
-          html += `
-            <p>
-              Посади:
-              ${roleNames}
-            </p>
-          `;
-
-        } else {
-
-          html += `
-            <p>
-              Учасник напрямку
-            </p>
-          `;
-
-        }
-
-
-        // --------------------------------
-        // КЛАС ETS2
-        // --------------------------------
-
-        const directionSlug =
-          String(
-            direction.slug ||
-            direction.code ||
-            ""
-          )
-            .trim()
-            .toLowerCase();
-
-
-        if (
-          directionSlug === "ets2" &&
-          direction.driver_class
-        ) {
-
-          const driverClass =
-            String(
-              direction.driver_class
-            )
-              .trim()
-              .toUpperCase();
-
-
-          const driverClassName =
-            getDriverClassName(
-              driverClass
-            );
-
-
-          html += `
-            <p>
-              Клас водія:
-              <strong>
-                ${escapeHtml(
-                  driverClassName
-                )}
-              </strong>
-            </p>
-          `;
-
-        }
-
-
-        directionCard.innerHTML =
-          html;
-
-
-        rolesList.appendChild(
-          directionCard
-        );
-
-      }
-    );
-
-
-    // ==================================
-    // НІЧОГО НЕМАЄ
-    // ==================================
-
-    if (
-      !rolesList.children.length
-    ) {
-
-      rolesList.innerHTML = `
-        <div class="roles-empty">
-          У вас поки немає призначених ролей.
-        </div>
-      `;
-
-    }
-
-  }
-
-
-  // ======================================
-  // НАПРЯМКИ В ОСОБИСТОМУ ПРОФІЛІ
-  //
-  // ТЕПЕР ЦЕ ТІЛЬКИ ВІДОБРАЖЕННЯ.
-  //
-  // КЕРУВАННЯ ЧЛЕНСТВОМ:
-  // member.html
-  //
-  // ДЖЕРЕЛО:
-  // user_directions
-  // ======================================
-
-  function renderManagedDirections(
-    directions = []
-  ) {
-
-    const checkboxes =
-      document.querySelectorAll(
-        'input[name="direction"]'
-      );
-
-
-    if (!checkboxes.length) {
-      return;
-    }
-
-
-    // ----------------------------------
-    // ОЧИЩАЄМО СТАН
-    // ----------------------------------
-
-    checkboxes.forEach(
-      checkbox => {
-
-        checkbox.checked =
-          false;
-
-        // Напрямками керує адміністрація
-        checkbox.disabled =
-          true;
-
-      }
-    );
-
-
-    // ----------------------------------
-    // ВСТАНОВЛЮЄМО ACTIVE
-    // ----------------------------------
-
-    directions.forEach(
-      direction => {
-
-        if (
-          direction.status &&
-          direction.status !== "active"
-        ) {
-
-          return;
-        }
-
-
-        const slug =
-          String(
-            direction.slug ||
-            direction.code ||
-            ""
-          )
-            .trim()
-            .toLowerCase();
-
-
-        if (!slug) {
-          return;
-        }
-
-
-        const checkbox =
-          document.querySelector(
-            `input[name="direction"][value="${CSS.escape(slug)}"]`
-          );
-
-
-        if (checkbox) {
-
-          checkbox.checked =
-            true;
-
-        }
-
-      }
-    );
-
-  }
-
-
-  // ======================================
-  // СТАТУС ЗАЯВКИ
-  //
-  // ПОКАЗУЄМО ОСТАННЮ ЗАЯВКУ
-  // ======================================
-
-  async function loadApplicationStatus() {
-
-    if (!applicationStatus) {
-      return;
-    }
-
-
-    applicationStatus.className =
-      "application-card";
-
-
-    applicationStatus.innerHTML = `
-      <h3>
-        📝 Моя заявка
-      </h3>
-
-      <p>
-        Завантаження заявки...
-      </p>
-    `;
-
-
-    const {
-      data: applications,
-      error
-    } = await supabase
-      .from("applications")
-      .select(`
-        id,
-        direction,
-        directions,
-        status,
-        created_at
-      `)
-      .eq(
-        "user_id",
-        user.id
-      )
-      .order(
-        "created_at",
-        {
-          ascending: false
-        }
-      )
-      .limit(1);
-
-
-    if (error) {
-
-      console.error(
-        "PROFILE: Помилка завантаження заявки:",
-        error
-      );
-
-
-      applicationStatus.className =
-        "application-card rejected";
-
-
-      applicationStatus.innerHTML = `
-        <h3>
-          ⚠️ Не вдалося перевірити заявку
-        </h3>
-
-        <p>
-          ${escapeHtml(
-            error.message
-          )}
-        </p>
-      `;
-
-
-      return;
-    }
-
-
-    // ==================================
-    // ЗАЯВОК НЕМАЄ
-    // ==================================
-
-    if (
-      !applications ||
-      applications.length === 0
-    ) {
-
-      applicationStatus.className =
-        "application-card none";
-
-
-      applicationStatus.innerHTML = `
-        <h3>
-          📝 Заявок ще немає
-        </h3>
-
-        <p>
-          Ви можете подати заявку
-          на вступ до UA LEGION.
-        </p>
-      `;
-
-
-      if (joinButton) {
-
-        joinButton.style.display =
-          "inline-flex";
-
-        joinButton.href =
-          "join.html";
-
-        joinButton.textContent =
-          "📝 ПОДАТИ ЗАЯВКУ";
-
-      }
-
-
-      return;
-    }
-
-
-    const application =
-      applications[0];
-
-
-    console.log(
-      "PROFILE: Остання заявка:",
-      application
-    );
-
-
-    // ==================================
-    // ВИЗНАЧАЄМО НАПРЯМОК
-    // ==================================
-
-    let direction =
+    let previewObjectUrl =
       null;
 
+    let currentProfile =
+      null;
 
-    if (
-      application.direction !==
-        null &&
-      application.direction !==
-        undefined &&
-      String(
-        application.direction
-      ).trim() !== ""
+    let currentManagement =
+      null;
+
+    let currentApplications =
+      [];
+
+    let currentDirections =
+      [];
+
+
+    // ======================================
+    // ПОВІДОМЛЕННЯ
+    // ======================================
+
+    function showMessage(
+      message,
+      type = "success"
     ) {
 
-      direction =
-        String(
-          application.direction
-        )
-          .trim()
-          .toLowerCase();
-
-    }
-
-
-    if (
-      !direction &&
-      Array.isArray(
-        application.directions
-      ) &&
-      application.directions.length >
-        0
-    ) {
-
-      direction =
-        String(
-          application.directions[0]
-        )
-          .trim()
-          .toLowerCase();
-
-    }
-
-
-    if (
-      !direction &&
-      typeof application.directions ===
-        "string"
-    ) {
-
-      const value =
-        application.directions.trim();
-
-
-      if (value) {
-
-        direction =
-          value
-            .replace(
-              /[\[\]"]/g,
-              ""
-            )
-            .trim()
-            .toLowerCase();
-
+      if (!messageBox) {
+        return;
       }
 
+      messageBox.textContent =
+        message;
+
+      messageBox.className =
+        "profile-message " +
+        type;
     }
 
 
-    // ==================================
-    // НАЗВИ НАПРЯМКІВ
-    // ==================================
+    // ======================================
+    // БЕЗПЕЧНИЙ HTML
+    // ======================================
 
-    const directionNames = {
+    function escapeHtml(
+      value
+    ) {
 
-      ets2:
-        "🚛 ETS2 / TruckersMP",
-
-      "ets2 / truckersmp":
-        "🚛 ETS2 / TruckersMP",
-
-      ets:
-        "🚛 ETS2 / TruckersMP",
-
-      wot:
-        "🪖 World of Tanks",
-
-      "world of tanks":
-        "🪖 World of Tanks",
-
-      dota2:
-        "🎮 Dota 2",
-
-      dota:
-        "🎮 Dota 2",
-
-      "dota 2":
-        "🎮 Dota 2",
-
-      wow:
-        "⚔️ World of Warcraft",
-
-      "world of warcraft":
-        "⚔️ World of Warcraft"
-
-    };
-
-
-    const directionName =
-      directionNames[
-        String(
-          direction || ""
+      return String(
+        value ?? ""
+      )
+        .replace(
+          /&/g,
+          "&amp;"
         )
-          .trim()
-          .toLowerCase()
-      ] ||
-      (
-        direction
-          ? "📍 " +
-            String(
-              direction
-            ).toUpperCase()
-          : "📍 Невідомий напрямок"
-      );
+        .replace(
+          /</g,
+          "&lt;"
+        )
+        .replace(
+          />/g,
+          "&gt;"
+        )
+        .replace(
+          /"/g,
+          "&quot;"
+        )
+        .replace(
+          /'/g,
+          "&#039;"
+        );
+
+    }
 
 
-    // ==================================
-    // СТАТУС
-    // ==================================
+    // ======================================
+    // НОРМАЛІЗАЦІЯ SLUG
+    // ======================================
 
-    const status =
-      String(
-        application.status ||
-        ""
+    function normalizeSlug(
+      value
+    ) {
+
+      return String(
+        value ?? ""
       )
         .trim()
         .toLowerCase();
 
+    }
 
-    console.log(
-      "PROFILE: Напрямок:",
+
+    // ======================================
+    // НАЗВА НАПРЯМКУ
+    // ======================================
+
+    function getDirectionName(
       direction
-    );
-
-
-    console.log(
-      "PROFILE: Статус:",
-      status
-    );
-
-
-    // ==================================
-    // PENDING
-    // ==================================
-
-    if (
-      status === "pending"
     ) {
 
-      applicationStatus.className =
-        "application-card pending";
-
-
-      applicationStatus.innerHTML = `
-        <h3>
-          ${escapeHtml(
-            directionName
-          )}
-        </h3>
-
-        <p>
-          ⏳ Заявка на розгляді
-        </p>
-
-        <p>
-          Ваша заявка очікує рішення
-          адміністрації UA LEGION.
-        </p>
-      `;
-
-
-      if (joinButton) {
-
-        joinButton.style.display =
-          "none";
-
-      }
-
-
-      return;
-    }
-
-
-    // ==================================
-    // APPROVED
-    // ==================================
-
-    if (
-      status === "approved"
-    ) {
-
-      applicationStatus.className =
-        "application-card approved";
-
-
-      applicationStatus.innerHTML = `
-        <h3>
-          ${escapeHtml(
-            directionName
-          )}
-        </h3>
-
-        <p>
-          ✅ Заявку схвалено
-        </p>
-
-        <p>
-          Ваша заявка була схвалена
-          адміністрацією UA LEGION.
-        </p>
-
-        <a
-          href="members.html"
-          class="members-link"
-        >
-          👥 УЧАСНИКИ UA LEGION
-        </a>
-      `;
-
-
-      if (joinButton) {
-
-        joinButton.style.display =
-          "none";
-
-      }
-
-
-      return;
-    }
-
-
-    // ==================================
-    // REJECTED
-    // ==================================
-
-    if (
-      status === "rejected"
-    ) {
-
-      applicationStatus.className =
-        "application-card rejected";
-
-
-      applicationStatus.innerHTML = `
-        <h3>
-          ${escapeHtml(
-            directionName
-          )}
-        </h3>
-
-        <p>
-          ❌ Заявку відхилено
-        </p>
-
-        <p>
-          Ваша заявка була відхилена
-          адміністрацією UA LEGION.
-        </p>
-      `;
-
-
-      if (joinButton) {
-
-        joinButton.style.display =
-          "inline-flex";
-
-        joinButton.href =
-          "join.html";
-
-        joinButton.textContent =
-          "📝 ПОДАТИ ЗАЯВКУ НА ІНШИЙ НАПРЯМОК";
-
-      }
-
-
-      return;
-    }
-
-
-    // ==================================
-    // ІНШИЙ СТАТУС
-    // ==================================
-
-    applicationStatus.className =
-      "application-card";
-
-
-    applicationStatus.innerHTML = `
-      <h3>
-        ${escapeHtml(
-          directionName
-        )}
-      </h3>
-
-      <p>
-        ℹ️ Поточний статус заявки:
-        ${escapeHtml(
-          application.status ||
-          "невідомий"
-        )}
-      </p>
-    `;
-
-  }
-
-
-  // ======================================
-  // СОХРАНЕНИЕ ЛИЧНОГО ПРОФИЛЯ
-  //
-  // ВАЖНО:
-  // НЕ СОХРАНЯЕМ ЗДЕСЬ РОЛИ И ЧЛЕНСТВО
-  // В НАПРЯМКАХ.
-  //
-  // ИМИ УПРАВЛЯЕТ member.html
-  // ======================================
-
-  if (profileForm) {
-
-    profileForm.addEventListener(
-      "submit",
-      async event => {
-
-        event.preventDefault();
-
-
-        showMessage(
-          "Збереження профілю..."
+      const slug =
+        normalizeSlug(
+          direction?.slug ||
+          direction?.code ||
+          direction
         );
 
 
-        let uploadedAvatarUrl =
-          null;
+      const names = {
+
+        ets2:
+          "🚛 ETS2 / TruckersMP",
+
+        ets:
+          "🚛 ETS2 / TruckersMP",
+
+        wot:
+          "🪖 World of Tanks",
+
+        world_of_tanks:
+          "🪖 World of Tanks",
+
+        "world of tanks":
+          "🪖 World of Tanks",
+
+        dota:
+          "🎮 Dota 2",
+
+        dota2:
+          "🎮 Dota 2",
+
+        "dota 2":
+          "🎮 Dota 2",
+
+        wow:
+          "⚔️ World of Warcraft",
+
+        world_of_warcraft:
+          "⚔️ World of Warcraft",
+
+        "world of warcraft":
+          "⚔️ World of Warcraft"
+
+      };
 
 
-        const avatarFile =
-          avatarUrl?.files?.[0];
+      return (
+        names[slug] ||
+        direction?.name ||
+        (
+          slug
+            ? "📍 " +
+              slug.toUpperCase()
+            : "📍 Невідомий напрямок"
+        )
+      );
+
+    }
 
 
-        // ==================================
-        // ЗАВАНТАЖЕННЯ АВАТАРА
-        // ==================================
+    // ======================================
+    // ICON GLOBAL ROLE
+    // ======================================
 
-        if (avatarFile) {
+    function getGlobalRoleIcon(
+      roleCode
+    ) {
+
+      switch (
+        roleCode
+      ) {
+
+        case "owner":
+          return "👑";
+
+        case "deputy_owner":
+          return "🛡️";
+
+        case "general_top_manager":
+          return "🏆";
+
+        case "general_hr_manager":
+          return "👥";
+
+        case "general_pr_manager":
+          return "📢";
+
+        case "general_smm_manager":
+          return "📱";
+
+        case "general_event_manager":
+          return "🎯";
+
+        case "general_technical_manager":
+          return "🔧";
+
+        default:
+          return "👤";
+
+      }
+
+    }
+
+
+    // ======================================
+    // ETS2 DRIVER CLASS
+    // ======================================
+
+    function getDriverClassName(
+      driverClass
+    ) {
+
+      const names = {
+
+        A:
+          "Клас A — «Майстер водій»",
+
+        B:
+          "Клас B — «Старший водій»",
+
+        C:
+          "Клас C — «Досвідчений водій»",
+
+        D:
+          "Клас D — «Водій»",
+
+        E:
+          "Клас E — «Стажер»"
+
+      };
+
+
+      const value =
+        String(
+          driverClass ?? ""
+        )
+          .trim()
+          .toUpperCase();
+
+
+      return (
+        names[value] ||
+        (
+          value
+            ? `Клас ${value}`
+            : "Клас не призначено"
+        )
+      );
+
+    }
+
+
+    // ======================================
+    // APPLICATION STATUS
+    // ======================================
+
+    function getApplicationStatusName(
+      status
+    ) {
+
+      switch (
+        normalizeSlug(status)
+      ) {
+
+        case "pending":
+          return "🟡 Заявка на розгляді";
+
+        case "approved":
+          return "🟢 Заявку схвалено";
+
+        case "rejected":
+          return "🔴 Заявку відхилено";
+
+        default:
+          return "⚪ Заявка відсутня";
+
+      }
+
+    }
+
+
+    // ======================================
+    // ПЕРЕДАЧА DISCORD IDENTITY
+    //
+    // Тільки читання.
+    // Ніякого автоматичного merge.
+    // ======================================
+
+    async function loadAuthIdentities() {
+
+      const {
+        data,
+        error
+      } =
+        await supabase.auth
+          .getUserIdentities();
+
+
+      if (error) {
+
+        console.warn(
+          "PROFILE: Не вдалося отримати identities:",
+          error
+        );
+
+        return [];
+
+      }
+
+
+      const identities =
+        Array.isArray(
+          data?.identities
+        )
+          ? data.identities
+          : [];
+
+
+      console.log(
+        "PROFILE: Auth identities:",
+        identities
+      );
+
+
+      return identities;
+
+    }
+
+
+    // ======================================
+    // DISCORD IDENTITY
+    // ======================================
+
+    async function syncDiscordIdentity(
+      profile
+    ) {
+
+      const identities =
+        await loadAuthIdentities();
+
+
+      const discordIdentity =
+        identities.find(
+          identity =>
+            normalizeSlug(
+              identity.provider
+            ) === "discord"
+        );
+
+
+      if (
+        !discordIdentity
+      ) {
+
+        return;
+
+      }
+
+
+      const identityData =
+        discordIdentity.identity_data ||
+        {};
+
+
+      const discordId =
+        discordIdentity.provider_id ||
+        identityData.id ||
+        identityData.user_id ||
+        null;
+
+
+      const discordName =
+        identityData.global_name ||
+        identityData.username ||
+        identityData.preferred_username ||
+        identityData.name ||
+        null;
+
+
+      if (
+        !discordId &&
+        !discordName
+      ) {
+
+        return;
+
+      }
+
+
+      const newDiscordId =
+        discordId ||
+        profile?.discord_user_id ||
+        null;
+
+
+      const newDiscordName =
+        discordName ||
+        profile?.discord_username ||
+        null;
+
+
+      const idChanged =
+        String(
+          profile?.discord_user_id ||
+          ""
+        ) !==
+        String(
+          newDiscordId ||
+          ""
+        );
+
+
+      const nameChanged =
+        String(
+          profile?.discord_username ||
+          ""
+        ) !==
+        String(
+          newDiscordName ||
+          ""
+        );
+
+
+      if (
+        !idChanged &&
+        !nameChanged
+      ) {
+
+        return;
+
+      }
+
+
+      const {
+        error
+      } =
+        await supabase
+          .from("profiles")
+          .update({
+
+            discord_user_id:
+              newDiscordId,
+
+            discord_username:
+              newDiscordName,
+
+            updated_at:
+              new Date()
+                .toISOString()
+
+          })
+          .eq(
+            "id",
+            user.id
+          );
+
+
+      if (error) {
+
+        console.warn(
+          "PROFILE: Не вдалося синхронізувати Discord:",
+          error
+        );
+
+        return;
+
+      }
+
+
+      console.log(
+        "PROFILE: Discord identity синхронізовано"
+      );
+
+
+      if (discordUsername) {
+
+        discordUsername.value =
+          newDiscordName || "";
+
+      }
+
+
+      if (discordUserId) {
+
+        discordUserId.value =
+          newDiscordId || "";
+
+      }
+
+
+      if (currentProfile) {
+
+        currentProfile.discord_username =
+          newDiscordName;
+
+        currentProfile.discord_user_id =
+          newDiscordId;
+
+      }
+
+    }
+
+
+    // ======================================
+    // ЗАВАНТАЖЕННЯ ПРОФІЛЮ
+    // ======================================
+
+    async function loadProfile() {
+
+      const {
+        data: profile,
+        error
+      } =
+        await supabase
+          .from("profiles")
+          .select("*")
+          .eq(
+            "id",
+            user.id
+          )
+          .maybeSingle();
+
+
+      if (error) {
+
+        console.error(
+          "PROFILE: Помилка профілю:",
+          error
+        );
+
+        showMessage(
+          error.message,
+          "error"
+        );
+
+        return null;
+
+      }
+
+
+      if (!profile) {
+
+        console.warn(
+          "PROFILE: Профіль не знайдено"
+        );
+
+        return null;
+
+      }
+
+
+      currentProfile =
+        profile;
+
+
+      // ==================================
+      // NAME
+      // ==================================
+
+      if (displayName) {
+
+        displayName.value =
+          profile.display_name ||
+          "";
+
+      }
+
+
+      if (profileNamePreview) {
+
+        profileNamePreview.textContent =
+          profile.display_name ||
+          "Учасник UA LEGION";
+
+      }
+
+
+      // ==================================
+      // BIRTH DATE
+      // ==================================
+
+      if (birthDate) {
+
+        birthDate.value =
+          profile.birth_date ||
+          "";
+
+      }
+
+
+      // ==================================
+      // AVATAR
+      // ==================================
+
+      currentAvatarUrl =
+        profile.avatar_url ||
+        null;
+
+
+      if (
+        currentAvatarUrl &&
+        profileAvatar
+      ) {
+
+        profileAvatar.src =
+          currentAvatarUrl;
+
+      }
+
+
+      // ==================================
+      // DISCORD
+      // ==================================
+
+      if (discordUsername) {
+
+        discordUsername.value =
+          profile.discord_username ||
+          "";
+
+      }
+
+
+      if (discordUserId) {
+
+        discordUserId.value =
+          profile.discord_user_id ||
+          "";
+
+      }
+
+
+      // ==================================
+      // STEAM
+      // ==================================
+
+      if (steamId) {
+
+        steamId.value =
+          profile.steam_id ||
+          "";
+
+      }
+
+
+      // ==================================
+      // GAME NICK
+      // ==================================
+
+      if (gameNickname) {
+
+        gameNickname.value =
+          profile.game_nickname ||
+          "";
+
+      }
+
+
+      // ==================================
+      // DISCORD FIELDS НЕ РЕДАГУЄМО
+      // ==================================
+
+      if (discordUsername) {
+
+        discordUsername.readOnly =
+          true;
+
+      }
+
+
+      if (discordUserId) {
+
+        discordUserId.readOnly =
+          true;
+
+      }
+
+
+      return profile;
+
+    }
+
+
+    // ======================================
+    // RBAC
+    //
+    // ЄДИНЕ ДЖЕРЕЛО РОЛЕЙ
+    // ======================================
+
+    async function loadUserManagement() {
+
+      if (!rolesList) {
+        return null;
+      }
+
+
+      rolesList.innerHTML = `
+        <div class="roles-empty">
+          Завантаження ролей...
+        </div>
+      `;
+
+
+      const {
+        data,
+        error
+      } =
+        await supabase.rpc(
+          "get_user_direction_management",
+          {
+            p_target_user_id:
+              user.id
+          }
+        );
+
+
+      if (error) {
+
+        console.error(
+          "PROFILE: RBAC error:",
+          error
+        );
+
+        rolesList.innerHTML = `
+          <div class="roles-empty">
+            Не вдалося завантажити ролі та напрямки.
+          </div>
+        `;
+
+        return null;
+
+      }
+
+
+      if (
+        !data ||
+        data.success === false
+      ) {
+
+        console.error(
+          "PROFILE: Некоректний RBAC:",
+          data
+        );
+
+        rolesList.innerHTML = `
+          <div class="roles-empty">
+            Не вдалося отримати інформацію про ролі.
+          </div>
+        `;
+
+        return null;
+
+      }
+
+
+      currentManagement =
+        data;
+
+
+      window.currentUserRoles =
+        data;
+
+
+      console.log(
+        "PROFILE: RBAC:",
+        data
+      );
+
+
+      renderUserRoles(
+        data.global_roles || [],
+        data.directions || []
+      );
+
+
+      renderManagedDirections(
+        data.directions || []
+      );
+
+
+      return data;
+
+    }
+
+
+    // ======================================
+    // РЕНДЕР РОЛЕЙ
+    // ======================================
+
+    function renderUserRoles(
+      globalRoles = [],
+      directions = []
+    ) {
+
+      if (!rolesList) {
+        return;
+      }
+
+
+      rolesList.innerHTML =
+        "";
+
+
+      // ==================================
+      // GLOBAL
+      // ==================================
+
+      globalRoles.forEach(
+        role => {
+
+          const card =
+            document.createElement(
+              "div"
+            );
+
+
+          card.className =
+            "role-card global";
+
+
+          const icon =
+            getGlobalRoleIcon(
+              role.code
+            );
+
+
+          card.innerHTML = `
+            <h3>
+              ${icon}
+              ${escapeHtml(
+                role.name ||
+                "Невідома роль"
+              )}
+            </h3>
+
+            <p>
+              Глобальна роль
+            </p>
+          `;
+
+
+          rolesList.appendChild(
+            card
+          );
+
+        }
+      );
+
+
+      // ==================================
+      // ACTIVE DIRECTIONS
+      // ==================================
+
+      directions.forEach(
+        direction => {
 
           if (
-            !avatarFile.type.startsWith(
+            direction.status &&
+            direction.status !==
+              "active"
+          ) {
+
+            return;
+
+          }
+
+
+          const card =
+            document.createElement(
+              "div"
+            );
+
+
+          card.className =
+            "role-card";
+
+
+          const name =
+            getDirectionName(
+              direction
+            );
+
+
+          const roles =
+            Array.isArray(
+              direction.roles
+            )
+              ? direction.roles
+              : [];
+
+
+          let html = `
+            <h3>
+              ${escapeHtml(
+                name
+              )}
+            </h3>
+          `;
+
+
+          // ------------------------------
+          // ПОСАДИ
+          // ------------------------------
+
+          if (
+            roles.length
+          ) {
+
+            const roleNames =
+              roles
+                .map(
+                  role =>
+                    escapeHtml(
+                      role.name ||
+                      role.code ||
+                      "Невідома посада"
+                    )
+                )
+                .join(
+                  ", "
+                );
+
+
+            html += `
+              <p>
+                Посади:
+                ${roleNames}
+              </p>
+            `;
+
+          } else {
+
+            html += `
+              <p>
+                Учасник напрямку
+              </p>
+            `;
+
+          }
+
+
+          // ------------------------------
+          // ETS2 CLASS
+          // ------------------------------
+
+          const slug =
+            normalizeSlug(
+              direction.slug ||
+              direction.code
+            );
+
+
+          if (
+            slug === "ets2"
+          ) {
+
+            html += `
+              <p>
+                Клас водія:
+                <strong>
+                  ${escapeHtml(
+                    getDriverClassName(
+                      direction.driver_class
+                    )
+                  )}
+                </strong>
+              </p>
+            `;
+
+          }
+
+
+          card.innerHTML =
+            html;
+
+
+          rolesList.appendChild(
+            card
+          );
+
+        }
+      );
+
+
+      if (
+        !rolesList.children.length
+      ) {
+
+        rolesList.innerHTML = `
+          <div class="roles-empty">
+            У вас поки немає призначених ролей.
+          </div>
+        `;
+
+      }
+
+    }
+
+
+    // ======================================
+    // НАПРЯМКИ
+    //
+    // ВАЖЛИВО:
+    // ЦЕ НЕ МЕХАНІЗМ ПРИЗНАЧЕННЯ.
+    //
+    // Користувач не може поставити собі
+    // членство через profile.js.
+    // ======================================
+
+    function renderManagedDirections(
+      directions = []
+    ) {
+
+      const checkboxes =
+        document.querySelectorAll(
+          'input[name="direction"]'
+        );
+
+
+      if (!checkboxes.length) {
+        return;
+      }
+
+
+      checkboxes.forEach(
+        checkbox => {
+
+          checkbox.checked =
+            false;
+
+          checkbox.disabled =
+            true;
+
+        }
+      );
+
+
+      directions.forEach(
+        direction => {
+
+          if (
+            direction.status &&
+            direction.status !==
+              "active"
+          ) {
+
+            return;
+
+          }
+
+
+          const slug =
+            normalizeSlug(
+              direction.slug ||
+              direction.code
+            );
+
+
+          if (!slug) {
+            return;
+          }
+
+
+          const checkbox =
+            document.querySelector(
+              `input[name="direction"][value="${CSS.escape(slug)}"]`
+            );
+
+
+          if (checkbox) {
+
+            checkbox.checked =
+              true;
+
+          }
+
+        }
+      );
+
+    }
+
+
+    // ======================================
+    // ЗАЯВКИ КОРИСТУВАЧА
+    //
+    // Завантажуємо ВСІ заявки.
+    // ======================================
+
+    async function loadApplications() {
+
+      const {
+        data,
+        error
+      } =
+        await supabase
+          .from("applications")
+          .select(`
+            id,
+            direction,
+            directions,
+            status,
+            created_at
+          `)
+          .eq(
+            "user_id",
+            user.id
+          )
+          .order(
+            "created_at",
+            {
+              ascending: false
+            }
+          );
+
+
+      if (error) {
+
+        console.error(
+          "PROFILE: Applications error:",
+          error
+        );
+
+        currentApplications =
+          [];
+
+        return [];
+
+      }
+
+
+      currentApplications =
+        Array.isArray(data)
+          ? data
+          : [];
+
+
+      console.log(
+        "PROFILE: Applications:",
+        currentApplications
+      );
+
+
+      return currentApplications;
+
+    }
+
+
+    // ======================================
+    // ВИЗНАЧЕННЯ APPLICATION DIRECTION
+    // ======================================
+
+    function getApplicationDirection(
+      application
+    ) {
+
+      if (
+        application?.direction
+      ) {
+
+        return normalizeSlug(
+          application.direction
+        );
+
+      }
+
+
+      if (
+        Array.isArray(
+          application?.directions
+        ) &&
+        application.directions.length
+      ) {
+
+        return normalizeSlug(
+          application.directions[0]
+        );
+
+      }
+
+
+      if (
+        typeof application?.directions ===
+          "string"
+      ) {
+
+        return normalizeSlug(
+          application.directions
+            .replace(
+              /[\[\]"]/g,
+              ""
+            )
+            .split(",")[0]
+        );
+
+      }
+
+
+      return "";
+
+    }
+
+
+    // ======================================
+    // APPLICATION ДЛЯ НАПРЯМКУ
+    // ======================================
+
+    function getLatestApplicationForDirection(
+      slug
+    ) {
+
+      const normalized =
+        normalizeSlug(
+          slug
+        );
+
+
+      return (
+        currentApplications.find(
+          application =>
+            getApplicationDirection(
+              application
+            ) === normalized
+        ) ||
+        null
+      );
+
+    }
+
+
+    // ======================================
+    // ACTIVE DIRECTION
+    // ======================================
+
+    function getActiveDirection(
+      slug
+    ) {
+
+      const normalized =
+        normalizeSlug(
+          slug
+        );
+
+
+      return (
+        (
+          currentManagement?.directions ||
+          []
+        ).find(
+          direction =>
+            direction.status ===
+              "active" &&
+            normalizeSlug(
+              direction.slug ||
+              direction.code
+            ) === normalized
+        ) ||
+        null
+      );
+
+    }
+
+
+    // ======================================
+    // СТАТУС НАПРЯМКУ
+    // ======================================
+
+    function getDirectionState(
+      direction
+    ) {
+
+      const slug =
+        normalizeSlug(
+          direction.slug ||
+          direction.code
+        );
+
+
+      const active =
+        getActiveDirection(
+          slug
+        );
+
+
+      if (active) {
+
+        return {
+          type:
+            "active",
+
+          label:
+            "🟢 Учасник",
+
+          direction:
+            active
+        };
+
+      }
+
+
+      const application =
+        getLatestApplicationForDirection(
+          slug
+        );
+
+
+      if (application) {
+
+        const status =
+          normalizeSlug(
+            application.status
+          );
+
+
+        if (
+          status === "pending"
+        ) {
+
+          return {
+            type:
+              "pending",
+
+            label:
+              "🟡 Заявка на розгляді",
+
+            application
+          };
+
+        }
+
+
+        if (
+          status === "rejected"
+        ) {
+
+          return {
+            type:
+              "rejected",
+
+            label:
+              "🔴 Заявку відхилено",
+
+            application
+          };
+
+        }
+
+
+        if (
+          status === "approved"
+        ) {
+
+          // Якщо approved є,
+          // але user_directions ще не повернув
+          // active — не створюємо членство
+          // на frontend автоматично.
+
+          return {
+            type:
+              "approved_waiting",
+
+            label:
+              "🟡 Заявку схвалено",
+
+            application
+          };
+
+        }
+
+      }
+
+
+      return {
+        type:
+          "none",
+
+        label:
+          "⚪ Не подавав заявку"
+      };
+
+    }
+
+
+    // ======================================
+    // РЕНДЕР СТАТУСІВ НАПРЯМКІВ
+    //
+    // ПІДТРИМУЄ МАЙБУТНІЙ HTML:
+    //
+    // #directionsStatus
+    //
+    // Якщо такого контейнера ще немає,
+    // стара система checkbox продовжить
+    // працювати.
+    // ======================================
+
+    function renderDirectionStatuses(
+      directions = []
+    ) {
+
+      const container =
+        document.getElementById(
+          "directionsStatus"
+        );
+
+
+      if (!container) {
+
+        return;
+
+      }
+
+
+      container.innerHTML =
+        "";
+
+
+      directions.forEach(
+        direction => {
+
+          const state =
+            getDirectionState(
+              direction
+            );
+
+
+          const card =
+            document.createElement(
+              "div"
+            );
+
+
+          card.className =
+            "direction-status-card " +
+            state.type;
+
+
+          const title =
+            getDirectionName(
+              direction
+            );
+
+
+          let html = `
+            <h3>
+              ${escapeHtml(
+                title
+              )}
+            </h3>
+
+            <p class="direction-status">
+              ${escapeHtml(
+                state.label
+              )}
+            </p>
+          `;
+
+
+          // ==================================
+          // ACTIVE
+          // ==================================
+
+          if (
+            state.type ===
+            "active"
+          ) {
+
+            const active =
+              state.direction;
+
+
+            const roles =
+              Array.isArray(
+                active?.roles
+              )
+                ? active.roles
+                : [];
+
+
+            if (
+              roles.length
+            ) {
+
+              html += `
+                <p>
+                  Посади:
+                  ${roles
+                    .map(
+                      role =>
+                        escapeHtml(
+                          role.name ||
+                          role.code ||
+                          ""
+                        )
+                    )
+                    .join(
+                      ", "
+                    )}
+                </p>
+              `;
+
+            } else {
+
+              html += `
+                <p>
+                  Учасник напрямку
+                </p>
+              `;
+
+            }
+
+
+            if (
+              normalizeSlug(
+                active?.slug ||
+                active?.code
+              ) ===
+              "ets2"
+            ) {
+
+              html += `
+                <p>
+                  Клас водія:
+                  <strong>
+                    ${escapeHtml(
+                      getDriverClassName(
+                        active.driver_class
+                      )
+                    )}
+                  </strong>
+                </p>
+              `;
+
+            }
+
+          }
+
+
+          // ==================================
+          // PENDING
+          // ==================================
+
+          if (
+            state.type ===
+            "pending"
+          ) {
+
+            html += `
+              <p>
+                Ваша заявка очікує
+                рішення адміністрації.
+              </p>
+            `;
+
+          }
+
+
+          // ==================================
+          // REJECTED
+          // ==================================
+
+          if (
+            state.type ===
+            "rejected"
+          ) {
+
+            html += `
+              <p>
+                Заявку було відхилено.
+              </p>
+
+              <a
+                href="join.html?direction=${encodeURIComponent(
+                  normalizeSlug(
+                    direction.slug ||
+                    direction.code
+                  )
+                )}"
+                class="direction-apply-button"
+              >
+                📝 ПОДАТИ ПОВТОРНО
+              </a>
+            `;
+
+          }
+
+
+          // ==================================
+          // NO APPLICATION
+          // ==================================
+
+          if (
+            state.type ===
+            "none"
+          ) {
+
+            html += `
+              <a
+                href="join.html?direction=${encodeURIComponent(
+                  normalizeSlug(
+                    direction.slug ||
+                    direction.code
+                  )
+                )}"
+                class="direction-apply-button"
+              >
+                📝 ПОДАТИ ЗАЯВКУ
+              </a>
+            `;
+
+          }
+
+
+          card.innerHTML =
+            html;
+
+
+          container.appendChild(
+            card
+          );
+
+        }
+      );
+
+
+      if (
+        !container.children.length
+      ) {
+
+        container.innerHTML = `
+          <div class="roles-empty">
+            Напрямки поки недоступні.
+          </div>
+        `;
+
+      }
+
+    }
+
+
+    // ======================================
+    // СТАРИЙ БЛОК APPLICATION STATUS
+    //
+    // ЗАЛИШАЄМО ДЛЯ СУМІСНОСТІ.
+    // ======================================
+
+    function renderLegacyApplicationStatus() {
+
+      if (!applicationStatus) {
+        return;
+      }
+
+
+      // ----------------------------------
+      // Якщо новий контейнер уже існує,
+      // старий блок не дублюємо.
+      // ----------------------------------
+
+      if (
+        document.getElementById(
+          "directionsStatus"
+        )
+      ) {
+
+        applicationStatus.innerHTML = `
+          <h3>
+            📝 Мої заявки
+          </h3>
+
+          <p>
+            Статус заявок відображається
+            у розділі «Напрямки UA LEGION».
+          </p>
+        `;
+
+        applicationStatus.className =
+          "application-card";
+
+        return;
+
+      }
+
+
+      // ----------------------------------
+      // Стара логіка
+      // ----------------------------------
+
+      if (
+        !currentApplications.length
+      ) {
+
+        applicationStatus.className =
+          "application-card none";
+
+
+        applicationStatus.innerHTML = `
+          <h3>
+            📝 Заявок ще немає
+          </h3>
+
+          <p>
+            Ви можете подати заявку
+            на вступ до UA LEGION.
+          </p>
+        `;
+
+
+        if (joinButton) {
+
+          joinButton.style.display =
+            "inline-flex";
+
+          joinButton.href =
+            "join.html";
+
+          joinButton.textContent =
+            "📝 ПОДАТИ ЗАЯВКУ";
+
+        }
+
+
+        return;
+
+      }
+
+
+      const application =
+        currentApplications[0];
+
+
+      const direction =
+        getApplicationDirection(
+          application
+        );
+
+
+      const directionName =
+        getDirectionName(
+          direction
+        );
+
+
+      const status =
+        normalizeSlug(
+          application.status
+        );
+
+
+      if (
+        status === "pending"
+      ) {
+
+        applicationStatus.className =
+          "application-card pending";
+
+
+        applicationStatus.innerHTML = `
+          <h3>
+            ${escapeHtml(
+              directionName
+            )}
+          </h3>
+
+          <p>
+            🟡 Заявка на розгляді
+          </p>
+        `;
+
+
+        if (joinButton) {
+
+          joinButton.style.display =
+            "none";
+
+        }
+
+
+        return;
+
+      }
+
+
+      if (
+        status === "approved"
+      ) {
+
+        applicationStatus.className =
+          "application-card approved";
+
+
+        applicationStatus.innerHTML = `
+          <h3>
+            ${escapeHtml(
+              directionName
+            )}
+          </h3>
+
+          <p>
+            🟢 Заявку схвалено
+          </p>
+
+          <a
+            href="members.html"
+            class="members-link"
+          >
+            👥 УЧАСНИКИ UA LEGION
+          </a>
+        `;
+
+
+        if (joinButton) {
+
+          joinButton.style.display =
+            "none";
+
+        }
+
+
+        return;
+
+      }
+
+
+      if (
+        status === "rejected"
+      ) {
+
+        applicationStatus.className =
+          "application-card rejected";
+
+
+        applicationStatus.innerHTML = `
+          <h3>
+            ${escapeHtml(
+              directionName
+            )}
+          </h3>
+
+          <p>
+            🔴 Заявку відхилено
+          </p>
+        `;
+
+
+        if (joinButton) {
+
+          joinButton.style.display =
+            "inline-flex";
+
+          joinButton.href =
+            `join.html?direction=${encodeURIComponent(
+              direction
+            )}`;
+
+          joinButton.textContent =
+            "📝 ПОДАТИ ЗАЯВКУ ПОВТОРНО";
+
+        }
+
+
+        return;
+
+      }
+
+    }
+
+
+    // ======================================
+    // АВАТАР PREVIEW
+    // ======================================
+
+    if (avatarUrl) {
+
+      avatarUrl.addEventListener(
+        "change",
+        () => {
+
+          const file =
+            avatarUrl.files?.[0];
+
+
+          if (!file) {
+            return;
+          }
+
+
+          if (
+            !file.type.startsWith(
               "image/"
             )
           ) {
@@ -1467,12 +2035,16 @@ document.addEventListener("DOMContentLoaded", async () => {
               "error"
             );
 
+            avatarUrl.value =
+              "";
+
             return;
+
           }
 
 
           if (
-            avatarFile.size >
+            file.size >
             10 * 1024 * 1024
           ) {
 
@@ -1481,230 +2053,12 @@ document.addEventListener("DOMContentLoaded", async () => {
               "error"
             );
 
-            return;
-          }
-
-
-          showMessage(
-            "Завантаження аватара..."
-          );
-
-
-          // -------------------------------
-          // РОЗШИРЕННЯ
-          // -------------------------------
-
-          const originalExtension =
-            avatarFile.name
-              .split(".")
-              .pop()
-              ?.toLowerCase();
-
-
-          const fileExtension =
-            originalExtension &&
-            /^[a-z0-9]+$/.test(
-              originalExtension
-            )
-              ? originalExtension
-              : "png";
-
-
-          // -------------------------------
-          // ШЛЯХ
-          // -------------------------------
-
-          const filePath =
-            `${user.id}/avatar-${Date.now()}.${fileExtension}`;
-
-
-          // -------------------------------
-          // UPLOAD
-          // -------------------------------
-
-          const {
-            error: uploadError
-          } =
-            await supabase
-              .storage
-              .from("avatars")
-              .upload(
-                filePath,
-                avatarFile,
-                {
-                  cacheControl:
-                    "3600",
-
-                  upsert:
-                    false,
-
-                  contentType:
-                    avatarFile.type
-                }
-              );
-
-
-          if (uploadError) {
-
-            console.error(
-              "PROFILE: Помилка завантаження аватара:",
-              uploadError
-            );
-
-
-            showMessage(
-              "Не вдалося завантажити аватар: " +
-              uploadError.message,
-              "error"
-            );
-
+            avatarUrl.value =
+              "";
 
             return;
-          }
-
-
-          // -------------------------------
-          // PUBLIC URL
-          // -------------------------------
-
-          const {
-            data:
-              publicUrlData
-          } =
-            supabase
-              .storage
-              .from("avatars")
-              .getPublicUrl(
-                filePath
-              );
-
-
-          uploadedAvatarUrl =
-            publicUrlData?.publicUrl ||
-            null;
-
-
-          if (
-            !uploadedAvatarUrl
-          ) {
-
-            showMessage(
-              "Аватар завантажено, але не вдалося отримати його URL.",
-              "error"
-            );
-
-            return;
-          }
-
-
-          if (profileAvatar) {
-
-            profileAvatar.src =
-              uploadedAvatarUrl;
 
           }
-
-        }
-
-
-        // ==================================
-        // АВАТАР ДЛЯ ЗБЕРЕЖЕННЯ
-        // ==================================
-
-        const avatarToSave =
-          uploadedAvatarUrl ||
-          currentAvatarUrl ||
-          null;
-
-
-        // ==================================
-        // ЗБЕРЕЖЕННЯ PROFILES
-        // ==================================
-
-        const {
-          error:
-            profileError
-        } =
-          await supabase
-            .from("profiles")
-            .upsert(
-              {
-
-                id:
-                  user.id,
-
-                display_name:
-                  displayName?.value
-                    .trim() ||
-                  null,
-
-                birth_date:
-                  birthDate?.value ||
-                  null,
-
-                avatar_url:
-                  avatarToSave,
-
-                discord_username:
-                  discordUsername?.value
-                    .trim() ||
-                  null,
-
-                discord_user_id:
-                  discordUserId?.value
-                    .trim() ||
-                  null,
-
-                steam_id:
-                  steamId?.value
-                    .trim() ||
-                  null,
-
-                game_nickname:
-                  gameNickname?.value
-                    .trim() ||
-                  null,
-
-                updated_at:
-                  new Date()
-                    .toISOString()
-
-              },
-              {
-                onConflict:
-                  "id"
-              }
-            );
-
-
-        if (profileError) {
-
-          console.error(
-            "PROFILE: Помилка профілю:",
-            profileError
-          );
-
-
-          showMessage(
-            profileError.message,
-            "error"
-          );
-
-
-          return;
-        }
-
-
-        // ==================================
-        // ОНОВЛЕННЯ СТАНУ АВАТАРА
-        // ==================================
-
-        if (
-          uploadedAvatarUrl
-        ) {
-
-          currentAvatarUrl =
-            uploadedAvatarUrl;
 
 
           if (
@@ -1715,105 +2069,501 @@ document.addEventListener("DOMContentLoaded", async () => {
               previewObjectUrl
             );
 
-            previewObjectUrl =
-              null;
-
           }
 
 
-          if (avatarUrl) {
+          previewObjectUrl =
+            URL.createObjectURL(
+              file
+            );
 
-            avatarUrl.value =
-              "";
+
+          if (profileAvatar) {
+
+            profileAvatar.src =
+              previewObjectUrl;
 
           }
 
         }
+      );
+
+    }
 
 
-        // ==================================
-        // ОНОВЛЕННЯ ІМЕНІ
-        // ==================================
+    // ======================================
+    // СОХРАНЕНИЕ ПРОФИЛЯ
+    //
+    // ТУТ НЕМАЄ:
+    // - ролей
+    // - членства
+    // - driver class
+    //
+    // Тільки profiles.
+    // ======================================
 
-        if (
-          displayName?.value.trim() &&
-          profileNamePreview
-        ) {
+    if (profileForm) {
 
-          profileNamePreview.textContent =
-            displayName.value.trim();
+      profileForm.addEventListener(
+        "submit",
+        async event => {
 
-        }
-
-
-        // ==================================
-        // ПОВТОРНО ЧИТАЄМО RBAC
-        //
-        // НА ВИПАДОК, ЯКЩО ДАНІ ЗМІНИЛИСЯ
-        // В ІНШІЙ ВКЛАДЦІ.
-        // ==================================
-
-        await loadUserManagement();
+          event.preventDefault();
 
 
-        showMessage(
-          "Профіль успішно збережено!",
-          "success"
-        );
-
-      }
-    );
-
-  }
-
-
-  // ======================================
-  // ВИХІД
-  // ======================================
-
-  if (logoutButton) {
-
-    logoutButton.addEventListener(
-      "click",
-      async () => {
-
-        const {
-          error
-        } =
-          await supabase
-            .auth
-            .signOut();
-
-
-        if (error) {
-
-          console.error(
-            "PROFILE: Помилка виходу:",
-            error
+          showMessage(
+            "Збереження профілю..."
           );
 
-          return;
+
+          let uploadedAvatarUrl =
+            null;
+
+
+          const avatarFile =
+            avatarUrl?.files?.[0];
+
+
+          // ==================================
+          // AVATAR UPLOAD
+          // ==================================
+
+          if (avatarFile) {
+
+            if (
+              !avatarFile.type.startsWith(
+                "image/"
+              )
+            ) {
+
+              showMessage(
+                "Будь ласка, виберіть файл зображення.",
+                "error"
+              );
+
+              return;
+
+            }
+
+
+            if (
+              avatarFile.size >
+              10 * 1024 * 1024
+            ) {
+
+              showMessage(
+                "Розмір аватара не повинен перевищувати 10 MB.",
+                "error"
+              );
+
+              return;
+
+            }
+
+
+            showMessage(
+              "Завантаження аватара..."
+            );
+
+
+            const originalExtension =
+              avatarFile.name
+                .split(".")
+                .pop()
+                ?.toLowerCase();
+
+
+            const fileExtension =
+              originalExtension &&
+              /^[a-z0-9]+$/.test(
+                originalExtension
+              )
+                ? originalExtension
+                : "png";
+
+
+            const filePath =
+              `${user.id}/avatar-${Date.now()}.${fileExtension}`;
+
+
+            const {
+              error:
+                uploadError
+            } =
+              await supabase
+                .storage
+                .from("avatars")
+                .upload(
+                  filePath,
+                  avatarFile,
+                  {
+                    cacheControl:
+                      "3600",
+
+                    upsert:
+                      false,
+
+                    contentType:
+                      avatarFile.type
+                  }
+                );
+
+
+            if (uploadError) {
+
+              console.error(
+                "PROFILE: Avatar upload error:",
+                uploadError
+              );
+
+              showMessage(
+                "Не вдалося завантажити аватар: " +
+                uploadError.message,
+                "error"
+              );
+
+              return;
+
+            }
+
+
+            const {
+              data:
+                publicUrlData
+            } =
+              supabase
+                .storage
+                .from("avatars")
+                .getPublicUrl(
+                  filePath
+                );
+
+
+            uploadedAvatarUrl =
+              publicUrlData?.publicUrl ||
+              null;
+
+
+            if (
+              !uploadedAvatarUrl
+            ) {
+
+              showMessage(
+                "Аватар завантажено, але URL не отримано.",
+                "error"
+              );
+
+              return;
+
+            }
+
+
+            if (profileAvatar) {
+
+              profileAvatar.src =
+                uploadedAvatarUrl;
+
+            }
+
+          }
+
+
+          // ==================================
+          // PROFILE UPDATE
+          // ==================================
+
+          const avatarToSave =
+            uploadedAvatarUrl ||
+            currentAvatarUrl ||
+            null;
+
+
+          const {
+            error:
+              profileError
+          } =
+            await supabase
+              .from("profiles")
+              .upsert(
+                {
+
+                  id:
+                    user.id,
+
+                  display_name:
+                    displayName?.value
+                      .trim() ||
+                    null,
+
+                  birth_date:
+                    birthDate?.value ||
+                    null,
+
+                  avatar_url:
+                    avatarToSave,
+
+                  // Discord дані беруться
+                  // з identity/profile.
+                  discord_username:
+                    currentProfile
+                      ?.discord_username ||
+                    discordUsername?.value
+                      .trim() ||
+                    null,
+
+                  discord_user_id:
+                    currentProfile
+                      ?.discord_user_id ||
+                    discordUserId?.value
+                      .trim() ||
+                    null,
+
+                  steam_id:
+                    steamId?.value
+                      .trim() ||
+                    null,
+
+                  game_nickname:
+                    gameNickname?.value
+                      .trim() ||
+                    null,
+
+                  updated_at:
+                    new Date()
+                      .toISOString()
+
+                },
+                {
+                  onConflict:
+                    "id"
+                }
+              );
+
+
+          if (profileError) {
+
+            console.error(
+              "PROFILE: Profile update error:",
+              profileError
+            );
+
+
+            showMessage(
+              profileError.message,
+              "error"
+            );
+
+
+            return;
+
+          }
+
+
+          // ==================================
+          // STATE UPDATE
+          // ==================================
+
+          if (
+            uploadedAvatarUrl
+          ) {
+
+            currentAvatarUrl =
+              uploadedAvatarUrl;
+
+
+            if (
+              previewObjectUrl
+            ) {
+
+              URL.revokeObjectURL(
+                previewObjectUrl
+              );
+
+              previewObjectUrl =
+                null;
+
+            }
+
+
+            if (avatarUrl) {
+
+              avatarUrl.value =
+                "";
+
+            }
+
+          }
+
+
+          if (
+            displayName?.value.trim() &&
+            profileNamePreview
+          ) {
+
+            profileNamePreview.textContent =
+              displayName.value.trim();
+
+          }
+
+
+          await loadProfile();
+
+          await syncDiscordIdentity(
+            currentProfile
+          );
+
+          await loadUserManagement();
+
+          await loadApplications();
+
+          renderDirectionStatuses(
+            currentDirections
+          );
+
+          renderLegacyApplicationStatus();
+
+
+          showMessage(
+            "Профіль успішно збережено!",
+            "success"
+          );
+
         }
+      );
+
+    }
 
 
-        window.location.href =
-          "index.html";
+    // ======================================
+    // LOGOUT
+    // ======================================
+
+    if (logoutButton) {
+
+      logoutButton.addEventListener(
+        "click",
+        async () => {
+
+          const {
+            error
+          } =
+            await supabase
+              .auth
+              .signOut();
+
+
+          if (error) {
+
+            console.error(
+              "PROFILE: Logout error:",
+              error
+            );
+
+            showMessage(
+              error.message,
+              "error"
+            );
+
+            return;
+
+          }
+
+
+          window.location.href =
+            "index.html";
+
+        }
+      );
+
+    }
+
+
+    // ======================================
+    // ЗАВАНТАЖЕННЯ НАПРЯМКІВ
+    // ======================================
+
+    async function loadDirections() {
+
+      const {
+        data,
+        error
+      } =
+        await supabase
+          .from("directions")
+          .select(
+            "id, code, slug, name, icon, status"
+          )
+          .eq(
+            "status",
+            "active"
+          )
+          .order(
+            "id",
+            {
+              ascending:
+                true
+            }
+          );
+
+
+      if (error) {
+
+        console.error(
+          "PROFILE: Directions error:",
+          error
+        );
+
+        currentDirections =
+          [];
+
+        return [];
 
       }
+
+
+      currentDirections =
+        Array.isArray(data)
+          ? data
+          : [];
+
+
+      console.log(
+        "PROFILE: Directions:",
+        currentDirections
+      );
+
+
+      return currentDirections;
+
+    }
+
+
+    // ======================================
+    // INITIAL LOAD
+    // ======================================
+
+    await loadProfile();
+
+    await syncDiscordIdentity(
+      currentProfile
+    );
+
+    await loadUserManagement();
+
+    await loadApplications();
+
+    await loadDirections();
+
+    renderDirectionStatuses(
+      currentDirections
+    );
+
+    renderLegacyApplicationStatus();
+
+
+    console.log(
+      "UA LEGION PROFILE: готово"
     );
 
   }
-
-
-  // ======================================
-  // ЗАПУСК
-  // ======================================
-
-  await loadProfile();
-
-  await loadUserManagement();
-
-  await loadApplicationStatus();
-
-
-});
+);
