@@ -12,6 +12,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const client = window.supabaseClient;
 
   if (!client) {
+
     console.error(
       "UA LEGION: Supabase не підключений"
     );
@@ -52,6 +53,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   const googleButton =
     document.getElementById("google-login");
 
+  const discordButton =
+    document.getElementById("discord-login");
+
   const switchButton =
     document.getElementById("switch-mode");
 
@@ -85,11 +89,11 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
     }
 
-    message.textContent = text;
+    message.textContent =
+      text;
 
     message.className =
       "message " + type;
-
   }
 
 
@@ -99,16 +103,16 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
     }
 
-    message.textContent = "";
+    message.textContent =
+      "";
 
     message.className =
       "message";
-
   }
 
 
   // ======================================
-  // UPDATE FORM MODE
+  // UPDATE FORM
   // ======================================
 
   function updateFormMode() {
@@ -119,45 +123,67 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (registerMode) {
 
       if (formTitle) {
+
         formTitle.textContent =
           "Реєстрація в UA LEGION";
+
       }
+
 
       if (submitButton) {
+
         submitButton.textContent =
           "ЗАРЕЄСТРУВАТИСЯ";
+
       }
+
 
       if (switchText) {
+
         switchText.textContent =
           "Вже маєте акаунт?";
+
       }
 
+
       if (switchButton) {
+
         switchButton.textContent =
           "Увійти";
+
       }
 
     } else {
 
       if (formTitle) {
+
         formTitle.textContent =
           "Вхід до UA LEGION";
+
       }
+
 
       if (submitButton) {
+
         submitButton.textContent =
           "УВІЙТИ";
+
       }
+
 
       if (switchText) {
+
         switchText.textContent =
           "Ще немає акаунта?";
+
       }
 
+
       if (switchButton) {
+
         switchButton.textContent =
           "Реєстрація";
+
       }
 
     }
@@ -166,7 +192,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
   // ======================================
-  // CHECK CURRENT SESSION
+  // CURRENT SESSION
   // ======================================
 
   try {
@@ -174,7 +200,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     const {
       data,
       error
-    } = await client.auth.getSession();
+    } =
+      await client.auth.getSession();
 
 
     if (error) {
@@ -184,7 +211,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         error
       );
 
-    } else if (
+    }
+
+
+    if (
       data &&
       data.session
     ) {
@@ -229,10 +259,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
       }
 
-
-      // ------------------------------------
-      // If user is on login page
-      // ------------------------------------
 
       if (
         window.location.pathname.endsWith(
@@ -301,10 +327,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             : "";
 
 
-        // --------------------------------
-        // Validation
-        // --------------------------------
-
         if (!email) {
 
           showMessage(
@@ -313,7 +335,6 @@ document.addEventListener("DOMContentLoaded", async () => {
           );
 
           return;
-
         }
 
 
@@ -325,7 +346,6 @@ document.addEventListener("DOMContentLoaded", async () => {
           );
 
           return;
-
         }
 
 
@@ -337,7 +357,6 @@ document.addEventListener("DOMContentLoaded", async () => {
           );
 
           return;
-
         }
 
 
@@ -348,9 +367,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (registerMode) {
 
           if (submitButton) {
-            submitButton.disabled = true;
+
+            submitButton.disabled =
+              true;
+
             submitButton.textContent =
               "РЕЄСТРАЦІЯ...";
+
           }
 
 
@@ -394,7 +417,6 @@ document.addEventListener("DOMContentLoaded", async () => {
               );
 
               return;
-
             }
 
 
@@ -403,10 +425,6 @@ document.addEventListener("DOMContentLoaded", async () => {
               data
             );
 
-
-            // --------------------------------
-            // Email confirmation enabled
-            // --------------------------------
 
             if (
               data &&
@@ -420,13 +438,8 @@ document.addEventListener("DOMContentLoaded", async () => {
               );
 
               return;
-
             }
 
-
-            // --------------------------------
-            // Session already created
-            // --------------------------------
 
             showMessage(
               "Реєстрацію виконано!",
@@ -441,7 +454,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           } catch (error) {
 
             console.error(
-              "UA LEGION REGISTER EXCEPTION:",
+              "UA LEGION REGISTER ERROR:",
               error
             );
 
@@ -458,7 +471,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                 false;
 
               submitButton.textContent =
-                "ЗАРЕЄСТРУВАТИСЯ";
+                registerMode
+                  ? "ЗАРЕЄСТРУВАТИСЯ"
+                  : "УВІЙТИ";
 
             }
 
@@ -466,7 +481,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
           return;
-
         }
 
 
@@ -518,7 +532,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             );
 
             return;
-
           }
 
 
@@ -534,10 +547,6 @@ document.addEventListener("DOMContentLoaded", async () => {
           );
 
 
-          // ==================================
-          // LOGIN → HOMEPAGE
-          // ==================================
-
           window.location.replace(
             HOME_URL
           );
@@ -545,7 +554,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         } catch (error) {
 
           console.error(
-            "UA LEGION LOGIN EXCEPTION:",
+            "UA LEGION LOGIN ERROR:",
             error
           );
 
@@ -562,9 +571,7 @@ document.addEventListener("DOMContentLoaded", async () => {
               false;
 
             submitButton.textContent =
-              registerMode
-                ? "ЗАРЕЄСТРУВАТИСЯ"
-                : "УВІЙТИ";
+              "УВІЙТИ";
 
           }
 
@@ -588,7 +595,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         clearMessage();
 
-
         googleButton.disabled =
           true;
 
@@ -606,7 +612,8 @@ document.addEventListener("DOMContentLoaded", async () => {
           } =
             await client.auth.signInWithOAuth({
 
-              provider: "google",
+              provider:
+                "google",
 
               options: {
 
@@ -632,13 +639,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             googleButton.disabled =
               false;
-
           }
 
         } catch (error) {
 
           console.error(
-            "UA LEGION GOOGLE EXCEPTION:",
+            "UA LEGION GOOGLE ERROR:",
             error
           );
 
@@ -649,7 +655,86 @@ document.addEventListener("DOMContentLoaded", async () => {
 
           googleButton.disabled =
             false;
+        }
 
+      }
+    );
+
+  }
+
+
+  // ======================================
+  // DISCORD LOGIN
+  // ======================================
+
+  if (discordButton) {
+
+    discordButton.addEventListener(
+      "click",
+      async () => {
+
+        clearMessage();
+
+        discordButton.disabled =
+          true;
+
+
+        showMessage(
+          "Перенаправлення до Discord...",
+          "info"
+        );
+
+
+        try {
+
+          const {
+            error
+          } =
+            await client.auth.signInWithOAuth({
+
+              provider:
+                "discord",
+
+              options: {
+
+                redirectTo:
+                  HOME_URL
+
+              }
+
+            });
+
+
+          if (error) {
+
+            console.error(
+              "UA LEGION DISCORD ERROR:",
+              error
+            );
+
+            showMessage(
+              error.message,
+              "error"
+            );
+
+            discordButton.disabled =
+              false;
+          }
+
+        } catch (error) {
+
+          console.error(
+            "UA LEGION DISCORD ERROR:",
+            error
+          );
+
+          showMessage(
+            "Не вдалося виконати вхід через Discord.",
+            "error"
+          );
+
+          discordButton.disabled =
+            false;
         }
 
       }
