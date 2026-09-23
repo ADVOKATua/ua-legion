@@ -15,12 +15,24 @@
     content="#05070b"
   >
 
-  <title>Мій кабінет — UA LEGION</title>
+  <title>
+    Мій кабінет — UA LEGION
+  </title>
+
+
+  <!-- =========================================
+       ОСНОВНИЙ CSS
+       ========================================= -->
 
   <link
     rel="stylesheet"
     href="style.css"
   >
+
+
+  <!-- =========================================
+       PROFILE CSS
+       ========================================= -->
 
   <style>
 
@@ -29,30 +41,42 @@
        ========================================= */
 
     body {
+
       min-height: 100vh;
+
     }
 
 
-    /* =========================================
-       ОСНОВНА СТОРІНКА
-       ========================================= */
-
     .profile-page {
+
       width: 100%;
-      min-height: calc(100vh - 76px);
+
+      min-height:
+        calc(
+          100vh - 76px
+        );
 
       display: flex;
-      justify-content: center;
 
-      padding: 50px 20px;
+      justify-content:
+        center;
 
-      box-sizing: border-box;
+      padding:
+        50px 20px;
+
+      box-sizing:
+        border-box;
+
     }
 
 
     .profile-container {
+
       width: 100%;
-      max-width: 900px;
+
+      max-width:
+        900px;
+
     }
 
 
@@ -61,24 +85,33 @@
        ========================================= */
 
     .profile-header {
-      margin-bottom: 30px;
+
+      margin-bottom:
+        30px;
+
     }
 
 
     .profile-header h1 {
-      margin: 0 0 10px;
 
-      font-size: clamp(
-        32px,
-        5vw,
-        52px
-      );
+      margin-bottom:
+        10px;
+
+      font-size:
+        clamp(
+          32px,
+          5vw,
+          52px
+        );
+
     }
 
 
     .profile-header p {
-      margin: 0;
-      opacity: 0.7;
+
+      opacity:
+        0.7;
+
     }
 
 
@@ -87,27 +120,33 @@
        ========================================= */
 
     .profile-card {
+
       background:
-        linear-gradient(
-          135deg,
-          rgba(255, 255, 255, 0.055),
-          rgba(255, 255, 255, 0.018)
+        rgba(
+          255,
+          255,
+          255,
+          0.04
         );
 
       border:
         1px solid
-        rgba(255, 255, 255, 0.12);
+        rgba(
+          255,
+          255,
+          255,
+          0.1
+        );
 
-      border-radius: 20px;
+      border-radius:
+        20px;
 
-      padding: 30px;
+      padding:
+        30px;
 
       backdrop-filter:
         blur(12px);
 
-      box-shadow:
-        0 20px 70px
-        rgba(0, 0, 0, 0.3);
     }
 
 
@@ -116,90 +155,84 @@
        ========================================= */
 
     .avatar-section {
-      display: flex;
 
-      align-items: center;
+      display:
+        flex;
 
-      gap: 28px;
+      align-items:
+        center;
 
-      margin-bottom: 35px;
+      gap:
+        25px;
 
-      padding-bottom: 30px;
+      margin-bottom:
+        35px;
+
+      padding-bottom:
+        30px;
 
       border-bottom:
         1px solid
-        rgba(255, 255, 255, 0.1);
-    }
-
-
-    /* СИНЬО-ЖОВТА УКРАЇНСЬКА РАМКА */
-
-    .avatar-frame {
-      width: 126px;
-      height: 126px;
-
-      flex-shrink: 0;
-
-      border-radius: 50%;
-
-      padding: 5px;
-
-      box-sizing: border-box;
-
-      background:
-        conic-gradient(
-          from 210deg,
-          #005bbb 0deg,
-          #005bbb 180deg,
-          #ffd700 180deg,
-          #ffd700 360deg
+        rgba(
+          255,
+          255,
+          255,
+          0.1
         );
 
-      box-shadow:
-        0 0 10px
-        rgba(0, 91, 187, 0.9),
-
-        0 0 22px
-        rgba(255, 215, 0, 0.65),
-
-        0 0 45px
-        rgba(0, 91, 187, 0.35);
     }
 
 
     .profile-avatar {
-      width: 100%;
-      height: 100%;
 
-      display: block;
+      width:
+        110px;
 
-      border-radius: 50%;
+      height:
+        110px;
 
-      object-fit: cover;
+      border-radius:
+        50%;
 
-      background: #171a20;
+      object-fit:
+        cover;
+
+      background:
+        rgba(
+          255,
+          255,
+          255,
+          0.08
+        );
 
       border:
-        3px solid
-        rgba(5, 7, 11, 0.95);
+        2px solid
+        rgba(
+          255,
+          255,
+          255,
+          0.15
+        );
+
     }
 
 
     .avatar-info h2 {
-      margin: 0 0 8px;
 
-      font-size: clamp(
-        22px,
-        3vw,
-        30px
-      );
+      margin:
+        0 0 8px;
+
     }
 
 
     .avatar-info p {
-      margin: 0;
 
-      opacity: 0.65;
+      margin:
+        0;
+
+      opacity:
+        0.65;
+
     }
 
 
@@ -208,84 +241,117 @@
        ========================================= */
 
     .profile-grid {
-      display: grid;
+
+      display:
+        grid;
 
       grid-template-columns:
         repeat(
           2,
-          minmax(0, 1fr)
+          minmax(
+            0,
+            1fr
+          )
         );
 
-      gap: 20px;
+      gap:
+        20px;
+
     }
 
 
     .profile-field {
-      display: flex;
 
-      flex-direction: column;
+      display:
+        flex;
 
-      gap: 8px;
+      flex-direction:
+        column;
+
+      gap:
+        8px;
+
     }
 
 
     .profile-field.full {
-      grid-column: 1 / -1;
+
+      grid-column:
+        1 / -1;
+
     }
 
 
     .profile-field label {
-      font-size: 14px;
 
-      opacity: 0.75;
+      font-size:
+        14px;
 
-      font-weight: 600;
+      opacity:
+        0.75;
+
     }
 
 
     .profile-field input {
-      width: 100%;
 
-      padding: 14px 16px;
+      width:
+        100%;
 
-      box-sizing: border-box;
+      padding:
+        14px 16px;
 
-      border-radius: 11px;
+      box-sizing:
+        border-box;
+
+      border-radius:
+        10px;
 
       border:
         1px solid
-        rgba(255, 255, 255, 0.14);
+        rgba(
+          255,
+          255,
+          255,
+          0.12
+        );
 
       background:
-        rgba(0, 0, 0, 0.25);
+        rgba(
+          0,
+          0,
+          0,
+          0.25
+        );
 
-      color: white;
+      color:
+        white;
 
-      font-size: 16px;
+      font-size:
+        16px;
 
-      outline: none;
+      outline:
+        none;
 
-      transition:
-        border-color 0.2s,
-        box-shadow 0.2s;
     }
 
 
     .profile-field input:focus {
-      border-color: #ffd34d;
 
-      box-shadow:
-        0 0 0 3px
-        rgba(255, 211, 77, 0.08);
+      border-color:
+        #ffd34d;
+
     }
 
 
-    /* =========================================
-       ФАЙЛ
-       ========================================= */
+    .profile-field input[readonly] {
 
-    .profile-field input[type="file"] {
-      padding: 12px;
+      opacity:
+        0.75;
+
+      cursor:
+        not-allowed;
+
     }
 
 
@@ -294,187 +360,442 @@
        ========================================= */
 
     .directions {
-      margin-top: 35px;
+
+      margin-top:
+        35px;
+
+      padding-top:
+        30px;
+
+      border-top:
+        1px solid
+        rgba(
+          255,
+          255,
+          255,
+          0.1
+        );
+
     }
 
 
     .directions h2 {
-      margin: 0 0 10px;
+
+      margin:
+        0 0 10px;
+
     }
 
 
     .directions-description {
-      opacity: 0.65;
 
-      margin: 0 0 20px;
-    }
+      opacity:
+        0.65;
 
+      margin-bottom:
+        20px;
 
-    .direction-list {
-      display: grid;
-
-      grid-template-columns:
-        repeat(
-          auto-fit,
-          minmax(180px, 1fr)
-        );
-
-      gap: 15px;
-    }
-
-
-    .direction-item {
-      display: flex;
-
-      align-items: center;
-
-      gap: 10px;
-
-      padding: 16px;
-
-      border-radius: 12px;
-
-      cursor: pointer;
-
-      background:
-        rgba(255, 255, 255, 0.035);
-
-      border:
-        1px solid
-        rgba(255, 255, 255, 0.09);
-
-      transition:
-        transform 0.2s,
-        border-color 0.2s,
-        background 0.2s;
-    }
-
-
-    .direction-item:hover {
-      transform:
-        translateY(-2px);
-
-      border-color:
-        rgba(255, 211, 77, 0.65);
-
-      background:
-        rgba(255, 211, 77, 0.04);
-    }
-
-
-    .direction-item input {
-      width: 18px;
-      height: 18px;
-
-      accent-color: #ffd34d;
     }
 
 
     /* =========================================
-       МОЯ ЗАЯВКА
+       СТАТУСИ НАПРЯМКІВ
        ========================================= */
 
-    .application-status {
-      margin-top: 35px;
+    .directions-status {
 
-      padding-top: 30px;
+      display:
+        grid;
+
+      grid-template-columns:
+        repeat(
+          auto-fit,
+          minmax(
+            240px,
+            1fr
+          )
+        );
+
+      gap:
+        15px;
+
+    }
+
+
+    /* =========================================
+       КАРТКА НАПРЯМКУ
+       ========================================= */
+
+    .direction-status-card {
+
+      padding:
+        20px;
+
+      border-radius:
+        14px;
+
+      background:
+        rgba(
+          255,
+          255,
+          255,
+          0.04
+        );
+
+      border:
+        1px solid
+        rgba(
+          255,
+          255,
+          255,
+          0.08
+        );
+
+      transition:
+        0.2s;
+
+    }
+
+
+    .direction-status-card:hover {
+
+      transform:
+        translateY(-2px);
+
+      background:
+        rgba(
+          255,
+          255,
+          255,
+          0.06
+        );
+
+    }
+
+
+    .direction-status-card h3 {
+
+      margin:
+        0 0 12px;
+
+      font-size:
+        17px;
+
+    }
+
+
+    .direction-status-card p {
+
+      margin:
+        7px 0;
+
+      font-size:
+        14px;
+
+      opacity:
+        0.75;
+
+      line-height:
+        1.45;
+
+    }
+
+
+    .direction-status-card
+    .direction-status {
+
+      margin:
+        0 0 12px;
+
+      font-weight:
+        700;
+
+      opacity:
+        1;
+
+    }
+
+
+    /* =========================================
+       ACTIVE
+       ========================================= */
+
+    .direction-status-card.active {
+
+      border-color:
+        rgba(
+          98,
+          229,
+          156,
+          0.65
+        );
+
+    }
+
+
+    .direction-status-card.active
+    .direction-status {
+
+      color:
+        #62e59c;
+
+    }
+
+
+    /* =========================================
+       PENDING
+       ========================================= */
+
+    .direction-status-card.pending {
+
+      border-color:
+        rgba(
+          255,
+          211,
+          77,
+          0.55
+        );
+
+    }
+
+
+    .direction-status-card.pending
+    .direction-status {
+
+      color:
+        #ffd34d;
+
+    }
+
+
+    /* =========================================
+       REJECTED
+       ========================================= */
+
+    .direction-status-card.rejected {
+
+      border-color:
+        rgba(
+          255,
+          112,
+          112,
+          0.55
+        );
+
+    }
+
+
+    .direction-status-card.rejected
+    .direction-status {
+
+      color:
+        #ff7070;
+
+    }
+
+
+    /* =========================================
+       APPROVED WAITING
+       ========================================= */
+
+    .direction-status-card.approved_waiting {
+
+      border-color:
+        rgba(
+          255,
+          211,
+          77,
+          0.55
+        );
+
+    }
+
+
+    .direction-status-card.approved_waiting
+    .direction-status {
+
+      color:
+        #ffd34d;
+
+    }
+
+
+    /* =========================================
+       КНОПКА ЗАЯВКИ
+       ========================================= */
+
+    .direction-apply-button {
+
+      display:
+        inline-flex;
+
+      align-items:
+        center;
+
+      justify-content:
+        center;
+
+      margin-top:
+        12px;
+
+      padding:
+        10px 15px;
+
+      border-radius:
+        9px;
+
+      background:
+        #ffd34d;
+
+      color:
+        #111;
+
+      text-decoration:
+        none;
+
+      font-size:
+        13px;
+
+      font-weight:
+        700;
+
+      transition:
+        0.2s;
+
+    }
+
+
+    .direction-apply-button:hover {
+
+      transform:
+        translateY(-2px);
+
+      filter:
+        brightness(
+          1.08
+        );
+
+    }
+
+
+    /* =========================================
+       МОЇ ЗАЯВКИ
+       ========================================= */
+
+    .application-section {
+
+      margin-top:
+        35px;
+
+      padding-top:
+        30px;
 
       border-top:
         1px solid
-        rgba(255, 255, 255, 0.1);
+        rgba(
+          255,
+          255,
+          255,
+          0.1
+        );
+
     }
 
 
-    .application-status h2 {
-      margin: 0 0 10px;
-    }
+    .application-section h2 {
 
+      margin:
+        0 0 10px;
 
-    .application-description {
-      opacity: 0.65;
-
-      margin: 0 0 20px;
     }
 
 
     .application-card {
-      padding: 20px;
 
-      border-radius: 14px;
+      padding:
+        18px;
+
+      border-radius:
+        12px;
 
       background:
-        rgba(255, 255, 255, 0.04);
+        rgba(
+          255,
+          255,
+          255,
+          0.04
+        );
 
       border:
         1px solid
-        rgba(255, 255, 255, 0.08);
+        rgba(
+          255,
+          255,
+          255,
+          0.08
+        );
+
     }
 
 
     .application-card h3 {
-      margin: 0 0 10px;
 
-      font-size: 20px;
+      margin:
+        0 0 10px;
+
+      font-size:
+        17px;
+
     }
 
 
     .application-card p {
-      margin: 0;
 
-      opacity: 0.75;
-    }
+      margin:
+        7px 0;
 
+      opacity:
+        0.7;
 
-    .application-card.pending {
-      border-color:
-        rgba(255, 211, 77, 0.7);
-
-      box-shadow:
-        0 0 20px
-        rgba(255, 211, 77, 0.05);
     }
 
 
     .application-card.approved {
-      border-color:
-        rgba(98, 229, 156, 0.75);
 
-      box-shadow:
-        0 0 20px
-        rgba(98, 229, 156, 0.05);
+      border-color:
+        rgba(
+          98,
+          229,
+          156,
+          0.55
+        );
+
+    }
+
+
+    .application-card.pending {
+
+      border-color:
+        rgba(
+          255,
+          211,
+          77,
+          0.55
+        );
+
     }
 
 
     .application-card.rejected {
+
       border-color:
-        rgba(255, 112, 112, 0.75);
-    }
+        rgba(
+          255,
+          112,
+          112,
+          0.55
+        );
 
-
-    .application-card.none {
-      opacity: 0.8;
-    }
-
-
-    .members-link {
-      display: inline-flex;
-
-      align-items: center;
-      justify-content: center;
-
-      margin-top: 15px;
-
-      padding: 12px 20px;
-
-      border-radius: 10px;
-
-      background: #ffd34d;
-
-      color: #111;
-
-      text-decoration: none;
-
-      font-weight: 700;
     }
 
 
@@ -483,299 +804,246 @@
        ========================================= */
 
     .user-roles {
-      margin-top: 35px;
 
-      padding-top: 30px;
+      margin-top:
+        35px;
+
+      padding-top:
+        30px;
 
       border-top:
         1px solid
-        rgba(255, 255, 255, 0.1);
+        rgba(
+          255,
+          255,
+          255,
+          0.1
+        );
+
     }
 
 
     .user-roles h2 {
-      margin: 0 0 10px;
+
+      margin:
+        0 0 10px;
+
     }
 
 
     .roles-description {
-      opacity: 0.65;
 
-      margin: 0 0 20px;
+      opacity:
+        0.65;
+
+      margin-bottom:
+        20px;
+
     }
 
 
     .roles-list {
-      display: grid;
+
+      display:
+        grid;
 
       grid-template-columns:
         repeat(
           auto-fit,
-          minmax(220px, 1fr)
+          minmax(
+            220px,
+            1fr
+          )
         );
 
-      gap: 15px;
+      gap:
+        15px;
+
     }
 
 
-    /* ЗВИЧАЙНА РОЛЬ */
-
     .role-card {
-      position: relative;
 
-      padding: 18px;
+      padding:
+        18px;
 
-      border-radius: 12px;
-
-      overflow: hidden;
+      border-radius:
+        12px;
 
       background:
-        linear-gradient(
-          135deg,
-          rgba(255, 255, 255, 0.055),
-          rgba(255, 255, 255, 0.02)
+        rgba(
+          255,
+          255,
+          255,
+          0.04
         );
 
       border:
         1px solid
-        rgba(255, 255, 255, 0.1);
+        rgba(
+          255,
+          255,
+          255,
+          0.08
+        );
 
-      transition:
-        transform 0.2s,
-        box-shadow 0.2s;
     }
 
 
-    .role-card:hover {
-      transform:
-        translateY(-2px);
+    .role-card.global {
 
-      box-shadow:
-        0 12px 30px
-        rgba(0, 0, 0, 0.25);
+      border-color:
+        rgba(
+          255,
+          211,
+          77,
+          0.55
+        );
+
     }
 
 
     .role-card h3 {
-      position: relative;
 
-      margin: 0 0 8px;
+      margin:
+        0 0 8px;
 
-      font-size: 17px;
+      font-size:
+        17px;
 
-      z-index: 1;
     }
 
 
     .role-card p {
-      position: relative;
 
-      margin: 0;
+      margin:
+        0;
 
-      opacity: 0.7;
+      opacity:
+        0.7;
 
-      font-size: 14px;
+      font-size:
+        14px;
 
-      z-index: 1;
+      line-height:
+        1.45;
+
     }
 
-
-    /* =========================================
-       ГЛОБАЛЬНА АДМІНІСТРАЦІЯ
-       СИНЬО-ЖОВТА КАРТКА
-       ========================================= */
-
-    .role-card.global {
-      border: none;
-
-      padding: 19px;
-
-      background:
-        linear-gradient(
-          135deg,
-          #005bbb,
-          #003f80 48%,
-          #ffd700 48%,
-          #e6b800
-        );
-
-      box-shadow:
-        0 0 20px
-        rgba(0, 91, 187, 0.25),
-
-        0 0 30px
-        rgba(255, 215, 0, 0.12);
-    }
-
-
-    /* Внутрішня темна частина */
-
-    .role-card.global::before {
-      content: "";
-
-      position: absolute;
-
-      inset: 3px;
-
-      border-radius: 10px;
-
-      background:
-        linear-gradient(
-          135deg,
-          rgba(0, 91, 187, 0.3),
-          rgba(8, 11, 18, 0.96) 45%,
-          rgba(255, 215, 0, 0.12)
-        );
-
-      z-index: 0;
-    }
-
-
-    /* УКРАЇНСЬКИЙ АКЦЕНТ */
-
-    .role-card.global::after {
-      content: "🇺🇦";
-
-      position: absolute;
-
-      top: 12px;
-      right: 15px;
-
-      font-size: 24px;
-
-      opacity: 0.9;
-    }
-
-
-    .role-card.global h3 {
-      color: #ffffff;
-
-      text-shadow:
-        0 0 12px
-        rgba(255, 215, 0, 0.35);
-    }
-
-
-    .role-card.global p {
-      color: #dcecff;
-    }
-
-
-    /* =========================================
-       ПОРОЖНІ РОЛІ
-       ========================================= */
 
     .roles-empty {
-      padding: 18px;
 
-      border-radius: 12px;
+      padding:
+        18px;
+
+      border-radius:
+        12px;
 
       background:
-        rgba(255, 255, 255, 0.04);
+        rgba(
+          255,
+          255,
+          255,
+          0.04
+        );
 
-      opacity: 0.7;
+      opacity:
+        0.7;
+
     }
 
 
     /* =========================================
-       КНОПКИ
+       КНОПКИ ПРОФІЛЮ
        ========================================= */
 
     .profile-actions {
-      display: flex;
 
-      gap: 15px;
+      display:
+        flex;
 
-      margin-top: 35px;
+      gap:
+        15px;
 
-      flex-wrap: wrap;
+      margin-top:
+        35px;
+
+      flex-wrap:
+        wrap;
+
     }
 
 
-    .profile-actions button,
-    .join-application-button {
-      padding: 14px 25px;
+    .profile-actions button {
 
-      border-radius: 10px;
+      padding:
+        14px 25px;
 
-      border: none;
+      border-radius:
+        10px;
 
-      cursor: pointer;
+      border:
+        none;
 
-      font-size: 15px;
+      cursor:
+        pointer;
 
-      font-weight: 700;
+      font-size:
+        15px;
 
-      transition:
-        transform 0.2s,
-        filter 0.2s,
-        box-shadow 0.2s;
+      font-weight:
+        700;
+
     }
 
 
     #saveProfile {
-      background: #ffd34d;
 
-      color: #111;
+      background:
+        #ffd34d;
 
-      box-shadow:
-        0 8px 20px
-        rgba(255, 211, 77, 0.15);
+      color:
+        #111;
+
     }
 
 
     #saveProfile:hover {
-      transform:
-        translateY(-2px);
 
       filter:
-        brightness(1.08);
-    }
+        brightness(
+          1.08
+        );
 
-
-    .join-application-button {
-      display: inline-flex;
-
-      align-items: center;
-      justify-content: center;
-
-      box-sizing: border-box;
-
-      text-decoration: none;
-
-      background: #f5b400;
-
-      color: #111;
-    }
-
-
-    .join-application-button:hover {
-      transform:
-        translateY(-2px);
-
-      filter:
-        brightness(1.08);
     }
 
 
     #logoutButton {
+
       background:
-        rgba(255, 255, 255, 0.08);
+        rgba(
+          255,
+          255,
+          255,
+          0.08
+        );
 
-      color: white;
+      color:
+        white;
 
-      border:
-        1px solid
-        rgba(255, 255, 255, 0.1);
     }
 
 
     #logoutButton:hover {
-      background:
-        rgba(255, 80, 80, 0.12);
 
-      border-color:
-        rgba(255, 80, 80, 0.4);
+      background:
+        rgba(
+          255,
+          255,
+          255,
+          0.13
+        );
+
     }
 
 
@@ -784,21 +1052,32 @@
        ========================================= */
 
     .profile-message {
-      margin-top: 20px;
 
-      min-height: 20px;
+      margin-top:
+        20px;
 
-      font-size: 14px;
+      min-height:
+        20px;
+
+      font-size:
+        14px;
+
     }
 
 
     .profile-message.success {
-      color: #62e59c;
+
+      color:
+        #62e59c;
+
     }
 
 
     .profile-message.error {
-      color: #ff7070;
+
+      color:
+        #ff7070;
+
     }
 
 
@@ -806,44 +1085,74 @@
        МОБІЛЬНА ВЕРСІЯ
        ========================================= */
 
-    @media (max-width: 700px) {
+    @media (
+      max-width: 700px
+    ) {
 
       .profile-page {
-        padding: 30px 15px;
+
+        padding:
+          30px 15px;
+
       }
 
 
       .profile-grid {
-        grid-template-columns: 1fr;
+
+        grid-template-columns:
+          1fr;
+
       }
 
 
       .avatar-section {
-        flex-direction: column;
 
-        text-align: center;
+        flex-direction:
+          column;
+
+        text-align:
+          center;
+
       }
 
 
       .profile-card {
-        padding: 20px;
+
+        padding:
+          20px;
+
+      }
+
+
+      .directions-status {
+
+        grid-template-columns:
+          1fr;
+
+      }
+
+
+      .roles-list {
+
+        grid-template-columns:
+          1fr;
+
       }
 
 
       .profile-actions {
-        flex-direction: column;
+
+        flex-direction:
+          column;
+
       }
 
 
-      .profile-actions button,
-      .join-application-button {
-        width: 100%;
-      }
+      .profile-actions button {
 
+        width:
+          100%;
 
-      .avatar-frame {
-        width: 120px;
-        height: 120px;
       }
 
     }
@@ -855,6 +1164,7 @@
 
 <body>
 
+
   <div class="noise"></div>
 
 
@@ -863,6 +1173,9 @@
        ========================================= -->
 
   <header class="topbar">
+
+
+    <!-- BRAND -->
 
     <a
       class="brand"
@@ -881,6 +1194,8 @@
     </a>
 
 
+    <!-- MOBILE MENU -->
+
     <button
       class="menu-btn"
       aria-label="Відкрити меню"
@@ -889,32 +1204,42 @@
     </button>
 
 
+    <!-- NAVIGATION -->
+
     <nav class="nav">
+
 
       <a href="index.html">
         Головна
       </a>
 
+
       <a href="about.html">
         Про нас
       </a>
+
 
       <a href="games.html">
         Ігри
       </a>
 
+
       <a href="events.html">
         Події
       </a>
+
 
       <a href="media.html">
         Медіа
       </a>
 
+
       <a href="gallery.html">
         Галерея
       </a>
 
+
+      <!-- TIKTOK -->
 
       <a
         href="https://www.tiktok.com/@ua_legion_"
@@ -924,6 +1249,8 @@
         TikTok
       </a>
 
+
+      <!-- DISCORD -->
 
       <a
         href="https://discord.gg/gfunf3yq7"
@@ -935,6 +1262,8 @@
       </a>
 
 
+      <!-- PERSONAL CABINET -->
+
       <a
         href="profile.html"
         id="authButton"
@@ -942,7 +1271,9 @@
         Мій кабінет
       </a>
 
+
     </nav>
+
 
   </header>
 
@@ -953,10 +1284,13 @@
 
   <main class="profile-page">
 
+
     <div class="profile-container">
 
 
-      <!-- ЗАГОЛОВОК -->
+      <!-- =====================================
+           ЗАГОЛОВОК
+           ===================================== -->
 
       <div class="profile-header">
 
@@ -965,13 +1299,15 @@
         </h1>
 
         <p>
-          Налаштуйте свій профіль UA LEGION
+          Особистий профіль учасника UA LEGION
         </p>
 
       </div>
 
 
-      <!-- КАРТКА -->
+      <!-- =====================================
+           КАРТКА
+           ===================================== -->
 
       <div class="profile-card">
 
@@ -983,40 +1319,42 @@
         <div class="avatar-section">
 
 
-          <!-- СИНЬО-ЖОВТА РАМКА -->
-
-          <div class="avatar-frame">
-
-            <img
-              id="profileAvatar"
-              class="profile-avatar"
-              src="ua-legion-logo.png"
-              alt="Аватар"
-            >
-
-          </div>
+          <img
+            id="profileAvatar"
+            class="profile-avatar"
+            src="ua-legion-logo.png"
+            alt="Аватар"
+          >
 
 
           <div class="avatar-info">
 
-            <h2 id="profileNamePreview">
+
+            <h2
+              id="profileNamePreview"
+            >
               UA LEGION Member
             </h2>
+
 
             <p>
               Особистий профіль
             </p>
 
+
           </div>
+
 
         </div>
 
 
         <!-- =====================================
-             ФОРМА
+             ФОРМА ПРОФІЛЮ
              ===================================== -->
 
-        <form id="profileForm">
+        <form
+          id="profileForm"
+        >
 
 
           <div class="profile-grid">
@@ -1039,7 +1377,7 @@
             </div>
 
 
-            <!-- ДАТА -->
+            <!-- ДАТА НАРОДЖЕННЯ -->
 
             <div class="profile-field">
 
@@ -1066,13 +1404,13 @@
               <input
                 type="file"
                 id="avatarUrl"
-                accept="image/png,image/jpeg,image/jpg,image/webp"
+                accept="image/*"
               >
 
             </div>
 
 
-            <!-- DISCORD -->
+            <!-- DISCORD USERNAME -->
 
             <div class="profile-field">
 
@@ -1083,7 +1421,8 @@
               <input
                 type="text"
                 id="discordUsername"
-                placeholder="Наприклад: ADVOKAT"
+                placeholder="Discord"
+                readonly
               >
 
             </div>
@@ -1100,13 +1439,14 @@
               <input
                 type="text"
                 id="discordUserId"
-                placeholder="Ваш Discord ID"
+                placeholder="Discord ID"
+                readonly
               >
 
             </div>
 
 
-            <!-- STEAM -->
+            <!-- STEAM ID -->
 
             <div class="profile-field">
 
@@ -1123,7 +1463,7 @@
             </div>
 
 
-            <!-- GAME NICK -->
+            <!-- GAME NICKNAME -->
 
             <div class="profile-field">
 
@@ -1144,93 +1484,63 @@
 
 
           <!-- =====================================
-               НАПРЯМКИ
+               НАПРЯМКИ UA LEGION
                ===================================== -->
 
-          <section class="directions">
+          <section
+            class="directions"
+          >
+
 
             <h2>
               📍 Напрямки UA LEGION
             </h2>
 
-            <p class="directions-description">
-              Можна вибрати один або декілька напрямків.
+
+            <p
+              class="directions-description"
+            >
+              Тут відображається ваш поточний статус
+              у кожному напрямку UA LEGION.
             </p>
 
 
-            <div class="direction-list">
+            <!--
+              Дані сюди завантажує profile.js.
 
+              Користувач НЕ може призначити
+              собі напрямок самостійно.
+            -->
 
-              <label class="direction-item">
+            <div
+              id="directionsStatus"
+              class="directions-status"
+            >
 
-                <input
-                  type="checkbox"
-                  value="ets2"
-                  name="direction"
-                >
-
-                🚛 ETS2 / TruckersMP
-
-              </label>
-
-
-              <label class="direction-item">
-
-                <input
-                  type="checkbox"
-                  value="wot"
-                  name="direction"
-                >
-
-                🪖 World of Tanks
-
-              </label>
-
-
-              <label class="direction-item">
-
-                <input
-                  type="checkbox"
-                  value="dota2"
-                  name="direction"
-                >
-
-                ⚔️ Dota 2
-
-              </label>
-
-
-              <label class="direction-item">
-
-                <input
-                  type="checkbox"
-                  value="wow"
-                  name="direction"
-                >
-
-                🐉 World of Warcraft
-
-              </label>
-
+              <div
+                class="roles-empty"
+              >
+                Завантаження напрямків...
+              </div>
 
             </div>
+
 
           </section>
 
 
           <!-- =====================================
-               МОЯ ЗАЯВКА
+               МОЇ ЗАЯВКИ
                ===================================== -->
 
-          <section class="application-status">
+          <section
+            class="application-section"
+          >
+
 
             <h2>
-              📋 Моя заявка
+              📝 Мої заявки
             </h2>
-
-            <p class="application-description">
-              Тут відображається поточний статус вашої заявки до UA LEGION.
-            </p>
 
 
             <div
@@ -1243,10 +1553,11 @@
               </h3>
 
               <p>
-                Перевіряємо інформацію про вашу заявку.
+                Перевіряємо статус заявок.
               </p>
 
             </div>
+
 
           </section>
 
@@ -1255,14 +1566,21 @@
                МОЇ РОЛІ
                ===================================== -->
 
-          <section class="user-roles">
+          <section
+            class="user-roles"
+          >
+
 
             <h2>
               🏅 Мої ролі
             </h2>
 
-            <p class="roles-description">
-              Ваші ролі та посади в UA LEGION.
+
+            <p
+              class="roles-description"
+            >
+              Ваші глобальні ролі та посади
+              у напрямках UA LEGION.
             </p>
 
 
@@ -1271,11 +1589,14 @@
               class="roles-list"
             >
 
-              <div class="roles-empty">
+              <div
+                class="roles-empty"
+              >
                 Завантаження ролей...
               </div>
 
             </div>
+
 
           </section>
 
@@ -1284,8 +1605,12 @@
                КНОПКИ
                ===================================== -->
 
-          <div class="profile-actions">
+          <div
+            class="profile-actions"
+          >
 
+
+            <!-- SAVE -->
 
             <button
               type="submit"
@@ -1295,14 +1620,7 @@
             </button>
 
 
-            <a
-              href="join.html"
-              class="join-application-button"
-              id="joinButton"
-            >
-              📝 ПОДАТИ ЗАЯВКУ
-            </a>
-
+            <!-- LOGOUT -->
 
             <button
               type="button"
@@ -1315,6 +1633,10 @@
           </div>
 
 
+          <!-- =====================================
+               MESSAGE
+               ===================================== -->
+
           <div
             id="profileMessage"
             class="profile-message"
@@ -1323,30 +1645,36 @@
 
         </form>
 
+
       </div>
 
+
     </div>
+
 
   </main>
 
 
   <!-- =========================================
-       SUPABASE
+       JAVASCRIPT
        ========================================= -->
+
+
+  <!-- SUPABASE -->
 
   <script
     src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
   ></script>
 
 
-  <!-- SUPABASE CONFIG -->
+  <!-- SUPABASE CONNECTION -->
 
   <script
     src="supabase.js"
   ></script>
 
 
-  <!-- АВТОРИЗАЦІЯ -->
+  <!-- AUTH MENU -->
 
   <script
     src="auth-menu.js"
@@ -1356,7 +1684,7 @@
   <!-- PROFILE -->
 
   <script
-    src="profile.js"
+    src="profile.js?v=6"
   ></script>
 
 
