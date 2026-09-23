@@ -32,7 +32,6 @@
       font-family: Arial, sans-serif;
     }
 
-
     .login-page {
       min-height: calc(100vh - 76px);
       display: flex;
@@ -41,7 +40,6 @@
       padding: 30px;
       box-sizing: border-box;
     }
-
 
     .login-box {
       width: 100%;
@@ -52,12 +50,10 @@
       box-sizing: border-box;
     }
 
-
     .login-logo {
       text-align: center;
       margin-bottom: 25px;
     }
-
 
     .login-logo img {
       width: 90px;
@@ -65,12 +61,10 @@
       object-fit: contain;
     }
 
-
     .login-box h1 {
       text-align: center;
       margin-bottom: 10px;
     }
-
 
     .login-description {
       text-align: center;
@@ -78,13 +72,11 @@
       margin-bottom: 30px;
     }
 
-
     .login-form {
       display: flex;
       flex-direction: column;
       gap: 15px;
     }
-
 
     .login-form input {
       width: 100%;
@@ -96,12 +88,10 @@
       font-size: 15px;
     }
 
-
     .login-form input:focus {
       outline: none;
       border-color: #f5b400;
     }
-
 
     .login-button {
       padding: 15px;
@@ -113,31 +103,38 @@
       font-size: 15px;
     }
 
-
     .login-button:disabled {
       opacity: 0.6;
       cursor: not-allowed;
     }
 
-
-    .google-button {
+    .google-button,
+    .discord-button {
       width: 100%;
       padding: 15px;
-      margin-top: 20px;
-      background: #ffffff;
-      color: #111;
       border: none;
       cursor: pointer;
       font-weight: bold;
       font-size: 15px;
     }
 
+    .google-button {
+      margin-top: 20px;
+      background: #ffffff;
+      color: #111;
+    }
 
-    .google-button:disabled {
+    .discord-button {
+      margin-top: 12px;
+      background: #5865F2;
+      color: #ffffff;
+    }
+
+    .google-button:disabled,
+    .discord-button:disabled {
       opacity: 0.6;
       cursor: not-allowed;
     }
-
 
     .divider {
       display: flex;
@@ -147,7 +144,6 @@
       color: #777;
     }
 
-
     .divider::before,
     .divider::after {
       content: "";
@@ -156,13 +152,11 @@
       background: #2b3340;
     }
 
-
     .login-switch {
       text-align: center;
       margin-top: 20px;
       color: #aaa;
     }
-
 
     .login-switch button {
       background: none;
@@ -172,7 +166,6 @@
       font-weight: bold;
     }
 
-
     .message {
       margin-top: 20px;
       padding: 12px;
@@ -181,14 +174,12 @@
       font-size: 14px;
     }
 
-
     .message.error {
       display: block;
       background: rgba(220, 38, 38, 0.15);
       border: 1px solid #dc2626;
       color: #ff8a8a;
     }
-
 
     .message.success {
       display: block;
@@ -197,7 +188,6 @@
       color: #86efac;
     }
 
-
     .message.info {
       display: block;
       background: rgba(245, 180, 0, 0.12);
@@ -205,13 +195,11 @@
       color: #f5b400;
     }
 
-
     @media (max-width: 600px) {
 
       .login-page {
         padding: 15px;
       }
-
 
       .login-box {
         padding: 25px;
@@ -227,12 +215,9 @@
 <body>
 
 
-  <!-- ====================================== -->
   <!-- ВЕРХНЄ МЕНЮ -->
-  <!-- ====================================== -->
 
   <header class="topbar">
-
 
     <a
       class="brand"
@@ -261,36 +246,29 @@
 
     <nav class="nav">
 
-
       <a href="index.html">
         Головна
       </a>
-
 
       <a href="about.html">
         Про нас
       </a>
 
-
       <a href="games.html">
         Ігри
       </a>
-
 
       <a href="events.html">
         Події
       </a>
 
-
       <a href="media.html">
         Медіа
       </a>
 
-
       <a href="gallery.html">
         Галерея
       </a>
-
 
       <a
         href="https://www.tiktok.com/@ua_legion_"
@@ -299,7 +277,6 @@
       >
         TikTok
       </a>
-
 
       <a
         href="https://discord.gg/gfunf3yq7"
@@ -310,9 +287,6 @@
         Discord
       </a>
 
-
-      <!-- АВТОРИЗАЦІЯ -->
-
       <a
         href="login.html"
         id="authButton"
@@ -320,23 +294,17 @@
         Увійти / Реєстрація
       </a>
 
-
     </nav>
 
   </header>
 
 
-  <!-- ====================================== -->
   <!-- СТОРІНКА ВХОДУ -->
-  <!-- ====================================== -->
 
   <main class="login-page">
 
-
     <section class="login-box">
 
-
-      <!-- ЛОГОТИП -->
 
       <div class="login-logo">
 
@@ -348,8 +316,6 @@
       </div>
 
 
-      <!-- ЗАГОЛОВОК -->
-
       <h1 id="form-title">
         Вхід до UA LEGION
       </h1>
@@ -360,15 +326,12 @@
       </p>
 
 
-      <!-- ====================================== -->
       <!-- EMAIL / ПАРОЛЬ -->
-      <!-- ====================================== -->
 
       <form
         class="login-form"
         id="auth-form"
       >
-
 
         <input
           type="email"
@@ -377,7 +340,6 @@
           autocomplete="email"
           required
         >
-
 
         <input
           type="password"
@@ -388,7 +350,6 @@
           required
         >
 
-
         <button
           type="submit"
           class="login-button"
@@ -397,22 +358,15 @@
           УВІЙТИ
         </button>
 
-
       </form>
 
-
-      <!-- ====================================== -->
-      <!-- РОЗДІЛЮВАЧ -->
-      <!-- ====================================== -->
 
       <div class="divider">
         або
       </div>
 
 
-      <!-- ====================================== -->
       <!-- GOOGLE -->
-      <!-- ====================================== -->
 
       <button
         type="button"
@@ -423,17 +377,22 @@
       </button>
 
 
-      <!-- ====================================== -->
-      <!-- ПЕРЕМИКАННЯ ВХІД / РЕЄСТРАЦІЯ -->
-      <!-- ====================================== -->
+      <!-- DISCORD -->
+
+      <button
+        type="button"
+        class="discord-button"
+        id="discord-login"
+      >
+        УВІЙТИ ЧЕРЕЗ DISCORD
+      </button>
+
 
       <div class="login-switch">
-
 
         <span id="switch-text">
           Ще немає акаунта?
         </span>
-
 
         <button
           type="button"
@@ -442,13 +401,8 @@
           Реєстрація
         </button>
 
-
       </div>
 
-
-      <!-- ====================================== -->
-      <!-- ПОВІДОМЛЕННЯ -->
-      <!-- ====================================== -->
 
       <div
         class="message"
@@ -461,25 +415,17 @@
   </main>
 
 
-  <!-- ====================================== -->
   <!-- SUPABASE -->
-  <!-- ====================================== -->
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-
   <script src="supabase.js"></script>
-
 
   <script src="auth-menu.js"></script>
 
-
-  <!-- ====================================== -->
   <!-- LOGIN SYSTEM -->
-  <!-- CACHE BUSTING v4 -->
-  <!-- ====================================== -->
 
-  <script src="login.js?v=4"></script>
+  <script src="login.js?v=5"></script>
 
 
 </body>
