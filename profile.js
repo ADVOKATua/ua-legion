@@ -26,7 +26,7 @@ document.addEventListener(
 
 
     // ======================================
-    // АВТОРИЗАЦІЯ
+    // AUTH
     // ======================================
 
     const {
@@ -34,7 +34,8 @@ document.addEventListener(
         user
       },
       error: userError
-    } = await supabase.auth.getUser();
+    } =
+      await supabase.auth.getUser();
 
 
     if (
@@ -131,20 +132,20 @@ document.addEventListener(
       );
 
 
+    const globalRolesSection =
+      document.getElementById(
+        "globalRolesSection"
+      );
+
+
     const directionsStatus =
       document.getElementById(
         "directionsStatus"
       );
 
 
-    const applicationStatus =
-      document.getElementById(
-        "applicationStatus"
-      );
-
-
     // ======================================
-    // VARIABLES
+    // STATE
     // ======================================
 
     let currentAvatarUrl =
@@ -152,10 +153,6 @@ document.addEventListener(
 
 
     let previewObjectUrl =
-      null;
-
-
-    let currentProfile =
       null;
 
 
@@ -253,11 +250,11 @@ document.addEventListener(
     // ======================================
 
     function getGlobalRoleIcon(
-      roleCode
+      code
     ) {
 
       switch (
-        normalize(roleCode)
+        normalize(code)
       ) {
 
         case "owner":
@@ -300,37 +297,48 @@ document.addEventListener(
       direction
     ) {
 
-      const value =
+      const key =
         normalize(
           direction?.slug ||
           direction?.code ||
+          direction?.name ||
           direction
         );
 
 
-      switch (value) {
+      switch (key) {
 
         case "ets2":
         case "ets":
         case "truckersmp":
+        case "ets2 / truckersmp":
+
           return "🚛";
+
 
         case "wot":
         case "world_of_tanks":
         case "world of tanks":
+
           return "🪖";
+
 
         case "dota":
         case "dota2":
         case "dota 2":
+
           return "🎮";
+
 
         case "wow":
         case "world_of_warcraft":
         case "world of warcraft":
+
           return "🐉";
 
+
         default:
+
           return "📍";
 
       }
@@ -346,7 +354,7 @@ document.addEventListener(
       direction
     ) {
 
-      const value =
+      const key =
         normalize(
           direction?.slug ||
           direction?.code ||
@@ -355,7 +363,7 @@ document.addEventListener(
         );
 
 
-      switch (value) {
+      switch (key) {
 
         case "ets2":
         case "ets":
@@ -446,7 +454,7 @@ document.addEventListener(
       };
 
 
-      const value =
+      const key =
         String(
           driverClass ?? ""
         )
@@ -455,10 +463,10 @@ document.addEventListener(
 
 
       return (
-        names[value] ||
+        names[key] ||
         (
-          value
-            ? `Клас ${value}`
+          key
+            ? `Клас ${key}`
             : ""
         )
       );
@@ -467,10 +475,10 @@ document.addEventListener(
 
 
     // ======================================
-    // APPLICATION STATUS NAME
+    // APPLICATION STATUS
     // ======================================
 
-    function getApplicationStatusName(
+    function getApplicationStatusText(
       status
     ) {
 
@@ -479,15 +487,22 @@ document.addEventListener(
       ) {
 
         case "pending":
+
           return "🟡 На розгляді";
 
+
         case "approved":
+
           return "🟢 Схвалено";
 
+
         case "rejected":
+
           return "🔴 Відхилено";
 
+
         default:
+
           return (
             status ||
             "Невідомий статус"
@@ -502,9 +517,11 @@ document.addEventListener(
     // APPLICATION DIRECTION
     // ======================================
 
-    function getApplicationDirection(
+    function getApplicationDirectionKey(
       application
     ) {
+
+      // direction
 
       if (
         application?.direction !==
@@ -523,6 +540,8 @@ document.addEventListener(
       }
 
 
+      // directions array
+
       if (
         Array.isArray(
           application?.directions
@@ -536,6 +555,8 @@ document.addEventListener(
 
       }
 
+
+      // directions string
 
       if (
         typeof application?.directions ===
@@ -554,15 +575,17 @@ document.addEventListener(
       }
 
 
+      // direction_id
+
       if (
         application?.direction_id
       ) {
 
-        const found =
+        const direction =
           allDirections.find(
-            direction =>
+            item =>
               String(
-                direction.id
+                item.id
               ) ===
               String(
                 application.direction_id
@@ -570,10 +593,10 @@ document.addEventListener(
           );
 
 
-        if (found) {
+        if (direction) {
 
           return getDirectionKey(
-            found
+            direction
           );
 
         }
@@ -587,7 +610,7 @@ document.addEventListener(
 
 
     // ======================================
-    // PREVIEW AVATAR
+    // AVATAR PREVIEW
     // ======================================
 
     if (avatarUrl) {
@@ -620,6 +643,7 @@ document.addEventListener(
               "";
 
             return;
+
           }
 
 
@@ -637,6 +661,7 @@ document.addEventListener(
               "";
 
             return;
+
           }
 
 
@@ -679,14 +704,15 @@ document.addEventListener(
       const {
         data: profile,
         error
-      } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq(
-          "id",
-          user.id
-        )
-        .maybeSingle();
+      } =
+        await supabase
+          .from("profiles")
+          .select("*")
+          .eq(
+            "id",
+            user.id
+          )
+          .maybeSingle();
 
 
       if (error) {
@@ -707,23 +733,11 @@ document.addEventListener(
 
 
       if (!profile) {
-
-        console.warn(
-          "PROFILE: Профіль не знайдений"
-        );
-
         return;
-
       }
 
 
-      currentProfile =
-        profile;
-
-
-      // ==================================
       // NAME
-      // ==================================
 
       if (displayName) {
 
@@ -743,9 +757,7 @@ document.addEventListener(
       }
 
 
-      // ==================================
       // BIRTH DATE
-      // ==================================
 
       if (birthDate) {
 
@@ -756,9 +768,7 @@ document.addEventListener(
       }
 
 
-      // ==================================
       // AVATAR
-      // ==================================
 
       currentAvatarUrl =
         profile.avatar_url ||
@@ -776,9 +786,7 @@ document.addEventListener(
       }
 
 
-      // ==================================
       // DISCORD
-      // ==================================
 
       if (discordUsername) {
 
@@ -798,9 +806,7 @@ document.addEventListener(
       }
 
 
-      // ==================================
       // STEAM
-      // ==================================
 
       if (steamId) {
 
@@ -811,9 +817,7 @@ document.addEventListener(
       }
 
 
-      // ==================================
       // GAME NICK
-      // ==================================
 
       if (gameNickname) {
 
@@ -827,22 +831,12 @@ document.addEventListener(
 
 
     // ======================================
-    // DISCORD IDENTITY
+    // SYNC DISCORD
     // ======================================
 
     async function syncDiscordIdentity() {
 
       try {
-
-        if (
-          !supabase.auth
-            .getUserIdentities
-        ) {
-
-          return;
-
-        }
-
 
         const {
           data,
@@ -855,7 +849,7 @@ document.addEventListener(
         if (error) {
 
           console.warn(
-            "PROFILE: Не вдалося отримати identities:",
+            "PROFILE: Discord identities:",
             error
           );
 
@@ -906,16 +900,6 @@ document.addEventListener(
           identityData.preferred_username ||
           identityData.username ||
           null;
-
-
-        if (
-          !discordId &&
-          !discordName
-        ) {
-
-          return;
-
-        }
 
 
         const updateData = {};
@@ -969,7 +953,7 @@ document.addEventListener(
         if (updateError) {
 
           console.warn(
-            "PROFILE: Discord identity не збережено:",
+            "PROFILE: Discord sync:",
             updateError
           );
 
@@ -1000,16 +984,6 @@ document.addEventListener(
         }
 
 
-        if (currentProfile) {
-
-          Object.assign(
-            currentProfile,
-            updateData
-          );
-
-        }
-
-
       } catch (error) {
 
         console.warn(
@@ -1023,54 +997,141 @@ document.addEventListener(
 
 
     // ======================================
-    // LOAD RBAC MANAGEMENT
+    // LOAD DIRECTIONS
     // ======================================
 
-    async function loadUserManagement() {
-
-      if (rolesList) {
-
-        rolesList.innerHTML = `
-          <div class="roles-empty">
-            Завантаження ролей...
-          </div>
-        `;
-
-      }
-
+    async function loadDirections() {
 
       const {
         data,
         error
-      } = await supabase.rpc(
-        "get_user_direction_management",
-        {
-          p_target_user_id:
-            user.id
-        }
-      );
+      } =
+        await supabase
+          .from("directions")
+          .select("*")
+          .order(
+            "id",
+            {
+              ascending: true
+            }
+          );
 
 
       if (error) {
 
         console.error(
-          "PROFILE: get_user_direction_management:",
+          "PROFILE: directions:",
           error
         );
 
 
-        if (rolesList) {
+        // FALLBACK
 
-          rolesList.innerHTML = `
+        allDirections = [
+
+          {
+            id: 1,
+            code: "ets2",
+            slug: "ets2",
+            name:
+              "ETS2 / TruckersMP",
+            icon:
+              "🚛"
+          },
+
+          {
+            id: 2,
+            code: "wot",
+            slug: "wot",
+            name:
+              "World of Tanks",
+            icon:
+              "🪖"
+          },
+
+          {
+            id: 3,
+            code: "dota2",
+            slug: "dota2",
+            name:
+              "Dota 2",
+            icon:
+              "🎮"
+          },
+
+          {
+            id: 4,
+            code: "wow",
+            slug: "wow",
+            name:
+              "World of Warcraft",
+            icon:
+              "🐉"
+          }
+
+        ];
+
+
+        return;
+
+      }
+
+
+      allDirections =
+        Array.isArray(data)
+          ? data
+          : [];
+
+    }
+
+
+    // ======================================
+    // LOAD RBAC
+    // ======================================
+
+    async function loadManagement() {
+
+      const {
+        data,
+        error
+      } =
+        await supabase.rpc(
+          "get_user_direction_management",
+          {
+            p_target_user_id:
+              user.id
+          }
+        );
+
+
+      if (error) {
+
+        console.error(
+          "PROFILE: RBAC:",
+          error
+        );
+
+
+        if (directionsStatus) {
+
+          directionsStatus.innerHTML = `
             <div class="roles-empty">
-              Не вдалося завантажити ролі.
+              Не вдалося завантажити статуси напрямків.
             </div>
           `;
 
         }
 
 
-        return null;
+        if (globalRolesSection) {
+
+          globalRolesSection.style.display =
+            "none";
+
+        }
+
+
+        return;
 
       }
 
@@ -1081,23 +1142,11 @@ document.addEventListener(
       ) {
 
         console.error(
-          "PROFILE: Некоректна RBAC відповідь:",
+          "PROFILE: Некоректний RBAC:",
           data
         );
 
-
-        if (rolesList) {
-
-          rolesList.innerHTML = `
-            <div class="roles-empty">
-              Не вдалося отримати RBAC-дані.
-            </div>
-          `;
-
-        }
-
-
-        return null;
+        return;
 
       }
 
@@ -1108,331 +1157,6 @@ document.addEventListener(
 
       window.currentUserRoles =
         data;
-
-
-      renderUserRoles(
-        data.global_roles || [],
-        data.directions || []
-      );
-
-
-      return data;
-
-    }
-
-
-    // ======================================
-    // RENDER ROLES
-    // ======================================
-
-    function renderUserRoles(
-      globalRoles = [],
-      directions = []
-    ) {
-
-      if (!rolesList) {
-        return;
-      }
-
-
-      rolesList.innerHTML =
-        "";
-
-
-      // ==================================
-      // GLOBAL ROLES
-      // ==================================
-
-      globalRoles.forEach(
-        role => {
-
-          const card =
-            document.createElement(
-              "div"
-            );
-
-
-          card.className =
-            "role-card global";
-
-
-          const icon =
-            getGlobalRoleIcon(
-              role.code
-            );
-
-
-          card.innerHTML = `
-            <h3>
-              ${icon}
-              ${escapeHtml(
-                role.name ||
-                "Невідома роль"
-              )}
-            </h3>
-
-            <p>
-              Глобальна роль
-            </p>
-          `;
-
-
-          rolesList.appendChild(
-            card
-          );
-
-        }
-      );
-
-
-      // ==================================
-      // DIRECTION ROLES
-      // ==================================
-
-      directions.forEach(
-        direction => {
-
-          const status =
-            normalize(
-              direction.status
-            );
-
-
-          if (
-            status &&
-            status !==
-              "active"
-          ) {
-
-            return;
-
-          }
-
-
-          const card =
-            document.createElement(
-              "div"
-            );
-
-
-          card.className =
-            "role-card";
-
-
-          const icon =
-            direction.icon ||
-            getDirectionIcon(
-              direction
-            );
-
-
-          const name =
-            getDirectionName(
-              direction
-            );
-
-
-          let html = `
-            <h3>
-              ${escapeHtml(
-                icon
-              )}
-              ${escapeHtml(
-                name
-              )}
-            </h3>
-          `;
-
-
-          // --------------------------------
-          // POSITIONS
-          // --------------------------------
-
-          const roles =
-            Array.isArray(
-              direction.roles
-            )
-              ? direction.roles
-              : [];
-
-
-          if (
-            roles.length
-          ) {
-
-            const roleNames =
-              roles
-                .map(
-                  role =>
-                    role.name ||
-                    role.code ||
-                    "Невідома посада"
-                )
-                .join(
-                  ", "
-                );
-
-
-            html += `
-              <p>
-                Посади:
-                ${escapeHtml(
-                  roleNames
-                )}
-              </p>
-            `;
-
-          } else {
-
-            html += `
-              <p>
-                Учасник напрямку
-              </p>
-            `;
-
-          }
-
-
-          // --------------------------------
-          // ETS2 DRIVER CLASS
-          // --------------------------------
-
-          if (
-            getDirectionKey(
-              direction
-            ) ===
-              "ets2" &&
-            direction.driver_class
-          ) {
-
-            html += `
-              <p>
-                Клас водія:
-                <strong>
-                  ${escapeHtml(
-                    getDriverClassName(
-                      direction.driver_class
-                    )
-                  )}
-                </strong>
-              </p>
-            `;
-
-          }
-
-
-          card.innerHTML =
-            html;
-
-
-          rolesList.appendChild(
-            card
-          );
-
-        }
-      );
-
-
-      if (
-        !rolesList.children.length
-      ) {
-
-        rolesList.innerHTML = `
-          <div class="roles-empty">
-            У вас поки немає призначених ролей.
-          </div>
-        `;
-
-      }
-
-    }
-
-
-    // ======================================
-    // LOAD ALL DIRECTIONS
-    // ======================================
-
-    async function loadDirections() {
-
-      const {
-        data,
-        error
-      } = await supabase
-        .from("directions")
-        .select("*")
-        .order(
-          "id",
-          {
-            ascending: true
-          }
-        );
-
-
-      if (error) {
-
-        console.error(
-          "PROFILE: Помилка directions:",
-          error
-        );
-
-
-        // ----------------------------------
-        // FALLBACK
-        // ----------------------------------
-
-        allDirections = [
-
-          {
-            id: 1,
-            code: "ets2",
-            slug: "ets2",
-            name:
-              "ETS2 / TruckersMP",
-            icon: "🚛"
-          },
-
-          {
-            id: 2,
-            code: "wot",
-            slug: "wot",
-            name:
-              "World of Tanks",
-            icon: "🪖"
-          },
-
-          {
-            id: 3,
-            code: "dota2",
-            slug: "dota2",
-            name:
-              "Dota 2",
-            icon: "🎮"
-          },
-
-          {
-            id: 4,
-            code: "wow",
-            slug: "wow",
-            name:
-              "World of Warcraft",
-            icon: "🐉"
-          }
-
-        ];
-
-
-        return allDirections;
-
-      }
-
-
-      allDirections =
-        Array.isArray(data)
-          ? data
-          : [];
-
-
-      return allDirections;
 
     }
 
@@ -1446,34 +1170,33 @@ document.addEventListener(
       const {
         data,
         error
-      } = await supabase
-        .from("applications")
-        .select("*")
-        .eq(
-          "user_id",
-          user.id
-        )
-        .order(
-          "created_at",
-          {
-            ascending: false
-          }
-        );
+      } =
+        await supabase
+          .from("applications")
+          .select("*")
+          .eq(
+            "user_id",
+            user.id
+          )
+          .order(
+            "created_at",
+            {
+              ascending:
+                false
+            }
+          );
 
 
       if (error) {
 
         console.error(
-          "PROFILE: Помилка applications:",
+          "PROFILE: applications:",
           error
         );
 
 
         allApplications =
           [];
-
-
-        renderApplications();
 
 
         return;
@@ -1486,14 +1209,11 @@ document.addEventListener(
           ? data
           : [];
 
-
-      renderApplications();
-
     }
 
 
     // ======================================
-    // GET ACTIVE DIRECTION
+    // ACTIVE DIRECTION
     // ======================================
 
     function getActiveDirection(
@@ -1509,7 +1229,7 @@ document.addEventListener(
       }
 
 
-      const directions =
+      const managementDirections =
         Array.isArray(
           currentManagement.directions
         )
@@ -1524,16 +1244,22 @@ document.addEventListener(
 
 
       return (
-        directions.find(
-          item =>
-            normalize(
-              item.status
-            ) ===
+        managementDirections.find(
+          item => {
+
+            return (
+              normalize(
+                item.status
+              ) ===
               "active" &&
-            getDirectionKey(
-              item
-            ) ===
+
+              getDirectionKey(
+                item
+              ) ===
               targetKey
+            );
+
+          }
         ) ||
         null
       );
@@ -1542,7 +1268,7 @@ document.addEventListener(
 
 
     // ======================================
-    // GET APPLICATION FOR DIRECTION
+    // LATEST APPLICATION
     // ======================================
 
     function getLatestApplication(
@@ -1555,22 +1281,20 @@ document.addEventListener(
         );
 
 
-      const matches =
+      const applications =
         allApplications.filter(
           application =>
-            getApplicationDirection(
+            getApplicationDirectionKey(
               application
             ) ===
             targetKey
         );
 
 
-      if (!matches.length) {
-        return null;
-      }
-
-
-      return matches[0];
+      return (
+        applications[0] ||
+        null
+      );
 
     }
 
@@ -1583,46 +1307,54 @@ document.addEventListener(
       direction
     ) {
 
-      // ----------------------------------
-      // ACTIVE MEMBER
-      // ----------------------------------
-
       const active =
         getActiveDirection(
           direction
         );
 
 
-      if (active) {
-
-        return {
-          type: "active",
-          active,
-          application:
-            getLatestApplication(
-              direction
-            )
-        };
-
-      }
-
-
-      // ----------------------------------
-      // LAST APPLICATION
-      // ----------------------------------
-
-      const application =
+      const latestApplication =
         getLatestApplication(
           direction
         );
 
 
-      if (!application) {
+      // ACTIVE MEMBER
+
+      if (active) {
 
         return {
-          type: "none",
+
+          type:
+            "active",
+
+          active,
+
+          application:
+            latestApplication
+
+        };
+
+      }
+
+
+      // NO APPLICATION
+
+      if (
+        !latestApplication
+      ) {
+
+        return {
+
+          type:
+            "none",
+
+          active:
+            null,
+
           application:
             null
+
         };
 
       }
@@ -1630,13 +1362,11 @@ document.addEventListener(
 
       const status =
         normalize(
-          application.status
+          latestApplication.status
         );
 
 
-      // ----------------------------------
       // PENDING
-      // ----------------------------------
 
       if (
         status ===
@@ -1644,16 +1374,22 @@ document.addEventListener(
       ) {
 
         return {
-          type: "pending",
-          application
+
+          type:
+            "pending",
+
+          active:
+            null,
+
+          application:
+            latestApplication
+
         };
 
       }
 
 
-      // ----------------------------------
       // REJECTED
-      // ----------------------------------
 
       if (
         status ===
@@ -1661,16 +1397,22 @@ document.addEventListener(
       ) {
 
         return {
-          type: "rejected",
-          application
+
+          type:
+            "rejected",
+
+          active:
+            null,
+
+          application:
+            latestApplication
+
         };
 
       }
 
 
-      // ----------------------------------
-      // APPROVED WITHOUT MEMBERSHIP
-      // ----------------------------------
+      // APPROVED WITHOUT ACTIVE MEMBERSHIP
 
       if (
         status ===
@@ -1678,27 +1420,143 @@ document.addEventListener(
       ) {
 
         return {
+
           type:
             "approved_waiting",
-          application
+
+          active:
+            null,
+
+          application:
+            latestApplication
+
         };
 
       }
 
 
       return {
-        type: "none",
-        application
+
+        type:
+          "none",
+
+        active:
+          null,
+
+        application:
+          latestApplication
+
       };
 
     }
 
 
     // ======================================
-    // RENDER DIRECTION STATUS
+    // RENDER GLOBAL ROLES
     // ======================================
 
-    function renderDirectionStatuses() {
+    function renderGlobalRoles() {
+
+      if (!rolesList) {
+        return;
+      }
+
+
+      const globalRoles =
+        Array.isArray(
+          currentManagement?.global_roles
+        )
+          ? currentManagement.global_roles
+          : [];
+
+
+      // ==================================
+      // НЕТ ГЛОБАЛЬНОЙ РОЛИ
+      // ==================================
+
+      if (
+        !globalRoles.length
+      ) {
+
+        if (globalRolesSection) {
+
+          globalRolesSection.style.display =
+            "none";
+
+        }
+
+        return;
+
+      }
+
+
+      // ==================================
+      // ЕСТЬ ГЛОБАЛЬНАЯ РОЛЬ
+      // ==================================
+
+      if (globalRolesSection) {
+
+        globalRolesSection.style.display =
+          "";
+
+      }
+
+
+      rolesList.innerHTML =
+        "";
+
+
+      globalRoles.forEach(
+        role => {
+
+          const card =
+            document.createElement(
+              "div"
+            );
+
+
+          card.className =
+            "global-role-card";
+
+
+          const icon =
+            getGlobalRoleIcon(
+              role.code
+            );
+
+
+          card.innerHTML = `
+
+            <h3>
+              ${icon}
+              ${escapeHtml(
+                role.name ||
+                "Невідома роль"
+              )}
+            </h3>
+
+            <p>
+              Глобальна роль UA LEGION
+            </p>
+
+          `;
+
+
+          rolesList.appendChild(
+            card
+          );
+
+        }
+      );
+
+    }
+
+
+    // ======================================
+    // RENDER DIRECTIONS
+    // ======================================
+
+    function renderDirections() {
 
       if (!directionsStatus) {
         return;
@@ -1733,15 +1591,10 @@ document.addEventListener(
             );
 
 
-          const card =
-            document.createElement(
-              "div"
+          const key =
+            getDirectionKey(
+              direction
             );
-
-
-          card.className =
-            "direction-status-card " +
-            state.type;
 
 
           const icon =
@@ -1757,15 +1610,122 @@ document.addEventListener(
             );
 
 
+          const card =
+            document.createElement(
+              "div"
+            );
+
+
+          card.className =
+            "direction-status-card " +
+            state.type;
+
+
+          // ==================================
+          // STATUS
+          // ==================================
+
+          let statusHtml = "";
+
+
+          if (
+            state.type ===
+            "active"
+          ) {
+
+            statusHtml = `
+              <span
+                class="direction-member-status active"
+              >
+                🟢 Учасник
+              </span>
+            `;
+
+          }
+
+          else if (
+            state.type ===
+            "pending"
+          ) {
+
+            statusHtml = `
+              <span
+                class="direction-member-status pending"
+              >
+                🟡 Заявка
+              </span>
+            `;
+
+          }
+
+          else if (
+            state.type ===
+            "rejected"
+          ) {
+
+            statusHtml = `
+              <span
+                class="direction-member-status rejected"
+              >
+                🔴 Відхилено
+              </span>
+            `;
+
+          }
+
+          else if (
+            state.type ===
+            "approved_waiting"
+          ) {
+
+            statusHtml = `
+              <span
+                class="direction-member-status pending"
+              >
+                🟡 Схвалено
+              </span>
+            `;
+
+          }
+
+          else {
+
+            statusHtml = `
+              <span
+                class="direction-member-status none"
+              >
+                ⚪ Не подавав
+              </span>
+            `;
+
+          }
+
+
+          // ==================================
+          // HEADER
+          // ==================================
+
           let html = `
-            <h3>
-              ${escapeHtml(
-                icon
-              )}
-              ${escapeHtml(
-                name
-              )}
-            </h3>
+
+            <div
+              class="direction-card-header"
+            >
+
+              <h3
+                class="direction-card-title"
+              >
+                ${escapeHtml(icon)}
+                ${escapeHtml(name)}
+              </h3>
+
+              ${statusHtml}
+
+            </div>
+
+            <div
+              class="direction-details"
+            >
+
           `;
 
 
@@ -1777,13 +1737,6 @@ document.addEventListener(
             state.type ===
             "active"
           ) {
-
-            html += `
-              <p class="direction-status">
-                🟢 Учасник
-              </p>
-            `;
-
 
             const active =
               state.active ||
@@ -1798,6 +1751,8 @@ document.addEventListener(
                 : [];
 
 
+            // POSITIONS
+
             if (
               roles.length
             ) {
@@ -1807,7 +1762,8 @@ document.addEventListener(
                   .map(
                     role =>
                       role.name ||
-                      role.code
+                      role.code ||
+                      "Невідома посада"
                   )
                   .join(
                     ", "
@@ -1815,7 +1771,9 @@ document.addEventListener(
 
 
               html += `
-                <p>
+                <p
+                  class="direction-detail"
+                >
                   <strong>
                     Посади:
                   </strong>
@@ -1825,22 +1783,29 @@ document.addEventListener(
                 </p>
               `;
 
-            } else {
+            }
+
+            else {
 
               html += `
-                <p>
-                  Посада ще не призначена
+                <p
+                  class="direction-detail"
+                >
+                  <strong>
+                    Посади:
+                  </strong>
+                  ще не призначено
                 </p>
               `;
 
             }
 
 
+            // ETS2 CLASS
+
             if (
-              getDirectionKey(
-                direction
-              ) ===
-                "ets2"
+              key ===
+              "ets2"
             ) {
 
               if (
@@ -1848,9 +1813,11 @@ document.addEventListener(
               ) {
 
                 html += `
-                  <p>
+                  <p
+                    class="direction-detail"
+                  >
                     <strong>
-                      Клас водія:
+                      Клас:
                     </strong>
                     ${escapeHtml(
                       getDriverClassName(
@@ -1860,18 +1827,69 @@ document.addEventListener(
                   </p>
                 `;
 
-              } else {
+              }
+
+              else {
 
                 html += `
-                  <p>
+                  <p
+                    class="direction-detail"
+                  >
                     <strong>
-                      Клас водія:
+                      Клас:
                     </strong>
-                    Не призначено
+                    не призначено
                   </p>
                 `;
 
               }
+
+            }
+
+
+            // LAST APPLICATION
+
+            if (
+              state.application
+            ) {
+
+              html += `
+                <div
+                  class="direction-application"
+                >
+
+                  <p
+                    class="direction-application-status"
+                  >
+                    Заявка:
+                    ${escapeHtml(
+                      getApplicationStatusText(
+                        state.application.status
+                      )
+                    )}
+                  </p>
+
+                  ${
+                    state.application.created_at
+                      ? `
+                        <p
+                          class="direction-application-date"
+                        >
+                          Подано:
+                          ${escapeHtml(
+                            new Date(
+                              state.application.created_at
+                            ).toLocaleDateString(
+                              "uk-UA"
+                            )
+                          )}
+                        </p>
+                      `
+                      : ""
+                  }
+
+                </div>
+              `;
 
             }
 
@@ -1888,15 +1906,47 @@ document.addEventListener(
           ) {
 
             html += `
-              <p class="direction-status">
-                🟡 Заявка на розгляді
-              </p>
-
-              <p>
-                Ваша заявка очікує
-                рішення адміністрації.
+              <p
+                class="direction-detail"
+              >
+                Ваша заявка очікує рішення адміністрації.
               </p>
             `;
+
+
+            if (
+              state.application?.created_at
+            ) {
+
+              html += `
+                <div
+                  class="direction-application"
+                >
+
+                  <p
+                    class="direction-application-status"
+                  >
+                    Заявка:
+                    🟡 На розгляді
+                  </p>
+
+                  <p
+                    class="direction-application-date"
+                  >
+                    Подано:
+                    ${escapeHtml(
+                      new Date(
+                        state.application.created_at
+                      ).toLocaleDateString(
+                        "uk-UA"
+                      )
+                    )}
+                  </p>
+
+                </div>
+              `;
+
+            }
 
           }
 
@@ -1911,26 +1961,27 @@ document.addEventListener(
           ) {
 
             html += `
-              <p class="direction-status">
-                🔴 Заявку відхилено
+              <p
+                class="direction-detail"
+              >
+                Останню заявку було відхилено.
               </p>
             `;
 
 
             const reason =
-              state.application
-                ?.review_comment ||
-              state.application
-                ?.rejection_reason ||
-              state.application
-                ?.review_reason ||
+              state.application?.review_comment ||
+              state.application?.rejection_reason ||
+              state.application?.review_reason ||
               null;
 
 
             if (reason) {
 
               html += `
-                <p>
+                <p
+                  class="direction-detail"
+                >
                   <strong>
                     Причина:
                   </strong>
@@ -1940,24 +1991,13 @@ document.addEventListener(
                 </p>
               `;
 
-            } else {
-
-              html += `
-                <p>
-                  Причина відхилення
-                  не вказана.
-                </p>
-              `;
-
             }
 
 
             html += `
               <a
                 href="join.html?direction=${encodeURIComponent(
-                  getDirectionKey(
-                    direction
-                  )
+                  key
                 )}"
                 class="direction-apply-button"
               >
@@ -1978,14 +2018,10 @@ document.addEventListener(
           ) {
 
             html += `
-              <p class="direction-status">
-                🟡 Заявку схвалено
-              </p>
-
-              <p>
-                Заявку схвалено.
-                Очікується активація
-                членства в напрямку.
+              <p
+                class="direction-detail"
+              >
+                Заявку схвалено. Очікується активація членства.
               </p>
             `;
 
@@ -1993,26 +2029,21 @@ document.addEventListener(
 
 
           // ==================================
-          // NONE
+          // NO APPLICATION
           // ==================================
 
           else {
 
             html += `
-              <p class="direction-status">
-                ⚪ Не подавав заявку
-              </p>
-
-              <p>
-                Ви ще не подавали заявку
-                до цього напрямку.
+              <p
+                class="direction-detail"
+              >
+                Ви ще не подавали заявку до цього напрямку.
               </p>
 
               <a
                 href="join.html?direction=${encodeURIComponent(
-                  getDirectionKey(
-                    direction
-                  )
+                  key
                 )}"
                 class="direction-apply-button"
               >
@@ -2021,6 +2052,11 @@ document.addEventListener(
             `;
 
           }
+
+
+          html += `
+            </div>
+          `;
 
 
           card.innerHTML =
@@ -2033,220 +2069,6 @@ document.addEventListener(
 
         }
       );
-
-    }
-
-
-    // ======================================
-    // RENDER APPLICATIONS
-    // ======================================
-
-    function renderApplications() {
-
-      if (!applicationStatus) {
-        return;
-      }
-
-
-      applicationStatus.className =
-        "application-card";
-
-
-      // ----------------------------------
-      // NO APPLICATIONS
-      // ----------------------------------
-
-      if (
-        !allApplications.length
-      ) {
-
-        applicationStatus.innerHTML = `
-          <h3>
-            📝 Заявок ще немає
-          </h3>
-
-          <p>
-            Ви ще не подавали заявок
-            до UA LEGION.
-          </p>
-
-          <p>
-            Статуси кожного напрямку
-            відображаються вище.
-          </p>
-        `;
-
-        return;
-
-      }
-
-
-      // ----------------------------------
-      // GROUP
-      // ----------------------------------
-
-      const applicationsHtml =
-        allApplications
-          .map(
-            application => {
-
-              const directionKey =
-                getApplicationDirection(
-                  application
-                );
-
-
-              const direction =
-                allDirections.find(
-                  item =>
-                    getDirectionKey(
-                      item
-                    ) ===
-                    directionKey
-                );
-
-
-              const directionName =
-                direction
-                  ? getDirectionName(
-                      direction
-                    )
-                  : (
-                      directionKey ||
-                      "Невідомий напрямок"
-                    );
-
-
-              const status =
-                normalize(
-                  application.status
-                );
-
-
-              let statusClass =
-                "";
-
-
-              if (
-                status ===
-                "pending"
-              ) {
-
-                statusClass =
-                  "pending";
-
-              } else if (
-                status ===
-                "approved"
-              ) {
-
-                statusClass =
-                  "approved";
-
-              } else if (
-                status ===
-                "rejected"
-              ) {
-
-                statusClass =
-                  "rejected";
-
-              }
-
-
-              const createdAt =
-                application.created_at
-                  ? new Date(
-                      application.created_at
-                    ).toLocaleString(
-                      "uk-UA"
-                    )
-                  : "";
-
-
-              const reason =
-                application.review_comment ||
-                application.rejection_reason ||
-                application.review_reason ||
-                null;
-
-
-              return `
-                <div
-                  class="application-card ${statusClass}"
-                  style="
-                    margin-bottom:12px;
-                  "
-                >
-
-                  <h3>
-                    ${escapeHtml(
-                      directionName
-                    )}
-                  </h3>
-
-                  <p>
-                    ${escapeHtml(
-                      getApplicationStatusName(
-                        status
-                      )
-                    )}
-                  </p>
-
-                  ${
-                    createdAt
-                      ? `
-                        <p>
-                          Подано:
-                          ${escapeHtml(
-                            createdAt
-                          )}
-                        </p>
-                      `
-                      : ""
-                  }
-
-                  ${
-                    reason
-                      ? `
-                        <p>
-                          <strong>
-                            Коментар:
-                          </strong>
-                          ${escapeHtml(
-                            reason
-                          )}
-                        </p>
-                      `
-                      : ""
-                  }
-
-                </div>
-              `;
-
-            }
-          )
-          .join("");
-
-
-      applicationStatus.innerHTML = `
-        <h3>
-          📝 Мої заявки
-        </h3>
-
-        <p>
-          Усього заявок:
-          ${allApplications.length}
-        </p>
-
-        <div
-          style="
-            margin-top:15px;
-          "
-        >
-          ${applicationsHtml}
-        </div>
-      `;
 
     }
 
@@ -2314,17 +2136,12 @@ document.addEventListener(
             }
 
 
-            showMessage(
-              "Завантаження аватара..."
-            );
-
-
             const extension =
               avatarFile.name
                 .split(".")
                 .pop()
-                ?.toLowerCase()
-                || "png";
+                ?.toLowerCase() ||
+              "png";
 
 
             const safeExtension =
@@ -2367,13 +2184,12 @@ document.addEventListener(
             ) {
 
               console.error(
-                "PROFILE: Avatar upload:",
+                "PROFILE: avatar upload:",
                 uploadError
               );
 
 
               showMessage(
-                "Не вдалося завантажити аватар: " +
                 uploadError.message,
                 "error"
               );
@@ -2396,8 +2212,7 @@ document.addEventListener(
 
 
             uploadedAvatarUrl =
-              publicUrlData
-                ?.publicUrl ||
+              publicUrlData?.publicUrl ||
               null;
 
 
@@ -2426,16 +2241,6 @@ document.addEventListener(
 
 
           // ==================================
-          // AVATAR URL
-          // ==================================
-
-          const avatarToSave =
-            uploadedAvatarUrl ||
-            currentAvatarUrl ||
-            null;
-
-
-          // ==================================
           // PROFILE DATA
           // ==================================
 
@@ -2454,10 +2259,10 @@ document.addEventListener(
               null,
 
             avatar_url:
-              avatarToSave,
+              uploadedAvatarUrl ||
+              currentAvatarUrl ||
+              null,
 
-            // Discord readonly,
-            // але зберігаємо поточне значення
             discord_username:
               discordUsername?.value
                 .trim() ||
@@ -2491,7 +2296,7 @@ document.addEventListener(
 
           const {
             error:
-              profileError
+              saveError
           } =
             await supabase
               .from("profiles")
@@ -2505,17 +2310,17 @@ document.addEventListener(
 
 
           if (
-            profileError
+            saveError
           ) {
 
             console.error(
-              "PROFILE: Save error:",
-              profileError
+              "PROFILE: save:",
+              saveError
             );
 
 
             showMessage(
-              profileError.message,
+              saveError.message,
               "error"
             );
 
@@ -2524,15 +2329,8 @@ document.addEventListener(
           }
 
 
-          currentProfile =
-            {
-              ...currentProfile,
-              ...profileData
-            };
-
-
           currentAvatarUrl =
-            avatarToSave;
+            profileData.avatar_url;
 
 
           if (
@@ -2599,11 +2397,6 @@ document.addEventListener(
 
           if (error) {
 
-            console.error(
-              "PROFILE: Logout:",
-              error
-            );
-
             showMessage(
               error.message,
               "error"
@@ -2629,61 +2422,44 @@ document.addEventListener(
 
     try {
 
-      // ----------------------------------
       // 1. PROFILE
-      // ----------------------------------
 
       await loadProfile();
 
 
-      // ----------------------------------
       // 2. DISCORD
-      // ----------------------------------
 
       await syncDiscordIdentity();
 
 
-      // ----------------------------------
-      // 3. ALL DIRECTIONS
-      // ----------------------------------
+      // 3. DIRECTIONS
 
       await loadDirections();
 
 
-      // ----------------------------------
       // 4. RBAC
-      // ----------------------------------
 
-      await loadUserManagement();
+      await loadManagement();
 
 
-      // ----------------------------------
       // 5. APPLICATIONS
-      // ----------------------------------
 
       await loadApplications();
 
 
-      // ----------------------------------
-      // 6. STATUS CARDS
-      // ----------------------------------
+      // 6. GLOBAL ROLES
 
-      renderDirectionStatuses();
+      renderGlobalRoles();
 
 
-      // ----------------------------------
-      // 7. APPLICATION LIST
-      // ----------------------------------
+      // 7. DIRECTIONS
 
-      renderApplications();
+      renderDirections();
 
 
       console.log(
-        "PROFILE: Система завантажена",
+        "PROFILE: готово",
         {
-          userId:
-            user.id,
-
           directions:
             allDirections,
 
@@ -2699,7 +2475,7 @@ document.addEventListener(
     } catch (error) {
 
       console.error(
-        "PROFILE: Критична помилка:",
+        "PROFILE: critical error:",
         error
       );
 
@@ -2713,6 +2489,16 @@ document.addEventListener(
             Не вдалося завантажити дані профілю.
           </div>
         `;
+
+      }
+
+
+      if (
+        globalRolesSection
+      ) {
+
+        globalRolesSection.style.display =
+          "none";
 
       }
 
