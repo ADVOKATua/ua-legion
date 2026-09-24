@@ -248,8 +248,8 @@ document.addEventListener(
         String(
           status || ""
         )
-        .trim()
-        .toLowerCase();
+          .trim()
+          .toLowerCase();
 
 
       if (
@@ -540,8 +540,7 @@ document.addEventListener(
       // ====================================
 
       if (
-        !isStaff
-        &&
+        !isStaff &&
         allApplications.length === 0
       ) {
 
@@ -680,8 +679,8 @@ document.addEventListener(
           searchInput?.value ||
           ""
         )
-        .trim()
-        .toLowerCase();
+          .trim()
+          .toLowerCase();
 
 
       return allApplications.filter(
@@ -706,6 +705,7 @@ document.addEventListener(
 
           }
 
+
           else if (
             status === "new"
           ) {
@@ -715,6 +715,7 @@ document.addEventListener(
               "pending";
 
           }
+
 
           else {
 
@@ -730,7 +731,7 @@ document.addEventListener(
               application.name ||
               ""
             )
-            .toLowerCase();
+              .toLowerCase();
 
 
           const discord =
@@ -739,7 +740,7 @@ document.addEventListener(
               application.discord_nick ||
               ""
             )
-            .toLowerCase();
+              .toLowerCase();
 
 
           const gameNickname =
@@ -752,27 +753,20 @@ document.addEventListener(
               application.wow_character ||
               ""
             )
-            .toLowerCase();
+              .toLowerCase();
 
 
           const searchMatch =
-
             !search
-
             ||
-
             name.includes(
               search
             )
-
             ||
-
             discord.includes(
               search
             )
-
             ||
-
             gameNickname.includes(
               search
             );
@@ -874,9 +868,9 @@ document.addEventListener(
       return new Date(
         dateString
       )
-      .toLocaleString(
-        "uk-UA"
-      );
+        .toLocaleString(
+          "uk-UA"
+        );
 
     }
 
@@ -1025,8 +1019,8 @@ document.addEventListener(
         String(
           applicationDirection
         )
-        .trim()
-        .toLowerCase();
+          .trim()
+          .toLowerCase();
 
 
       const directionMap = {
@@ -1076,8 +1070,8 @@ document.addEventListener(
               String(
                 item.slug || ""
               )
-              .trim()
-              .toLowerCase() ===
+                .trim()
+                .toLowerCase() ===
               slug
 
           );
@@ -1099,8 +1093,8 @@ document.addEventListener(
             String(
               direction.name || ""
             )
-            .trim()
-            .toLowerCase() ===
+              .trim()
+              .toLowerCase() ===
             normalized
 
         );
@@ -1112,13 +1106,13 @@ document.addEventListener(
       );
 
     }
-
-
     // ======================================
     // ROLE OPTIONS
     // ======================================
 
-    function createRoleOptions() {
+    function createRoleOptions(
+      directionId = "global"
+    ) {
 
       let html = `
 
@@ -1131,7 +1125,156 @@ document.addEventListener(
       `;
 
 
-      allRoles.forEach(
+      const normalizedDirection =
+        String(
+          directionId || "global"
+        )
+          .trim()
+          .toLowerCase();
+
+
+      const globalRoleNames = [
+
+        "Власник UA LEGION",
+
+        "Заступник власника UA LEGION",
+
+        "Генеральний Топ-менеджер UA LEGION",
+
+        "Генеральний HR-менеджер UA LEGION",
+
+        "Генеральний SMM-менеджер UA LEGION",
+
+        "Генеральний PR-менеджер UA LEGION",
+
+        "Генеральний технічний-менеджер UA LEGION",
+
+        "Генеральний івент-менеджер UA LEGION"
+
+      ];
+
+
+      let filteredRoles = [];
+
+
+      if (
+        normalizedDirection ===
+        "global"
+      ) {
+
+        filteredRoles =
+          allRoles.filter(
+            role => {
+
+              const roleName =
+                String(
+                  role.name || ""
+                )
+                  .trim()
+                  .toLowerCase();
+
+
+              return globalRoleNames.some(
+                globalName =>
+                  roleName ===
+                  globalName
+                    .trim()
+                    .toLowerCase()
+              );
+
+            }
+          );
+
+      }
+
+
+      else {
+
+        const direction =
+          allDirections.find(
+            item =>
+              String(item.id) ===
+              String(directionId)
+          );
+
+
+        const directionSlug =
+          String(
+            direction?.slug || ""
+          )
+            .trim()
+            .toLowerCase();
+
+
+        const directionTokens = {
+
+          ets2: [
+            "ets2",
+            "truckersmp"
+          ],
+
+          wot: [
+            "world of tanks",
+            "wot"
+          ],
+
+          dota2: [
+            "dota 2",
+            "dota2",
+            "dota"
+          ],
+
+          wow: [
+            "world of warcraft",
+            "wow"
+          ]
+
+        };
+
+
+        const tokens =
+          directionTokens[
+            directionSlug
+          ] || [];
+
+
+        filteredRoles =
+          allRoles.filter(
+            role => {
+
+              const roleName =
+                String(
+                  role.name || ""
+                )
+                  .trim()
+                  .toLowerCase();
+
+
+              const roleCode =
+                String(
+                  role.code || ""
+                )
+                  .trim()
+                  .toLowerCase();
+
+
+              return tokens.some(
+                token =>
+                  roleName.includes(
+                    token
+                  ) ||
+                  roleCode.includes(
+                    token
+                  )
+              );
+
+            }
+          );
+
+      }
+
+
+      filteredRoles.forEach(
         role => {
 
           html += `
@@ -1591,6 +1734,8 @@ document.addEventListener(
       );
 
     }
+
+
     // ======================================
     // RENDER APPLICATIONS
     // ======================================
@@ -1895,7 +2040,10 @@ document.addEventListener(
                   ${isNew ? "" : "disabled"}
                 >
 
-                  ${createRoleOptions()}
+                  ${createRoleOptions(
+                    applicationDirectionId ||
+                    "global"
+                  )}
 
                 </select>
 
@@ -2198,8 +2346,6 @@ document.addEventListener(
       }
 
     }
-
-
     // ======================================
     // APPROVE APPLICATION
     // ======================================
@@ -2556,6 +2702,7 @@ document.addEventListener(
 
       }
 
+
       else {
 
         showMessage(
@@ -2691,6 +2838,30 @@ document.addEventListener(
 
                 const applicationId =
                   directionSelect.dataset.id;
+
+
+                /*
+                 * При зміні напрямку автоматично
+                 * перебудовуємо список посад.
+                 */
+
+                const roleSelect =
+                  document.querySelector(
+                    `.application-role-select[data-id="${applicationId}"]`
+                  );
+
+
+                if (roleSelect) {
+
+                  roleSelect.innerHTML =
+                    createRoleOptions(
+                      directionSelect.value
+                    );
+
+                  roleSelect.value =
+                    "";
+
+                }
 
 
                 const driverClassSelect =
@@ -2908,6 +3079,8 @@ document.addEventListener(
       }
 
     );
+
+
     // ======================================
     // START
     // ======================================
