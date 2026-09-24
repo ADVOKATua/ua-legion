@@ -308,6 +308,51 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
   // ==========================================
+  // MARK TICKET AS READ
+  // ==========================================
+
+  async function markTicketAsRead(
+    ticketId
+  ) {
+
+    if (
+      !currentUser ||
+      !ticketId
+    ) {
+
+      return false;
+
+    }
+
+
+    const result =
+      await supabase.rpc(
+        "mark_support_ticket_read",
+        {
+          p_ticket_id:
+            ticketId
+        }
+      );
+
+
+    if (result.error) {
+
+      console.error(
+        "mark_support_ticket_read:",
+        result.error
+      );
+
+      return false;
+
+    }
+
+
+    return result.data === true;
+
+  }
+
+
+  // ==========================================
   // LOAD PROFILE CURRENT VALUES
   // ==========================================
 
@@ -1891,6 +1936,15 @@ document.addEventListener("DOMContentLoaded", async function () {
       );
 
     }
+
+
+    // ======================================
+    // MARK AS READ
+    // ======================================
+
+    await markTicketAsRead(
+      ticketId
+    );
 
 
     currentTicket = {
