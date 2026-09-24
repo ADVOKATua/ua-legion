@@ -3,1110 +3,1686 @@
    Подача заявки на вступ
 
    Логіка:
-   - Дані профілю беремо з profiles.
+   - Дані профілю (ім'я, вік, Discord, Steam) беремо з profiles.
    - Одна заявка = один напрямок.
    - Повторна заявка дозволена для іншого напрямку.
-   - pending/new/review/... блокують повторну заявку.
-   - approved сам по собі НЕ блокує повторну заявку.
-   - Якщо користувач уже активний у user_directions —
-     повторна заявка на цей напрямок блокується.
+   - Активний учасник напрямку не може подати повторну заявку.
+   - pending / new / review / under_review / in_review
+     блокують повторну заявку.
+   - approved сам по собі НЕ блокує повторну заявку,
+     якщо напрямок фактично не активний у user_directions.
    - rejected дозволяє подати заявку повторно.
-   - Неактивні форми ігрових напрямків вимикаються.
+   - Активні напрямки блокуються прямо у формі.
+   - Перед INSERT повторно перевіряється активне членство.
+   - Неактивні форми ігрових напрямків вимикаються,
+     щоб required-поля прихованих форм не заважали submit.
    - Streaming НЕ використовується.
    ========================================================= */
 
-document.addEventListener("DOMContentLoaded", async () => {
-  const supabase = window.supabaseClient;
+document.addEventListener(
+  "DOMContentLoaded",
+  async () => {
 
-  if (!supabase) {
-    console.error(
-      "UA LEGION: Supabase client не знайдено."
-    );
+    const supabase =
+      window.supabaseClient;
 
-    return;
-  }
 
-  // ---------------------------------------------------------
-  // DOM
-  // ---------------------------------------------------------
+    // =====================================================
+    // SUPABASE
+    // =====================================================
 
-  const applicationForm =
-    document.getElementById("applicationForm");
+    if (!supabase) {
 
-  const submitButton =
-    document.getElementById("submitApplication");
-
-  const formMessage =
-    document.getElementById("formMessage");
-
-  const directionInputs =
-    document.querySelectorAll(
-      'input[name="direction"]'
-    );
-
-  const gameForms = {
-    ets2: document.getElementById("ets2Form"),
-    wot: document.getElementById("wotForm"),
-    dota2: document.getElementById("dota2Form"),
-    wow: document.getElementById("wowForm")
-  };
-
-  // ---------------------------------------------------------
-  // Helpers
-  // ---------------------------------------------------------
-
-  function showMessage(
-    message,
-    type = "error"
-  ) {
-    if (!formMessage) return;
-
-    formMessage.textContent = message;
-    formMessage.className = "";
-
-    formMessage.classList.add(
-      "show",
-      type
-    );
-  }
-
-  function clearMessage() {
-    if (!formMessage) return;
-
-    formMessage.textContent = "";
-    formMessage.className = "";
-  }
-
-  function getValue(id) {
-    const element =
-      document.getElementById(id);
-
-    if (!element) return null;
-
-    const value =
-      element.value?.trim();
-
-    return value === ""
-      ? null
-      : value;
-  }
-
-  function getSelectedDirection() {
-    const selected =
-      document.querySelector(
-        'input[name="direction"]:checked'
+      console.error(
+        "UA LEGION: Supabase client не знайдено."
       );
 
-    return selected
-      ? selected.value
-      : null;
-  }
-
-  function normalizeDirection(value) {
-    if (!value) return null;
-
-    const text =
-      String(value)
-        .trim()
-        .toLowerCase();
-
-    if (
-      text === "ets2" ||
-      text === "ets2/truckersmp"
-    ) {
-      return "ets2";
+      return;
     }
 
-    if (
-      text === "wot" ||
-      text === "world of tanks"
-    ) {
-      return "wot";
-    }
 
-    if (
-      text === "dota2" ||
-      text === "dota 2" ||
-      text === "dota"
-    ) {
-      return "dota2";
-    }
+    // =====================================================
+    // DOM
+    // =====================================================
 
-    if (
-      text === "wow" ||
-      text === "world of warcraft"
-    ) {
-      return "wow";
-    }
-
-    return text;
-  }
-
-  function getDirectionLabel(direction) {
-    switch (
-      normalizeDirection(direction)
-    ) {
-      case "ets2":
-        return "🚛 ETS2 / TruckersMP";
-
-      case "wot":
-        return "🪖 World of Tanks";
-
-      case "dota2":
-        return "⚔️ Dota 2";
-
-      case "wow":
-        return "🐉 World of Warcraft";
-
-      default:
-        return String(
-          direction || "напрямок"
-        );
-    }
-  }
-
-  function calculateAge(birthDate) {
-    if (!birthDate) return null;
-
-    const birth =
-      new Date(
-        `${birthDate}T00:00:00`
+    const applicationForm =
+      document.getElementById(
+        "applicationForm"
       );
 
-    if (
-      Number.isNaN(
-        birth.getTime()
-      )
-    ) {
-      return null;
-    }
-
-    const today =
-      new Date();
-
-    let age =
-      today.getFullYear() -
-      birth.getFullYear();
-
-    const monthDifference =
-      today.getMonth() -
-      birth.getMonth();
-
-    if (
-      monthDifference < 0 ||
-      (
-        monthDifference === 0 &&
-        today.getDate() <
-          birth.getDate()
-      )
-    ) {
-      age--;
-    }
-
-    return age >= 0
-      ? age
-      : null;
-  }
-
-  function getFallbackName(
-    user,
-    profile
-  ) {
-    return (
-      profile?.display_name?.trim() ||
-      user?.user_metadata?.full_name?.trim() ||
-      user?.user_metadata?.name?.trim() ||
-      user?.user_metadata?.display_name?.trim() ||
-      user?.email
-        ?.split("@")[0]
-        ?.trim() ||
-      null
-    );
-  }
-
-  function setFormEnabled(
-    container,
-    enabled
-  ) {
-    if (!container) return;
-
-    const controls =
-      container.querySelectorAll(
-        "input, select, textarea, button"
+    const submitButton =
+      document.getElementById(
+        "submitApplication"
       );
 
-    controls.forEach(
-      (control) => {
-        control.disabled =
-          !enabled;
+    const formMessage =
+      document.getElementById(
+        "formMessage"
+      );
+
+    const directionInputs =
+      document.querySelectorAll(
+        'input[name="direction"]'
+      );
+
+
+    const gameForms = {
+
+      ets2:
+        document.getElementById(
+          "ets2Form"
+        ),
+
+      wot:
+        document.getElementById(
+          "wotForm"
+        ),
+
+      dota2:
+        document.getElementById(
+          "dota2Form"
+        ),
+
+      wow:
+        document.getElementById(
+          "wowForm"
+        )
+
+    };
+
+
+    // =====================================================
+    // MESSAGE
+    // =====================================================
+
+    function showMessage(
+      message,
+      type = "error"
+    ) {
+
+      if (!formMessage) {
+        return;
       }
-    );
-  }
 
-  function hideAllGameForms() {
-    Object.values(
-      gameForms
-    ).forEach((form) => {
-      if (!form) return;
+      formMessage.textContent =
+        message;
 
-      form.classList.remove(
-        "active"
+      formMessage.className = "";
+
+      formMessage.classList.add(
+        "show",
+        type
       );
+    }
 
-      setFormEnabled(
-        form,
-        false
-      );
-    });
-  }
 
-  function showGameForm(
-    direction
-  ) {
-    hideAllGameForms();
+    function clearMessage() {
 
-    const form =
-      gameForms[
+      if (!formMessage) {
+        return;
+      }
+
+      formMessage.textContent =
+        "";
+
+      formMessage.className =
+        "";
+    }
+
+
+    // =====================================================
+    // GET VALUE
+    // =====================================================
+
+    function getValue(id) {
+
+      const element =
+        document.getElementById(id);
+
+      if (!element) {
+        return null;
+      }
+
+      const value =
+        element.value?.trim();
+
+      return value === ""
+        ? null
+        : value;
+    }
+
+
+    // =====================================================
+    // SELECTED DIRECTION
+    // =====================================================
+
+    function getSelectedDirection() {
+
+      const selected =
+        document.querySelector(
+          'input[name="direction"]:checked'
+        );
+
+      return selected
+        ? selected.value
+        : null;
+    }
+
+
+    // =====================================================
+    // NORMALIZE DIRECTION
+    // =====================================================
+
+    function normalizeDirection(
+      value
+    ) {
+
+      if (!value) {
+        return null;
+      }
+
+      const text =
+        String(value)
+          .trim()
+          .toLowerCase();
+
+
+      if (
+        text === "ets2" ||
+        text === "ets2/truckersmp"
+      ) {
+
+        return "ets2";
+      }
+
+
+      if (
+        text === "wot" ||
+        text === "world of tanks"
+      ) {
+
+        return "wot";
+      }
+
+
+      if (
+        text === "dota2" ||
+        text === "dota 2" ||
+        text === "dota"
+      ) {
+
+        return "dota2";
+      }
+
+
+      if (
+        text === "wow" ||
+        text === "world of warcraft"
+      ) {
+
+        return "wow";
+      }
+
+
+      return text;
+    }
+
+
+    // =====================================================
+    // DIRECTION LABEL
+    // =====================================================
+
+    function getDirectionLabel(
+      direction
+    ) {
+
+      switch (
         normalizeDirection(
           direction
         )
-      ];
+      ) {
 
-    if (!form) return;
+        case "ets2":
 
-    form.classList.add(
-      "active"
-    );
-
-    setFormEnabled(
-      form,
-      true
-    );
-  }
-
-  // ---------------------------------------------------------
-  // Напрямки із заявки
-  // ---------------------------------------------------------
-
-  function getDirectionsFromApplication(
-    application
-  ) {
-    const result = [];
-
-    if (
-      application?.direction
-    ) {
-      result.push(
-        application.direction
-      );
-    }
-
-    const directions =
-      application?.directions;
-
-    if (
-      Array.isArray(
-        directions
-      )
-    ) {
-      result.push(
-        ...directions
-      );
-
-    } else if (
-      typeof directions ===
-      "string"
-    ) {
-
-      try {
-        const parsed =
-          JSON.parse(
-            directions
+          return (
+            "🚛 ETS2 / TruckersMP"
           );
 
-        if (
-          Array.isArray(
-            parsed
-          )
-        ) {
-          result.push(
-            ...parsed
+
+        case "wot":
+
+          return (
+            "🪖 World of Tanks"
           );
 
-        } else {
-          result.push(
-            directions
-          );
-        }
 
-      } catch {
-        result.push(
-          directions
-        );
+        case "dota2":
+
+          return (
+            "⚔️ Dota 2"
+          );
+
+
+        case "wow":
+
+          return (
+            "🐉 World of Warcraft"
+          );
+
+
+        default:
+
+          return String(
+            direction ||
+            "напрямок"
+          );
       }
     }
 
-    return result
-      .map(
-        normalizeDirection
-      )
-      .filter(Boolean);
-  }
 
-  // ---------------------------------------------------------
-  // Статуси заявок, які реально блокують повторну заявку
-  //
-  // ВАЖЛИВО:
-  // approved тут НЕМАЄ.
-  //
-  // Якщо заявка approved, але user_directions
-  // не активований — користувач зможе подати нову.
-  // ---------------------------------------------------------
+    // =====================================================
+    // CALCULATE AGE
+    // =====================================================
 
-  function isActiveApplicationStatus(
-    status
-  ) {
-    const normalized =
-      String(status || "")
-        .trim()
-        .toLowerCase();
-
-    return [
-      "pending",
-      "new",
-      "review",
-      "under_review",
-      "in_review"
-    ].includes(
-      normalized
-    );
-  }
-
-  // ---------------------------------------------------------
-  // Перевірка реального членства у напрямку
-  //
-  // Якщо user_directions.status = active,
-  // повторну заявку на цей напрямок не дозволяємо.
-  // ---------------------------------------------------------
-
-  async function hasActiveDirectionMembership(
-    userId,
-    direction
-  ) {
-    const normalizedDirection =
-      normalizeDirection(
-        direction
-      );
-
-    if (
-      !userId ||
-      !normalizedDirection
+    function calculateAge(
+      birthDate
     ) {
-      return false;
-    }
 
-    try {
-      // -----------------------------------------------------
-      // Завантажуємо direction_id за code / slug
-      // -----------------------------------------------------
-
-      const {
-        data: directionRows,
-        error: directionError
-      } = await supabase
-        .from("directions")
-        .select(
-          "id,code,slug"
-        );
-
-      if (directionError) {
-        console.error(
-          "UA LEGION: помилка перевірки напрямку:",
-          directionError
-        );
-
-        throw directionError;
+      if (!birthDate) {
+        return null;
       }
 
-      const directionRow =
+
+      const birth =
+        new Date(
+          `${birthDate}T00:00:00`
+        );
+
+
+      if (
+        Number.isNaN(
+          birth.getTime()
+        )
+      ) {
+
+        return null;
+      }
+
+
+      const today =
+        new Date();
+
+
+      let age =
+        today.getFullYear() -
+        birth.getFullYear();
+
+
+      const monthDifference =
+        today.getMonth() -
+        birth.getMonth();
+
+
+      if (
+        monthDifference < 0 ||
         (
-          directionRows || []
-        ).find(
-          (row) => {
+          monthDifference === 0 &&
+          today.getDate() <
+            birth.getDate()
+        )
+      ) {
 
-            const code =
-              normalizeDirection(
-                row.code
-              );
+        age--;
+      }
 
-            const slug =
-              normalizeDirection(
-                row.slug
-              );
 
-            return (
-              code ===
-                normalizedDirection ||
-              slug ===
-                normalizedDirection
+      return age >= 0
+        ? age
+        : null;
+    }
+
+
+    // =====================================================
+    // FALLBACK NAME
+    // =====================================================
+
+    function getFallbackName(
+      user,
+      profile
+    ) {
+
+      return (
+
+        profile?.display_name?.trim() ||
+
+        user?.user_metadata
+          ?.full_name
+          ?.trim() ||
+
+        user?.user_metadata
+          ?.name
+          ?.trim() ||
+
+        user?.user_metadata
+          ?.display_name
+          ?.trim() ||
+
+        user?.email
+          ?.split("@")[0]
+          ?.trim() ||
+
+        null
+
+      );
+    }
+
+
+    // =====================================================
+    // ENABLE / DISABLE FORM
+    // =====================================================
+
+    function setFormEnabled(
+      container,
+      enabled
+    ) {
+
+      if (!container) {
+        return;
+      }
+
+
+      const controls =
+        container.querySelectorAll(
+          "input, select, textarea, button"
+        );
+
+
+      controls.forEach(
+        control => {
+
+          control.disabled =
+            !enabled;
+
+        }
+      );
+    }
+
+
+    // =====================================================
+    // HIDE ALL GAME FORMS
+    // =====================================================
+
+    function hideAllGameForms() {
+
+      Object.values(
+        gameForms
+      ).forEach(
+        form => {
+
+          if (!form) {
+            return;
+          }
+
+
+          form.classList.remove(
+            "active"
+          );
+
+
+          setFormEnabled(
+            form,
+            false
+          );
+
+        }
+      );
+    }
+
+
+    // =====================================================
+    // SHOW GAME FORM
+    // =====================================================
+
+    function showGameForm(
+      direction
+    ) {
+
+      hideAllGameForms();
+
+
+      const normalizedDirection =
+        normalizeDirection(
+          direction
+        );
+
+
+      const form =
+        gameForms[
+          normalizedDirection
+        ];
+
+
+      if (!form) {
+        return;
+      }
+
+
+      form.classList.add(
+        "active"
+      );
+
+
+      setFormEnabled(
+        form,
+        true
+      );
+    }
+
+
+    // =====================================================
+    // APPLICATION DIRECTIONS
+    // =====================================================
+
+    function getDirectionsFromApplication(
+      application
+    ) {
+
+      const result = [];
+
+
+      if (
+        application?.direction
+      ) {
+
+        result.push(
+          application.direction
+        );
+      }
+
+
+      const directions =
+        application?.directions;
+
+
+      if (
+        Array.isArray(
+          directions
+        )
+      ) {
+
+        result.push(
+          ...directions
+        );
+
+      }
+
+      else if (
+        typeof directions ===
+        "string"
+      ) {
+
+        try {
+
+          const parsed =
+            JSON.parse(
+              directions
+            );
+
+
+          if (
+            Array.isArray(
+              parsed
+            )
+          ) {
+
+            result.push(
+              ...parsed
+            );
+
+          }
+
+          else {
+
+            result.push(
+              directions
             );
           }
+
+        }
+
+        catch {
+
+          result.push(
+            directions
+          );
+
+        }
+      }
+
+
+      return result
+        .map(
+          normalizeDirection
+        )
+        .filter(Boolean);
+    }
+
+
+    // =====================================================
+    // ACTIVE APPLICATION STATUS
+    //
+    // approved тут спеціально НЕМАЄ.
+    // =====================================================
+
+    function isActiveApplicationStatus(
+      status
+    ) {
+
+      const normalized =
+        String(
+          status || ""
+        )
+          .trim()
+          .toLowerCase();
+
+
+      return [
+
+        "pending",
+
+        "new",
+
+        "review",
+
+        "under_review",
+
+        "in_review"
+
+      ].includes(
+        normalized
+      );
+    }
+
+
+    // =====================================================
+    // CHECK ACTIVE MEMBERSHIP
+    //
+    // Використовуємо RPC:
+    //
+    // is_user_active_in_direction
+    //
+    // який ми вже створили в Supabase.
+    // =====================================================
+
+    async function hasActiveDirectionMembership(
+      userId,
+      direction
+    ) {
+
+      const normalizedDirection =
+        normalizeDirection(
+          direction
         );
 
-      if (!directionRow) {
-        console.warn(
-          "UA LEGION: direction не знайдено:",
-          normalizedDirection
-        );
+
+      if (
+        !userId ||
+        !normalizedDirection
+      ) {
 
         return false;
       }
 
-      // -----------------------------------------------------
-      // Перевіряємо user_directions
-      // -----------------------------------------------------
-
-      const {
-        data: memberships,
-        error: membershipError
-      } = await supabase
-        .from("user_directions")
-        .select(
-          "id,status,direction_id"
-        )
-        .eq(
-          "user_id",
-          userId
-        )
-        .eq(
-          "direction_id",
-          directionRow.id
-        )
-        .eq(
-          "status",
-          "active"
-        )
-        .limit(1);
-
-      if (membershipError) {
-        console.error(
-          "UA LEGION: помилка перевірки user_directions:",
-          membershipError
-        );
-
-        throw membershipError;
-      }
-
-      return (
-        Array.isArray(
-          memberships
-        ) &&
-        memberships.length > 0
-      );
-
-    } catch (error) {
-
-      console.error(
-        "UA LEGION: помилка перевірки активного членства:",
-        error
-      );
-
-      // Не блокуємо заявку через технічну помилку.
-      // Основна перевірка applications все одно виконається.
-      return false;
-    }
-  }
-
-  // ---------------------------------------------------------
-  // Auth
-  // ---------------------------------------------------------
-
-  const {
-    data: {
-      user
-    },
-    error: authError
-  } =
-    await supabase.auth.getUser();
-
-  if (authError) {
-    console.error(
-      "UA LEGION: помилка отримання користувача:",
-      authError
-    );
-
-    showMessage(
-      "Не вдалося перевірити авторизацію. Оновіть сторінку.",
-      "error"
-    );
-
-    return;
-  }
-
-  if (!user) {
-    showMessage(
-      "Щоб подати заявку, спочатку увійдіть у свій акаунт.",
-      "error"
-    );
-
-    setTimeout(
-      () => {
-        window.location.href =
-          "login.html";
-      },
-      1200
-    );
-
-    return;
-  }
-
-  // ---------------------------------------------------------
-  // Завантаження профілю
-  // ---------------------------------------------------------
-
-  const {
-    data: profile,
-    error: profileError
-  } =
-    await supabase
-      .from("profiles")
-      .select(
-        "display_name,birth_date,discord_username,discord_user_id,steam_id,game_nickname"
-      )
-      .eq(
-        "id",
-        user.id
-      )
-      .maybeSingle();
-
-  if (profileError) {
-    console.error(
-      "UA LEGION: помилка завантаження профілю:",
-      profileError
-    );
-
-    showMessage(
-      "Не вдалося завантажити дані профілю.",
-      "error"
-    );
-
-    return;
-  }
-
-  const profileName =
-    getFallbackName(
-      user,
-      profile
-    );
-
-  const profileAge =
-    calculateAge(
-      profile?.birth_date
-    );
-
-  // ---------------------------------------------------------
-  // Перевірка обов'язкових даних
-  // ---------------------------------------------------------
-
-  if (!profileName) {
-    showMessage(
-      "Спочатку заповніть ім'я у своєму профілі.",
-      "error"
-    );
-
-    return;
-  }
-
-  if (
-    profileAge === null
-  ) {
-    showMessage(
-      "Спочатку заповніть дату народження у своєму профілі.",
-      "error"
-    );
-
-    return;
-  }
-
-  // ---------------------------------------------------------
-  // Вибір напрямку
-  // ---------------------------------------------------------
-
-  hideAllGameForms();
-
-  directionInputs.forEach(
-    (input) => {
-
-      input.addEventListener(
-        "change",
-        () => {
-
-          clearMessage();
-
-          showGameForm(
-            input.value
-          );
-        }
-      );
-    }
-  );
-
-  const initialDirection =
-    getSelectedDirection();
-
-  if (initialDirection) {
-    showGameForm(
-      initialDirection
-    );
-  }
-
-  // ---------------------------------------------------------
-  // Submit
-  // ---------------------------------------------------------
-
-  if (!applicationForm) {
-    console.error(
-      "UA LEGION: #applicationForm не знайдено."
-    );
-
-    return;
-  }
-
-  applicationForm.addEventListener(
-    "submit",
-    async (event) => {
-
-      event.preventDefault();
-
-      clearMessage();
-
-      const direction =
-        normalizeDirection(
-          getSelectedDirection()
-        );
-
-      // -----------------------------------------------------
-      // Напрямок
-      // -----------------------------------------------------
-
-      if (!direction) {
-        showMessage(
-          "Оберіть напрямок, до якого хочете подати заявку.",
-          "error"
-        );
-
-        return;
-      }
-
-      // -----------------------------------------------------
-      // ПЕРЕВІРКА №1
-      //
-      // Чи користувач уже активний учасник цього напрямку?
-      // -----------------------------------------------------
-
-      const alreadyActive =
-        await hasActiveDirectionMembership(
-          user.id,
-          direction
-        );
-
-      if (alreadyActive) {
-
-        showMessage(
-          `Ви вже є активним учасником напрямку ${getDirectionLabel(
-            direction
-          )}. Повторна заявка не потрібна.`,
-          "error"
-        );
-
-        return;
-      }
-
-      // -----------------------------------------------------
-      // ПЕРЕВІРКА №2
-      //
-      // Чи є активна заявка саме цього напрямку?
-      //
-      // approved НЕ блокує.
-      // rejected НЕ блокує.
-      // -----------------------------------------------------
-
-      const {
-        data: existingApplications,
-        error: existingError
-      } =
-        await supabase
-          .from("applications")
-          .select(
-            "id,status,direction,directions,created_at"
-          )
-          .eq(
-            "user_id",
-            user.id
-          )
-          .order(
-            "created_at",
-            {
-              ascending: false
-            }
-          );
-
-      if (existingError) {
-        console.error(
-          "UA LEGION: помилка перевірки попередніх заявок:",
-          existingError
-        );
-
-        showMessage(
-          "Не вдалося перевірити попередні заявки. Спробуйте ще раз.",
-          "error"
-        );
-
-        return;
-      }
-
-      const applications =
-        existingApplications || [];
-
-      const sameDirectionActiveApplication =
-        applications.find(
-          (application) => {
-
-            const applicationDirections =
-              getDirectionsFromApplication(
-                application
-              );
-
-            const sameDirection =
-              applicationDirections.includes(
-                direction
-              );
-
-            return (
-              sameDirection &&
-              isActiveApplicationStatus(
-                application.status
-              )
-            );
-          }
-        );
-
-      if (
-        sameDirectionActiveApplication
-      ) {
-
-        showMessage(
-          `У вас уже є активна заявка для напрямку ${getDirectionLabel(
-            direction
-          )}. Дочекайтеся її розгляду.`,
-          "error"
-        );
-
-        return;
-      }
-
-      // -----------------------------------------------------
-      // Дані заявки
-      // -----------------------------------------------------
-
-      const applicationData = {
-
-        // Користувач
-        user_id:
-          user.id,
-
-        // Дані профілю
-        name:
-          profileName,
-
-        age:
-          profileAge,
-
-        discord_nick:
-          profile?.discord_username ||
-          null,
-
-        discord_id:
-          profile?.discord_user_id ||
-          null,
-
-        steam_id:
-          profile?.steam_id ||
-          null,
-
-        // Напрямок
-        direction:
-          direction,
-
-        directions: [
-          direction.toUpperCase()
-        ],
-
-        // Статус
-        status:
-          "pending",
-
-        // Загальна інформація
-        about:
-          getValue("about")
-      };
-
-      // -----------------------------------------------------
-      // ETS2
-      // -----------------------------------------------------
-
-      if (
-        direction === "ets2"
-      ) {
-
-        applicationData.truckersmp_nick =
-          getValue(
-            "truckersmpNick"
-          );
-
-        applicationData.truckersmp_id =
-          getValue(
-            "truckersmpId"
-          );
-
-        applicationData.truckershub_username =
-          getValue(
-            "truckershubUsername"
-          );
-
-        applicationData.truckershub_id =
-          getValue(
-            "truckershubId"
-          );
-
-        applicationData.game_nick =
-          applicationData.truckersmp_nick ||
-          profile?.game_nickname ||
-          null;
-      }
-
-      // -----------------------------------------------------
-      // World of Tanks
-      // -----------------------------------------------------
-
-      if (
-        direction === "wot"
-      ) {
-
-        applicationData.wot_nickname =
-          getValue(
-            "wotNickname"
-          );
-
-        applicationData.wargaming_id =
-          getValue(
-            "wargamingId"
-          );
-
-        applicationData.wot_region =
-          getValue(
-            "wotRegion"
-          );
-
-        applicationData.game_nick =
-          applicationData.wot_nickname ||
-          profile?.game_nickname ||
-          null;
-      }
-
-      // -----------------------------------------------------
-      // Dota 2
-      // -----------------------------------------------------
-
-      if (
-        direction === "dota2"
-      ) {
-
-        applicationData.dota_nickname =
-          getValue(
-            "dotaNickname"
-          );
-
-        applicationData.dota_friend_id =
-          getValue(
-            "dotaFriendId"
-          );
-
-        applicationData.dota_rank =
-          getValue(
-            "dotaRank"
-          );
-
-        applicationData.game_nick =
-          applicationData.dota_nickname ||
-          profile?.game_nickname ||
-          null;
-      }
-
-      // -----------------------------------------------------
-      // World of Warcraft
-      // -----------------------------------------------------
-
-      if (
-        direction === "wow"
-      ) {
-
-        applicationData.battle_tag =
-          getValue(
-            "battleTag"
-          );
-
-        applicationData.wow_character =
-          getValue(
-            "wowCharacter"
-          );
-
-        applicationData.wow_realm =
-          getValue(
-            "wowRealm"
-          );
-
-        applicationData.wow_faction =
-          getValue(
-            "wowFaction"
-          );
-
-        applicationData.wow_class =
-          getValue(
-            "wowClass"
-          );
-
-        applicationData.game_nick =
-          applicationData.wow_character ||
-          profile?.game_nickname ||
-          null;
-      }
-
-      // -----------------------------------------------------
-      // Submit UI
-      // -----------------------------------------------------
-
-      if (submitButton) {
-
-        submitButton.disabled =
-          true;
-
-        submitButton.dataset.originalText =
-          submitButton.textContent;
-
-        submitButton.textContent =
-          "Відправлення...";
-      }
 
       try {
 
-        console.log(
-          "UA LEGION: відправляємо заявку:",
-          applicationData
+        const {
+          data,
+          error
+        } = await supabase.rpc(
+          "is_user_active_in_direction",
+          {
+
+            p_user_id:
+              userId,
+
+            p_direction_code:
+              normalizedDirection
+
+          }
         );
 
-        const {
-          data: insertedApplication,
-          error: insertError
-        } =
-          await supabase
-            .from("applications")
-            .insert(
-              applicationData
-            )
-            .select()
-            .single();
 
-        // ---------------------------------------------------
-        // Помилка INSERT
-        // ---------------------------------------------------
-
-        if (insertError) {
+        if (error) {
 
           console.error(
-            "UA LEGION: помилка створення заявки:",
-            insertError
+            "UA LEGION: помилка RPC перевірки активного напрямку:",
+            error
           );
 
-          if (
-            insertError.code ===
-              "23502" &&
-            String(
-              insertError.message ||
-                ""
-            ).includes(
-              "name"
-            )
-          ) {
+          return false;
+        }
 
-            showMessage(
-              "Не вдалося створити заявку: у профілі не заповнене ім'я.",
-              "error"
-            );
 
-          } else {
+        return data === true;
 
-            showMessage(
-              `Не вдалося відправити заявку: ${
-                insertError.message ||
-                "невідома помилка"
-              }`,
-              "error"
+      }
+
+      catch (error) {
+
+        console.error(
+          "UA LEGION: помилка перевірки членства:",
+          error
+        );
+
+        return false;
+      }
+    }
+
+
+    // =====================================================
+    // BLOCK ACTIVE DIRECTION
+    // =====================================================
+
+    function markDirectionAsDisabled(
+      input
+    ) {
+
+      if (!input) {
+        return;
+      }
+
+
+      input.disabled =
+        true;
+
+
+      if (input.checked) {
+
+        input.checked =
+          false;
+      }
+
+
+      // Найчастіше radio знаходиться
+      // безпосередньо всередині label.
+      let label =
+        input.closest(
+          "label"
+        );
+
+
+      // Якщо label не знайдено,
+      // пробуємо знайти батьківський блок.
+      if (!label) {
+
+        label =
+          input.parentElement;
+      }
+
+
+      if (label) {
+
+        label.classList.add(
+          "direction-disabled"
+        );
+
+
+        label.style.opacity =
+          "0.45";
+
+
+        label.style.cursor =
+          "not-allowed";
+
+
+        label.style.pointerEvents =
+          "none";
+
+
+        label.title =
+          "Ви вже є учасником цього напрямку";
+      }
+    }
+
+
+    // =====================================================
+    // CHECK ALL ACTIVE DIRECTIONS
+    // =====================================================
+
+    async function disableActiveDirections() {
+
+      let activeDirectionsCount =
+        0;
+
+
+      for (
+        const input
+        of directionInputs
+      ) {
+
+        const direction =
+          normalizeDirection(
+            input.value
+          );
+
+
+        if (!direction) {
+          continue;
+        }
+
+
+        const isActive =
+          await hasActiveDirectionMembership(
+            user.id,
+            direction
+          );
+
+
+        if (isActive) {
+
+          activeDirectionsCount++;
+
+          markDirectionAsDisabled(
+            input
+          );
+        }
+      }
+
+
+      // ---------------------------------------------------
+      // Знаходимо доступний напрямок
+      // ---------------------------------------------------
+
+      const availableDirection =
+        Array.from(
+          directionInputs
+        ).find(
+          input =>
+            !input.disabled
+        );
+
+
+      const selectedDirection =
+        getSelectedDirection();
+
+
+      // ---------------------------------------------------
+      // Якщо вже був вибраний доступний напрямок
+      // ---------------------------------------------------
+
+      if (
+        selectedDirection
+      ) {
+
+        const selectedInput =
+          Array.from(
+            directionInputs
+          ).find(
+            input =>
+              !input.disabled &&
+              normalizeDirection(
+                input.value
+              ) ===
+                normalizeDirection(
+                  selectedDirection
+                )
+          );
+
+
+        if (selectedInput) {
+
+          showGameForm(
+            selectedInput.value
+          );
+
+          return;
+        }
+      }
+
+
+      // ---------------------------------------------------
+      // Якщо є доступний напрямок —
+      // вибираємо його
+      // ---------------------------------------------------
+
+      if (
+        availableDirection
+      ) {
+
+        availableDirection.checked =
+          true;
+
+
+        showGameForm(
+          availableDirection.value
+        );
+
+
+        return;
+      }
+
+
+      // ---------------------------------------------------
+      // Усі напрямки активні
+      // ---------------------------------------------------
+
+      hideAllGameForms();
+
+
+      if (
+        activeDirectionsCount > 0
+      ) {
+
+        showMessage(
+          "Ви вже є активним учасником усіх доступних напрямків.",
+          "error"
+        );
+      }
+    }
+
+
+    // =====================================================
+    // AUTH
+    // =====================================================
+
+    const {
+      data: {
+        user
+      },
+      error: authError
+    } =
+      await supabase.auth.getUser();
+
+
+    if (authError) {
+
+      console.error(
+        "UA LEGION: помилка отримання користувача:",
+        authError
+      );
+
+
+      showMessage(
+        "Не вдалося перевірити авторизацію. Оновіть сторінку.",
+        "error"
+      );
+
+
+      return;
+    }
+
+
+    if (!user) {
+
+      showMessage(
+        "Щоб подати заявку, спочатку увійдіть у свій акаунт.",
+        "error"
+      );
+
+
+      setTimeout(
+        () => {
+
+          window.location.href =
+            "login.html";
+
+        },
+        1200
+      );
+
+
+      return;
+    }
+
+
+    // =====================================================
+    // PROFILE
+    // =====================================================
+
+    const {
+      data: profile,
+      error: profileError
+    } =
+      await supabase
+        .from("profiles")
+        .select(
+          "display_name,birth_date,discord_username,discord_user_id,steam_id,game_nickname"
+        )
+        .eq(
+          "id",
+          user.id
+        )
+        .maybeSingle();
+
+
+    if (profileError) {
+
+      console.error(
+        "UA LEGION: помилка завантаження профілю:",
+        profileError
+      );
+
+
+      showMessage(
+        "Не вдалося завантажити дані профілю.",
+        "error"
+      );
+
+
+      return;
+    }
+
+
+    const profileName =
+      getFallbackName(
+        user,
+        profile
+      );
+
+
+    const profileAge =
+      calculateAge(
+        profile?.birth_date
+      );
+
+
+    // =====================================================
+    // REQUIRED PROFILE DATA
+    // =====================================================
+
+    if (!profileName) {
+
+      showMessage(
+        "Спочатку заповніть ім'я у своєму профілі.",
+        "error"
+      );
+
+
+      return;
+    }
+
+
+    if (
+      profileAge === null
+    ) {
+
+      showMessage(
+        "Спочатку заповніть дату народження у своєму профілі.",
+        "error"
+      );
+
+
+      return;
+    }
+
+
+    // =====================================================
+    // DIRECTION SELECTION
+    // =====================================================
+
+    hideAllGameForms();
+
+
+    directionInputs.forEach(
+      input => {
+
+        input.addEventListener(
+          "change",
+          () => {
+
+            if (
+              input.disabled
+            ) {
+
+              return;
+            }
+
+
+            clearMessage();
+
+
+            showGameForm(
+              input.value
             );
           }
+        );
+      }
+    );
+
+
+    // =====================================================
+    // BLOCK ACTIVE DIRECTIONS
+    // =====================================================
+
+    await disableActiveDirections();
+
+
+    // =====================================================
+    // APPLICATION FORM
+    // =====================================================
+
+    if (!applicationForm) {
+
+      console.error(
+        "UA LEGION: #applicationForm не знайдено."
+      );
+
+
+      return;
+    }
+
+
+    // =====================================================
+    // SUBMIT
+    // =====================================================
+
+    applicationForm.addEventListener(
+      "submit",
+      async event => {
+
+        event.preventDefault();
+
+
+        clearMessage();
+
+
+        // -------------------------------------------------
+        // SELECTED DIRECTION
+        // -------------------------------------------------
+
+        const direction =
+          normalizeDirection(
+            getSelectedDirection()
+          );
+
+
+        if (!direction) {
+
+          showMessage(
+            "Оберіть напрямок, до якого хочете подати заявку.",
+            "error"
+          );
+
 
           return;
         }
 
-        // ---------------------------------------------------
-        // Успішно
-        // ---------------------------------------------------
 
-        console.log(
-          "UA LEGION: заявку створено:",
-          insertedApplication
-        );
+        // -------------------------------------------------
+        // CHECK ACTIVE MEMBERSHIP
+        //
+        // Повторна перевірка перед INSERT.
+        // -------------------------------------------------
 
-        showMessage(
-          `Заявку на напрямок ${getDirectionLabel(
+        const alreadyActive =
+          await hasActiveDirectionMembership(
+            user.id,
             direction
-          )} успішно відправлено.`,
-          "success"
-        );
+          );
 
-        setTimeout(
-          () => {
-            window.location.href =
-              "profile.html";
-          },
-          1500
-        );
 
-      } catch (error) {
+        if (alreadyActive) {
 
-        console.error(
-          "UA LEGION: неочікувана помилка:",
-          error
-        );
+          showMessage(
+            `Ви вже є активним учасником напрямку ${getDirectionLabel(
+              direction
+            )}. Повторна заявка не потрібна.`,
+            "error"
+          );
 
-        showMessage(
-          "Сталася неочікувана помилка. Спробуйте ще раз.",
-          "error"
-        );
 
-      } finally {
+          // Додатково блокуємо напрямок
+          const selectedInput =
+            Array.from(
+              directionInputs
+            ).find(
+              input =>
+                normalizeDirection(
+                  input.value
+                ) === direction
+            );
 
-        if (submitButton) {
+
+          if (
+            selectedInput
+          ) {
+
+            markDirectionAsDisabled(
+              selectedInput
+            );
+          }
+
+
+          return;
+        }
+
+
+        // -------------------------------------------------
+        // CHECK EXISTING APPLICATIONS
+        // -------------------------------------------------
+
+        const {
+          data:
+            existingApplications,
+          error:
+            existingError
+        } =
+          await supabase
+            .from(
+              "applications"
+            )
+            .select(
+              "id,status,direction,directions,created_at"
+            )
+            .eq(
+              "user_id",
+              user.id
+            )
+            .order(
+              "created_at",
+              {
+                ascending:
+                  false
+              }
+            );
+
+
+        if (existingError) {
+
+          console.error(
+            "UA LEGION: помилка перевірки попередніх заявок:",
+            existingError
+          );
+
+
+          showMessage(
+            "Не вдалося перевірити попередні заявки. Спробуйте ще раз.",
+            "error"
+          );
+
+
+          return;
+        }
+
+
+        const applications =
+          existingApplications ||
+          [];
+
+
+        // -------------------------------------------------
+        // FIND ACTIVE APPLICATION
+        // -------------------------------------------------
+
+        const sameDirectionActiveApplication =
+          applications.find(
+            application => {
+
+              const applicationDirections =
+                getDirectionsFromApplication(
+                  application
+                );
+
+
+              const sameDirection =
+                applicationDirections.includes(
+                  direction
+                );
+
+
+              return (
+                sameDirection &&
+                isActiveApplicationStatus(
+                  application.status
+                )
+              );
+            }
+          );
+
+
+        if (
+          sameDirectionActiveApplication
+        ) {
+
+          showMessage(
+            `У вас уже є активна заявка для напрямку ${getDirectionLabel(
+              direction
+            )}. Дочекайтеся її розгляду.`,
+            "error"
+          );
+
+
+          return;
+        }
+
+
+        // =================================================
+        // APPLICATION DATA
+        // =================================================
+
+        const applicationData = {
+
+          // ------------------------------------------------
+          // USER
+          // ------------------------------------------------
+
+          user_id:
+            user.id,
+
+
+          // ------------------------------------------------
+          // PROFILE DATA
+          // ------------------------------------------------
+
+          name:
+            profileName,
+
+
+          age:
+            profileAge,
+
+
+          discord_nick:
+            profile?.discord_username ||
+            null,
+
+
+          discord_id:
+            profile?.discord_user_id ||
+            null,
+
+
+          steam_id:
+            profile?.steam_id ||
+            null,
+
+
+          // ------------------------------------------------
+          // DIRECTION
+          // ------------------------------------------------
+
+          direction:
+            direction,
+
+
+          directions:
+            [
+              direction.toUpperCase()
+            ],
+
+
+          // ------------------------------------------------
+          // STATUS
+          // ------------------------------------------------
+
+          status:
+            "pending",
+
+
+          // ------------------------------------------------
+          // ABOUT
+          // ------------------------------------------------
+
+          about:
+            getValue(
+              "about"
+            )
+
+        };
+
+
+        // =================================================
+        // ETS2
+        // =================================================
+
+        if (
+          direction ===
+          "ets2"
+        ) {
+
+          applicationData.truckersmp_nick =
+            getValue(
+              "truckersmpNick"
+            );
+
+
+          applicationData.truckersmp_id =
+            getValue(
+              "truckersmpId"
+            );
+
+
+          applicationData.truckershub_username =
+            getValue(
+              "truckershubUsername"
+            );
+
+
+          applicationData.truckershub_id =
+            getValue(
+              "truckershubId"
+            );
+
+
+          applicationData.game_nick =
+            applicationData
+              .truckersmp_nick ||
+
+            profile?.game_nickname ||
+
+            null;
+        }
+
+
+        // =================================================
+        // WORLD OF TANKS
+        // =================================================
+
+        if (
+          direction ===
+          "wot"
+        ) {
+
+          applicationData.wot_nickname =
+            getValue(
+              "wotNickname"
+            );
+
+
+          applicationData.wargaming_id =
+            getValue(
+              "wargamingId"
+            );
+
+
+          applicationData.wot_region =
+            getValue(
+              "wotRegion"
+            );
+
+
+          applicationData.game_nick =
+            applicationData
+              .wot_nickname ||
+
+            profile?.game_nickname ||
+
+            null;
+        }
+
+
+        // =================================================
+        // DOTA 2
+        // =================================================
+
+        if (
+          direction ===
+          "dota2"
+        ) {
+
+          applicationData.dota_nickname =
+            getValue(
+              "dotaNickname"
+            );
+
+
+          applicationData.dota_friend_id =
+            getValue(
+              "dotaFriendId"
+            );
+
+
+          applicationData.dota_rank =
+            getValue(
+              "dotaRank"
+            );
+
+
+          applicationData.game_nick =
+            applicationData
+              .dota_nickname ||
+
+            profile?.game_nickname ||
+
+            null;
+        }
+
+
+        // =================================================
+        // WORLD OF WARCRAFT
+        // =================================================
+
+        if (
+          direction ===
+          "wow"
+        ) {
+
+          applicationData.battle_tag =
+            getValue(
+              "battleTag"
+            );
+
+
+          applicationData.wow_character =
+            getValue(
+              "wowCharacter"
+            );
+
+
+          applicationData.wow_realm =
+            getValue(
+              "wowRealm"
+            );
+
+
+          applicationData.wow_faction =
+            getValue(
+              "wowFaction"
+            );
+
+
+          applicationData.wow_class =
+            getValue(
+              "wowClass"
+            );
+
+
+          applicationData.game_nick =
+            applicationData
+              .wow_character ||
+
+            profile?.game_nickname ||
+
+            null;
+        }
+
+
+        // =================================================
+        // SUBMIT BUTTON
+        // =================================================
+
+        if (
+          submitButton
+        ) {
 
           submitButton.disabled =
-            false;
+            true;
+
+
+          submitButton.dataset.originalText =
+            submitButton.textContent;
+
 
           submitButton.textContent =
-            submitButton.dataset
-              .originalText ||
-            "Подати заявку";
+            "Відправлення...";
         }
+
+
+        // =================================================
+        // INSERT
+        // =================================================
+
+        try {
+
+          console.log(
+            "UA LEGION: відправляємо заявку:",
+            applicationData
+          );
+
+
+          const {
+            data:
+              insertedApplication,
+            error:
+              insertError
+          } =
+            await supabase
+              .from(
+                "applications"
+              )
+              .insert(
+                applicationData
+              )
+              .select()
+              .single();
+
+
+          // ------------------------------------------------
+          // INSERT ERROR
+          // ------------------------------------------------
+
+          if (
+            insertError
+          ) {
+
+            console.error(
+              "UA LEGION: помилка створення заявки:",
+              insertError
+            );
+
+
+            // ----------------------------------------------
+            // NOT NULL name
+            // ----------------------------------------------
+
+            if (
+              insertError.code ===
+                "23502" &&
+
+              String(
+                insertError.message ||
+                ""
+              ).includes(
+                "name"
+              )
+            ) {
+
+              showMessage(
+                "Не вдалося створити заявку: у профілі не заповнене ім'я.",
+                "error"
+              );
+
+            }
+
+            else {
+
+              showMessage(
+                `Не вдалося відправити заявку: ${
+                  insertError.message ||
+                  "невідома помилка"
+                }`,
+                "error"
+              );
+            }
+
+
+            return;
+          }
+
+
+          // ------------------------------------------------
+          // SUCCESS
+          // ------------------------------------------------
+
+          console.log(
+            "UA LEGION: заявку створено:",
+            insertedApplication
+          );
+
+
+          showMessage(
+            `Заявку на напрямок ${getDirectionLabel(
+              direction
+            )} успішно відправлено.`,
+            "success"
+          );
+
+
+          // ------------------------------------------------
+          // REDIRECT
+          // ------------------------------------------------
+
+          setTimeout(
+            () => {
+
+              window.location.href =
+                "profile.html";
+
+            },
+            1500
+          );
+
+
+        }
+
+        // =================================================
+        // UNEXPECTED ERROR
+        // =================================================
+
+        catch (
+          error
+        ) {
+
+          console.error(
+            "UA LEGION: неочікувана помилка:",
+            error
+          );
+
+
+          showMessage(
+            "Сталася неочікувана помилка. Спробуйте ще раз.",
+            "error"
+          );
+
+        }
+
+
+        // =================================================
+        // RESTORE BUTTON
+        // =================================================
+
+        finally {
+
+          if (
+            submitButton
+          ) {
+
+            submitButton.disabled =
+              false;
+
+
+            submitButton.textContent =
+              submitButton
+                .dataset
+                .originalText ||
+
+              "Подати заявку";
+          }
+        }
+
       }
-    }
-  );
-});
+    );
+
+  }
+);
