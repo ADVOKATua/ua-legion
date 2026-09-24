@@ -3,7 +3,7 @@
    Подача заявки на вступ
 
    Логіка:
-   - Дані профілю (ім'я, вік, Discord, Steam) беремо з profiles.
+   - Дані профілю беремо з profiles.
    - Одна заявка = один напрямок.
    - Повторна заявка дозволена для іншого напрямку.
    - Активний учасник напрямку не може подати повторну заявку.
@@ -189,7 +189,8 @@ document.addEventListener(
 
       if (
         text === "ets2" ||
-        text === "ets2/truckersmp"
+        text === "ets2/truckersmp" ||
+        text === "ets2 / truckersmp"
       ) {
 
         return "ets2";
@@ -571,7 +572,7 @@ document.addEventListener(
     // =====================================================
     // ACTIVE APPLICATION STATUS
     //
-    // approved тут спеціально НЕМАЄ.
+    // approved спеціально НЕ блокує заявку.
     // =====================================================
 
     function isActiveApplicationStatus(
@@ -605,13 +606,90 @@ document.addEventListener(
 
 
     // =====================================================
+    // FIND DIRECTION
+    //
+    // Шукаємо напрямок у таблиці directions.
+    //
+    // Підтримуємо:
+    // - slug
+    // - code
+    // =====================================================
+
+    async function getDirectionRecord(
+      direction
+    ) {
+
+      const normalizedDirection =
+        normalizeDirection(
+          direction
+        );
+
+
+      if (!normalizedDirection) {
+        return null;
+      }
+
+
+      try {
+
+        const {
+          data,
+          error
+        } = await supabase
+          .from(
+            "directions"
+          )
+          .select(
+            "id,code,slug,name,is_active"
+          )
+          .or(
+            `slug.eq.${normalizedDirection},code.eq.${normalizedDirection}`
+          )
+          .limit(
+            1
+          )
+          .maybeSingle();
+
+
+        if (error) {
+
+          console.error(
+            "UA LEGION: помилка пошуку напрямку:",
+            error
+          );
+
+          return null;
+        }
+
+
+        return data || null;
+
+      }
+
+      catch (error) {
+
+        console.error(
+          "UA LEGION: неочікувана помилка пошуку напрямку:",
+          error
+        );
+
+        return null;
+      }
+    }
+
+
+    // =====================================================
     // CHECK ACTIVE MEMBERSHIP
     //
-    // Використовуємо RPC:
+    // БЕЗ RPC.
     //
-    // is_user_active_in_direction
+    // Перевіряємо:
     //
-    // який ми вже створили в Supabase.
+    // directions
+    //      ↓
+    // user_directions
+    //
+    // status = active
     // =====================================================
 
     async function hasActiveDirectionMembership(
@@ -636,42 +714,90 @@ document.addEventListener(
 
       try {
 
-        const {
-          data,
-          error
-        } = await supabase.rpc(
-          "is_user_active_in_direction",
-          {
+        // -------------------------------------------------
+        // 1. Знаходимо ID напрямку
+        // -------------------------------------------------
 
-            p_user_id:
-              userId,
-
-            p_direction_code:
-              normalizedDirection
-
-          }
-        );
+        const directionRecord =
+          await getDirectionRecord(
+            normalizedDirection
+          );
 
 
-        if (error) {
+        if (
+          !directionRecord?.id
+        ) {
 
-          console.error(
-            "UA LEGION: помилка RPC перевірки активного напрямку:",
-            error
+          console.warn(
+            "UA LEGION: напрямок не знайдено:",
+            normalizedDirection
           );
 
           return false;
         }
 
 
-        return data === true;
+        // -------------------------------------------------
+        // 2. Перевіряємо user_directions
+        // -------------------------------------------------
+
+        const {
+          data,
+          error
+        } = await supabase
+          .from(
+            "user_directions"
+          )
+          .select(
+            "id,user_id,direction_id,status"
+          )
+          .eq(
+            "user_id",
+            userId
+          )
+          .eq(
+            "direction_id",
+            directionRecord.id
+          )
+          .eq(
+            "status",
+            "active"
+          )
+          .limit(
+            1
+          )
+          .maybeSingle();
+
+
+        if (error) {
+
+          console.error(
+            "UA LEGION: помилка перевірки user_directions:",
+            error
+          );
+
+          /*
+           * Якщо RLS не дозволяє читати user_directions,
+           * ми НЕ вважаємо користувача активним.
+           *
+           * Це краще, ніж блокувати нову заявку
+           * через помилку RPC.
+           */
+
+          return false;
+        }
+
+
+        return Boolean(
+          data?.id
+        );
 
       }
 
       catch (error) {
 
         console.error(
-          "UA LEGION: помилка перевірки членства:",
+          "UA LEGION: неочікувана помилка перевірки членства:",
           error
         );
 
@@ -704,20 +830,30 @@ document.addEventListener(
       }
 
 
-      // Найчастіше radio знаходиться
-      // безпосередньо всередині label.
+      /*
+       * У join.html структура:
+       *
+       * <div class="choice">
+       *   <input ...>
+       *   <label ...>
+       *
+       * Тому шукаємо label
+       * через for/id.
+       */
+
       let label =
-        input.closest(
-          "label"
+        document.querySelector(
+          `label[for="${input.id}"]`
         );
 
 
-      // Якщо label не знайдено,
-      // пробуємо знайти батьківський блок.
       if (!label) {
 
         label =
-          input.parentElement;
+          input.parentElement
+            ?.querySelector(
+              "label"
+            );
       }
 
 
@@ -782,6 +918,7 @@ document.addEventListener(
         if (isActive) {
 
           activeDirectionsCount++;
+
 
           markDirectionAsDisabled(
             input
@@ -945,7 +1082,9 @@ document.addEventListener(
       error: profileError
     } =
       await supabase
-        .from("profiles")
+        .from(
+          "profiles"
+        )
         .select(
           "display_name,birth_date,discord_username,discord_user_id,steam_id,game_nickname"
         )
@@ -1132,7 +1271,6 @@ document.addEventListener(
           );
 
 
-          // Додатково блокуємо напрямок
           const selectedInput =
             Array.from(
               directionInputs
@@ -1213,6 +1351,8 @@ document.addEventListener(
 
         // -------------------------------------------------
         // FIND ACTIVE APPLICATION
+        //
+        // approved тут НЕ враховується.
         // -------------------------------------------------
 
         const sameDirectionActiveApplication =
@@ -1561,10 +1701,6 @@ document.addEventListener(
               insertError
             );
 
-
-            // ----------------------------------------------
-            // NOT NULL name
-            // ----------------------------------------------
 
             if (
               insertError.code ===
