@@ -144,6 +144,10 @@ document.addEventListener(
     // ETS2 DRIVER CLASSES
     // ======================================
 
+    /*
+     * Класи використовуються тільки для ETS2.
+     */
+
     const ets2DriverClasses = [
 
       {
@@ -1343,18 +1347,16 @@ document.addEventListener(
 
 
     // ======================================
-    // SAVE ETS2 DRIVER CLASS
+    // ACTIVATE USER DIRECTION
     // ======================================
 
-    async function saveETS2DriverClass(
+    async function activateUserDirection(
       application,
-      driverClass,
-      directionId
+      directionId,
+      driverClass = ""
     ) {
 
-      if (
-        !application?.user_id
-      ) {
+      if (!application?.user_id) {
 
         throw new Error(
           "Не знайдено користувача заявки."
@@ -1363,7 +1365,53 @@ document.addEventListener(
       }
 
 
-      if (!driverClass) {
+      if (!directionId) {
+
+        throw new Error(
+          "Не знайдено напрямок заявки."
+        );
+
+      }
+
+
+      const numericDirectionId =
+        Number(directionId);
+
+
+      if (!Number.isFinite(numericDirectionId)) {
+
+        throw new Error(
+          "Некоректний ID напрямку."
+        );
+
+      }
+
+
+      const direction =
+        allDirections.find(
+          item =>
+            String(item.id) ===
+            String(numericDirectionId)
+        );
+
+
+      if (!direction) {
+
+        throw new Error(
+          "Напрямок не знайдено."
+        );
+
+      }
+
+
+      const isETS2 =
+        direction.slug === "ets2";
+
+
+      if (
+        isETS2 &&
+        !driverClass
+      ) {
 
         throw new Error(
           "Для ETS2 потрібно вибрати клас водія."
@@ -1372,52 +1420,9 @@ document.addEventListener(
       }
 
 
-      if (!directionId) {
-
-        throw new Error(
-          "Не знайдено напрямок ETS2."
-        );
-
-      }
-
-
-      const numericDirectionId =
-        Number(
-          directionId
-        );
-
-
-      if (
-        !Number.isFinite(
-          numericDirectionId
-        )
-      ) {
-
-        throw new Error(
-          "Некоректний ID напрямку ETS2."
-        );
-
-      }
-
-
-      console.log(
-        "Збереження класу ETS2:",
-        {
-          user_id:
-            application.user_id,
-
-          direction_id:
-            numericDirectionId,
-
-          driver_class:
-            driverClass
-        }
-      );
-
-
-      // ====================================
-      // SEARCH EXISTING USER DIRECTION
-      // ====================================
+      // ------------------------------------
+      // SEARCH EXISTING MEMBERSHIP
+      // ------------------------------------
 
       const {
         data: existingDirection,
@@ -1451,26 +1456,42 @@ document.addEventListener(
       }
 
 
-      // ====================================
-      // UPDATE EXISTING
-      // ====================================
+      // ------------------------------------
+      // UPDATE EXISTING MEMBERSHIP
+      // ------------------------------------
 
       if (existingDirection) {
+
+        const updateData = {
+
+          status:
+            "active"
+
+        };
+
+
+        // Клас ETS2 залишається окремим
+        // параметром членства.
+
+        if (
+          isETS2 &&
+          driverClass
+        ) {
+
+          updateData.driver_class =
+            driverClass;
+
+        }
+
 
         const {
           error: updateError
         } =
           await supabase
             .from("user_directions")
-            .update({
-
-              status:
-                "active",
-
-              driver_class:
-                driverClass
-
-            })
+            .update(
+              updateData
+            )
             .eq(
               "user_id",
               application.user_id
@@ -1495,32 +1516,45 @@ document.addEventListener(
       }
 
 
-      // ====================================
-      // INSERT NEW
-      // ====================================
+      // ------------------------------------
+      // CREATE NEW MEMBERSHIP
+      // ------------------------------------
 
       else {
+
+        const membershipData = {
+
+          user_id:
+            application.user_id,
+
+          direction_id:
+            numericDirectionId,
+
+          status:
+            "active"
+
+        };
+
+
+        if (
+          isETS2 &&
+          driverClass
+        ) {
+
+          membershipData.driver_class =
+            driverClass;
+
+        }
+
 
         const {
           error: insertError
         } =
           await supabase
             .from("user_directions")
-            .insert({
-
-              user_id:
-                application.user_id,
-
-              direction_id:
-                numericDirectionId,
-
-              status:
-                "active",
-
-              driver_class:
-                driverClass
-
-            });
+            .insert(
+              membershipData
+            );
 
 
         if (insertError) {
@@ -1538,13 +1572,25 @@ document.addEventListener(
 
 
       console.log(
-        "Клас водія успішно збережено:",
-        driverClass
+        "Напрямок користувача активовано:",
+        {
+          user_id:
+            application.user_id,
+
+          direction_id:
+            numericDirectionId,
+
+          direction:
+            direction.slug,
+
+          driver_class:
+            isETS2
+              ? driverClass
+              : null
+        }
       );
 
     }
-
-
     // ======================================
     // RENDER APPLICATIONS
     // ======================================
@@ -1764,7 +1810,7 @@ document.addEventListener(
               >
 
                 <span>
-                  📍 Напрямок
+                  📍 Напрямок заявки
                 </span>
 
                 <strong>
@@ -1839,7 +1885,7 @@ document.addEventListener(
               >
 
                 <span>
-                  🎖️ Призначення ролі
+                  🎖️ Посада / роль
                 </span>
 
 
@@ -2174,17 +2220,9 @@ document.addEventListener(
 
     ) {
 
-      if (!roleId) {
-
-        showMessage(
-          "Перед схваленням потрібно вибрати роль.",
-          "error"
-        );
-
-        return;
-
-      }
-
+      // ====================================
+      // FIND APPLICATION
+      // ====================================
 
       const application =
         allApplications.find(
@@ -2217,33 +2255,85 @@ document.addEventListener(
       }
 
 
-      const finalDirectionId =
+      // ====================================
+      // CHECK DIRECTION
+      // ====================================
 
+      if (
+        !directionId ||
         directionId === "global"
+      ) {
 
-          ?
-
-          null
-
-          :
-
-          Number(
-            directionId
-          );
-
-
-      const selectedRole =
-        allRoles.find(
-          role =>
-            String(role.id) ===
-            String(roleId)
+        showMessage(
+          "Перед схваленням потрібно вибрати напрямок.",
+          "error"
         );
 
 
-      if (!selectedRole) {
+        if (button) {
+
+          button.disabled =
+            false;
+
+          button.textContent =
+            "🟢 СХВАЛИТИ";
+
+        }
+
+
+        return;
+
+      }
+
+
+      const finalDirectionId =
+        Number(
+          directionId
+        );
+
+
+      if (
+        !Number.isFinite(
+          finalDirectionId
+        )
+      ) {
 
         showMessage(
-          "Вибрану роль не знайдено.",
+          "Некоректний ID напрямку.",
+          "error"
+        );
+
+
+        if (button) {
+
+          button.disabled =
+            false;
+
+          button.textContent =
+            "🟢 СХВАЛИТИ";
+
+        }
+
+
+        return;
+
+      }
+
+
+      const selectedDirection =
+        allDirections.find(
+
+          direction =>
+            String(direction.id) ===
+            String(finalDirectionId)
+
+        );
+
+
+      if (!selectedDirection) {
+
+        showMessage(
+          "Вибраний напрямок не знайдено.",
           "error"
         );
 
@@ -2265,33 +2355,13 @@ document.addEventListener(
 
 
       // ====================================
-      // DETERMINE ETS2
+      // CHECK ETS2
       // ====================================
-
-      const selectedDirection =
-        finalDirectionId !== null
-
-          ?
-
-          allDirections.find(
-            direction =>
-              String(direction.id) ===
-              String(finalDirectionId)
-          )
-
-          :
-
-          null;
-
 
       const isETS2 =
-        selectedDirection?.slug ===
+        selectedDirection.slug ===
         "ets2";
 
-
-      // ====================================
-      // ETS2 CLASS REQUIRED
-      // ====================================
 
       if (
         isETS2 &&
@@ -2321,65 +2391,34 @@ document.addEventListener(
 
 
       // ====================================
-      // CHECK EXISTING ROLE
+      // ACTIVATE DIRECTION
       // ====================================
 
-      let roleQuery =
-        supabase
-          .from("user_roles")
-          .select(
-            "id, user_id, role_id, direction_id"
-          )
-          .eq(
-            "user_id",
-            application.user_id
-          )
-          .eq(
-            "role_id",
-            Number(roleId)
-          );
+      try {
 
+        await activateUserDirection(
 
-      if (
-        finalDirectionId === null
-      ) {
+          application,
 
-        roleQuery =
-          roleQuery.is(
-            "direction_id",
-            null
-          );
+          finalDirectionId,
+
+          driverClass
+
+        );
 
       }
 
-      else {
-
-        roleQuery =
-          roleQuery.eq(
-            "direction_id",
-            finalDirectionId
-          );
-
-      }
-
-
-      const {
-        data: existingRoles,
-        error: existingRoleError
-      } =
-        await roleQuery;
-
-
-      if (existingRoleError) {
+      catch (directionError) {
 
         console.error(
-          "Помилка перевірки ролі:",
-          existingRoleError
+          "Помилка активації напрямку:",
+          directionError
         );
 
 
         showMessage(
-          existingRoleError.message,
+          "Не вдалося активувати напрямок: " +
+          directionError.message,
           "error"
         );
 
@@ -2401,142 +2440,45 @@ document.addEventListener(
 
 
       // ====================================
-      // ADD ROLE
+      // ВАЖЛИВО
+      // ====================================
+      //
+      // Тут НЕ призначається роль.
+      //
+      // roleId передається з форми тільки
+      // для сумісності зі старим інтерфейсом,
+      // але user_roles НЕ змінюється.
+      //
+      // Посада буде призначатися окремо
+      // через систему керування учасником.
+      //
       // ====================================
 
-      if (
-        !existingRoles ||
-        existingRoles.length === 0
-      ) {
 
-        const roleData = {
+      console.log(
+        "Заявку схвалено без автоматичного призначення ролі:",
+        {
+          application_id:
+            application.id,
 
           user_id:
             application.user_id,
 
-          role_id:
-            Number(roleId),
+          direction_id:
+            finalDirectionId,
 
-          role:
-            selectedRole.code
+          direction:
+            selectedDirection.name,
 
-        };
+          driver_class:
+            isETS2
+              ? driverClass
+              : null,
 
-
-        if (
-          finalDirectionId !== null
-        ) {
-
-          roleData.direction_id =
-            finalDirectionId;
-
+          selected_role:
+            roleId || null
         }
-
-
-        console.log(
-          "Дані для призначення ролі:",
-          roleData
-        );
-
-
-        const {
-          error: roleError
-        } =
-          await supabase
-            .from("user_roles")
-            .insert(
-              roleData
-            );
-
-
-        if (roleError) {
-
-          console.error(
-            "Повна помилка призначення ролі:",
-            roleError
-          );
-
-
-          showMessage(
-            "Не вдалося призначити роль: " +
-            roleError.message,
-            "error"
-          );
-
-
-          if (button) {
-
-            button.disabled =
-              false;
-
-            button.textContent =
-              "🟢 СХВАЛИТИ";
-
-          }
-
-
-          return;
-
-        }
-
-
-        console.log(
-          "Роль успішно призначена."
-        );
-
-      }
-
-
-      // ====================================
-      // SAVE ETS2 DRIVER CLASS
-      // ====================================
-
-      if (
-        isETS2 &&
-        driverClass
-      ) {
-
-        try {
-
-          await saveETS2DriverClass(
-            application,
-            driverClass,
-            finalDirectionId
-          );
-
-        }
-
-        catch (driverClassError) {
-
-          console.error(
-            "Помилка збереження класу водія:",
-            driverClassError
-          );
-
-
-          showMessage(
-            "Роль призначена, але клас водія не збережено: " +
-            driverClassError.message,
-            "error"
-          );
-
-
-          if (button) {
-
-            button.disabled =
-              false;
-
-            button.textContent =
-              "🟢 СХВАЛИТИ";
-
-          }
-
-
-          return;
-
-        }
-
-      }
+      );
 
 
       // ====================================
@@ -2576,6 +2518,7 @@ document.addEventListener(
 
 
         showMessage(
+          "Напрямок активовано, але статус заявки не оновлено: " +
           applicationError.message,
           "error"
         );
@@ -2597,20 +2540,38 @@ document.addEventListener(
       }
 
 
-      showMessage(
-        isETS2
+      // ====================================
+      // SUCCESS
+      // ====================================
 
-          ?
+      if (isETS2) {
 
-          `🎉 Заявку схвалено. Роль та клас ETS2 (${driverClass}) призначено користувачу.`
+        showMessage(
 
-          :
+          `🎉 Заявку схвалено. Користувача додано до напрямку "${selectedDirection.name}". Клас ETS2: ${driverClass}. Посаду не призначено.`,
 
-          "🎉 Заявку схвалено. Роль призначено користувачу.",
+          "success"
 
-        "success"
-      );
+        );
 
+      }
+
+      else {
+
+        showMessage(
+
+          `🎉 Заявку схвалено. Користувача додано до напрямку "${selectedDirection.name}". Посаду не призначено.`,
+
+          "success"
+
+        );
+
+      }
+
+
+      // ====================================
+      // RELOAD
+      // ====================================
 
       await loadApplications();
 
@@ -2811,7 +2772,7 @@ document.addEventListener(
 
                 const directionId =
                   directionSelect?.value ||
-                  "global";
+                  "";
 
 
                 const driverClass =
@@ -2947,8 +2908,6 @@ document.addEventListener(
       }
 
     );
-
-
     // ======================================
     // START
     // ======================================
