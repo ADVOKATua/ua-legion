@@ -131,7 +131,6 @@ async function initAuthMenu() {
       !session.user
     ) {
 
-      // Зупиняємо старий таймер
       if (supportUnreadTimer) {
 
         clearInterval(
@@ -150,10 +149,6 @@ async function initAuthMenu() {
       authButton.textContent =
         "Увійти / Реєстрація";
 
-
-      // ======================================
-      // ЗАВЖДИ ОСТАННІЙ
-      // ======================================
 
       nav.appendChild(
         authButton
@@ -324,10 +319,6 @@ async function initAuthMenu() {
       className
     ) {
 
-      // ----------------------------------
-      // ДОДАТКОВИЙ ЗАХИСТ
-      // ----------------------------------
-
       const existing =
         nav.querySelector(
           `.${className}`
@@ -383,8 +374,6 @@ async function initAuthMenu() {
 
     // ======================================
     // УЧАСНИКИ
-    // АДМІНІСТРАЦІЯ
-    // АБО ОДОБРЕНИЙ УЧАСНИК
     // ======================================
 
     if (
@@ -403,7 +392,6 @@ async function initAuthMenu() {
 
     // ======================================
     // ЗАЯВКИ
-    // ТІЛЬКИ АДМІНІСТРАЦІЯ
     // ======================================
 
     if (isAdmin) {
@@ -419,7 +407,6 @@ async function initAuthMenu() {
 
     // ======================================
     // ЗВЕРНЕННЯ
-    // ДЛЯ ВСІХ АВТОРИЗОВАНИХ
     // ======================================
 
     const supportMenuItem =
@@ -445,7 +432,7 @@ async function initAuthMenu() {
 
 
     // ======================================
-    // КОНТЕЙНЕР ІКОНКИ
+    // СТИЛЬ КНОПКИ
     // ======================================
 
     supportMenuItem.style.position =
@@ -521,8 +508,12 @@ async function initAuthMenu() {
       "support-unread-badge";
 
 
-    supportBadge.hidden =
-      true;
+    // ======================================
+    // ПОЧАТКОВО ПРИХОВАНИЙ
+    // ======================================
+
+    supportBadge.style.display =
+      "none";
 
 
     supportBadge.style.position =
@@ -551,10 +542,6 @@ async function initAuthMenu() {
 
     supportBadge.style.borderRadius =
       "999px";
-
-
-    supportBadge.style.display =
-      "inline-flex";
 
 
     supportBadge.style.alignItems =
@@ -627,8 +614,10 @@ async function initAuthMenu() {
             result.error
           );
 
-          supportBadge.hidden =
-            true;
+
+          supportBadge.style.display =
+            "none";
+
 
           return;
 
@@ -652,26 +641,38 @@ async function initAuthMenu() {
         }
 
 
-        if (count <= 0) {
+        // ====================================
+        // НЕМАЄ НЕПРОЧИТАНИХ
+        // ====================================
 
-          supportBadge.hidden =
-            true;
+        if (count <= 0) {
 
           supportBadge.textContent =
             "";
 
+
+          supportBadge.style.display =
+            "none";
+
+
           supportMenuItem.title =
             "Звернення";
+
 
           supportMenuItem.setAttribute(
             "aria-label",
             "Звернення"
           );
 
+
           return;
 
         }
 
+
+        // ====================================
+        // Є НЕПРОЧИТАНІ
+        // ====================================
 
         const badgeText =
           count > 99
@@ -683,8 +684,8 @@ async function initAuthMenu() {
           badgeText;
 
 
-        supportBadge.hidden =
-          false;
+        supportBadge.style.display =
+          "inline-flex";
 
 
         supportMenuItem.title =
@@ -705,8 +706,9 @@ async function initAuthMenu() {
           error
         );
 
-        supportBadge.hidden =
-          true;
+
+        supportBadge.style.display =
+          "none";
 
       }
 
@@ -756,7 +758,7 @@ async function initAuthMenu() {
 
 
     // ======================================
-    // МІЙ КАБІНЕТ — ЗАВЖДИ ОСТАННІЙ
+    // МІЙ КАБІНЕТ — ОСТАННІЙ
     // ======================================
 
     nav.appendChild(
@@ -765,14 +767,14 @@ async function initAuthMenu() {
 
 
     // ======================================
-    // ПЕРШЕ ОНОВЛЕННЯ ЛІЧИЛЬНИКА
+    // ПЕРШЕ ОНОВЛЕННЯ
     // ======================================
 
     await refreshSupportUnreadCount();
 
 
     // ======================================
-    // ЗАПАМ'ЯТОВУЄМО ФУНКЦІЮ ГЛОБАЛЬНО
+    // ГЛОБАЛЬНА ФУНКЦІЯ ОНОВЛЕННЯ
     // ======================================
 
     window.uaLegionRefreshSupportUnread =
@@ -793,8 +795,7 @@ async function initAuthMenu() {
 
 
     // ======================================
-    // АВТООНОВЛЕННЯ
-    // КОЖНІ 5 СЕКУНД
+    // АВТООНОВЛЕННЯ КОЖНІ 5 СЕКУНД
     // ======================================
 
     supportUnreadTimer =
@@ -825,10 +826,6 @@ async function initAuthMenu() {
   }
 
   finally {
-
-    // ======================================
-    // ДОЗВОЛЯЄМО НАСТУПНИЙ ЗАПУСК
-    // ======================================
 
     authMenuRunning =
       false;
