@@ -366,7 +366,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     const values = [];
 
 
+    // ====================================
     // BASIC PROFILE
+    // ====================================
 
     values.push(
       member.name,
@@ -376,7 +378,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     );
 
 
+    // ====================================
     // GLOBAL ROLES
+    // ====================================
 
     getGlobalRoles(member)
       .forEach(role => {
@@ -390,7 +394,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       });
 
 
+    // ====================================
     // DIRECTIONS
+    // ====================================
 
     getMemberDirections(member)
       .forEach(direction => {
@@ -403,7 +409,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         );
 
 
+        // ==================================
         // DIRECTION ROLES
+        // ==================================
 
         normalizeArray(
           direction.roles
@@ -419,7 +427,9 @@ document.addEventListener("DOMContentLoaded", async () => {
           });
 
 
+        // ==================================
         // DIRECTION DATA
+        // ==================================
 
         const data =
           getDirectionData(
@@ -780,6 +790,65 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
   // ======================================
+  // AVATAR URL
+  // ======================================
+
+  function getAvatarUrl(
+    member
+  ) {
+
+    const value =
+      cleanValue(
+        member.avatar_url ||
+        member.avatar
+      );
+
+
+    if (!value) {
+      return "";
+    }
+
+
+    /*
+     * Дозволяємо нормальні HTTP/HTTPS
+     * адреси зображень.
+     *
+     * Якщо значення не є коректним URL,
+     * повертаємо порожній рядок,
+     * щоб не ламати картку учасника.
+     */
+
+    try {
+
+      const url =
+        new URL(
+          value,
+          window.location.origin
+        );
+
+
+      if (
+        url.protocol !== "http:" &&
+        url.protocol !== "https:"
+      ) {
+
+        return "";
+
+      }
+
+
+      return url.href;
+
+    } catch (error) {
+
+      return "";
+
+    }
+
+  }
+
+
+  // ======================================
   // RENDER AVATAR
   // ======================================
 
@@ -788,9 +857,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   ) {
 
     const avatarUrl =
-      cleanValue(
-        member.avatar_url ||
-        member.avatar
+      getAvatarUrl(
+        member
       );
 
 
@@ -805,7 +873,25 @@ document.addEventListener("DOMContentLoaded", async () => {
             "Учасник"
           )}"
           class="member-avatar-image"
+          loading="lazy"
+          onerror="
+            this.style.display='none';
+            this.parentElement
+              .querySelector('.member-avatar-letter')
+              ?.removeAttribute('hidden');
+          "
         >
+
+        <span
+          class="member-avatar-letter"
+          hidden
+        >
+
+          ${escapeHtml(
+            getAvatarLetter(member)
+          )}
+
+        </span>
 
       `;
 
@@ -1279,12 +1365,14 @@ document.addEventListener("DOMContentLoaded", async () => {
                   class="member-direction-status"
                 >
 
-                  ${direction.status === "active"
-                    ? "🟢 Активний"
-                    : escapeHtml(
-                        direction.status ||
-                        ""
-                      )}
+                  ${
+                    direction.status === "active"
+                      ? "🟢 Активний"
+                      : escapeHtml(
+                          direction.status ||
+                          ""
+                        )
+                  }
 
                 </div>
 
@@ -1378,9 +1466,11 @@ document.addEventListener("DOMContentLoaded", async () => {
           id="membersDirectionFilter"
           class="members-filter-control"
         >
+
           <option value="">
             🎮 Усі напрямки
           </option>
+
         </select>
 
 
@@ -1388,9 +1478,11 @@ document.addEventListener("DOMContentLoaded", async () => {
           id="membersRoleFilter"
           class="members-filter-control"
         >
+
           <option value="">
             🛡 Усі посади
           </option>
+
         </select>
 
 
@@ -1398,6 +1490,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           id="membersClassFilter"
           class="members-filter-control"
         >
+
           <option value="">
             🚛 Усі класи
           </option>
@@ -1594,6 +1687,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           membersSearch.value = "";
         }
 
+
         filters = {
           direction: "",
           role: "",
@@ -1649,8 +1743,10 @@ document.addEventListener("DOMContentLoaded", async () => {
       );
 
 
-    if (!directionFilter ||
-        !roleFilter) {
+    if (
+      !directionFilter ||
+      !roleFilter
+    ) {
       return;
     }
 
@@ -1866,7 +1962,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         card.innerHTML = `
 
-          <!-- AVATAR -->
+          <!-- =================================
+               AVATAR
+               ================================= -->
 
           <div
             class="member-avatar"
@@ -1879,7 +1977,9 @@ document.addEventListener("DOMContentLoaded", async () => {
           </div>
 
 
-          <!-- INFO -->
+          <!-- =================================
+               INFO
+               ================================= -->
 
           <div
             class="member-info"
@@ -1905,10 +2005,13 @@ document.addEventListener("DOMContentLoaded", async () => {
                     <div
                       class="member-nickname"
                     >
+
                       🎮
+
                       ${escapeHtml(
                         member.game_nickname
                       )}
+
                     </div>
                   `
                   : ""
@@ -1921,10 +2024,13 @@ document.addEventListener("DOMContentLoaded", async () => {
                     <div
                       class="member-discord"
                     >
+
                       💬
+
                       ${escapeHtml(
                         member.discord_username
                       )}
+
                     </div>
                   `
                   : ""
@@ -1933,7 +2039,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             </div>
 
 
-            <!-- GLOBAL ROLES -->
+            <!-- =================================
+                 GLOBAL ROLES
+                 ================================= -->
 
             <div
               class="member-section"
@@ -1959,7 +2067,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             </div>
 
 
-            <!-- DIRECTIONS -->
+            <!-- =================================
+                 DIRECTIONS
+                 ================================= -->
 
             <div
               class="member-section"
@@ -1985,7 +2095,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             </div>
 
 
-            <!-- OPEN PROFILE -->
+            <!-- =================================
+                 OPEN PROFILE
+                 ================================= -->
 
             <div
               class="member-card-actions"
@@ -1997,7 +2109,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                 )}"
                 class="member-open-button"
               >
+
                 👤 Відкрити профіль
+
               </a>
 
             </div>
@@ -2060,7 +2174,8 @@ document.addEventListener("DOMContentLoaded", async () => {
           rgba(255,255,255,.045);
 
         border:
-          1px solid rgba(255,255,255,.09);
+          1px solid
+          rgba(255,255,255,.09);
 
       }
 
@@ -2162,6 +2277,178 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
       /* ==================================
+         MEMBER CARD
+         ================================== */
+
+      .member-card {
+
+        position:
+          relative;
+
+        box-sizing:
+          border-box;
+
+        overflow:
+          hidden;
+
+      }
+
+
+      /* ==================================
+         AVATAR
+         ================================== */
+
+      .member-avatar {
+
+        width:
+          72px;
+
+        height:
+          72px;
+
+        min-width:
+          72px;
+
+        min-height:
+          72px;
+
+        max-width:
+          72px;
+
+        max-height:
+          72px;
+
+        flex:
+          0 0 72px;
+
+        border-radius:
+          50%;
+
+        overflow:
+          hidden;
+
+        display:
+          flex;
+
+        align-items:
+          center;
+
+        justify-content:
+          center;
+
+        box-sizing:
+          border-box;
+
+        background:
+          #171a20;
+
+        border:
+          2px solid
+          rgba(255,255,255,.12);
+
+        position:
+          relative;
+
+      }
+
+
+      .member-avatar-image {
+
+        width:
+          100%;
+
+        height:
+          100%;
+
+        min-width:
+          100%;
+
+        min-height:
+          100%;
+
+        max-width:
+          none;
+
+        max-height:
+          none;
+
+        display:
+          block;
+
+        object-fit:
+          cover;
+
+        object-position:
+          center;
+
+        border-radius:
+          50%;
+
+        position:
+          absolute;
+
+        inset:
+          0;
+
+      }
+
+
+      .member-avatar-letter {
+
+        width:
+          100%;
+
+        height:
+          100%;
+
+        min-width:
+          100%;
+
+        min-height:
+          100%;
+
+        display:
+          flex;
+
+        align-items:
+          center;
+
+        justify-content:
+          center;
+
+        font-size:
+          28px;
+
+        font-weight:
+          800;
+
+        line-height:
+          1;
+
+        color:
+          white;
+
+        user-select:
+          none;
+
+        position:
+          absolute;
+
+        inset:
+          0;
+
+      }
+
+
+      .member-avatar-letter[hidden] {
+
+        display:
+          none;
+
+      }
+
+
+      /* ==================================
          DIRECTION CARD
          ================================== */
 
@@ -2173,7 +2460,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         flex-direction:
           column;
 
-        gap: 12px;
+        gap:
+          12px;
 
       }
 
@@ -2193,6 +2481,12 @@ document.addEventListener("DOMContentLoaded", async () => {
           1px solid
           rgba(255,255,255,.08);
 
+        box-sizing:
+          border-box;
+
+        min-width:
+          0;
+
       }
 
 
@@ -2207,7 +2501,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         align-items:
           flex-start;
 
-        gap: 12px;
+        gap:
+          12px;
 
         margin-bottom:
           10px;
@@ -2265,6 +2560,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         font-weight:
           800;
+
+        white-space:
+          nowrap;
 
       }
 
@@ -2358,6 +2656,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         background:
           rgba(0,0,0,.14);
 
+        min-width:
+          0;
+
       }
 
 
@@ -2382,6 +2683,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         word-break:
           break-word;
+
+        overflow-wrap:
+          anywhere;
 
       }
 
@@ -2467,9 +2771,55 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
 
 
+      /* ==================================
+         EMPTY / LOADING
+         ================================== */
+
+      .members-empty,
+      .members-loading {
+
+        box-sizing:
+          border-box;
+
+        width:
+          100%;
+
+      }
+
+
+      /* ==================================
+         RESPONSIVE
+         ================================== */
+
       @media (
         max-width: 600px
       ) {
+
+        .member-avatar {
+
+          width:
+            64px;
+
+          height:
+            64px;
+
+          min-width:
+            64px;
+
+          min-height:
+            64px;
+
+          max-width:
+            64px;
+
+          max-height:
+            64px;
+
+          flex-basis:
+            64px;
+
+        }
+
 
         .member-direction-header {
 
@@ -2477,6 +2827,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             column;
 
         }
+
 
         .member-driver-class {
 
