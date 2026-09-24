@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     direction: "",
     role: "",
     driverClass: "",
-    sort: "name",
+    sort: "hierarchy",
     order: "asc"
   };
 
@@ -165,7 +165,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
       } catch (error) {
-        // not JSON
+        // Значення не JSON
       }
 
 
@@ -637,6 +637,50 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
   // ======================================
+  // HIERARCHY LEVEL
+  // ======================================
+
+  function getMemberHierarchyLevel(
+    member
+  ) {
+
+    const roles =
+      getGlobalRoles(
+        member
+      );
+
+
+    if (!roles.length) {
+      return 0;
+    }
+
+
+    const levels =
+      roles.map(
+        role => {
+
+          const level =
+            Number(
+              role.level
+            );
+
+
+          return Number.isFinite(level)
+            ? level
+            : 0;
+
+        }
+      );
+
+
+    return Math.max(
+      ...levels
+    );
+
+  }
+
+
+  // ======================================
   // SORT VALUE
   // ======================================
 
@@ -648,6 +692,21 @@ document.addEventListener("DOMContentLoaded", async () => {
       filters.sort
     ) {
 
+      // ==================================
+      // HIERARCHY
+      // ==================================
+
+      case "hierarchy":
+
+        return getMemberHierarchyLevel(
+          member
+        );
+
+
+      // ==================================
+      // NICKNAME
+      // ==================================
+
       case "nickname":
 
         return cleanValue(
@@ -656,6 +715,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         )
           .toLowerCase();
 
+
+      // ==================================
+      // DIRECTION
+      // ==================================
 
       case "direction":
 
@@ -672,6 +735,10 @@ document.addEventListener("DOMContentLoaded", async () => {
           .toLowerCase();
 
 
+      // ==================================
+      // ROLE
+      // ==================================
+
       case "role":
 
         return getAllRoles(
@@ -687,6 +754,10 @@ document.addEventListener("DOMContentLoaded", async () => {
           .toLowerCase();
 
 
+      // ==================================
+      // DRIVER CLASS
+      // ==================================
+
       case "driver_class":
 
         return getMemberDirections(
@@ -700,6 +771,10 @@ document.addEventListener("DOMContentLoaded", async () => {
           .join(" ")
           .toUpperCase();
 
+
+      // ==================================
+      // NAME
+      // ==================================
 
       case "name":
 
@@ -732,22 +807,102 @@ document.addEventListener("DOMContentLoaded", async () => {
     sorted.sort(
       (a, b) => {
 
-        const valueA =
-          getSortValue(a);
+        // ==================================
+        // HIERARCHICAL SORT
+        // ==================================
 
-        const valueB =
-          getSortValue(b);
+        if (
+          filters.sort ===
+          "hierarchy"
+        ) {
+
+          const levelA =
+            getMemberHierarchyLevel(
+              a
+            );
 
 
-        const result =
-          valueA.localeCompare(
-            valueB,
+          const levelB =
+            getMemberHierarchyLevel(
+              b
+            );
+
+
+          /*
+           * Вища глобальна роль
+           * має більший level.
+           */
+
+          if (
+            levelA !==
+            levelB
+          ) {
+
+            return (
+              levelB -
+              levelA
+            );
+
+          }
+
+
+          /*
+           * Якщо рівень однаковий —
+           * сортуємо за ім'ям.
+           */
+
+          const nameA =
+            cleanValue(
+              a.name ||
+              a.display_name ||
+              a.game_nickname
+            )
+              .toLowerCase();
+
+
+          const nameB =
+            cleanValue(
+              b.name ||
+              b.display_name ||
+              b.game_nickname
+            )
+              .toLowerCase();
+
+
+          return nameA.localeCompare(
+            nameB,
             "uk",
             {
               numeric: true,
               sensitivity: "base"
             }
           );
+
+        }
+
+
+        // ==================================
+        // OTHER SORTING
+        // ==================================
+
+        const valueA =
+          getSortValue(a);
+
+
+        const valueB =
+          getSortValue(b);
+
+
+        const result =
+          String(valueA)
+            .localeCompare(
+              String(valueB),
+              "uk",
+              {
+                numeric: true,
+                sensitivity: "base"
+              }
+            );
 
 
         return filters.order === "desc"
@@ -808,15 +963,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       return "";
     }
 
-
-    /*
-     * Дозволяємо нормальні HTTP/HTTPS
-     * адреси зображень.
-     *
-     * Якщо значення не є коректним URL,
-     * повертаємо порожній рядок,
-     * щоб не ламати картку учасника.
-     */
 
     try {
 
@@ -938,7 +1084,31 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    return roles
+    /*
+     * Глобальні ролі всередині
+     * картки теж показуємо
+     * від найвищого level
+     * до найнижчого.
+     */
+
+    const sortedRoles =
+      [...roles]
+        .sort(
+          (a, b) => {
+
+            const levelA =
+              Number(a.level) || 0;
+
+            const levelB =
+              Number(b.level) || 0;
+
+            return levelB - levelA;
+
+          }
+        );
+
+
+    return sortedRoles
       .map(role => `
 
         <span class="member-role">
@@ -984,7 +1154,30 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    return roles
+    /*
+     * Посади напрямку також
+     * показуємо від вищого
+     * level до нижчого.
+     */
+
+    const sortedRoles =
+      [...roles]
+        .sort(
+          (a, b) => {
+
+            const levelA =
+              Number(a.level) || 0;
+
+            const levelB =
+              Number(b.level) || 0;
+
+            return levelB - levelA;
+
+          }
+        );
+
+
+    return sortedRoles
       .map(role => `
 
         <span class="direction-role">
@@ -1314,7 +1507,63 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    return directions
+    /*
+     * ETS2 ставимо першим,
+     * інші напрямки після нього.
+     * При однаковому порядку —
+     * за назвою.
+     */
+
+    const sortedDirections =
+      [...directions]
+        .sort(
+          (a, b) => {
+
+            const codeA =
+              cleanValue(
+                a.code ||
+                a.slug
+              )
+                .toLowerCase();
+
+            const codeB =
+              cleanValue(
+                b.code ||
+                b.slug
+              )
+                .toLowerCase();
+
+
+            if (
+              codeA === "ets2" &&
+              codeB !== "ets2"
+            ) {
+              return -1;
+            }
+
+
+            if (
+              codeB === "ets2" &&
+              codeA !== "ets2"
+            ) {
+              return 1;
+            }
+
+
+            return getDirectionLabel(a)
+              .localeCompare(
+                getDirectionLabel(b),
+                "uk",
+                {
+                  sensitivity: "base"
+                }
+              );
+
+          }
+        );
+
+
+    return sortedDirections
       .map(direction => {
 
         const label =
@@ -1361,6 +1610,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                 </div>
 
+
                 <div
                   class="member-direction-status"
                 >
@@ -1385,9 +1635,11 @@ document.addEventListener("DOMContentLoaded", async () => {
                     <span
                       class="member-driver-class"
                     >
+
                       Клас ${escapeHtml(
                         driverClass
                       )}
+
                     </span>
                   `
                   : ""
@@ -1454,7 +1706,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       <div
         class="members-filter-title"
       >
+
         🔎 Пошук та фільтри
+
       </div>
 
 
@@ -1523,24 +1777,28 @@ document.addEventListener("DOMContentLoaded", async () => {
           class="members-filter-control"
         >
 
+          <option value="hierarchy">
+            👑 Сортувати: Ієрархія
+          </option>
+
           <option value="name">
-            Сортувати: Ім'я
+            🔤 Сортувати: Ім'я
           </option>
 
           <option value="nickname">
-            Сортувати: Ігровий нік
+            🎮 Сортувати: Ігровий нік
           </option>
 
           <option value="direction">
-            Сортувати: Напрямок
+            🎮 Сортувати: Напрямок
           </option>
 
           <option value="role">
-            Сортувати: Посада
+            🛡 Сортувати: Посада
           </option>
 
           <option value="driver_class">
-            Сортувати: Клас ETS2
+            🚛 Сортувати: Клас ETS2
           </option>
 
         </select>
@@ -1567,7 +1825,9 @@ document.addEventListener("DOMContentLoaded", async () => {
           id="membersResetFilters"
           class="members-filter-reset"
         >
+
           Скинути фільтри
+
         </button>
 
       </div>
@@ -1692,7 +1952,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           direction: "",
           role: "",
           driverClass: "",
-          sort: "name",
+          sort: "hierarchy",
           order: "asc"
         };
 
@@ -1710,7 +1970,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
         if (sortSelect) {
-          sortSelect.value = "name";
+          sortSelect.value = "hierarchy";
         }
 
         if (orderSelect) {
@@ -1930,7 +2190,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       membersList.innerHTML = `
 
-        <div class="members-empty">
+        <div
+          class="members-empty"
+        >
 
           👤 Учасників не знайдено.
 
@@ -2050,7 +2312,9 @@ document.addEventListener("DOMContentLoaded", async () => {
               <div
                 class="member-section-title"
               >
+
                 🌐 Глобальні ролі
+
               </div>
 
 
@@ -2078,7 +2342,9 @@ document.addEventListener("DOMContentLoaded", async () => {
               <div
                 class="member-section-title"
               >
+
                 🎮 Напрямки
+
               </div>
 
 
@@ -2164,11 +2430,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       .members-filters {
 
-        margin-bottom: 22px;
+        margin-bottom:
+          22px;
 
-        padding: 18px;
+        padding:
+          18px;
 
-        border-radius: 16px;
+        border-radius:
+          16px;
 
         background:
           rgba(255,255,255,.045);
@@ -2182,18 +2451,22 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       .members-filter-title {
 
-        margin-bottom: 14px;
+        margin-bottom:
+          14px;
 
-        font-size: 17px;
+        font-size:
+          17px;
 
-        font-weight: 800;
+        font-weight:
+          800;
 
       }
 
 
       .members-filter-grid {
 
-        display: grid;
+        display:
+          grid;
 
         grid-template-columns:
           repeat(
@@ -2201,16 +2474,19 @@ document.addEventListener("DOMContentLoaded", async () => {
             minmax(180px, 1fr)
           );
 
-        gap: 10px;
+        gap:
+          10px;
 
       }
 
 
       .members-filter-control {
 
-        width: 100%;
+        width:
+          100%;
 
-        min-height: 44px;
+        min-height:
+          44px;
 
         padding:
           10px 12px;
@@ -2218,7 +2494,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         box-sizing:
           border-box;
 
-        border-radius: 10px;
+        border-radius:
+          10px;
 
         border:
           1px solid
@@ -2230,14 +2507,16 @@ document.addEventListener("DOMContentLoaded", async () => {
         color:
           white;
 
-        font-size: 14px;
+        font-size:
+          14px;
 
       }
 
 
       .members-filter-control:focus {
 
-        outline: none;
+        outline:
+          none;
 
         border-color:
           rgba(255,211,77,.7);
@@ -2247,23 +2526,29 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       .members-filter-reset {
 
-        min-height: 44px;
+        min-height:
+          44px;
 
         padding:
           10px 15px;
 
-        border: 0;
+        border:
+          0;
 
-        border-radius: 10px;
+        border-radius:
+          10px;
 
         background:
           rgba(255,255,255,.08);
 
-        color: white;
+        color:
+          white;
 
-        font-weight: 700;
+        font-weight:
+          700;
 
-        cursor: pointer;
+        cursor:
+          pointer;
 
       }
 
@@ -2277,10 +2562,34 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
       /* ==================================
+         MEMBERS LIST — ONE COLUMN
+         ================================== */
+
+      #membersList {
+
+        display:
+          grid;
+
+        grid-template-columns:
+          1fr;
+
+        width:
+          100%;
+
+        gap:
+          14px;
+
+        align-items:
+          start;
+
+      }
+
+
+      /* ==================================
          MEMBER CARD
          ================================== */
 
-      .member-card {
+      #membersList .member-card {
 
         position:
           relative;
@@ -2290,6 +2599,18 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         overflow:
           hidden;
+
+        width:
+          100%;
+
+        height:
+          fit-content;
+
+        min-height:
+          0;
+
+        align-self:
+          start;
 
       }
 
@@ -2772,22 +3093,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
       /* ==================================
-         EMPTY / LOADING
-         ================================== */
-
-      .members-empty,
-      .members-loading {
-
-        box-sizing:
-          border-box;
-
-        width:
-          100%;
-
-      }
-
-
-      /* ==================================
          RESPONSIVE
          ================================== */
 
@@ -2815,8 +3120,8 @@ document.addEventListener("DOMContentLoaded", async () => {
           max-height:
             64px;
 
-          flex-basis:
-            64px;
+          flex:
+            0 0 64px;
 
         }
 
@@ -2915,7 +3220,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     membersList.innerHTML = `
 
-      <div class="members-empty">
+      <div
+        class="members-empty"
+      >
 
         🔒 Доступ до списку учасників
         доступний тільки учасникам
@@ -2938,7 +3245,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     membersList.innerHTML = `
 
-      <div class="members-loading">
+      <div
+        class="members-loading"
+      >
 
         ⏳ Завантаження учасників...
 
