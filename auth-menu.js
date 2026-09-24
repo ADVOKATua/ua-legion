@@ -75,7 +75,7 @@ async function initAuthMenu() {
 
     nav
       .querySelectorAll(
-        ".admin-menu-item, .members-menu-item"
+        ".admin-menu-item, .members-menu-item, .support-menu-item"
       )
       .forEach(
         (item) => item.remove()
@@ -136,7 +136,10 @@ async function initAuthMenu() {
         "Увійти / Реєстрація";
 
 
-      // Завжди останній
+      // ======================================
+      // ЗАВЖДИ ОСТАННІЙ
+      // ======================================
+
       nav.appendChild(
         authButton
       );
@@ -164,6 +167,10 @@ async function initAuthMenu() {
     const user =
       session.user;
 
+
+    // ======================================
+    // МІЙ КАБІНЕТ
+    // ======================================
 
     authButton.href =
       "profile.html";
@@ -393,6 +400,123 @@ async function initAuthMenu() {
       );
 
     }
+
+
+    // ======================================
+    // ЗВЕРНЕННЯ
+    // ДЛЯ ВСІХ АВТОРИЗОВАНИХ
+    // ======================================
+
+    const supportMenuItem =
+      document.createElement("a");
+
+
+    supportMenuItem.href =
+      "support.html";
+
+
+    supportMenuItem.className =
+      "support-menu-item";
+
+
+    supportMenuItem.textContent =
+      "💬";
+
+
+    supportMenuItem.title =
+      "Звернення";
+
+
+    supportMenuItem.setAttribute(
+      "aria-label",
+      "Звернення"
+    );
+
+
+    // ======================================
+    // СТИЛЬ ІКОНКИ
+    // ======================================
+
+    supportMenuItem.style.position =
+      "relative";
+
+
+    supportMenuItem.style.display =
+      "inline-flex";
+
+
+    supportMenuItem.style.alignItems =
+      "center";
+
+
+    supportMenuItem.style.justifyContent =
+      "center";
+
+
+    supportMenuItem.style.width =
+      "38px";
+
+
+    supportMenuItem.style.height =
+      "38px";
+
+
+    supportMenuItem.style.fontSize =
+      "18px";
+
+
+    supportMenuItem.style.border =
+      "1px solid rgba(23,104,255,.35)";
+
+
+    supportMenuItem.style.background =
+      "rgba(23,104,255,.06)";
+
+
+    supportMenuItem.style.transition =
+      ".25s";
+
+
+    // ======================================
+    // HOVER
+    // ======================================
+
+    supportMenuItem.addEventListener(
+      "mouseenter",
+      () => {
+
+        supportMenuItem.style.borderColor =
+          "rgba(23,104,255,.75)";
+
+        supportMenuItem.style.background =
+          "rgba(23,104,255,.14)";
+
+      }
+    );
+
+
+    supportMenuItem.addEventListener(
+      "mouseleave",
+      () => {
+
+        supportMenuItem.style.borderColor =
+          "rgba(23,104,255,.35)";
+
+        supportMenuItem.style.background =
+          "rgba(23,104,255,.06)";
+
+      }
+    );
+
+
+    // ======================================
+    // ДОДАЄМО ПЕРЕД МІЙ КАБІНЕТ
+    // ======================================
+
+    nav.insertBefore(
+      supportMenuItem,
+      authButton
+    );
 
 
     // ======================================
