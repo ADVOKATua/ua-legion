@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#05070b">
+  <title>Підтримка — UA LEGION</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="support.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
+</head>
+<body>
+  <div class="noise"></div>
+
+  <header class="topbar">
+    <a class="brand" href="index.html">
+      <img src="ua-legion-logo.png" alt="UA LEGION">
+      <span>UA LEGION</span>
+    </a>
+    <button class="menu-btn" aria-label="Відкрити меню">☰</button>
+
+    <nav class="nav">
+      <a href="index.html">Головна</a>
+      <a href="about.html">Про нас</a>
+      <a href="games.html">Ігри</a>
+      <a href="events.html">Події</a>
+      <a href="media.html">Медіа</a>
+      <a href="gallery.html">Галерея</a>
+      <a href="support.html" class="nav-active">Підтримка</a>
+      <a href="https://discord.gg/gfunf3yq7" target="_blank" rel="noopener" class="nav-cta">Discord</a>
+      <a href="profile.html" id="authButton">Мій кабінет</a>
+    </nav>
+  </header>
+
+  <main class="support-page">
+    <div class="support-container">
+
+      <section class="support-hero">
+        <div>
+          <div class="support-eyebrow">UA LEGION SUPPORT</div>
+          <h1>🎧 Підтримка</h1>
+          <p>Створіть звернення, виберіть напрямок і спілкуйтеся з відповідальним спеціалістом в одному діалозі.</p>
+        </div>
+        <a class="support-profile-link" href="profile.html">👤 Мій кабінет</a>
+      </section>
+
+      <div id="supportMessage" class="support-message"></div>
+
+      <section class="support-grid">
+        <div class="support-card create-card">
+          <div class="support-card-header">
+            <div>
+              <div class="support-label">NEW REQUEST</div>
+              <h2>Створити звернення</h2>
+            </div>
+          </div>
+
+          <form id="ticketForm">
+            <div class="support-form-grid">
+              <div class="support-field">
+                <label for="ticketDirection">📍 Напрямок</label>
+                <select id="ticketDirection"></select>
+              </div>
+
+              <div class="support-field">
+                <label for="ticketCategory">📂 Категорія</label>
+                <select id="ticketCategory" required></select>
+              </div>
+
+              <div class="support-field support-full">
+                <label for="ticketSubject">📝 Тема</label>
+                <input id="ticketSubject" type="text" maxlength="160" required placeholder="Коротко опишіть питання">
+              </div>
+
+              <div class="support-field support-full">
+                <label for="ticketPriority">⚡ Пріоритет</label>
+                <select id="ticketPriority">
+                  <option value="normal">Звичайний</option>
+                  <option value="low">Низький</option>
+                  <option value="high">Високий</option>
+                  <option value="urgent">Терміновий</option>
+                </select>
+              </div>
+
+              <div class="support-field support-full">
+                <label for="ticketMessage">💬 Повідомлення</label>
+                <textarea id="ticketMessage" rows="6" maxlength="6000" required placeholder="Опишіть ситуацію максимально зрозуміло..."></textarea>
+              </div>
+            </div>
+
+            <section id="dataChangeBuilder" class="data-change-builder" hidden>
+              <div class="support-subtitle">
+                <span>📝</span>
+                <div>
+                  <h3>Зміна даних</h3>
+                  <p>Вкажіть, які дані потрібно змінити. Після розгляду схвалені зміни застосуються автоматично.</p>
+                </div>
+              </div>
+
+              <div id="dataChangeRows" class="data-change-rows"></div>
+              <button id="addChangeButton" class="support-secondary-btn" type="button">＋ ДОДАТИ ЗМІНУ</button>
+            </section>
+
+            <div class="support-form-actions">
+              <button id="submitTicketButton" class="support-primary-btn" type="submit">📨 НАДІСЛАТИ ЗВЕРНЕННЯ</button>
+            </div>
+          </form>
+        </div>
+
+        <aside class="support-card my-tickets-card">
+          <div class="support-card-header">
+            <div>
+              <div class="support-label">MY REQUESTS</div>
+              <h2>Мої звернення</h2>
+            </div>
+            <button id="refreshMyTickets" class="support-icon-btn" type="button" title="Оновити">↻</button>
+          </div>
+          <div id="myTicketsList" class="tickets-list">
+            <div class="support-empty">Завантаження...</div>
+          </div>
+        </aside>
+      </section>
+
+      <section id="staffPanel" class="support-card staff-panel" hidden>
+        <div class="support-card-header staff-header">
+          <div>
+            <div class="support-label">STAFF CENTER</div>
+            <h2>Звернення для працівників</h2>
+          </div>
+          <button id="refreshStaffTickets" class="support-secondary-btn" type="button">↻ ОНОВИТИ</button>
+        </div>
+
+        <div class="staff-filters">
+          <input id="staffSearch" type="search" placeholder="🔍 Пошук за номером, темою або користувачем...">
+          <select id="staffStatusFilter">
+            <option value="all">Усі статуси</option>
+            <option value="new">🆕 Нові</option>
+            <option value="in_progress">🔵 В роботі</option>
+            <option value="resolved">✅ Вирішені</option>
+            <option value="closed">🔒 Закриті</option>
+          </select>
+          <select id="staffDirectionFilter">
+            <option value="all">Усі напрямки</option>
+          </select>
+        </div>
+
+        <div id="staffTicketsList" class="tickets-list staff-tickets-list">
+          <div class="support-empty">Завантаження...</div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <div id="ticketModal" class="support-modal" aria-hidden="true">
+    <div class="support-modal-content">
+      <div class="support-modal-header">
+        <div>
+          <div class="support-label">SUPPORT TICKET</div>
+          <h2 id="modalTitle">Звернення</h2>
+          <div id="modalMeta" class="ticket-modal-meta"></div>
+        </div>
+        <button id="closeTicketModal" class="support-close-btn" type="button">✕</button>
+      </div>
+
+      <div id="modalTicketBody" class="support-modal-body"></div>
+      <div id="modalChanges" class="modal-changes"></div>
+      <div id="modalMessages" class="modal-messages"></div>
+
+      <div class="modal-reply">
+        <textarea id="replyMessage" rows="4" maxlength="6000" placeholder="Ваше повідомлення..."></textarea>
+
+        <label id="internalMessageWrap" class="internal-toggle" hidden>
+          <input id="internalMessage" type="checkbox">
+          Внутрішнє повідомлення для працівників
+        </label>
+
+        <div class="modal-reply-actions">
+          <button id="sendReplyButton" class="support-primary-btn" type="button">💬 НАДІСЛАТИ</button>
+        </div>
+      </div>
+
+      <div id="staffDecision" class="staff-decision" hidden>
+        <textarea id="decisionComment" rows="3" maxlength="3000" placeholder="Коментар до рішення..."></textarea>
+        <div class="decision-buttons">
+          <button id="approveTicketButton" class="decision-btn approve" type="button">✅ СХВАЛИТИ ЗМІНИ</button>
+          <button id="rejectTicketButton" class="decision-btn reject" type="button">❌ ВІДХИЛИТИ ЗМІНИ</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="auth-menu.js"></script>
+  <script src="support.js?v=1"></script>
+  <script src="script.js"></script>
+</body>
+</html>
