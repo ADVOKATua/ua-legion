@@ -5,6 +5,8 @@
 
 let authMenuRunning = false;
 
+let supportUnreadTimer = null;
+
 
 // ======================================
 // INIT AUTH MENU
@@ -128,6 +130,19 @@ async function initAuthMenu() {
       !session ||
       !session.user
     ) {
+
+      // Зупиняємо старий таймер
+      if (supportUnreadTimer) {
+
+        clearInterval(
+          supportUnreadTimer
+        );
+
+        supportUnreadTimer =
+          null;
+
+      }
+
 
       authButton.href =
         "login.html";
@@ -419,10 +434,6 @@ async function initAuthMenu() {
       "support-menu-item";
 
 
-    supportMenuItem.textContent =
-      "💬";
-
-
     supportMenuItem.title =
       "Звернення";
 
@@ -434,7 +445,7 @@ async function initAuthMenu() {
 
 
     // ======================================
-    // СТИЛЬ ІКОНКИ
+    // КОНТЕЙНЕР ІКОНКИ
     // ======================================
 
     supportMenuItem.style.position =
@@ -475,6 +486,231 @@ async function initAuthMenu() {
 
     supportMenuItem.style.transition =
       ".25s";
+
+
+    // ======================================
+    // ІКОНКА
+    // ======================================
+
+    const supportIcon =
+      document.createElement("span");
+
+
+    supportIcon.className =
+      "support-icon";
+
+
+    supportIcon.textContent =
+      "💬";
+
+
+    supportMenuItem.appendChild(
+      supportIcon
+    );
+
+
+    // ======================================
+    // BADGE
+    // ======================================
+
+    const supportBadge =
+      document.createElement("span");
+
+
+    supportBadge.className =
+      "support-unread-badge";
+
+
+    supportBadge.hidden =
+      true;
+
+
+    supportBadge.style.position =
+      "absolute";
+
+
+    supportBadge.style.top =
+      "-6px";
+
+
+    supportBadge.style.right =
+      "-6px";
+
+
+    supportBadge.style.minWidth =
+      "18px";
+
+
+    supportBadge.style.height =
+      "18px";
+
+
+    supportBadge.style.padding =
+      "0 5px";
+
+
+    supportBadge.style.borderRadius =
+      "999px";
+
+
+    supportBadge.style.display =
+      "inline-flex";
+
+
+    supportBadge.style.alignItems =
+      "center";
+
+
+    supportBadge.style.justifyContent =
+      "center";
+
+
+    supportBadge.style.boxSizing =
+      "border-box";
+
+
+    supportBadge.style.background =
+      "#ff3b30";
+
+
+    supportBadge.style.color =
+      "#ffffff";
+
+
+    supportBadge.style.fontSize =
+      "10px";
+
+
+    supportBadge.style.fontWeight =
+      "800";
+
+
+    supportBadge.style.lineHeight =
+      "1";
+
+
+    supportBadge.style.fontFamily =
+      "Arial, sans-serif";
+
+
+    supportBadge.style.border =
+      "2px solid #05080d";
+
+
+    supportBadge.style.zIndex =
+      "10";
+
+
+    supportMenuItem.appendChild(
+      supportBadge
+    );
+
+
+    // ======================================
+    // ОНОВЛЕННЯ ЛІЧИЛЬНИКА
+    // ======================================
+
+    async function refreshSupportUnreadCount() {
+
+      try {
+
+        const result =
+          await supabase.rpc(
+            "get_support_unread_count"
+          );
+
+
+        if (result.error) {
+
+          console.error(
+            "get_support_unread_count:",
+            result.error
+          );
+
+          supportBadge.hidden =
+            true;
+
+          return;
+
+        }
+
+
+        let count =
+          Number(
+            result.data || 0
+          );
+
+
+        if (
+          !Number.isFinite(count) ||
+          count < 0
+        ) {
+
+          count =
+            0;
+
+        }
+
+
+        if (count <= 0) {
+
+          supportBadge.hidden =
+            true;
+
+          supportBadge.textContent =
+            "";
+
+          supportMenuItem.title =
+            "Звернення";
+
+          supportMenuItem.setAttribute(
+            "aria-label",
+            "Звернення"
+          );
+
+          return;
+
+        }
+
+
+        const badgeText =
+          count > 99
+            ? "99+"
+            : String(count);
+
+
+        supportBadge.textContent =
+          badgeText;
+
+
+        supportBadge.hidden =
+          false;
+
+
+        supportMenuItem.title =
+          `Звернення — непрочитаних: ${count}`;
+
+
+        supportMenuItem.setAttribute(
+          "aria-label",
+          `Звернення — непрочитаних: ${count}`
+        );
+
+      }
+
+      catch (error) {
+
+        console.error(
+          "Помилка лічильника звернень:",
+          error
+        );
+
+        supportBadge.hidden =
+          true;
+
+      }
+
+    }
 
 
     // ======================================
@@ -529,6 +765,46 @@ async function initAuthMenu() {
 
 
     // ======================================
+    // ПЕРШЕ ОНОВЛЕННЯ ЛІЧИЛЬНИКА
+    // ======================================
+
+    await refreshSupportUnreadCount();
+
+
+    // ======================================
+    // ЗАПАМ'ЯТОВУЄМО ФУНКЦІЮ ГЛОБАЛЬНО
+    // ======================================
+
+    window.uaLegionRefreshSupportUnread =
+      refreshSupportUnreadCount;
+
+
+    // ======================================
+    // ОЧИЩАЄМО ПОПЕРЕДНІЙ ТАЙМЕР
+    // ======================================
+
+    if (supportUnreadTimer) {
+
+      clearInterval(
+        supportUnreadTimer
+      );
+
+    }
+
+
+    // ======================================
+    // АВТООНОВЛЕННЯ
+    // КОЖНІ 5 СЕКУНД
+    // ======================================
+
+    supportUnreadTimer =
+      setInterval(
+        refreshSupportUnreadCount,
+        5000
+      );
+
+
+    // ======================================
     // DEBUG
     // ======================================
 
@@ -554,7 +830,8 @@ async function initAuthMenu() {
     // ДОЗВОЛЯЄМО НАСТУПНИЙ ЗАПУСК
     // ======================================
 
-    authMenuRunning = false;
+    authMenuRunning =
+      false;
 
   }
 
