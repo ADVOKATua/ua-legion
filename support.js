@@ -28,6 +28,9 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   let profileCurrentValues = {};
 
+  // Кеш профілів користувачів
+  const memberSummaryCache = new Map();
+
 
   // ==========================================
   // ELEMENT HELPER
@@ -271,6 +274,231 @@ document.addEventListener("DOMContentLoaded", async function () {
     }[priority] ||
       priority ||
       "—";
+
+  }
+
+
+  // ==========================================
+  // GET MEMBER NICKNAME
+  // ==========================================
+
+  function getMemberNickname(
+    profile,
+    fallbackId = ""
+  ) {
+
+    if (!profile) {
+
+      return (
+        fallbackId ||
+        "Користувач"
+      );
+
+    }
+
+
+    return (
+
+      profile.game_nickname ||
+
+      profile.discord_username ||
+
+      profile.display_name ||
+
+      fallbackId ||
+
+      "Користувач"
+
+    );
+
+  }
+
+
+  // ==========================================
+  // LOAD MEMBER SUMMARY
+  // ==========================================
+
+  async function loadMemberSummary(
+    userId
+  ) {
+
+    if (!userId) {
+
+      return null;
+
+    }
+
+
+    if (
+      memberSummaryCache.has(
+        userId
+      )
+    ) {
+
+      return memberSummaryCache.get(
+        userId
+      );
+
+    }
+
+
+    const profileResult =
+      await supabase
+        .from("profiles")
+        .select(
+          "id,display_name,game_nickname,discord_username"
+        )
+        .eq(
+          "id",
+          userId
+        )
+        .maybeSingle();
+
+
+    if (profileResult.error) {
+
+      console.error(
+        "Member profile:",
+        profileResult.error
+      );
+
+      return null;
+
+    }
+
+
+    const profile =
+      profileResult.data;
+
+
+    if (!profile) {
+
+      return null;
+
+    }
+
+
+    const rolesResult =
+      await supabase
+        .from("user_roles")
+        .select(
+          "role_id,role,direction_id,roles(name,level,is_active)"
+        )
+        .eq(
+          "user_id",
+          userId
+        );
+
+
+    if (rolesResult.error) {
+
+      console.error(
+        "Member roles:",
+        rolesResult.error
+      );
+
+    }
+
+
+    const roles =
+      (rolesResult.data || [])
+        .filter(
+          row =>
+            row.roles &&
+            row.roles.is_active !== false
+        )
+        .sort(
+          (a, b) =>
+            Number(
+              b.roles?.level || 0
+            ) -
+            Number(
+              a.roles?.level || 0
+            )
+        );
+
+
+    const primaryRole =
+      roles[0]?.roles?.name ||
+      "Працівник UA LEGION";
+
+
+    const summary = {
+
+      id:
+        profile.id,
+
+      displayName:
+        profile.display_name ||
+        "",
+
+      nickname:
+        getMemberNickname(
+          profile,
+          userId
+        ),
+
+      roleName:
+        primaryRole,
+
+      roles
+
+    };
+
+
+    memberSummaryCache.set(
+      userId,
+      summary
+    );
+
+
+    return summary;
+
+  }
+
+
+  // ==========================================
+  // PROFILE LINK
+  // ==========================================
+
+  function profileLink(
+    userId,
+    nickname
+  ) {
+
+    if (!userId) {
+
+      return escapeHtml(
+        nickname ||
+        "Користувач"
+      );
+
+    }
+
+
+    return `
+
+      <a
+        href="member.html?user_id=${encodeURIComponent(
+          userId
+        )}"
+        target="_blank"
+        rel="noopener noreferrer"
+        style="
+          color:#ffd54a;
+          text-decoration:none;
+          font-weight:800;
+        "
+      >
+
+        @${escapeHtml(
+          nickname ||
+          "Користувач"
+        )}
+
+      </a>
+
+    `;
 
   }
 
@@ -1514,12 +1742,40 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                         ${escapeHtml(
 
-                          user.display_name ||
-                          ticket.user_id
+                          getMemberNickname(
+                            user,
+                            ticket.user_id
+                          )
 
                         )}
 
                       </div>
+
+
+                      ${
+                        ticket.reviewed_at
+
+                          ? `
+
+                            <div
+                              class="ticket-user"
+                            >
+
+                              👨‍💼 Розглянуто:
+
+                              ${escapeHtml(
+                                formatDate(
+                                  ticket.reviewed_at
+                                )
+                              )}
+
+                            </div>
+
+                          `
+
+                          : ""
+
+                      }
 
                     `
 
@@ -1575,7 +1831,7 @@ document.addEventListener("DOMContentLoaded", async function () {
           "support_tickets"
         )
         .select(
-          "id,ticket_number,user_id,direction_id,category_id,subject,status,priority,assigned_user_id,created_at,updated_at,resolved_at,support_categories(name,code,icon),directions(name,code)"
+          "id,ticket_number,user_id,direction_id,category_id,subject,status,priority,assigned_user_id,created_at,updated_at,resolved_at,reviewed_by,reviewed_at,support_categories(name,code,icon),directions(name,code)"
         )
         .eq(
           "user_id",
@@ -1667,7 +1923,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         )
         .select(
 
-          "id,ticket_number,user_id,direction_id,category_id,subject,status,priority,assigned_user_id,created_at,updated_at,resolved_at,support_categories(name,code,icon),directions(name,code),profiles!support_tickets_user_id_fkey(display_name)"
+          "id,ticket_number,user_id,direction_id,category_id,subject,status,priority,assigned_user_id,created_at,updated_at,resolved_at,reviewed_by,reviewed_at,support_categories(name,code,icon),directions(name,code),profiles!support_tickets_user_id_fkey(display_name,game_nickname,discord_username)"
 
         )
         .order(
@@ -1730,10 +1986,11 @@ document.addEventListener("DOMContentLoaded", async function () {
         ticket => {
 
           const userName =
-            ticket.profiles
-              ?.display_name
-              ?.toLowerCase() ||
-            "";
+            getMemberNickname(
+              ticket.profiles,
+              ticket.user_id
+            )
+            .toLowerCase();
 
 
           const matchesSearch =
@@ -1826,7 +2083,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         )
         .select(
 
-          "id,ticket_number,user_id,direction_id,category_id,subject,status,priority,assigned_user_id,created_at,updated_at,resolved_at,support_categories(name,code,icon,description),directions(name,code),profiles!support_tickets_user_id_fkey(display_name)"
+          "id,ticket_number,user_id,direction_id,category_id,subject,status,priority,assigned_user_id,created_at,updated_at,resolved_at,reviewed_by,reviewed_at,support_categories(name,code,icon,description),directions(name,code),profiles!support_tickets_user_id_fkey(display_name,game_nickname,discord_username)"
 
         )
         .eq(
@@ -1859,6 +2116,25 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     const ticket =
       result.data;
+
+
+    // ======================================
+    // LOAD REVIEWER
+    // ======================================
+
+    let reviewer = null;
+
+
+    if (
+      ticket.reviewed_by
+    ) {
+
+      reviewer =
+        await loadMemberSummary(
+          ticket.reviewed_by
+        );
+
+    }
 
 
     // ======================================
@@ -1951,6 +2227,8 @@ document.addEventListener("DOMContentLoaded", async function () {
 
       ticket,
 
+      reviewer,
+
       messages:
         messagesResult.data ||
         [],
@@ -1988,6 +2266,10 @@ document.addEventListener("DOMContentLoaded", async function () {
       currentTicket.ticket;
 
 
+    const reviewer =
+      currentTicket.reviewer;
+
+
     const category =
       ticket.support_categories ||
       {};
@@ -1996,6 +2278,18 @@ document.addEventListener("DOMContentLoaded", async function () {
     const direction =
       ticket.directions ||
       {};
+
+
+    const userProfile =
+      ticket.profiles ||
+      {};
+
+
+    const userNickname =
+      getMemberNickname(
+        userProfile,
+        ticket.user_id
+      );
 
 
     modalTitle.textContent =
@@ -2025,23 +2319,23 @@ document.addEventListener("DOMContentLoaded", async function () {
         class="modal-info-grid"
       >
 
+        <!-- =================================
+             USER
+             ================================= -->
+
         <div
           class="modal-info-item"
         >
 
           <span>
-            Користувач
+            👤 Користувач
           </span>
 
           <strong>
 
-            ${escapeHtml(
-
-              ticket.profiles
-                ?.display_name ||
-
-              ticket.user_id
-
+            ${profileLink(
+              ticket.user_id,
+              userNickname
             )}
 
           </strong>
@@ -2049,12 +2343,16 @@ document.addEventListener("DOMContentLoaded", async function () {
         </div>
 
 
+        <!-- =================================
+             CREATED
+             ================================= -->
+
         <div
           class="modal-info-item"
         >
 
           <span>
-            Створено
+            📅 Створено
           </span>
 
           <strong>
@@ -2072,18 +2370,124 @@ document.addEventListener("DOMContentLoaded", async function () {
         </div>
 
 
+        <!-- =================================
+             SUBJECT
+             ================================= -->
+
         <div
           class="modal-info-item full"
         >
 
           <span>
-            Тема
+            📝 Тема
           </span>
 
           <strong>
 
             ${escapeHtml(
               ticket.subject
+            )}
+
+          </strong>
+
+        </div>
+
+
+        <!-- =================================
+             REVIEWER
+             ================================= -->
+
+        <div
+          class="modal-info-item full"
+        >
+
+          <span>
+            👨‍💼 Розглянув
+          </span>
+
+          <strong>
+
+            ${
+              ticket.reviewed_by && reviewer
+
+                ? `
+
+                  <div
+                    style="
+                      display:flex;
+                      flex-direction:column;
+                      gap:4px;
+                    "
+                  >
+
+                    <span
+                      style="
+                        font-weight:700;
+                      "
+                    >
+
+                      ${escapeHtml(
+                        reviewer.roleName ||
+                        "Працівник UA LEGION"
+                      )}
+
+                    </span>
+
+
+                    <span>
+
+                      ${profileLink(
+                        reviewer.id,
+                        reviewer.nickname
+                      )}
+
+                    </span>
+
+                  </div>
+
+                `
+
+                : `
+
+                  <span
+                    style="
+                      opacity:0.7;
+                    "
+                  >
+                    Ще не розглянуто
+                  </span>
+
+                `
+
+            }
+
+          </strong>
+
+        </div>
+
+
+        <!-- =================================
+             REVIEW DATE
+             ================================= -->
+
+        <div
+          class="modal-info-item"
+        >
+
+          <span>
+            🕐 Дата розгляду
+          </span>
+
+          <strong>
+
+            ${escapeHtml(
+
+              ticket.reviewed_at
+                ? formatDate(
+                    ticket.reviewed_at
+                  )
+                : "—"
+
             )}
 
           </strong>
