@@ -13,7 +13,6 @@ document.addEventListener("DOMContentLoaded", async function () {
     return;
   }
 
-
   // ==========================================
   // STATE
   // ==========================================
@@ -37,7 +36,6 @@ document.addEventListener("DOMContentLoaded", async function () {
   const directionDataCache = new Map();
   const nicknameCache = new Map();
   const profileCache = new Map();
-
 
   // ==========================================
   // ELEMENTS
@@ -99,33 +97,25 @@ document.addEventListener("DOMContentLoaded", async function () {
   const takeTicketButton =
     el("takeTicketButton");
 
-
   // ==========================================
   // HELPERS
   // ==========================================
 
   function escapeHtml(value) {
-
-    return String(
-      value == null ? "" : value
-    )
+    return String(value == null ? "" : value)
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;")
       .replace(/'/g, "&#039;");
-
   }
 
-
   function formatDate(value) {
-
     if (!value) {
       return "—";
     }
 
     try {
-
       return new Date(value).toLocaleString(
         "uk-UA",
         {
@@ -136,94 +126,52 @@ document.addEventListener("DOMContentLoaded", async function () {
           minute: "2-digit"
         }
       );
-
     } catch {
-
       return String(value);
-
     }
-
   }
 
-
-  function showMessage(
-    message,
-    type = "info"
-  ) {
-
+  function showMessage(message, type = "info") {
     if (!supportMessage) {
       return;
     }
 
-    supportMessage.textContent =
-      message || "";
-
+    supportMessage.textContent = message || "";
     supportMessage.className =
       "support-message " + type;
 
-    supportMessage.style.display =
-      "block";
+    supportMessage.style.display = "block";
 
-    clearTimeout(
-      showMessage.timer
-    );
+    clearTimeout(showMessage.timer);
 
-    showMessage.timer =
-      setTimeout(
-        () => {
-
-          supportMessage.style.display =
-            "none";
-
-        },
-        5000
-      );
-
+    showMessage.timer = setTimeout(() => {
+      supportMessage.style.display = "none";
+    }, 5000);
   }
-
 
   function statusLabel(status) {
-
     return {
-
       new: "Нове",
-
       in_progress: "В роботі",
-
       resolved: "Вирішено",
-
       closed: "Закрито"
-
     }[status] || status || "—";
-
   }
-
 
   function priorityLabel(priority) {
-
     return {
-
       low: "Низький",
-
       normal: "Звичайний",
-
       high: "Високий",
-
       urgent: "Терміновий"
-
-    }[priority] ||
-      priority ||
-      "—";
-
+    }[priority] || priority || "—";
   }
-
 
   // ==========================================
   // USER
   // ==========================================
 
   async function loadUser() {
-
     const result =
       await supabase.auth.getUser();
 
@@ -231,118 +179,77 @@ document.addEventListener("DOMContentLoaded", async function () {
       result.error ||
       !result.data?.user
     ) {
-
-      window.location.href =
-        "login.html";
-
+      window.location.href = "login.html";
       return false;
-
     }
 
-    currentUser =
-      result.data.user;
+    currentUser = result.data.user;
 
     return true;
-
   }
-
 
   // ==========================================
   // LOAD PROFILE
   // ==========================================
 
-  async function loadProfile(
-    userId
-  ) {
-
+  async function loadProfile(userId) {
     if (!userId) {
       return null;
     }
 
-
-    if (
-      profileCache.has(userId)
-    ) {
-
-      return profileCache.get(
-        userId
-      );
-
+    if (profileCache.has(userId)) {
+      return profileCache.get(userId);
     }
-
 
     const result =
       await supabase
         .from("profiles")
-        .select(
-          `
+        .select(`
           id,
           display_name,
           discord_username,
           discord_user_id,
           steam_id,
           game_nickname
-          `
-        )
-        .eq(
-          "id",
-          userId
-        )
+        `)
+        .eq("id", userId)
         .maybeSingle();
 
-
     if (result.error) {
-
       console.error(
         "loadProfile:",
         result.error
       );
 
       return null;
-
     }
-
 
     const profile =
       result.data || null;
 
-
     if (profile) {
-
       profileCache.set(
         userId,
         profile
       );
-
     }
 
-
     return profile;
-
   }
-
 
   // ==========================================
   // LOAD MANY PROFILES
-  //
-  // ВАЖЛИВО:
-  // окремий запит, щоб не було
-  // ambiguous relationship
   // ==========================================
 
-  async function loadProfiles(
-    userIds
-  ) {
+  async function loadProfiles(userIds) {
 
-    const ids =
-      [
-        ...new Set(
-          (userIds || [])
-            .filter(Boolean)
-            .map(String)
-        )
-      ];
-
+    const ids = [
+      ...new Set(
+        (userIds || [])
+          .filter(Boolean)
+          .map(String)
+      )
+    ];
 
     const missing =
       ids.filter(
@@ -350,44 +257,31 @@ document.addEventListener("DOMContentLoaded", async function () {
           !profileCache.has(id)
       );
 
-
     if (!missing.length) {
 
       const result = {};
 
-      ids.forEach(
-        id => {
-
-          result[id] =
-            profileCache.get(id) ||
-            null;
-
-        }
-      );
+      ids.forEach(id => {
+        result[id] =
+          profileCache.get(id) ||
+          null;
+      });
 
       return result;
-
     }
-
 
     const query =
       await supabase
         .from("profiles")
-        .select(
-          `
+        .select(`
           id,
           display_name,
           discord_username,
           discord_user_id,
           steam_id,
           game_nickname
-          `
-        )
-        .in(
-          "id",
-          missing
-        );
-
+        `)
+        .in("id", missing);
 
     if (query.error) {
 
@@ -398,9 +292,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     } else {
 
-      (
-        query.data || []
-      ).forEach(
+      (query.data || []).forEach(
         profile => {
 
           profileCache.set(
@@ -413,24 +305,18 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     }
 
-
     const result = {};
 
-    ids.forEach(
-      id => {
+    ids.forEach(id => {
 
-        result[id] =
-          profileCache.get(id) ||
-          null;
+      result[id] =
+        profileCache.get(id) ||
+        null;
 
-      }
-    );
-
+    });
 
     return result;
-
   }
-
 
   // ==========================================
   // PROFILE CURRENT VALUES
@@ -443,11 +329,9 @@ document.addEventListener("DOMContentLoaded", async function () {
         currentUser.id
       );
 
-
     if (!profile) {
       return {};
     }
-
 
     return {
 
@@ -470,9 +354,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         profile.game_nickname ?? ""
 
     };
-
   }
-
 
   // ==========================================
   // DIRECTIONS
@@ -486,12 +368,8 @@ document.addEventListener("DOMContentLoaded", async function () {
         .select(
           "id,name,slug,code,is_active"
         )
-        .eq(
-          "is_active",
-          true
-        )
+        .eq("is_active", true)
         .order("id");
-
 
     if (result.error) {
 
@@ -506,38 +384,29 @@ document.addEventListener("DOMContentLoaded", async function () {
       );
 
       return;
-
     }
-
 
     directions =
       result.data || [];
 
-
     const membership =
       await supabase
         .from("user_directions")
-        .select(
-          `
+        .select(`
           direction_id,
           status,
           direction_data
-          `
-        )
+        `)
         .eq(
           "user_id",
           currentUser.id
         );
 
-
     if (!membership.error) {
 
       activeDirectionData = {};
 
-
-      (
-        membership.data || []
-      ).forEach(
+      (membership.data || []).forEach(
         row => {
 
           if (
@@ -545,9 +414,7 @@ document.addEventListener("DOMContentLoaded", async function () {
           ) {
 
             activeDirectionData[
-              String(
-                row.direction_id
-              )
+              String(row.direction_id)
             ] =
               row.direction_data ||
               {};
@@ -559,16 +426,13 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     }
 
-
     if (ticketDirection) {
 
-      ticketDirection.innerHTML =
-        `
+      ticketDirection.innerHTML = `
         <option value="">
           🇺🇦 UA LEGION / Загальне
         </option>
-        `;
-
+      `;
 
       directions.forEach(
         direction => {
@@ -599,11 +463,9 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     }
 
-
     if (staffDirectionFilter) {
 
-      staffDirectionFilter.innerHTML =
-        `
+      staffDirectionFilter.innerHTML = `
         <option value="all">
           Усі напрямки
         </option>
@@ -611,8 +473,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         <option value="global">
           🇺🇦 UA LEGION / Загальні
         </option>
-        `;
-
+      `;
 
       directions.forEach(
         direction => {
@@ -634,9 +495,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       );
 
     }
-
   }
-
 
   // ==========================================
   // CATEGORIES
@@ -650,12 +509,8 @@ document.addEventListener("DOMContentLoaded", async function () {
         .select(
           "id,code,name,icon,description"
         )
-        .eq(
-          "is_active",
-          true
-        )
+        .eq("is_active", true)
         .order("id");
-
 
     if (result.error) {
 
@@ -670,13 +525,10 @@ document.addEventListener("DOMContentLoaded", async function () {
       );
 
       return;
-
     }
-
 
     categories =
       result.data || [];
-
 
     if (ticketCategory) {
 
@@ -701,13 +553,9 @@ document.addEventListener("DOMContentLoaded", async function () {
           )
           .join("");
 
-
       updateDataChangeVisibility();
-
     }
-
   }
-
 
   // ==========================================
   // DATA FIELDS
@@ -717,25 +565,17 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     const result =
       await supabase
-        .from(
-          "support_data_fields"
-        )
-        .select(
-          `
+        .from("support_data_fields")
+        .select(`
           field_key,
           field_name,
           direction_id,
           json_key,
           input_type,
           is_active
-          `
-        )
-        .eq(
-          "is_active",
-          true
-        )
+        `)
+        .eq("is_active", true)
         .order("id");
-
 
     if (result.error) {
 
@@ -745,21 +585,16 @@ document.addEventListener("DOMContentLoaded", async function () {
       );
 
       return;
-
     }
-
 
     dataFields =
       result.data || [];
-
   }
-
 
   function fieldsForCurrentDirection() {
 
     const directionId =
       ticketDirection?.value || "";
-
 
     return dataFields.filter(
       field => {
@@ -771,36 +606,24 @@ document.addEventListener("DOMContentLoaded", async function () {
             "profile."
           )
         ) {
-
           return true;
-
         }
-
 
         return (
           directionId &&
-          String(
-            field.direction_id
-          ) ===
-          String(
-            directionId
-          )
+          String(field.direction_id) ===
+          String(directionId)
         );
 
       }
     );
-
   }
 
-
-  function getCurrentValue(
-    field
-  ) {
+  function getCurrentValue(field) {
 
     if (!field) {
       return "";
     }
-
 
     if (
       String(
@@ -815,9 +638,7 @@ document.addEventListener("DOMContentLoaded", async function () {
           field.field_key
         ] ?? ""
       );
-
     }
-
 
     const data =
       activeDirectionData[
@@ -826,28 +647,19 @@ document.addEventListener("DOMContentLoaded", async function () {
         )
       ] || {};
 
-
     return (
-      data[
-        field.json_key
-      ] ?? ""
+      data[field.json_key] ?? ""
     );
-
   }
 
-
-  function addChangeRow(
-    selectedKey
-  ) {
+  function addChangeRow(selectedKey) {
 
     if (!dataChangeRows) {
       return;
     }
 
-
     const fields =
       fieldsForCurrentDirection();
-
 
     if (!fields.length) {
 
@@ -857,9 +669,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       );
 
       return;
-
     }
-
 
     const field =
       fields.find(
@@ -869,19 +679,13 @@ document.addEventListener("DOMContentLoaded", async function () {
       ) ||
       fields[0];
 
-
     const row =
-      document.createElement(
-        "div"
-      );
-
+      document.createElement("div");
 
     row.className =
       "change-row";
 
-
-    row.innerHTML =
-      `
+    row.innerHTML = `
       <div>
 
         <label>
@@ -945,7 +749,6 @@ document.addEventListener("DOMContentLoaded", async function () {
           placeholder="Нове значення"
         >
 
-
         <textarea
           class="change-reason"
           rows="2"
@@ -962,25 +765,19 @@ document.addEventListener("DOMContentLoaded", async function () {
       >
         ✕
       </button>
-      `;
+    `;
 
-
-    dataChangeRows.appendChild(
-      row
-    );
-
+    dataChangeRows.appendChild(row);
 
     const fieldSelect =
       row.querySelector(
         ".change-field"
       );
 
-
     const currentInput =
       row.querySelector(
         ".change-current"
       );
-
 
     function refreshCurrent() {
 
@@ -991,39 +788,28 @@ document.addEventListener("DOMContentLoaded", async function () {
             fieldSelect.value
         );
 
-
       currentInput.value =
         selected
-          ? getCurrentValue(
-              selected
-            )
+          ? getCurrentValue(selected)
           : "";
-
     }
-
 
     fieldSelect.addEventListener(
       "change",
       refreshCurrent
     );
 
-
     row.querySelector(
       ".remove-change"
     ).addEventListener(
       "click",
       () => {
-
         row.remove();
-
       }
     );
 
-
     refreshCurrent();
-
   }
-
 
   function updateDataChangeVisibility() {
 
@@ -1031,53 +817,38 @@ document.addEventListener("DOMContentLoaded", async function () {
       !ticketCategory ||
       !dataChangeBuilder
     ) {
-
       return;
-
     }
-
 
     const active =
       ticketCategory.value ===
       "data_change";
 
-
     dataChangeBuilder.hidden =
       !active;
-
 
     if (!active) {
 
       if (dataChangeRows) {
-
-        dataChangeRows.innerHTML =
-          "";
-
+        dataChangeRows.innerHTML = "";
       }
 
       return;
-
     }
-
 
     if (
       dataChangeRows &&
       !dataChangeRows.children.length
     ) {
-
       addChangeRow();
-
     }
-
   }
-
 
   function collectChanges() {
 
     if (!dataChangeRows) {
       return [];
     }
-
 
     return [
       ...dataChangeRows.querySelectorAll(
@@ -1089,9 +860,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         const fieldKey =
           row.querySelector(
             ".change-field"
-          )?.value ||
-          "";
-
+          )?.value || "";
 
         const field =
           dataFields.find(
@@ -1100,27 +869,20 @@ document.addEventListener("DOMContentLoaded", async function () {
               fieldKey
           );
 
-
         const oldValue =
           row.querySelector(
             ".change-current"
-          )?.value ||
-          "";
-
+          )?.value || "";
 
         const newValue =
           row.querySelector(
             ".change-new"
-          )?.value.trim() ||
-          "";
-
+          )?.value.trim() || "";
 
         const reason =
           row.querySelector(
             ".change-reason"
-          )?.value.trim() ||
-          "";
-
+          )?.value.trim() || "";
 
         return {
 
@@ -1142,30 +904,21 @@ document.addEventListener("DOMContentLoaded", async function () {
               : newValue,
 
           reason:
-            reason ||
-            null
+            reason || null
 
         };
-
       }
     );
-
   }
 
-
-  function validateChanges(
-    changes
-  ) {
+  function validateChanges(changes) {
 
     if (
       ticketCategory?.value !==
       "data_change"
     ) {
-
       return true;
-
     }
-
 
     if (!changes.length) {
 
@@ -1175,13 +928,9 @@ document.addEventListener("DOMContentLoaded", async function () {
       );
 
       return false;
-
     }
 
-
-    const used =
-      new Set();
-
+    const used = new Set();
 
     for (
       const change of changes
@@ -1199,18 +948,13 @@ document.addEventListener("DOMContentLoaded", async function () {
         );
 
         return false;
-
       }
-
 
       used.add(
         change.field_key
       );
 
-
-      if (
-        !change.new_value
-      ) {
+      if (!change.new_value) {
 
         showMessage(
           "Нове значення не може бути порожнім.",
@@ -1218,13 +962,9 @@ document.addEventListener("DOMContentLoaded", async function () {
         );
 
         return false;
-
       }
 
-
-      if (
-        !change.reason
-      ) {
+      if (!change.reason) {
 
         showMessage(
           "Для кожної зміни вкажіть причину.",
@@ -1232,37 +972,25 @@ document.addEventListener("DOMContentLoaded", async function () {
         );
 
         return false;
-
       }
-
     }
 
-
     return true;
-
   }
-
 
   // ==========================================
   // CREATE TICKET
   // ==========================================
 
-  async function createTicket(
-    event
-  ) {
+  async function createTicket(event) {
 
     event.preventDefault();
 
-
     const subject =
-      ticketSubject?.value.trim() ||
-      "";
-
+      ticketSubject?.value.trim() || "";
 
     const message =
-      ticketMessage?.value.trim() ||
-      "";
-
+      ticketMessage?.value.trim() || "";
 
     if (
       !subject ||
@@ -1275,41 +1003,27 @@ document.addEventListener("DOMContentLoaded", async function () {
       );
 
       return;
-
     }
-
 
     const changes =
       collectChanges();
 
-
     if (
-      !validateChanges(
-        changes
-      )
+      !validateChanges(changes)
     ) {
-
       return;
-
     }
 
-
     const button =
-      el(
-        "submitTicketButton"
-      );
-
+      el("submitTicketButton");
 
     if (button) {
 
-      button.disabled =
-        true;
+      button.disabled = true;
 
       button.textContent =
         "НАДСИЛАННЯ...";
-
     }
-
 
     const result =
       await supabase.rpc(
@@ -1337,21 +1051,16 @@ document.addEventListener("DOMContentLoaded", async function () {
 
           p_changes:
             changes
-
         }
       );
 
-
     if (button) {
 
-      button.disabled =
-        false;
+      button.disabled = false;
 
       button.textContent =
         "📨 НАДІСЛАТИ ЗВЕРНЕННЯ";
-
     }
-
 
     if (result.error) {
 
@@ -1367,54 +1076,37 @@ document.addEventListener("DOMContentLoaded", async function () {
       );
 
       return;
-
     }
-
 
     ticketForm.reset();
 
-
     if (dataChangeRows) {
-
-      dataChangeRows.innerHTML =
-        "";
-
+      dataChangeRows.innerHTML = "";
     }
 
-
     updateDataChangeVisibility();
-
 
     showMessage(
       "Звернення успішно створено.",
       "success"
     );
 
-
     await loadMyTickets();
 
-
     if (isStaff) {
-
       await loadStaffTickets();
-
     }
-
   }
-
 
   // ==========================================
   // NICKNAMES
   // ==========================================
 
-  function getFallbackNickname(
-    profile
-  ) {
+  function getFallbackNickname(profile) {
 
     if (!profile) {
       return "Користувач";
     }
-
 
     const displayName =
       String(
@@ -1422,16 +1114,12 @@ document.addEventListener("DOMContentLoaded", async function () {
         ""
       ).trim();
 
-
     if (
       displayName &&
       !displayName.includes("@")
     ) {
-
       return displayName;
-
     }
-
 
     const discord =
       String(
@@ -1439,11 +1127,9 @@ document.addEventListener("DOMContentLoaded", async function () {
         ""
       ).trim();
 
-
     if (discord) {
       return discord;
     }
-
 
     const game =
       String(
@@ -1451,25 +1137,18 @@ document.addEventListener("DOMContentLoaded", async function () {
         ""
       ).trim();
 
-
     if (game) {
       return game;
     }
 
-
     return "Користувач";
-
   }
 
-
-  function getDirectionNicknameKey(
-    direction
-  ) {
+  function getDirectionNicknameKey(direction) {
 
     if (!direction) {
       return null;
     }
-
 
     const code =
       String(
@@ -1480,7 +1159,6 @@ document.addEventListener("DOMContentLoaded", async function () {
         .toLowerCase()
         .trim();
 
-
     const name =
       String(
         direction.name ||
@@ -1489,57 +1167,38 @@ document.addEventListener("DOMContentLoaded", async function () {
         .toLowerCase()
         .trim();
 
-
     if (
       code === "ets2" ||
       name.includes("ets2") ||
       name.includes("truckersmp")
     ) {
-
       return "truckersmp_nick";
-
     }
-
 
     if (
       code === "wot" ||
-      name.includes(
-        "world of tanks"
-      )
+      name.includes("world of tanks")
     ) {
-
       return "wot_nickname";
-
     }
-
 
     if (
       code === "dota2" ||
       code === "dota" ||
       name.includes("dota")
     ) {
-
       return "dota_nickname";
-
     }
-
 
     if (
       code === "wow" ||
-      name.includes(
-        "world of warcraft"
-      )
+      name.includes("world of warcraft")
     ) {
-
       return "wow_character";
-
     }
 
-
     return null;
-
   }
-
 
   async function loadUserDirectionData(
     userId,
@@ -1551,39 +1210,30 @@ document.addEventListener("DOMContentLoaded", async function () {
       directionId === null ||
       directionId === undefined
     ) {
-
       return {};
-
     }
-
 
     const cacheKey =
       `${userId}:${directionId}`;
-
 
     if (
       directionDataCache.has(
         cacheKey
       )
     ) {
-
       return directionDataCache.get(
         cacheKey
       );
-
     }
-
 
     const result =
       await supabase
         .from("user_directions")
-        .select(
-          `
+        .select(`
           direction_id,
           direction_data,
           status
-          `
-        )
+        `)
         .eq(
           "user_id",
           userId
@@ -1593,7 +1243,6 @@ document.addEventListener("DOMContentLoaded", async function () {
           directionId
         )
         .maybeSingle();
-
 
     if (result.error) {
 
@@ -1608,25 +1257,19 @@ document.addEventListener("DOMContentLoaded", async function () {
       );
 
       return {};
-
     }
-
 
     const data =
       result.data?.direction_data ||
       {};
-
 
     directionDataCache.set(
       cacheKey,
       data
     );
 
-
     return data;
-
   }
-
 
   async function getTicketUserNickname(
     userId,
@@ -1638,26 +1281,21 @@ document.addEventListener("DOMContentLoaded", async function () {
       return "Користувач";
     }
 
-
     const cacheKey =
       `${userId}:${
         directionId ??
         "global"
       }`;
 
-
     if (
       nicknameCache.has(
         cacheKey
       )
     ) {
-
       return nicknameCache.get(
         cacheKey
       );
-
     }
-
 
     const userProfile =
       profile ||
@@ -1665,10 +1303,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         userId
       );
 
-
-    // ========================================
     // GLOBAL
-    // ========================================
 
     if (
       directionId === null ||
@@ -1681,28 +1316,21 @@ document.addEventListener("DOMContentLoaded", async function () {
           ""
         ).trim();
 
-
       const result =
         nickname ||
         getFallbackNickname(
           userProfile
         );
 
-
       nicknameCache.set(
         cacheKey,
         result
       );
 
-
       return result;
-
     }
 
-
-    // ========================================
     // DIRECTION
-    // ========================================
 
     const direction =
       directions.find(
@@ -1711,12 +1339,10 @@ document.addEventListener("DOMContentLoaded", async function () {
           Number(directionId)
       );
 
-
     const nicknameKey =
       getDirectionNicknameKey(
         direction
       );
-
 
     if (nicknameKey) {
 
@@ -1726,15 +1352,12 @@ document.addEventListener("DOMContentLoaded", async function () {
           directionId
         );
 
-
       const nickname =
         String(
           directionData?.[
             nicknameKey
-          ] ||
-          ""
+          ] || ""
         ).trim();
-
 
       if (nickname) {
 
@@ -1743,30 +1366,22 @@ document.addEventListener("DOMContentLoaded", async function () {
           nickname
         );
 
-
         return nickname;
-
       }
-
     }
-
 
     const fallback =
       getFallbackNickname(
         userProfile
       );
 
-
     nicknameCache.set(
       cacheKey,
       fallback
     );
 
-
     return fallback;
-
   }
-
 
   // ==========================================
   // PROFILE LINK
@@ -1783,9 +1398,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         nickname ||
         "Користувач"
       );
-
     }
-
 
     return `
       <a
@@ -1802,47 +1415,37 @@ document.addEventListener("DOMContentLoaded", async function () {
         )}
       </a>
     `;
-
   }
-
 
   // ==========================================
   // MEMBER SUMMARY
   // ==========================================
 
-  async function loadMemberSummary(
-    userId
-  ) {
+  async function loadMemberSummary(userId) {
 
     if (!userId) {
       return null;
     }
-
 
     if (
       memberSummaryCache.has(
         userId
       )
     ) {
-
       return memberSummaryCache.get(
         userId
       );
-
     }
-
 
     const profile =
       await loadProfile(
         userId
       );
 
-
     const rolesResult =
       await supabase
         .from("user_roles")
-        .select(
-          `
+        .select(`
           role_id,
           direction_id,
           roles(
@@ -1851,13 +1454,11 @@ document.addEventListener("DOMContentLoaded", async function () {
             level,
             is_active
           )
-          `
-        )
+        `)
         .eq(
           "user_id",
           userId
         );
-
 
     if (rolesResult.error) {
 
@@ -1865,13 +1466,10 @@ document.addEventListener("DOMContentLoaded", async function () {
         "Member roles:",
         rolesResult.error
       );
-
     }
-
 
     const roles =
       rolesResult.data || [];
-
 
     const activeRoles =
       roles
@@ -1883,20 +1481,16 @@ document.addEventListener("DOMContentLoaded", async function () {
         .sort(
           (a, b) =>
             Number(
-              b.roles?.level ||
-              0
+              b.roles?.level || 0
             ) -
             Number(
-              a.roles?.level ||
-              0
+              a.roles?.level || 0
             )
         );
-
 
     const role =
       activeRoles[0]?.roles ||
       null;
-
 
     const summary = {
 
@@ -1923,20 +1517,15 @@ document.addEventListener("DOMContentLoaded", async function () {
           role?.level ||
           0
         )
-
     };
-
 
     memberSummaryCache.set(
       userId,
       summary
     );
 
-
     return summary;
-
   }
-
 
   // ==========================================
   // TICKET LIST
@@ -1952,20 +1541,16 @@ document.addEventListener("DOMContentLoaded", async function () {
       return;
     }
 
-
     if (!list.length) {
 
-      target.innerHTML =
-        `
+      target.innerHTML = `
         <div class="support-empty">
           Звернень немає.
         </div>
-        `;
+      `;
 
       return;
-
     }
-
 
     const userIds =
       list.map(
@@ -1973,12 +1558,10 @@ document.addEventListener("DOMContentLoaded", async function () {
           ticket.user_id
       );
 
-
     const profiles =
       await loadProfiles(
         userIds
       );
-
 
     target.innerHTML =
       list
@@ -2006,7 +1589,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                 profile
               );
 
-
             return `
               <div
                 class="ticket-row"
@@ -2027,7 +1609,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                     )}
                   </span>
 
-
                   <span
                     class="ticket-status ${escapeHtml(
                       ticket.status
@@ -2042,7 +1623,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                 </div>
 
-
                 <div
                   class="ticket-subject"
                 >
@@ -2051,12 +1631,12 @@ document.addEventListener("DOMContentLoaded", async function () {
                   )}
                 </div>
 
-
                 <div
                   class="ticket-row-bottom"
                 >
 
                   <span>
+
                     ${escapeHtml(
                       (
                         category.icon ||
@@ -2078,7 +1658,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                   </span>
 
-
                   <span>
                     ${escapeHtml(
                       formatDate(
@@ -2089,7 +1668,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                   </span>
 
                 </div>
-
 
                 ${
                   staffMode
@@ -2122,15 +1700,9 @@ document.addEventListener("DOMContentLoaded", async function () {
 
               </div>
             `;
-
           }
         )
         .join("");
-
-
-    // ========================================
-    // LOAD REAL NICKNAMES
-    // ========================================
 
     if (staffMode) {
 
@@ -2145,14 +1717,12 @@ document.addEventListener("DOMContentLoaded", async function () {
             ] ||
             null;
 
-
           const nickname =
             await getTicketUserNickname(
               ticket.user_id,
               ticket.direction_id,
               profile
             );
-
 
           target
             .querySelectorAll(
@@ -2170,17 +1740,13 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                   element.textContent =
                     nickname;
-
                 }
 
               }
             );
-
         }
       );
-
     }
-
 
     target
       .querySelectorAll(
@@ -2204,9 +1770,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         }
       );
-
   }
-
 
   // ==========================================
   // MY TICKETS
@@ -2218,12 +1782,10 @@ document.addEventListener("DOMContentLoaded", async function () {
       return;
     }
 
-
     const result =
       await supabase
         .from("support_tickets")
-        .select(
-          `
+        .select(`
           id,
           ticket_number,
           user_id,
@@ -2245,8 +1807,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             name,
             code
           )
-          `
-        )
+        `)
         .eq(
           "user_id",
           currentUser.id
@@ -2258,7 +1819,6 @@ document.addEventListener("DOMContentLoaded", async function () {
           }
         );
 
-
     if (result.error) {
 
       console.error(
@@ -2266,30 +1826,24 @@ document.addEventListener("DOMContentLoaded", async function () {
         result.error
       );
 
-      myTicketsList.innerHTML =
-        `
+      myTicketsList.innerHTML = `
         <div class="support-empty">
           Не вдалося завантажити звернення.
         </div>
-        `;
+      `;
 
       return;
-
     }
-
 
     myTickets =
       result.data || [];
-
 
     await renderTicketList(
       myTickets,
       myTicketsList,
       false
     );
-
   }
-
 
   // ==========================================
   // STAFF CHECK
@@ -2302,7 +1856,6 @@ document.addEventListener("DOMContentLoaded", async function () {
         "is_ua_legion_staff"
       );
 
-
     if (result.error) {
 
       console.error(
@@ -2311,14 +1864,10 @@ document.addEventListener("DOMContentLoaded", async function () {
       );
 
       return false;
-
     }
 
-
     return result.data === true;
-
   }
-
 
   // ==========================================
   // STAFF TICKETS
@@ -2330,17 +1879,13 @@ document.addEventListener("DOMContentLoaded", async function () {
       !isStaff ||
       !staffTicketsList
     ) {
-
       return;
-
     }
-
 
     const result =
       await supabase
         .from("support_tickets")
-        .select(
-          `
+        .select(`
           id,
           ticket_number,
           user_id,
@@ -2362,15 +1907,13 @@ document.addEventListener("DOMContentLoaded", async function () {
             name,
             code
           )
-          `
-        )
+        `)
         .order(
           "updated_at",
           {
             ascending: false
           }
         );
-
 
     if (result.error) {
 
@@ -2379,26 +1922,20 @@ document.addEventListener("DOMContentLoaded", async function () {
         result.error
       );
 
-      staffTicketsList.innerHTML =
-        `
+      staffTicketsList.innerHTML = `
         <div class="support-empty">
           Не вдалося завантажити звернення.
         </div>
-        `;
+      `;
 
       return;
-
     }
-
 
     staffTickets =
       result.data || [];
 
-
     await applyStaffFilters();
-
   }
-
 
   // ==========================================
   // STAFF FILTERS
@@ -2410,7 +1947,6 @@ document.addEventListener("DOMContentLoaded", async function () {
       return;
     }
 
-
     const search =
       (
         staffSearch?.value ||
@@ -2419,16 +1955,13 @@ document.addEventListener("DOMContentLoaded", async function () {
         .trim()
         .toLowerCase();
 
-
     const status =
       staffStatusFilter?.value ||
       "all";
 
-
     const direction =
       staffDirectionFilter?.value ||
       "all";
-
 
     const profiles =
       await loadProfiles(
@@ -2438,9 +1971,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         )
       );
 
-
     const filtered = [];
-
 
     for (
       const ticket of staffTickets
@@ -2454,14 +1985,12 @@ document.addEventListener("DOMContentLoaded", async function () {
         ] ||
         null;
 
-
       const nickname =
         await getTicketUserNickname(
           ticket.user_id,
           ticket.direction_id,
           profile
         );
-
 
       const matchesSearch =
         !search ||
@@ -2507,11 +2036,9 @@ document.addEventListener("DOMContentLoaded", async function () {
           .toLowerCase()
           .includes(search);
 
-
       const matchesStatus =
         status === "all" ||
         ticket.status === status;
-
 
       const matchesDirection =
         direction === "all" ||
@@ -2526,7 +2053,6 @@ document.addEventListener("DOMContentLoaded", async function () {
         ) ===
         String(direction);
 
-
       if (
         matchesSearch &&
         matchesStatus &&
@@ -2536,20 +2062,15 @@ document.addEventListener("DOMContentLoaded", async function () {
         filtered.push(
           ticket
         );
-
       }
-
     }
-
 
     await renderTicketList(
       filtered,
       staffTicketsList,
       true
     );
-
   }
-
 
   // ==========================================
   // ASSIGNMENT HISTORY
@@ -2564,8 +2085,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         .from(
           "support_assignment_history"
         )
-        .select(
-          `
+        .select(`
           id,
           ticket_id,
           previous_user_id,
@@ -2577,8 +2097,7 @@ document.addEventListener("DOMContentLoaded", async function () {
           new_role_level,
           action,
           created_at
-          `
-        )
+        `)
         .eq(
           "ticket_id",
           ticketId
@@ -2590,7 +2109,6 @@ document.addEventListener("DOMContentLoaded", async function () {
           }
         );
 
-
     if (result.error) {
 
       console.error(
@@ -2599,14 +2117,10 @@ document.addEventListener("DOMContentLoaded", async function () {
       );
 
       return [];
-
     }
 
-
     return result.data || [];
-
   }
-
 
   // ==========================================
   // ASSIGNMENT HISTORY RENDER
@@ -2620,11 +2134,9 @@ document.addEventListener("DOMContentLoaded", async function () {
       return;
     }
 
-
     if (!history.length) {
 
-      assignmentHistory.innerHTML =
-        `
+      assignmentHistory.innerHTML = `
         <div class="support-subtitle">
 
           <span>
@@ -2645,19 +2157,15 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         </div>
 
-
         <div class="support-empty">
           Історії передачі ще немає.
         </div>
-        `;
+      `;
 
       return;
-
     }
 
-
-    assignmentHistory.innerHTML =
-      `
+    assignmentHistory.innerHTML = `
       <div class="support-subtitle">
 
         <span>
@@ -2677,29 +2185,24 @@ document.addEventListener("DOMContentLoaded", async function () {
         </div>
 
       </div>
-      `;
-
+    `;
 
     const container =
       document.createElement(
         "div"
       );
 
-
     container.className =
       "assignment-history-list";
-
 
     assignmentHistory.appendChild(
       container
     );
 
-
     const directionId =
       currentTicket
         ?.ticket
         ?.direction_id;
-
 
     for (
       const item of history
@@ -2711,17 +2214,13 @@ document.addEventListener("DOMContentLoaded", async function () {
           directionId
         );
 
-
       const changedNickname =
         await getTicketUserNickname(
           item.changed_by,
           directionId
         );
 
-
-      let previousNickname =
-        "";
-
+      let previousNickname = "";
 
       if (
         item.previous_user_id
@@ -2732,27 +2231,22 @@ document.addEventListener("DOMContentLoaded", async function () {
             item.previous_user_id,
             directionId
           );
-
       }
-
 
       const card =
         document.createElement(
           "div"
         );
 
-
       card.className =
         "change-review-card";
-
 
       if (
         item.action ===
         "assigned"
       ) {
 
-        card.innerHTML =
-          `
+        card.innerHTML = `
           <div class="change-review-title">
 
             <span>
@@ -2769,7 +2263,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
           </div>
 
-
           <div class="change-review-reason">
 
             <b>
@@ -2782,7 +2275,6 @@ document.addEventListener("DOMContentLoaded", async function () {
             )}
 
           </div>
-
 
           <div class="change-review-reason">
 
@@ -2797,7 +2289,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
           </div>
 
-
           <div class="change-review-reason">
 
             <b>
@@ -2810,12 +2301,11 @@ document.addEventListener("DOMContentLoaded", async function () {
             )}
 
           </div>
-          `;
+        `;
 
       } else {
 
-        card.innerHTML =
-          `
+        card.innerHTML = `
           <div class="change-review-title">
 
             <span>
@@ -2832,7 +2322,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
           </div>
 
-
           <div class="change-review-reason">
 
             <b>
@@ -2845,7 +2334,6 @@ document.addEventListener("DOMContentLoaded", async function () {
             )}
 
           </div>
-
 
           <div class="change-review-reason">
 
@@ -2860,7 +2348,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
           </div>
 
-
           <div class="change-review-reason">
 
             <b>
@@ -2873,7 +2360,6 @@ document.addEventListener("DOMContentLoaded", async function () {
             )}
 
           </div>
-
 
           <div class="change-review-reason">
 
@@ -2888,7 +2374,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
           </div>
 
-
           <div class="change-review-reason">
 
             <b>
@@ -2901,19 +2386,14 @@ document.addEventListener("DOMContentLoaded", async function () {
             )}
 
           </div>
-          `;
-
+        `;
       }
-
 
       container.appendChild(
         card
       );
-
     }
-
   }
-
 
   // ==========================================
   // CURRENT ASSIGNMENT
@@ -2925,33 +2405,26 @@ document.addEventListener("DOMContentLoaded", async function () {
       return;
     }
 
-
     if (!isStaff) {
 
       ticketAssignmentPanel.hidden =
         true;
 
       return;
-
     }
-
 
     ticketAssignmentPanel.hidden =
       false;
 
-
     const ticket =
       currentTicket.ticket;
-
 
     const assignedUserId =
       ticket.assigned_user_id;
 
-
     if (!assignedUserId) {
 
-      assignmentCurrent.innerHTML =
-        `
+      assignmentCurrent.innerHTML = `
         <div class="change-review-title">
 
           <span>
@@ -2964,11 +2437,10 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         </div>
 
-
         <div class="change-review-reason">
           Звернення ще ніхто не взяв у роботу.
         </div>
-        `;
+      `;
 
     } else {
 
@@ -2978,15 +2450,12 @@ document.addEventListener("DOMContentLoaded", async function () {
           ticket.direction_id
         );
 
-
       const summary =
         await loadMemberSummary(
           assignedUserId
         );
 
-
-      assignmentCurrent.innerHTML =
-        `
+      assignmentCurrent.innerHTML = `
         <div class="change-review-title">
 
           <span>
@@ -2998,7 +2467,6 @@ document.addEventListener("DOMContentLoaded", async function () {
           </span>
 
         </div>
-
 
         <div class="change-review-reason">
 
@@ -3013,7 +2481,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         </div>
 
-
         <div class="change-review-reason">
 
           <b>
@@ -3026,10 +2493,8 @@ document.addEventListener("DOMContentLoaded", async function () {
           )}
 
         </div>
-        `;
-
+      `;
     }
-
 
     const resolved =
       [
@@ -3038,7 +2503,6 @@ document.addEventListener("DOMContentLoaded", async function () {
       ].includes(
         ticket.status
       );
-
 
     if (
       resolved ||
@@ -3054,27 +2518,21 @@ document.addEventListener("DOMContentLoaded", async function () {
       takeTicketButton.hidden =
         false;
 
-
       takeTicketButton.textContent =
         assignedUserId
           ? "🔄 ПЕРЕБРАТИ ЗВЕРНЕННЯ"
           : "🔵 ВЗЯТИ В РОБОТУ";
-
     }
-
 
     const history =
       await loadAssignmentHistory(
         ticket.id
       );
 
-
     await renderAssignmentHistory(
       history
     );
-
   }
-
 
   // ==========================================
   // TAKE TICKET
@@ -3086,21 +2544,16 @@ document.addEventListener("DOMContentLoaded", async function () {
       !currentTicket ||
       !isStaff
     ) {
-
       return;
-
     }
-
 
     takeTicketButton.disabled =
       true;
-
 
     const oldAssigned =
       currentTicket
         .ticket
         .assigned_user_id;
-
 
     const result =
       await supabase.rpc(
@@ -3111,10 +2564,8 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
       );
 
-
     takeTicketButton.disabled =
       false;
-
 
     if (result.error) {
 
@@ -3130,9 +2581,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       );
 
       return;
-
     }
-
 
     showMessage(
       oldAssigned
@@ -3141,43 +2590,27 @@ document.addEventListener("DOMContentLoaded", async function () {
       "success"
     );
 
-
     await openTicket(
       currentTicket.ticket.id
     );
 
-
     await loadMyTickets();
 
-
     if (isStaff) {
-
       await loadStaffTickets();
-
     }
-
   }
-
 
   // ==========================================
   // OPEN TICKET
   // ==========================================
 
-  async function openTicket(
-    ticketId
-  ) {
-
-    // ========================================
-    // ВАЖЛИВО:
-    // НЕ робимо profiles(...) тут.
-    // Це усуває ambiguous relationship.
-    // ========================================
+  async function openTicket(ticketId) {
 
     const result =
       await supabase
         .from("support_tickets")
-        .select(
-          `
+        .select(`
           id,
           ticket_number,
           user_id,
@@ -3205,14 +2638,12 @@ document.addEventListener("DOMContentLoaded", async function () {
             code,
             slug
           )
-          `
-        )
+        `)
         .eq(
           "id",
           ticketId
         )
         .maybeSingle();
-
 
     if (
       result.error ||
@@ -3230,13 +2661,10 @@ document.addEventListener("DOMContentLoaded", async function () {
       );
 
       return;
-
     }
-
 
     const ticket =
       result.data;
-
 
     // ========================================
     // LOAD TICKET USER PROFILE SEPARATELY
@@ -3247,10 +2675,8 @@ document.addEventListener("DOMContentLoaded", async function () {
         ticket.user_id
       );
 
-
     ticket._profile =
       ticketUserProfile;
-
 
     // ========================================
     // MESSAGES
@@ -3259,16 +2685,14 @@ document.addEventListener("DOMContentLoaded", async function () {
     const messagesResult =
       await supabase
         .from("support_messages")
-        .select(
-          `
+        .select(`
           id,
           ticket_id,
           sender_user_id,
           message,
           created_at,
           is_internal
-          `
-        )
+        `)
         .eq(
           "ticket_id",
           ticketId
@@ -3279,7 +2703,6 @@ document.addEventListener("DOMContentLoaded", async function () {
             ascending: true
           }
         );
-
 
     if (
       messagesResult.error
@@ -3296,14 +2719,11 @@ document.addEventListener("DOMContentLoaded", async function () {
       );
 
       return;
-
     }
-
 
     const messages =
       messagesResult.data ||
       [];
-
 
     // ========================================
     // LOAD MESSAGE PROFILES SEPARATELY
@@ -3316,7 +2736,6 @@ document.addEventListener("DOMContentLoaded", async function () {
             message.sender_user_id
         )
       );
-
 
     messages.forEach(
       message => {
@@ -3332,7 +2751,6 @@ document.addEventListener("DOMContentLoaded", async function () {
       }
     );
 
-
     // ========================================
     // CHANGES
     // ========================================
@@ -3342,8 +2760,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         .from(
           "support_data_changes"
         )
-        .select(
-          `
+        .select(`
           id,
           ticket_id,
           field_key,
@@ -3356,14 +2773,12 @@ document.addEventListener("DOMContentLoaded", async function () {
           reviewed_at,
           review_comment,
           created_at
-          `
-        )
+        `)
         .eq(
           "ticket_id",
           ticketId
         )
         .order("id");
-
 
     if (
       changesResult.error
@@ -3373,9 +2788,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         "Changes:",
         changesResult.error
       );
-
     }
-
 
     currentTicket = {
 
@@ -3388,7 +2801,6 @@ document.addEventListener("DOMContentLoaded", async function () {
         []
 
     };
-
 
     // ========================================
     // MARK READ
@@ -3404,7 +2816,6 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
       );
 
-
       if (
         typeof window
           .uaLegionRefreshSupportUnread ===
@@ -3413,7 +2824,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         window
           .uaLegionRefreshSupportUnread();
-
       }
 
     } catch (error) {
@@ -3422,12 +2832,9 @@ document.addEventListener("DOMContentLoaded", async function () {
         "mark_support_ticket_read:",
         error
       );
-
     }
 
-
     await renderModal();
-
 
     if (ticketModal) {
 
@@ -3439,11 +2846,8 @@ document.addEventListener("DOMContentLoaded", async function () {
         "aria-hidden",
         "false"
       );
-
     }
-
   }
-
 
   // ==========================================
   // RENDER MODAL
@@ -3455,24 +2859,19 @@ document.addEventListener("DOMContentLoaded", async function () {
       return;
     }
 
-
     const ticket =
       currentTicket.ticket;
-
 
     const category =
       ticket.support_categories ||
       {};
 
-
     const direction =
       ticket.directions ||
       {};
 
-
     modalTitle.textContent =
       `#${ticket.ticket_number} — ${ticket.subject}`;
-
 
     modalMeta.textContent =
       `${category.icon || ""} ` +
@@ -3485,7 +2884,6 @@ document.addEventListener("DOMContentLoaded", async function () {
         ticket.status
       )}`;
 
-
     // ========================================
     // USER NICKNAME
     // ========================================
@@ -3497,14 +2895,11 @@ document.addEventListener("DOMContentLoaded", async function () {
         ticket._profile
       );
 
-
     // ========================================
     // REVIEWER
     // ========================================
 
-    let reviewerNickname =
-      "";
-
+    let reviewerNickname = "";
 
     if (
       ticket.reviewed_by
@@ -3515,18 +2910,14 @@ document.addEventListener("DOMContentLoaded", async function () {
           ticket.reviewed_by,
           ticket.direction_id
         );
-
     }
-
 
     // ========================================
     // BASIC INFO
     // ========================================
 
-    modalTicketBody.innerHTML =
-      `
+    modalTicketBody.innerHTML = `
       <div class="modal-info-grid">
-
 
         <div class="modal-info-item">
 
@@ -3542,7 +2933,6 @@ document.addEventListener("DOMContentLoaded", async function () {
           </strong>
 
         </div>
-
 
         <div class="modal-info-item">
 
@@ -3560,7 +2950,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         </div>
 
-
         <div class="modal-info-item full">
 
           <span>
@@ -3574,7 +2963,6 @@ document.addEventListener("DOMContentLoaded", async function () {
           </strong>
 
         </div>
-
 
         ${
           ticket.reviewed_by
@@ -3593,7 +2981,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                 </strong>
 
               </div>
-
 
               <div class="modal-info-item">
 
@@ -3615,15 +3002,13 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
 
       </div>
-      `;
-
+    `;
 
     renderChanges();
 
     await renderMessages();
 
     await renderAssignment();
-
 
     const canReview =
       isStaff &&
@@ -3641,24 +3026,16 @@ document.addEventListener("DOMContentLoaded", async function () {
         ticket.status
       );
 
-
     if (staffDecision) {
-
       staffDecision.hidden =
         !canReview;
-
     }
-
 
     if (internalMessageWrap) {
-
       internalMessageWrap.hidden =
         !isStaff;
-
     }
-
   }
-
 
   // ==========================================
   // CHANGES
@@ -3670,19 +3047,15 @@ document.addEventListener("DOMContentLoaded", async function () {
       currentTicket?.changes ||
       [];
 
-
     if (!changes.length) {
 
       modalChanges.innerHTML =
         "";
 
       return;
-
     }
 
-
-    modalChanges.innerHTML =
-      `
+    modalChanges.innerHTML = `
       <div class="support-subtitle">
 
         <span>
@@ -3703,7 +3076,6 @@ document.addEventListener("DOMContentLoaded", async function () {
         </div>
 
       </div>
-
 
       ${changes
         .map(
@@ -3734,7 +3106,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
               </div>
 
-
               <div
                 class="change-review-values"
               >
@@ -3756,7 +3127,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                 </div>
 
-
                 <div
                   class="change-review-value"
                 >
@@ -3776,7 +3146,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
               </div>
 
-
               <div
                 class="change-review-reason"
               >
@@ -3791,7 +3160,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                 )}
 
               </div>
-
 
               ${
                 change.review_comment
@@ -3817,10 +3185,8 @@ document.addEventListener("DOMContentLoaded", async function () {
             `
         )
         .join("")}
-      `;
-
+    `;
   }
-
 
   // ==========================================
   // MESSAGES
@@ -3832,29 +3198,23 @@ document.addEventListener("DOMContentLoaded", async function () {
       currentTicket?.messages ||
       [];
 
-
     if (!messages.length) {
 
-      modalMessages.innerHTML =
-        `
+      modalMessages.innerHTML = `
         <div class="support-empty">
           Повідомлень ще немає.
         </div>
-        `;
+      `;
 
       return;
-
     }
-
 
     const directionId =
       currentTicket
         .ticket
         .direction_id;
 
-
     const rendered = [];
-
 
     for (
       const message of messages
@@ -3864,14 +3224,11 @@ document.addEventListener("DOMContentLoaded", async function () {
         message.sender_user_id ===
         currentUser.id;
 
-
       const internal =
         message.is_internal ===
         true;
 
-
       let author;
-
 
       if (internal) {
 
@@ -3886,21 +3243,14 @@ document.addEventListener("DOMContentLoaded", async function () {
             directionId,
             message._profile
           );
-
       }
 
-
-      rendered.push(
-        `
+      rendered.push(`
         <div
           class="chat-message ${
-            mine
-              ? "mine"
-              : ""
+            mine ? "mine" : ""
           } ${
-            internal
-              ? "internal"
-              : ""
+            internal ? "internal" : ""
           }"
         >
 
@@ -3908,9 +3258,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             ${
               internal
-                ? escapeHtml(
-                    author
-                  )
+                ? escapeHtml(author)
                 : profileLink(
                     message.sender_user_id,
                     author
@@ -3919,13 +3267,11 @@ document.addEventListener("DOMContentLoaded", async function () {
 
           </div>
 
-
           <div class="chat-text">
             ${escapeHtml(
               message.message
             )}
           </div>
-
 
           <div class="chat-time">
             ${escapeHtml(
@@ -3936,21 +3282,15 @@ document.addEventListener("DOMContentLoaded", async function () {
           </div>
 
         </div>
-        `
-      );
-
+      `);
     }
-
 
     modalMessages.innerHTML =
       rendered.join("");
 
-
     modalMessages.scrollTop =
       modalMessages.scrollHeight;
-
   }
-
 
   // ==========================================
   // SEND REPLY
@@ -3962,10 +3302,8 @@ document.addEventListener("DOMContentLoaded", async function () {
       return;
     }
 
-
     const message =
       replyMessage.value.trim();
-
 
     if (!message) {
 
@@ -3975,15 +3313,11 @@ document.addEventListener("DOMContentLoaded", async function () {
       );
 
       return;
-
     }
-
 
     const result =
       await supabase
-        .from(
-          "support_messages"
-        )
+        .from("support_messages")
         .insert({
 
           ticket_id:
@@ -4002,7 +3336,6 @@ document.addEventListener("DOMContentLoaded", async function () {
         .select("id")
         .single();
 
-
     if (result.error) {
 
       console.error(
@@ -4017,56 +3350,37 @@ document.addEventListener("DOMContentLoaded", async function () {
       );
 
       return;
-
     }
 
-
-    replyMessage.value =
-      "";
-
+    replyMessage.value = "";
 
     if (internalMessage) {
-
-      internalMessage.checked =
-        false;
-
+      internalMessage.checked = false;
     }
-
 
     await openTicket(
       currentTicket.ticket.id
     );
 
-
     await loadMyTickets();
 
-
     if (isStaff) {
-
       await loadStaffTickets();
-
     }
-
   }
-
 
   // ==========================================
   // REVIEW
   // ==========================================
 
-  async function reviewTicket(
-    decision
-  ) {
+  async function reviewTicket(decision) {
 
     if (
       !currentTicket ||
       !isStaff
     ) {
-
       return;
-
     }
-
 
     const pending =
       currentTicket.changes.filter(
@@ -4074,7 +3388,6 @@ document.addEventListener("DOMContentLoaded", async function () {
           change.status ===
           "pending"
       );
-
 
     if (!pending.length) {
 
@@ -4084,13 +3397,10 @@ document.addEventListener("DOMContentLoaded", async function () {
       );
 
       return;
-
     }
-
 
     const comment =
       decisionComment.value.trim();
-
 
     if (
       decision === "rejected" &&
@@ -4103,16 +3413,13 @@ document.addEventListener("DOMContentLoaded", async function () {
       );
 
       return;
-
     }
-
 
     approveTicketButton.disabled =
       true;
 
     rejectTicketButton.disabled =
       true;
-
 
     const result =
       await supabase.rpc(
@@ -4131,13 +3438,11 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
       );
 
-
     approveTicketButton.disabled =
       false;
 
     rejectTicketButton.disabled =
       false;
-
 
     if (result.error) {
 
@@ -4153,43 +3458,27 @@ document.addEventListener("DOMContentLoaded", async function () {
       );
 
       return;
-
     }
 
-
-    decisionComment.value =
-      "";
-
+    decisionComment.value = "";
 
     showMessage(
-
       decision === "approved"
-
         ? "Зміни схвалено та автоматично застосовано."
-
         : "Зміни відхилено. Дані залишилися без змін.",
-
       "success"
-
     );
-
 
     await openTicket(
       currentTicket.ticket.id
     );
 
-
     await loadMyTickets();
 
-
     if (isStaff) {
-
       await loadStaffTickets();
-
     }
-
   }
-
 
   // ==========================================
   // EVENTS
@@ -4203,7 +3492,6 @@ document.addEventListener("DOMContentLoaded", async function () {
     );
 
   }
-
 
   if (ticketDirection) {
 
@@ -4220,14 +3508,12 @@ document.addEventListener("DOMContentLoaded", async function () {
             "";
 
           addChangeRow();
-
         }
 
       }
     );
 
   }
-
 
   if (addChangeButton) {
 
@@ -4239,7 +3525,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   }
 
-
   if (ticketForm) {
 
     ticketForm.addEventListener(
@@ -4249,12 +3534,8 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   }
 
-
   const refreshMyTickets =
-    el(
-      "refreshMyTickets"
-    );
-
+    el("refreshMyTickets");
 
   if (refreshMyTickets) {
 
@@ -4265,12 +3546,8 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   }
 
-
   const refreshStaffTickets =
-    el(
-      "refreshStaffTickets"
-    );
-
+    el("refreshStaffTickets");
 
   if (refreshStaffTickets) {
 
@@ -4281,7 +3558,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   }
 
-
   if (staffSearch) {
 
     staffSearch.addEventListener(
@@ -4290,7 +3566,6 @@ document.addEventListener("DOMContentLoaded", async function () {
     );
 
   }
-
 
   if (staffStatusFilter) {
 
@@ -4301,7 +3576,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   }
 
-
   if (staffDirectionFilter) {
 
     staffDirectionFilter.addEventListener(
@@ -4310,7 +3584,6 @@ document.addEventListener("DOMContentLoaded", async function () {
     );
 
   }
-
 
   if (closeTicketModal) {
 
@@ -4327,14 +3600,12 @@ document.addEventListener("DOMContentLoaded", async function () {
           "true"
         );
 
-        currentTicket =
-          null;
+        currentTicket = null;
 
       }
     );
 
   }
-
 
   if (ticketModal) {
 
@@ -4356,7 +3627,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   }
 
-
   if (sendReplyButton) {
 
     sendReplyButton.addEventListener(
@@ -4365,7 +3635,6 @@ document.addEventListener("DOMContentLoaded", async function () {
     );
 
   }
-
 
   if (approveTicketButton) {
 
@@ -4379,7 +3648,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   }
 
-
   if (rejectTicketButton) {
 
     rejectTicketButton.addEventListener(
@@ -4392,7 +3660,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   }
 
-
   if (takeTicketButton) {
 
     takeTicketButton.addEventListener(
@@ -4402,7 +3669,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   }
 
-
   // ==========================================
   // INIT
   // ==========================================
@@ -4410,28 +3676,20 @@ document.addEventListener("DOMContentLoaded", async function () {
   if (
     !await loadUser()
   ) {
-
     return;
-
   }
-
 
   profileCurrentValues =
     await loadProfileCurrentValues();
 
-
   await loadDirections();
-
 
   await loadCategories();
 
-
   await loadDataFields();
-
 
   isStaff =
     await checkStaff();
-
 
   if (isStaff) {
 
@@ -4442,12 +3700,9 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   }
 
-
   await loadMyTickets();
 
-
   updateDataChangeVisibility();
-
 
   console.log(
     "UA LEGION SUPPORT: готово"
