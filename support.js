@@ -18,15 +18,19 @@ document.addEventListener("DOMContentLoaded", async function () {
   // ==========================================
 
   let currentUser = null;
+
   let isStaff = false;
 
   let directions = [];
+
   let categories = [];
+
   let dataFields = [];
 
   let activeDirectionData = {};
 
   let myTickets = [];
+
   let staffTickets = [];
 
   let currentTicket = null;
@@ -37,15 +41,11 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
   // ==========================================
-  // ELEMENT HELPER
+  // ELEMENTS
   // ==========================================
 
   const el = id => document.getElementById(id);
 
-
-  // ==========================================
-  // MAIN ELEMENTS
-  // ==========================================
 
   const supportMessage =
     el("supportMessage");
@@ -96,10 +96,6 @@ document.addEventListener("DOMContentLoaded", async function () {
     el("staffDirectionFilter");
 
 
-  // ==========================================
-  // MODAL ELEMENTS
-  // ==========================================
-
   const ticketModal =
     el("ticketModal");
 
@@ -145,11 +141,6 @@ document.addEventListener("DOMContentLoaded", async function () {
   const rejectTicketButton =
     el("rejectTicketButton");
 
-
-  // ==========================================
-  // ASSIGNMENT ELEMENTS
-  // ==========================================
-
   const ticketAssignmentPanel =
     el("ticketAssignmentPanel");
 
@@ -164,13 +155,15 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
   // ==========================================
-  // ESCAPE HTML
+  // HTML ESCAPE
   // ==========================================
 
   function escapeHtml(value) {
 
     return String(
-      value == null ? "" : value
+      value == null
+        ? ""
+        : value
     )
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
@@ -182,13 +175,17 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
   // ==========================================
-  // SHOW MESSAGE
+  // MESSAGE
   // ==========================================
 
   function showMessage(
     message,
     type = "info"
   ) {
+
+    if (!supportMessage) {
+      return;
+    }
 
     supportMessage.textContent =
       message || "";
@@ -215,7 +212,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
   // ==========================================
-  // FORMAT DATE
+  // DATE
   // ==========================================
 
   function formatDate(value) {
@@ -226,45 +223,18 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     try {
 
-      const date =
-        new Date(value);
-
-      if (
-        Number.isNaN(
-          date.getTime()
-        )
-      ) {
-        return String(value);
-      }
-
-      const day =
-        String(
-          date.getDate()
-        ).padStart(2, "0");
-
-      const month =
-        String(
-          date.getMonth() + 1
-        ).padStart(2, "0");
-
-      const year =
-        date.getFullYear();
-
-      const hours =
-        String(
-          date.getHours()
-        ).padStart(2, "0");
-
-      const minutes =
-        String(
-          date.getMinutes()
-        ).padStart(2, "0");
-
-      return `${day}.${month}.${year} ${hours}:${minutes}`;
+      return new Date(value)
+        .toLocaleString(
+          "uk-UA",
+          {
+            dateStyle: "short",
+            timeStyle: "short"
+          }
+        );
 
     } catch {
 
-      return String(value);
+      return value;
 
     }
 
@@ -272,7 +242,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
   // ==========================================
-  // STATUS LABEL
+  // STATUS
   // ==========================================
 
   function statusLabel(status) {
@@ -291,15 +261,17 @@ document.addEventListener("DOMContentLoaded", async function () {
       closed:
         "Закрито"
 
-    }[
-      status
-    ] || status || "—";
+    }[status] ||
+
+      status ||
+
+      "—";
 
   }
 
 
   // ==========================================
-  // PRIORITY LABEL
+  // PRIORITY
   // ==========================================
 
   function priorityLabel(priority) {
@@ -318,9 +290,44 @@ document.addEventListener("DOMContentLoaded", async function () {
       urgent:
         "Терміновий"
 
-    }[
-      priority
-    ] || priority || "—";
+    }[priority] ||
+
+      priority ||
+
+      "—";
+
+  }
+
+
+  // ==========================================
+  // PROFILE LINK
+  // ==========================================
+
+  function profileLink(
+    userId,
+    nickname
+  ) {
+
+    if (!userId) {
+
+      return escapeHtml(
+        nickname || "Користувач"
+      );
+
+    }
+
+    return `
+      <a
+        href="member.html?user_id=${encodeURIComponent(userId)}"
+        target="_blank"
+        rel="noopener"
+        class="support-profile-link"
+      >
+        ${escapeHtml(
+          nickname || "Користувач"
+        )}
+      </a>
+    `;
 
   }
 
@@ -372,6 +379,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         )
         .maybeSingle();
 
+
     if (result.error) {
 
       console.error(
@@ -383,8 +391,10 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     }
 
+
     const p =
       result.data || {};
+
 
     return {
 
@@ -429,6 +439,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         )
         .order("id");
 
+
     if (result.error) {
 
       console.error(
@@ -445,13 +456,10 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     }
 
+
     directions =
       result.data || [];
 
-
-    // ======================================
-    // USER ACTIVE DIRECTIONS
-    // ======================================
 
     const membership =
       await supabase
@@ -463,6 +471,7 @@ document.addEventListener("DOMContentLoaded", async function () {
           "user_id",
           currentUser.id
         );
+
 
     if (!membership.error) {
 
@@ -486,12 +495,9 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
 
-    // ======================================
-    // TICKET DIRECTION SELECT
-    // ======================================
-
     ticketDirection.innerHTML =
       '<option value="">🇺🇦 UA LEGION / Загальне</option>';
+
 
     directions.forEach(
       direction => {
@@ -504,9 +510,14 @@ document.addEventListener("DOMContentLoaded", async function () {
 
           ticketDirection.insertAdjacentHTML(
             "beforeend",
+
             `
-              <option value="${direction.id}">
-                ${escapeHtml(direction.name)}
+              <option
+                value="${direction.id}"
+              >
+                ${escapeHtml(
+                  direction.name
+                )}
               </option>
             `
           );
@@ -516,10 +527,6 @@ document.addEventListener("DOMContentLoaded", async function () {
       }
     );
 
-
-    // ======================================
-    // STAFF FILTER
-    // ======================================
 
     staffDirectionFilter.innerHTML =
       `
@@ -532,16 +539,23 @@ document.addEventListener("DOMContentLoaded", async function () {
         </option>
       `;
 
+
     directions.forEach(
       direction => {
 
         staffDirectionFilter.insertAdjacentHTML(
           "beforeend",
+
           `
-            <option value="${direction.id}">
-              ${escapeHtml(direction.name)}
+            <option
+              value="${direction.id}"
+            >
+              ${escapeHtml(
+                direction.name
+              )}
             </option>
           `
+
         );
 
       }
@@ -568,6 +582,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         )
         .order("id");
 
+
     if (result.error) {
 
       console.error(
@@ -584,14 +599,20 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     }
 
+
     categories =
       result.data || [];
+
 
     ticketCategory.innerHTML =
       categories
         .map(
           category => `
-            <option value="${escapeHtml(category.code)}">
+            <option
+              value="${escapeHtml(
+                category.code
+              )}"
+            >
               ${escapeHtml(
                 (category.icon || "") +
                 " " +
@@ -601,6 +622,7 @@ document.addEventListener("DOMContentLoaded", async function () {
           `
         )
         .join("");
+
 
     updateDataChangeVisibility();
 
@@ -625,6 +647,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         )
         .order("id");
 
+
     if (result.error) {
 
       console.error(
@@ -641,6 +664,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     }
 
+
     dataFields =
       result.data || [];
 
@@ -655,6 +679,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     const directionId =
       ticketDirection.value;
+
 
     return dataFields.filter(
       field => {
@@ -671,8 +696,12 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         return (
           directionId &&
-          String(field.direction_id) ===
-            String(directionId)
+          String(
+            field.direction_id
+          ) ===
+          String(
+            directionId
+          )
         );
 
       }
@@ -682,7 +711,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
   // ==========================================
-  // GET CURRENT FIELD VALUE
+  // CURRENT FIELD VALUE
   // ==========================================
 
   function getCurrentValue(field) {
@@ -690,6 +719,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     if (!field) {
       return "";
     }
+
 
     if (
       field.field_key.startsWith(
@@ -705,13 +735,19 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     }
 
+
     const data =
       activeDirectionData[
-        String(field.direction_id)
+        String(
+          field.direction_id
+        )
       ] || {};
 
+
     return (
-      data[field.json_key] ?? ""
+      data[
+        field.json_key
+      ] ?? ""
     );
 
   }
@@ -729,14 +765,19 @@ document.addEventListener("DOMContentLoaded", async function () {
       .map(
         field => `
           <option
-            value="${escapeHtml(field.field_key)}"
+            value="${escapeHtml(
+              field.field_key
+            )}"
             ${
-              field.field_key === selectedKey
+              field.field_key ===
+              selectedKey
                 ? "selected"
                 : ""
             }
           >
-            ${escapeHtml(field.field_name)}
+            ${escapeHtml(
+              field.field_name
+            )}
           </option>
         `
       )
@@ -756,6 +797,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     const fields =
       fieldsForCurrentDirection();
 
+
     if (!fields.length) {
 
       showMessage(
@@ -767,6 +809,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     }
 
+
     const field =
       fields.find(
         item =>
@@ -775,24 +818,38 @@ document.addEventListener("DOMContentLoaded", async function () {
       ) ||
       fields[0];
 
+
     const row =
-      document.createElement("div");
+      document.createElement(
+        "div"
+      );
+
 
     row.className =
       "change-row";
 
-    row.innerHTML = `
-      <div>
-        <label>Поле</label>
 
-        <select class="change-field">
+    row.innerHTML = `
+
+      <div>
+
+        <label>
+          Поле
+        </label>
+
+        <select
+          class="change-field"
+        >
           ${buildFieldOptions(
             field.field_key
           )}
         </select>
+
       </div>
 
+
       <div>
+
         <label>
           Поточне значення
         </label>
@@ -802,9 +859,12 @@ document.addEventListener("DOMContentLoaded", async function () {
           type="text"
           readonly
         >
+
       </div>
 
+
       <div>
+
         <label>
           Нове значення / причина
         </label>
@@ -820,7 +880,9 @@ document.addEventListener("DOMContentLoaded", async function () {
           rows="2"
           placeholder="Причина зміни"
         ></textarea>
+
       </div>
+
 
       <button
         class="remove-change"
@@ -829,16 +891,20 @@ document.addEventListener("DOMContentLoaded", async function () {
       >
         ✕
       </button>
+
     `;
+
 
     dataChangeRows.appendChild(
       row
     );
 
+
     const fieldSelect =
       row.querySelector(
         ".change-field"
       );
+
 
     const currentInput =
       row.querySelector(
@@ -855,9 +921,12 @@ document.addEventListener("DOMContentLoaded", async function () {
             fieldSelect.value
         );
 
+
       currentInput.value =
         selected
-          ? getCurrentValue(selected)
+          ? getCurrentValue(
+              selected
+            )
           : "";
 
     }
@@ -898,8 +967,10 @@ document.addEventListener("DOMContentLoaded", async function () {
       ticketCategory.value ===
       "data_change";
 
+
     dataChangeBuilder.hidden =
       !active;
+
 
     if (!active) {
 
@@ -909,6 +980,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       return;
 
     }
+
 
     if (
       !dataChangeRows.children.length
@@ -927,64 +999,73 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   function collectChanges() {
 
-    return Array.from(
-      dataChangeRows.querySelectorAll(
-        ".change-row"
+    return Array
+      .from(
+        dataChangeRows.querySelectorAll(
+          ".change-row"
+        )
       )
-    ).map(row => {
+      .map(
+        row => {
 
-      const fieldKey =
-        row.querySelector(
-          ".change-field"
-        ).value;
+          const fieldKey =
+            row.querySelector(
+              ".change-field"
+            ).value;
 
-      const field =
-        dataFields.find(
-          item =>
-            item.field_key ===
-            fieldKey
-        );
 
-      const oldValue =
-        row.querySelector(
-          ".change-current"
-        ).value;
+          const field =
+            dataFields.find(
+              item =>
+                item.field_key ===
+                fieldKey
+            );
 
-      const newValue =
-        row.querySelector(
-          ".change-new"
-        ).value.trim();
 
-      const reason =
-        row.querySelector(
-          ".change-reason"
-        ).value.trim();
+          const oldValue =
+            row.querySelector(
+              ".change-current"
+            ).value;
 
-      return {
 
-        field_key:
-          fieldKey,
+          const newValue =
+            row.querySelector(
+              ".change-new"
+            ).value.trim();
 
-        field_name:
-          field?.field_name ||
-          fieldKey,
 
-        old_value:
-          oldValue === ""
-            ? null
-            : oldValue,
+          const reason =
+            row.querySelector(
+              ".change-reason"
+            ).value.trim();
 
-        new_value:
-          newValue === ""
-            ? null
-            : newValue,
 
-        reason:
-          reason || null
+          return {
 
-      };
+            field_key:
+              fieldKey,
 
-    });
+            field_name:
+              field?.field_name ||
+              fieldKey,
+
+            old_value:
+              oldValue === ""
+                ? null
+                : oldValue,
+
+            new_value:
+              newValue === ""
+                ? null
+                : newValue,
+
+            reason:
+              reason || null
+
+          };
+
+        }
+      );
 
   }
 
@@ -1006,6 +1087,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     }
 
+
     if (!changes.length) {
 
       showMessage(
@@ -1017,12 +1099,14 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     }
 
+
     const used =
       new Set();
 
 
     for (
-      const change of changes
+      const change
+      of changes
     ) {
 
       if (
@@ -1039,6 +1123,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         return false;
 
       }
+
 
       used.add(
         change.field_key
@@ -1074,6 +1159,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     }
 
+
     return true;
 
   }
@@ -1089,8 +1175,10 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     event.preventDefault();
 
+
     const subject =
       ticketSubject.value.trim();
+
 
     const message =
       ticketMessage.value.trim();
@@ -1116,7 +1204,9 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
     if (
-      !validateChanges(changes)
+      !validateChanges(
+        changes
+      )
     ) {
 
       return;
@@ -1129,8 +1219,10 @@ document.addEventListener("DOMContentLoaded", async function () {
         "submitTicketButton"
       );
 
+
     button.disabled =
       true;
+
 
     button.textContent =
       "НАДСИЛАННЯ...";
@@ -1170,6 +1262,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     button.disabled =
       false;
 
+
     button.textContent =
       "📨 НАДІСЛАТИ ЗВЕРНЕННЯ";
 
@@ -1198,11 +1291,14 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     ticketForm.reset();
 
+
     ticketDirection.value =
       "";
 
+
     dataChangeRows.innerHTML =
       "";
+
 
     updateDataChangeVisibility();
 
@@ -1220,8 +1316,11 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     await loadMyTickets();
 
+
     if (isStaff) {
+
       await loadStaffTickets();
+
     }
 
   }
@@ -1236,6 +1335,11 @@ document.addEventListener("DOMContentLoaded", async function () {
     target,
     staffMode
   ) {
+
+    if (!target) {
+      return;
+    }
+
 
     if (!list.length) {
 
@@ -1253,110 +1357,139 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     target.innerHTML =
       list
-        .map(ticket => {
+        .map(
+          ticket => {
 
-          const category =
-            ticket.support_categories ||
-            {};
-
-          const direction =
-            ticket.directions ||
-            {};
-
-          const user =
-            ticket.profiles ||
-            {};
+            const category =
+              ticket.support_categories ||
+              {};
 
 
-          return `
-            <div
-              class="ticket-row"
-              data-ticket-id="${ticket.id}"
-            >
+            const direction =
+              ticket.directions ||
+              {};
 
-              <div class="ticket-row-top">
 
-                <span class="ticket-number">
-                  #${escapeHtml(
-                    ticket.ticket_number
-                  )}
-                </span>
+            const user =
+              ticket.profiles ||
+              {};
 
-                <span
-                  class="ticket-status ${escapeHtml(
-                    ticket.status
-                  )}"
+
+            const assigned =
+              ticket.assigned_user_id;
+
+
+            return `
+
+              <div
+                class="ticket-row"
+                data-ticket-id="${ticket.id}"
+              >
+
+                <div
+                  class="ticket-row-top"
+                >
+
+                  <span
+                    class="ticket-number"
+                  >
+                    #${escapeHtml(
+                      ticket.ticket_number
+                    )}
+                  </span>
+
+
+                  <span
+                    class="ticket-status ${escapeHtml(
+                      ticket.status
+                    )}"
+                  >
+                    ${escapeHtml(
+                      statusLabel(
+                        ticket.status
+                      )
+                    )}
+                  </span>
+
+                </div>
+
+
+                <div
+                  class="ticket-subject"
                 >
                   ${escapeHtml(
-                    statusLabel(
-                      ticket.status
-                    )
+                    ticket.subject
                   )}
-                </span>
+                </div>
+
+
+                <div
+                  class="ticket-row-bottom"
+                >
+
+                  <span>
+                    ${escapeHtml(
+                      (
+                        category.icon ||
+                        ""
+                      ) +
+                      " " +
+                      (
+                        category.name ||
+                        "Категорія"
+                      )
+                    )}
+
+                    ·
+
+                    ${escapeHtml(
+                      direction.name ||
+                      "UA LEGION"
+                    )}
+                  </span>
+
+
+                  <span>
+                    ${escapeHtml(
+                      formatDate(
+                        ticket.updated_at ||
+                        ticket.created_at
+                      )
+                    )}
+                  </span>
+
+                </div>
+
+
+                ${
+                  staffMode
+                    ? `
+                      <div
+                        class="ticket-user"
+                      >
+                        Користувач:
+                        ${escapeHtml(
+                          user.display_name ||
+                          ticket.user_id
+                        )}
+
+                        ${
+                          assigned
+                            ? " · 👨‍💼 Призначено"
+                            : ""
+                        }
+
+                      </div>
+                    `
+                    : ""
+                }
 
               </div>
 
+            `;
 
-              <div class="ticket-subject">
-                ${escapeHtml(
-                  ticket.subject
-                )}
-              </div>
-
-
-              <div class="ticket-row-bottom">
-
-                <span>
-                  ${escapeHtml(
-                    (
-                      category.icon ||
-                      ""
-                    ) +
-                    " " +
-                    (
-                      category.name ||
-                      "Категорія"
-                    )
-                  )}
-
-                  ·
-
-                  ${escapeHtml(
-                    direction.name ||
-                    "UA LEGION"
-                  )}
-                </span>
-
-                <span>
-                  ${escapeHtml(
-                    formatDate(
-                      ticket.updated_at ||
-                      ticket.created_at
-                    )
-                  )}
-                </span>
-
-              </div>
-
-
-              ${
-                staffMode
-                  ? `
-                    <div class="ticket-user">
-                      Користувач:
-                      ${escapeHtml(
-                        user.display_name ||
-                        ticket.user_id
-                      )}
-                    </div>
-                  `
-                  : ""
-              }
-
-            </div>
-          `;
-
-        })
+          }
+        )
         .join("");
 
 
@@ -1364,19 +1497,25 @@ document.addEventListener("DOMContentLoaded", async function () {
       .querySelectorAll(
         ".ticket-row"
       )
-      .forEach(row => {
+      .forEach(
+        row => {
 
-        row.addEventListener(
-          "click",
-          () =>
-            openTicket(
-              Number(
-                row.dataset.ticketId
-              )
-            )
-        );
+          row.addEventListener(
+            "click",
+            () => {
 
-      });
+              openTicket(
+                Number(
+                  row.dataset
+                    .ticketId
+                )
+              );
+
+            }
+          );
+
+        }
+      );
 
   }
 
@@ -1389,9 +1528,11 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     const result =
       await supabase
-        .from("support_tickets")
+        .from(
+          "support_tickets"
+        )
         .select(
-          "id,ticket_number,user_id,direction_id,category_id,subject,status,priority,assigned_user_id,created_at,updated_at,resolved_at,reviewed_by,reviewed_at,support_categories(name,code,icon),directions(name,code)"
+          "id,ticket_number,user_id,direction_id,category_id,subject,status,priority,assigned_user_id,created_at,updated_at,resolved_at,support_categories(name,code,icon),directions(name,code)"
         )
         .eq(
           "user_id",
@@ -1414,7 +1555,9 @@ document.addEventListener("DOMContentLoaded", async function () {
 
       myTicketsList.innerHTML =
         `
-          <div class="support-empty">
+          <div
+            class="support-empty"
+          >
             Не вдалося завантажити звернення.
           </div>
         `;
@@ -1461,7 +1604,9 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
 
-    return result.data === true;
+    return (
+      result.data === true
+    );
 
   }
 
@@ -1479,9 +1624,11 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     const result =
       await supabase
-        .from("support_tickets")
+        .from(
+          "support_tickets"
+        )
         .select(
-          "id,ticket_number,user_id,direction_id,category_id,subject,status,priority,assigned_user_id,created_at,updated_at,resolved_at,reviewed_by,reviewed_at,support_categories(name,code,icon),directions(name,code),profiles(display_name)"
+          "id,ticket_number,user_id,direction_id,category_id,subject,status,priority,assigned_user_id,created_at,updated_at,resolved_at,reviewed_by,reviewed_at,support_categories(name,code,icon),directions(name,code),profiles!support_tickets_user_id_fkey(display_name)"
         )
         .order(
           "updated_at",
@@ -1500,7 +1647,9 @@ document.addEventListener("DOMContentLoaded", async function () {
 
       staffTicketsList.innerHTML =
         `
-          <div class="support-empty">
+          <div
+            class="support-empty"
+          >
             Не вдалося завантажити звернення.
           </div>
         `;
@@ -1520,18 +1669,31 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
   // ==========================================
-  // APPLY STAFF FILTERS
+  // STAFF FILTERS
   // ==========================================
 
   function applyStaffFilters() {
+
+    if (
+      !staffSearch ||
+      !staffStatusFilter ||
+      !staffDirectionFilter
+    ) {
+
+      return;
+
+    }
+
 
     const search =
       staffSearch.value
         .trim()
         .toLowerCase();
 
+
     const status =
       staffStatusFilter.value;
+
 
     const direction =
       staffDirectionFilter.value;
@@ -1542,24 +1704,32 @@ document.addEventListener("DOMContentLoaded", async function () {
         ticket => {
 
           const userName =
-            ticket.profiles
+            ticket
+              .profiles
               ?.display_name
               ?.toLowerCase() ||
             "";
 
 
           const matchesSearch =
+
             !search ||
 
             String(
               ticket.ticket_number
-            ).includes(search) ||
+            )
+              .includes(
+                search
+              ) ||
 
             String(
-              ticket.subject || ""
+              ticket.subject ||
+              ""
             )
               .toLowerCase()
-              .includes(search) ||
+              .includes(
+                search
+              ) ||
 
             userName.includes(
               search
@@ -1567,21 +1737,30 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
           const matchesStatus =
+
             status === "all" ||
-            ticket.status === status;
+
+            ticket.status ===
+            status;
 
 
           const matchesDirection =
-            direction === "all" ||
+
+            direction ===
+            "all" ||
 
             (
-              direction === "global" &&
-              ticket.direction_id === null
+              direction ===
+              "global" &&
+
+              ticket.direction_id ===
+              null
             ) ||
 
             String(
               ticket.direction_id
-            ) === direction;
+            ) ===
+            direction;
 
 
           return (
@@ -1645,7 +1824,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     if (profileResult.error) {
 
       console.error(
-        "Member profile:",
+        "Profile summary:",
         profileResult.error
       );
 
@@ -1654,11 +1833,11 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
 
-    const rolesResult =
+    const roleResult =
       await supabase
         .from("user_roles")
         .select(
-          "role_id,role,direction_id,roles(name,level,is_active)"
+          "role_id,roles(name,level,is_active)"
         )
         .eq(
           "user_id",
@@ -1666,25 +1845,18 @@ document.addEventListener("DOMContentLoaded", async function () {
         );
 
 
-    if (rolesResult.error) {
+    if (roleResult.error) {
 
       console.error(
-        "Member roles:",
-        rolesResult.error
+        "Role summary:",
+        roleResult.error
       );
 
     }
 
 
-    const profile =
-      profileResult.data || {};
-
-    const roleRows =
-      rolesResult.data || [];
-
-
-    const activeRoles =
-      roleRows
+    const roles =
+      (roleResult.data || [])
         .filter(
           row =>
             row.roles &&
@@ -1701,29 +1873,27 @@ document.addEventListener("DOMContentLoaded", async function () {
         );
 
 
-    const topRole =
-      activeRoles[0];
+    const highestRole =
+      roles[0]?.roles || null;
 
 
     const summary = {
 
       userId,
 
-      nickname:
-        profile.display_name ||
+      displayName:
+        profileResult.data
+          ?.display_name ||
         userId,
 
       roleName:
-        topRole?.roles?.name ||
-        "Працівник UA LEGION",
+        highestRole?.name ||
+        "Працівник",
 
-      // Рівень залишається доступним
-      // для внутрішньої логіки,
-      // але НІКОЛИ не виводиться
-      // в інтерфейс.
       roleLevel:
         Number(
-          topRole?.roles?.level || 0
+          highestRole?.level ||
+          0
         )
 
     };
@@ -1736,47 +1906,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
     return summary;
-
-  }
-
-
-  // ==========================================
-  // PROFILE LINK
-  // ==========================================
-
-  function profileLink(
-    userId,
-    nickname
-  ) {
-
-    if (!userId) {
-
-      return escapeHtml(
-        nickname || "Користувач"
-      );
-
-    }
-
-
-    return `
-      <a
-        href="member.html?user_id=${encodeURIComponent(
-          userId
-        )}"
-        target="_blank"
-        rel="noopener"
-        style="
-          color:#f1c94a;
-          text-decoration:none;
-          font-weight:700;
-        "
-      >
-        ${escapeHtml(
-          nickname ||
-          "Користувач"
-        )}
-      </a>
-    `;
 
   }
 
@@ -1834,15 +1963,17 @@ document.addEventListener("DOMContentLoaded", async function () {
     userIds
   ) {
 
-    const uniqueIds =
+    const ids =
       [
         ...new Set(
-          userIds.filter(Boolean)
+          userIds.filter(
+            Boolean
+          )
         )
       ];
 
 
-    if (!uniqueIds.length) {
+    if (!ids.length) {
       return {};
     }
 
@@ -1855,14 +1986,14 @@ document.addEventListener("DOMContentLoaded", async function () {
         )
         .in(
           "id",
-          uniqueIds
+          ids
         );
 
 
     if (result.error) {
 
       console.error(
-        "Assignment profiles:",
+        "Profile names:",
         result.error
       );
 
@@ -1871,25 +2002,17 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
 
-    const map = {};
-
-
-    (
-      result.data || []
-    ).forEach(
-      profile => {
-
-        map[
-          profile.id
-        ] =
+    return Object.fromEntries(
+      (
+        result.data || []
+      ).map(
+        profile => [
+          profile.id,
           profile.display_name ||
-          profile.id;
-
-      }
+          profile.id
+        ]
+      )
     );
-
-
-    return map;
 
   }
 
@@ -1902,12 +2025,17 @@ document.addEventListener("DOMContentLoaded", async function () {
     history
   ) {
 
+    if (!assignmentHistory) {
+      return;
+    }
+
+
     if (!history.length) {
 
       assignmentHistory.innerHTML =
         `
           <div class="support-empty">
-            Історія передачі відсутня.
+            Історії передачі ще немає.
           </div>
         `;
 
@@ -1925,25 +2053,33 @@ document.addEventListener("DOMContentLoaded", async function () {
         if (
           item.previous_user_id
         ) {
+
           ids.push(
             item.previous_user_id
           );
+
         }
+
 
         if (
           item.new_user_id
         ) {
+
           ids.push(
             item.new_user_id
           );
+
         }
+
 
         if (
           item.changed_by
         ) {
+
           ids.push(
             item.changed_by
           );
+
         }
 
       }
@@ -1957,231 +2093,184 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
     assignmentHistory.innerHTML =
-      history
-        .map(item => {
+      `
+        <div class="support-subtitle">
 
-          const changedBy =
-            names[
-              item.changed_by
-            ] ||
-            item.changed_by ||
-            "Користувач";
+          <span>📜</span>
 
+          <div>
 
-          const previousName =
-            item.previous_user_id
-              ? (
-                  names[
-                    item.previous_user_id
-                  ] ||
-                  item.previous_user_id
-                )
-              : null;
+            <h3>
+              Історія відповідальних
+            </h3>
+
+            <p>
+              Хто і коли брав звернення в роботу.
+            </p>
+
+          </div>
+
+        </div>
 
 
-          const newName =
-            names[
-              item.new_user_id
-            ] ||
-            item.new_user_id ||
-            "Користувач";
+        ${history.map(
+          item => {
+
+            const changedBy =
+              names[
+                item.changed_by
+              ] ||
+              item.changed_by ||
+              "—";
 
 
-          const isReassigned =
-            item.action ===
-            "reassigned";
+            const newUser =
+              names[
+                item.new_user_id
+              ] ||
+              item.new_user_id ||
+              "—";
 
 
-          if (
-            isReassigned
-          ) {
+            const previousUser =
+              names[
+                item.previous_user_id
+              ] ||
+              item.previous_user_id ||
+              "—";
+
+
+            const isFirst =
+              item.action ===
+              "assigned";
+
 
             return `
-              <div class="change-review-card">
+
+              <div
+                class="change-review-card"
+              >
 
                 <div
                   class="change-review-title"
                 >
+
                   <span>
-                    🔄 Передача звернення
+                    ${
+                      isFirst
+                        ? "🔵 Взяття в роботу"
+                        : "🔄 Передача звернення"
+                    }
                   </span>
-                </div>
 
-
-                <div
-                  class="change-review-values"
-                >
-
-                  <div
-                    class="change-review-value"
-                  >
-
-                    <span>
-                      Відповідальний
-                    </span>
-
-                    <strong>
-                      ${profileLink(
-                        item.previous_user_id,
-                        previousName
-                      )}
-                    </strong>
-
-                  </div>
-
-
-                  <div
-                    class="change-review-value"
-                  >
-
-                    <span>
-                      Новий відповідальний
-                    </span>
-
-                    <strong>
-                      ${profileLink(
-                        item.new_user_id,
-                        newName
-                      )}
-                    </strong>
-
-                  </div>
+                  <span>
+                    ${escapeHtml(
+                      formatDate(
+                        item.created_at
+                      )
+                    )}
+                  </span>
 
                 </div>
+
+
+                ${
+                  isFirst
+                    ? `
+                      <div
+                        class="change-review-reason"
+                      >
+
+                        <b>
+                          Новий відповідальний:
+                        </b>
+
+                        ${profileLink(
+                          item.new_user_id,
+                          newUser
+                        )}
+
+                      </div>
+                    `
+                    : `
+                      <div
+                        class="change-review-reason"
+                      >
+
+                        <b>
+                          Було:
+                        </b>
+
+                        ${profileLink(
+                          item.previous_user_id,
+                          previousUser
+                        )}
+
+                      </div>
+
+
+                      <div
+                        class="change-review-reason"
+                      >
+
+                        <b>
+                          Стало:
+                        </b>
+
+                        ${profileLink(
+                          item.new_user_id,
+                          newUser
+                        )}
+
+                      </div>
+                    `
+                }
 
 
                 <div
                   class="change-review-reason"
                 >
+
                   <b>
-                    Передав:
+                    Змінив:
                   </b>
 
                   ${profileLink(
                     item.changed_by,
                     changedBy
                   )}
+
                 </div>
 
 
-                <div
-                  class="change-review-reason"
-                >
-                  <b>
-                    Посада попереднього:
-                  </b>
+                ${
+                  item.new_role_name
+                    ? `
+                      <div
+                        class="change-review-reason"
+                      >
 
-                  ${escapeHtml(
-                    item.previous_role_name ||
-                    "—"
-                  )}
-                </div>
+                        <b>
+                          Посада:
+                        </b>
 
+                        ${escapeHtml(
+                          item.new_role_name
+                        )}
 
-                <div
-                  class="change-review-reason"
-                >
-                  <b>
-                    Посада нового:
-                  </b>
-
-                  ${escapeHtml(
-                    item.new_role_name ||
-                    "—"
-                  )}
-                </div>
-
-
-                <div
-                  class="chat-time"
-                >
-                  ${escapeHtml(
-                    formatDate(
-                      item.created_at
-                    )
-                  )}
-                </div>
+                      </div>
+                    `
+                    : ""
+                }
 
               </div>
+
             `;
 
           }
+        ).join("")}
 
-
-          return `
-            <div class="change-review-card">
-
-              <div
-                class="change-review-title"
-              >
-                <span>
-                  🔵 Взяття в роботу
-                </span>
-              </div>
-
-
-              <div
-                class="change-review-values"
-              >
-
-                <div
-                  class="change-review-value"
-                >
-
-                  <span>
-                    Працівник
-                  </span>
-
-                  <strong>
-                    ${profileLink(
-                      item.new_user_id,
-                      newName
-                    )}
-                  </strong>
-
-                </div>
-
-              </div>
-
-
-              <div
-                class="change-review-reason"
-              >
-                <b>
-                  Взяв звернення в роботу.
-                </b>
-              </div>
-
-
-              <div
-                class="change-review-reason"
-              >
-                <b>
-                  Посада:
-                </b>
-
-                ${escapeHtml(
-                  item.new_role_name ||
-                  "—"
-                )}
-              </div>
-
-
-              <div
-                class="chat-time"
-              >
-                ${escapeHtml(
-                  formatDate(
-                    item.created_at
-                  )
-                )}
-              </div>
-
-            </div>
-          `;
-
-        })
-        .join("");
+      `;
 
   }
 
@@ -2193,9 +2282,12 @@ document.addEventListener("DOMContentLoaded", async function () {
   async function renderAssignment() {
 
     if (
-      !ticketAssignmentPanel
+      !ticketAssignmentPanel ||
+      !assignmentCurrent
     ) {
+
       return;
+
     }
 
 
@@ -2217,13 +2309,39 @@ document.addEventListener("DOMContentLoaded", async function () {
       currentTicket.ticket;
 
 
-    // ======================================
-    // CURRENT RESPONSIBLE
-    // ======================================
-
     if (
-      ticket.assigned_user_id
+      !ticket.assigned_user_id
     ) {
+
+      assignmentCurrent.innerHTML =
+        `
+
+          <div
+            class="change-review-title"
+          >
+
+            <span>
+              ⚪ Відповідальний
+            </span>
+
+            <span>
+              Не призначено
+            </span>
+
+          </div>
+
+
+          <div
+            class="change-review-reason"
+          >
+
+            Звернення ще ніхто не взяв у роботу.
+
+          </div>
+
+        `;
+
+    } else {
 
       const summary =
         await loadMemberSummary(
@@ -2233,77 +2351,63 @@ document.addEventListener("DOMContentLoaded", async function () {
 
       assignmentCurrent.innerHTML =
         `
+
           <div
             class="change-review-title"
           >
+
             <span>
-              👤 Поточний відповідальний
+              👨‍💼 Відповідальний
             </span>
 
-            <strong>
-              ${
-                summary
-                  ? escapeHtml(
-                      summary.roleName
-                    )
-                  : "Працівник"
-              }
-            </strong>
+            <span>
+              В роботі
+            </span>
+
           </div>
 
 
           <div
             class="change-review-reason"
           >
-            ${
-              profileLink(
-                ticket.assigned_user_id,
-                summary?.nickname ||
-                ticket.assigned_user_id
-              )
-            }
-          </div>
 
-
-          <div
-            class="change-review-reason"
-          >
             <b>
-              Посада:
+              Працівник:
             </b>
 
-            ${escapeHtml(
-              summary?.roleName ||
-              "Працівник UA LEGION"
+            ${profileLink(
+              ticket.assigned_user_id,
+              summary?.displayName ||
+              ticket.assigned_user_id
             )}
-          </div>
-        `;
 
-    } else {
-
-      assignmentCurrent.innerHTML =
-        `
-          <div
-            class="change-review-title"
-          >
-            <span>
-              ⚪ Відповідальний
-            </span>
           </div>
 
-          <div
-            class="change-review-reason"
-          >
-            Звернення ще ніхто не взяв у роботу.
-          </div>
+
+          ${
+            summary?.roleName
+              ? `
+                <div
+                  class="change-review-reason"
+                >
+
+                  <b>
+                    Посада:
+                  </b>
+
+                  ${escapeHtml(
+                    summary.roleName
+                  )}
+
+                </div>
+              `
+              : ""
+          }
+
         `;
 
     }
 
-
-    // ======================================
-    // HISTORY
-    // ======================================
 
     const history =
       await loadAssignmentHistory(
@@ -2316,16 +2420,21 @@ document.addEventListener("DOMContentLoaded", async function () {
     );
 
 
-    // ======================================
-    // BUTTON
-    // ======================================
+    if (!takeTicketButton) {
+      return;
+    }
 
-    if (
-      ["resolved", "closed"]
-        .includes(
-          ticket.status
-        )
-    ) {
+
+    const completed =
+      [
+        "resolved",
+        "closed"
+      ].includes(
+        ticket.status
+      );
+
+
+    if (completed) {
 
       takeTicketButton.hidden =
         true;
@@ -2370,7 +2479,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
   // ==========================================
-  // TAKE / REASSIGN TICKET
+  // TAKE TICKET
   // ==========================================
 
   async function takeTicket() {
@@ -2385,14 +2494,19 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
 
-    if (
-      takeTicketButton
-    ) {
+    const ticketId =
+      currentTicket.ticket.id;
 
-      takeTicketButton.disabled =
-        true;
 
-    }
+    takeTicketButton.disabled =
+      true;
+
+
+    const hadResponsible =
+      Boolean(
+        currentTicket.ticket
+          .assigned_user_id
+      );
 
 
     const result =
@@ -2400,19 +2514,13 @@ document.addEventListener("DOMContentLoaded", async function () {
         "take_support_ticket",
         {
           p_ticket_id:
-            currentTicket.ticket.id
+            ticketId
         }
       );
 
 
-    if (
-      takeTicketButton
-    ) {
-
-      takeTicketButton.disabled =
-        false;
-
-    }
+    takeTicketButton.disabled =
+      false;
 
 
     if (result.error) {
@@ -2422,11 +2530,13 @@ document.addEventListener("DOMContentLoaded", async function () {
         result.error
       );
 
+
       showMessage(
-        "Не вдалося взяти звернення в роботу: " +
-        result.error.message,
+        result.error.message ||
+        "Не вдалося взяти звернення в роботу.",
         "error"
       );
+
 
       return;
 
@@ -2434,23 +2544,22 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
     showMessage(
-      currentTicket.ticket.assigned_user_id
+
+      hadResponsible
         ? "Звернення передано вам."
         : "Звернення взято в роботу.",
+
       "success"
+
     );
 
 
     await openTicket(
-      currentTicket.ticket.id
+      ticketId
     );
 
 
-    await loadMyTickets();
-
-    if (isStaff) {
-      await loadStaffTickets();
-    }
+    await loadStaffTickets();
 
   }
 
@@ -2465,9 +2574,11 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     const result =
       await supabase
-        .from("support_tickets")
+        .from(
+          "support_tickets"
+        )
         .select(
-          "id,ticket_number,user_id,direction_id,category_id,subject,status,priority,assigned_user_id,created_at,updated_at,resolved_at,reviewed_by,reviewed_at,support_categories(name,code,icon,description),directions(name,code),profiles(display_name)"
+          "id,ticket_number,user_id,direction_id,category_id,subject,status,priority,assigned_user_id,created_at,updated_at,resolved_at,reviewed_by,reviewed_at,support_categories(name,code,icon,description),directions(name,code),profiles!support_tickets_user_id_fkey(display_name)"
         )
         .eq(
           "id",
@@ -2480,6 +2591,11 @@ document.addEventListener("DOMContentLoaded", async function () {
       result.error ||
       !result.data
     ) {
+
+      console.error(
+        "Open ticket:",
+        result.error
+      );
 
       showMessage(
         "Не вдалося відкрити звернення.",
@@ -2495,13 +2611,11 @@ document.addEventListener("DOMContentLoaded", async function () {
       result.data;
 
 
-    // ======================================
-    // MESSAGES
-    // ======================================
-
     const messagesResult =
       await supabase
-        .from("support_messages")
+        .from(
+          "support_messages"
+        )
         .select(
           "id,ticket_id,sender_user_id,message,created_at,is_internal,profiles(display_name)"
         )
@@ -2517,9 +2631,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         );
 
 
-    if (
-      messagesResult.error
-    ) {
+    if (messagesResult.error) {
 
       console.error(
         "Messages:",
@@ -2536,13 +2648,11 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
 
-    // ======================================
-    // DATA CHANGES
-    // ======================================
-
     const changesResult =
       await supabase
-        .from("support_data_changes")
+        .from(
+          "support_data_changes"
+        )
         .select(
           "id,ticket_id,field_key,field_name,old_value,new_value,reason,status,reviewed_by,reviewed_at,review_comment,created_at"
         )
@@ -2555,9 +2665,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         );
 
 
-    if (
-      changesResult.error
-    ) {
+    if (changesResult.error) {
 
       console.error(
         "Changes:",
@@ -2582,25 +2690,11 @@ document.addEventListener("DOMContentLoaded", async function () {
     };
 
 
-    renderModal();
-
-
-    ticketModal.classList.add(
-      "active"
-    );
-
-    ticketModal.setAttribute(
-      "aria-hidden",
-      "false"
-    );
-
-
     // ======================================
-    // MARK READ
+    // MARK AS READ
     // ======================================
 
-    try {
-
+    const readResult =
       await supabase.rpc(
         "mark_support_ticket_read",
         {
@@ -2609,22 +2703,38 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
       );
 
-      if (
-        window.uaLegionRefreshSupportUnread
-      ) {
 
-        window.uaLegionRefreshSupportUnread();
+    if (readResult.error) {
 
-      }
-
-    } catch (error) {
-
-      console.error(
+      console.warn(
         "mark_support_ticket_read:",
-        error
+        readResult.error
       );
 
     }
+
+
+    if (
+      window.uaLegionRefreshSupportUnread
+    ) {
+
+      window.uaLegionRefreshSupportUnread();
+
+    }
+
+
+    renderModal();
+
+
+    ticketModal.classList.add(
+      "active"
+    );
+
+
+    ticketModal.setAttribute(
+      "aria-hidden",
+      "false"
+    );
 
   }
 
@@ -2638,9 +2748,11 @@ document.addEventListener("DOMContentLoaded", async function () {
     const ticket =
       currentTicket.ticket;
 
+
     const category =
       ticket.support_categories ||
       {};
+
 
     const direction =
       ticket.directions ||
@@ -2652,37 +2764,84 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
     modalMeta.textContent =
-      `${category.icon || ""} ${
-        category.name ||
-        "Категорія"
-      } · ${
-        direction.name ||
-        "UA LEGION"
-      } · ${
-        priorityLabel(
-          ticket.priority
-        )
-      } · ${
-        statusLabel(
-          ticket.status
-        )
-      }`;
+
+      `${category.icon || ""} ` +
+
+      `${category.name || "Категорія"} · ` +
+
+      `${direction.name || "UA LEGION"} · ` +
+
+      `${priorityLabel(
+        ticket.priority
+      )} · ` +
+
+      `${statusLabel(
+        ticket.status
+      )}`;
 
 
-    // ======================================
-    // TICKET INFO
-    // ======================================
+    let reviewerHtml =
+      "";
 
-    const reviewer =
+
+    if (
       ticket.reviewed_by
-        ? await loadMemberSummary(
-            ticket.reviewed_by
-          )
-        : null;
+    ) {
+
+      const reviewer =
+        await loadMemberSummary(
+          ticket.reviewed_by
+        );
+
+
+      reviewerHtml =
+        `
+
+          <div
+            class="modal-info-item full"
+          >
+
+            <span>
+              Розглянув
+            </span>
+
+            <strong>
+              ${profileLink(
+                ticket.reviewed_by,
+                reviewer?.displayName ||
+                ticket.reviewed_by
+              )}
+            </strong>
+
+          </div>
+
+
+          <div
+            class="modal-info-item full"
+          >
+
+            <span>
+              Дата розгляду
+            </span>
+
+            <strong>
+              ${escapeHtml(
+                formatDate(
+                  ticket.reviewed_at
+                )
+              )}
+            </strong>
+
+          </div>
+
+        `;
+
+    }
 
 
     modalTicketBody.innerHTML =
       `
+
         <div
           class="modal-info-grid"
         >
@@ -2692,13 +2851,14 @@ document.addEventListener("DOMContentLoaded", async function () {
           >
 
             <span>
-              👤 Користувач
+              Користувач
             </span>
 
             <strong>
               ${profileLink(
                 ticket.user_id,
-                ticket.profiles?.display_name ||
+                ticket.profiles
+                  ?.display_name ||
                 ticket.user_id
               )}
             </strong>
@@ -2711,7 +2871,7 @@ document.addEventListener("DOMContentLoaded", async function () {
           >
 
             <span>
-              📅 Створено
+              Створено
             </span>
 
             <strong>
@@ -2730,7 +2890,7 @@ document.addEventListener("DOMContentLoaded", async function () {
           >
 
             <span>
-              📝 Тема
+              Тема
             </span>
 
             <strong>
@@ -2742,92 +2902,28 @@ document.addEventListener("DOMContentLoaded", async function () {
           </div>
 
 
-          <div
-            class="modal-info-item"
-          >
-
-            <span>
-              👨‍💼 Розглянув
-            </span>
-
-            <strong>
-
-              ${
-                reviewer
-                  ? `
-                    ${escapeHtml(
-                      reviewer.roleName
-                    )}
-                    ·
-                    ${profileLink(
-                      ticket.reviewed_by,
-                      reviewer.nickname
-                    )}
-                  `
-                  : "Ще не розглянуто"
-              }
-
-            </strong>
-
-          </div>
-
-
-          <div
-            class="modal-info-item"
-          >
-
-            <span>
-              🕐 Дата розгляду
-            </span>
-
-            <strong>
-              ${escapeHtml(
-                ticket.reviewed_at
-                  ? formatDate(
-                      ticket.reviewed_at
-                    )
-                  : "—"
-              )}
-            </strong>
-
-          </div>
+          ${reviewerHtml}
 
         </div>
+
       `;
 
 
-    // ======================================
-    // ASSIGNMENT
-    // ======================================
-
-    await renderAssignment();
-
-
-    // ======================================
-    // CHANGES
-    // ======================================
-
     renderChanges();
-
-
-    // ======================================
-    // MESSAGES
-    // ======================================
 
     renderMessages();
 
 
-    // ======================================
-    // REVIEW BUTTONS
-    // ======================================
-
     const canReview =
+
       isStaff &&
+
       currentTicket.changes.some(
         change =>
           change.status ===
           "pending"
       ) &&
+
       ![
         "resolved",
         "closed"
@@ -2836,12 +2932,23 @@ document.addEventListener("DOMContentLoaded", async function () {
       );
 
 
-    staffDecision.hidden =
-      !canReview;
+    if (staffDecision) {
+
+      staffDecision.hidden =
+        !canReview;
+
+    }
 
 
-    internalMessageWrap.hidden =
-      !isStaff;
+    if (internalMessageWrap) {
+
+      internalMessageWrap.hidden =
+        !isStaff;
+
+    }
+
+
+    await renderAssignment();
 
   }
 
@@ -2869,6 +2976,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     modalChanges.innerHTML =
       `
+
         <div
           class="support-subtitle"
         >
@@ -2884,9 +2992,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             </h3>
 
             <p>
-              Схвалення звернення
-              автоматично застосовує
-              всі зміни.
+              Схвалення звернення автоматично застосовує всі зміни.
             </p>
 
           </div>
@@ -2894,121 +3000,119 @@ document.addEventListener("DOMContentLoaded", async function () {
         </div>
 
 
-        ${
-          changes
-            .map(
-              change => `
+        ${changes.map(
+          change => `
+
+            <div
+              class="change-review-card ${escapeHtml(
+                change.status
+              )}"
+            >
+
+              <div
+                class="change-review-title"
+              >
+
+                <span>
+                  ${escapeHtml(
+                    change.field_name ||
+                    change.field_key
+                  )}
+                </span>
+
+                <span>
+                  ${escapeHtml(
+                    change.status
+                  )}
+                </span>
+
+              </div>
+
+
+              <div
+                class="change-review-values"
+              >
 
                 <div
-                  class="change-review-card ${escapeHtml(
-                    change.status
-                  )}"
+                  class="change-review-value"
                 >
 
-                  <div
-                    class="change-review-title"
-                  >
+                  <span>
+                    Було
+                  </span>
 
-                    <span>
-                      ${escapeHtml(
-                        change.field_name ||
-                        change.field_key
-                      )}
-                    </span>
-
-                    <span>
-                      ${escapeHtml(
-                        change.status
-                      )}
-                    </span>
-
-                  </div>
-
-
-                  <div
-                    class="change-review-values"
-                  >
-
-                    <div
-                      class="change-review-value"
-                    >
-
-                      <span>
-                        Було
-                      </span>
-
-                      <strong>
-                        ${escapeHtml(
-                          change.old_value ??
-                          "—"
-                        )}
-                      </strong>
-
-                    </div>
-
-
-                    <div
-                      class="change-review-value"
-                    >
-
-                      <span>
-                        Стане
-                      </span>
-
-                      <strong>
-                        ${escapeHtml(
-                          change.new_value ??
-                          "—"
-                        )}
-                      </strong>
-
-                    </div>
-
-                  </div>
-
-
-                  <div
-                    class="change-review-reason"
-                  >
-
-                    <b>
-                      Причина:
-                    </b>
-
+                  <strong>
                     ${escapeHtml(
-                      change.reason ||
+                      change.old_value ??
                       "—"
                     )}
-
-                  </div>
-
-
-                  ${
-                    change.review_comment
-                      ? `
-                        <div
-                          class="change-review-reason"
-                        >
-
-                          <b>
-                            Рішення:
-                          </b>
-
-                          ${escapeHtml(
-                            change.review_comment
-                          )}
-
-                        </div>
-                      `
-                      : ""
-                  }
+                  </strong>
 
                 </div>
 
-              `
-            )
-            .join("")
-        }
+
+                <div
+                  class="change-review-value"
+                >
+
+                  <span>
+                    Стане
+                  </span>
+
+                  <strong>
+                    ${escapeHtml(
+                      change.new_value ??
+                      "—"
+                    )}
+                  </strong>
+
+                </div>
+
+              </div>
+
+
+              <div
+                class="change-review-reason"
+              >
+
+                <b>
+                  Причина:
+                </b>
+
+                ${escapeHtml(
+                  change.reason ||
+                  "—"
+                )}
+
+              </div>
+
+
+              ${
+                change.review_comment
+                  ? `
+
+                    <div
+                      class="change-review-reason"
+                    >
+
+                      <b>
+                        Рішення:
+                      </b>
+
+                      ${escapeHtml(
+                        change.review_comment
+                      )}
+
+                    </div>
+
+                  `
+                  : ""
+              }
+
+            </div>
+
+          `
+        ).join("")}
 
       `;
 
@@ -3030,7 +3134,9 @@ document.addEventListener("DOMContentLoaded", async function () {
 
       modalMessages.innerHTML =
         `
-          <div class="support-empty">
+          <div
+            class="support-empty"
+          >
             Повідомлень ще немає.
           </div>
         `;
@@ -3042,70 +3148,71 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     modalMessages.innerHTML =
       messages
-        .map(message => {
+        .map(
+          message => {
 
-          const mine =
-            message.sender_user_id ===
-            currentUser.id;
-
-          const internal =
-            message.is_internal ===
-            true;
+            const mine =
+              message.sender_user_id ===
+              currentUser.id;
 
 
-          return `
-            <div
-              class="
-                chat-message
-                ${mine ? "mine" : ""}
-                ${internal ? "internal" : ""}
-              "
-            >
+            const internal =
+              message.is_internal ===
+              true;
+
+
+            return `
 
               <div
-                class="chat-author"
+                class="chat-message ${mine ? "mine" : ""} ${internal ? "internal" : ""}"
               >
 
-                ${escapeHtml(
+                <div
+                  class="chat-author"
+                >
 
-                  internal
+                  ${escapeHtml(
 
-                    ? "🔒 Внутрішнє повідомлення"
+                    internal
 
-                    : (
-                        message.profiles
-                          ?.display_name ||
-                        "Користувач"
-                      )
+                      ? "🔒 Внутрішнє повідомлення"
 
-                )}
+                      : (
+                          message.profiles
+                            ?.display_name ||
+                          "Користувач"
+                        )
+
+                  )}
+
+                </div>
+
+
+                <div
+                  class="chat-text"
+                >
+                  ${escapeHtml(
+                    message.message
+                  )}
+                </div>
+
+
+                <div
+                  class="chat-time"
+                >
+                  ${escapeHtml(
+                    formatDate(
+                      message.created_at
+                    )
+                  )}
+                </div>
 
               </div>
 
+            `;
 
-              <div
-                class="chat-text"
-              >
-                ${escapeHtml(
-                  message.message
-                )}
-              </div>
-
-
-              <div
-                class="chat-time"
-              >
-                ${escapeHtml(
-                  formatDate(
-                    message.created_at
-                  )
-                )}
-              </div>
-
-            </div>
-          `;
-
-        })
+          }
+        )
         .join("");
 
 
@@ -3144,7 +3251,9 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     const result =
       await supabase
-        .from("support_messages")
+        .from(
+          "support_messages"
+        )
         .insert({
 
           ticket_id:
@@ -3184,6 +3293,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     replyMessage.value =
       "";
+
 
     internalMessage.checked =
       false;
@@ -3225,12 +3335,11 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
     const pending =
-      currentTicket.changes
-        .filter(
-          change =>
-            change.status ===
-            "pending"
-        );
+      currentTicket.changes.filter(
+        change =>
+          change.status ===
+          "pending"
+      );
 
 
     if (!pending.length) {
@@ -3250,7 +3359,8 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
     if (
-      decision === "rejected" &&
+      decision ===
+      "rejected" &&
       !comment
     ) {
 
@@ -3266,6 +3376,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     approveTicketButton.disabled =
       true;
+
 
     rejectTicketButton.disabled =
       true;
@@ -3283,7 +3394,8 @@ document.addEventListener("DOMContentLoaded", async function () {
             decision,
 
           p_review_comment:
-            comment || null
+            comment ||
+            null
 
         }
       );
@@ -3291,6 +3403,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     approveTicketButton.disabled =
       false;
+
 
     rejectTicketButton.disabled =
       false;
@@ -3320,7 +3433,8 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     showMessage(
 
-      decision === "approved"
+      decision ===
+      "approved"
 
         ? "Зміни схвалено та автоматично застосовано."
 
@@ -3425,10 +3539,6 @@ document.addEventListener("DOMContentLoaded", async function () {
   );
 
 
-  // ==========================================
-  // CLOSE MODAL
-  // ==========================================
-
   closeTicketModal.addEventListener(
     "click",
     () => {
@@ -3465,10 +3575,6 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
   );
 
-
-  // ==========================================
-  // BUTTONS
-  // ==========================================
 
   sendReplyButton.addEventListener(
     "click",
