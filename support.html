@@ -2,38 +2,83 @@
 <html lang="uk">
 
 <head>
+
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#05070b">
 
-  <title>Підтримка — UA LEGION</title>
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
-  <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="support.css">
+  <meta
+    name="theme-color"
+    content="#05070b"
+  >
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase.js"></script>
+  <title>
+    Підтримка — UA LEGION
+  </title>
+
+
+  <!-- ====================================== -->
+  <!-- CSS -->
+  <!-- ====================================== -->
+
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
+
+  <link
+    rel="stylesheet"
+    href="support.css"
+  >
+
+
+  <!-- ====================================== -->
+  <!-- SUPABASE -->
+  <!-- ====================================== -->
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+  ></script>
+
+  <script
+    src="supabase.js"
+  ></script>
+
 </head>
 
+
 <body>
+
+
+  <!-- ====================================== -->
+  <!-- NOISE -->
+  <!-- ====================================== -->
 
   <div class="noise"></div>
 
 
-  <!-- ==========================================
-       HEADER
-       ========================================== -->
+  <!-- ====================================== -->
+  <!-- HEADER -->
+  <!-- ====================================== -->
 
   <header class="topbar">
 
-    <a class="brand" href="index.html">
+    <a
+      class="brand"
+      href="index.html"
+    >
 
       <img
         src="ua-legion-logo.png"
         alt="UA LEGION"
       >
 
-      <span>UA LEGION</span>
+      <span>
+        UA LEGION
+      </span>
 
     </a>
 
@@ -100,18 +145,18 @@
   </header>
 
 
-  <!-- ==========================================
-       MAIN
-       ========================================== -->
+  <!-- ====================================== -->
+  <!-- MAIN -->
+  <!-- ====================================== -->
 
   <main class="support-page">
 
     <div class="support-container">
 
 
-      <!-- ======================================
-           HERO
-           ====================================== -->
+      <!-- ================================== -->
+      <!-- HERO -->
+      <!-- ================================== -->
 
       <section class="support-hero">
 
@@ -127,8 +172,8 @@
 
           <p>
             Створіть звернення, виберіть напрямок
-            і спілкуйтеся з відповідальним спеціалістом
-            в одному діалозі.
+            і спілкуйтеся з відповідальним
+            спеціалістом в одному діалозі.
           </p>
 
         </div>
@@ -144,20 +189,26 @@
       </section>
 
 
+      <!-- ================================== -->
+      <!-- GLOBAL MESSAGE -->
+      <!-- ================================== -->
+
       <div
         id="supportMessage"
         class="support-message"
       ></div>
 
 
-      <!-- ======================================
-           CREATE + MY TICKETS
-           ====================================== -->
+      <!-- ================================== -->
+      <!-- SUPPORT GRID -->
+      <!-- ================================== -->
 
       <section class="support-grid">
 
 
-        <!-- CREATE -->
+        <!-- ================================= -->
+        <!-- CREATE TICKET -->
+        <!-- ================================= -->
 
         <div class="support-card create-card">
 
@@ -180,12 +231,23 @@
 
           <form id="ticketForm">
 
+
+            <!-- ============================= -->
+            <!-- FORM GRID -->
+            <!-- ============================= -->
+
             <div class="support-form-grid">
 
 
+              <!-- =========================== -->
+              <!-- DIRECTION -->
+              <!-- =========================== -->
+
               <div class="support-field">
 
-                <label for="ticketDirection">
+                <label
+                  for="ticketDirection"
+                >
                   📍 Напрямок
                 </label>
 
@@ -196,9 +258,15 @@
               </div>
 
 
+              <!-- =========================== -->
+              <!-- CATEGORY -->
+              <!-- =========================== -->
+
               <div class="support-field">
 
-                <label for="ticketCategory">
+                <label
+                  for="ticketCategory"
+                >
                   📂 Категорія
                 </label>
 
@@ -210,9 +278,17 @@
               </div>
 
 
-              <div class="support-field support-full">
+              <!-- =========================== -->
+              <!-- SUBJECT -->
+              <!-- =========================== -->
 
-                <label for="ticketSubject">
+              <div
+                class="support-field support-full"
+              >
+
+                <label
+                  for="ticketSubject"
+                >
                   📝 Тема
                 </label>
 
@@ -227,13 +303,23 @@
               </div>
 
 
-              <div class="support-field support-full">
+              <!-- =========================== -->
+              <!-- PRIORITY -->
+              <!-- =========================== -->
 
-                <label for="ticketPriority">
+              <div
+                class="support-field support-full"
+              >
+
+                <label
+                  for="ticketPriority"
+                >
                   ⚡ Пріоритет
                 </label>
 
-                <select id="ticketPriority">
+                <select
+                  id="ticketPriority"
+                >
 
                   <option value="normal">
                     Звичайний
@@ -256,9 +342,17 @@
               </div>
 
 
-              <div class="support-field support-full">
+              <!-- =========================== -->
+              <!-- MESSAGE -->
+              <!-- =========================== -->
 
-                <label for="ticketMessage">
+              <div
+                class="support-field support-full"
+              >
+
+                <label
+                  for="ticketMessage"
+                >
                   💬 Повідомлення
                 </label>
 
@@ -275,7 +369,9 @@
             </div>
 
 
+            <!-- ================================= -->
             <!-- DATA CHANGE -->
+            <!-- ================================= -->
 
             <section
               id="dataChangeBuilder"
@@ -283,7 +379,9 @@
               hidden
             >
 
-              <div class="support-subtitle">
+              <div
+                class="support-subtitle"
+              >
 
                 <span>
                   📝
@@ -296,9 +394,10 @@
                   </h3>
 
                   <p>
-                    Вкажіть, які дані потрібно змінити.
-                    Після розгляду схвалені зміни
-                    застосуються автоматично.
+                    Вкажіть, які дані потрібно
+                    змінити. Після розгляду
+                    схвалені зміни застосуються
+                    автоматично.
                   </p>
 
                 </div>
@@ -323,7 +422,13 @@
             </section>
 
 
-            <div class="support-form-actions">
+            <!-- ================================= -->
+            <!-- SUBMIT -->
+            <!-- ================================= -->
+
+            <div
+              class="support-form-actions"
+            >
 
               <button
                 id="submitTicketButton"
@@ -335,16 +440,23 @@
 
             </div>
 
+
           </form>
 
         </div>
 
 
+        <!-- ================================= -->
         <!-- MY TICKETS -->
+        <!-- ================================= -->
 
-        <aside class="support-card my-tickets-card">
+        <aside
+          class="support-card my-tickets-card"
+        >
 
-          <div class="support-card-header">
+          <div
+            class="support-card-header"
+          >
 
             <div>
 
@@ -384,12 +496,13 @@
 
         </aside>
 
+
       </section>
 
 
-      <!-- ======================================
-           STAFF PANEL
-           ====================================== -->
+      <!-- ====================================== -->
+      <!-- STAFF PANEL -->
+      <!-- ====================================== -->
 
       <section
         id="staffPanel"
@@ -397,7 +510,9 @@
         hidden
       >
 
-        <div class="support-card-header staff-header">
+        <div
+          class="support-card-header staff-header"
+        >
 
           <div>
 
@@ -423,6 +538,10 @@
         </div>
 
 
+        <!-- ================================= -->
+        <!-- STAFF FILTERS -->
+        <!-- ================================= -->
+
         <div class="staff-filters">
 
           <input
@@ -432,7 +551,9 @@
           >
 
 
-          <select id="staffStatusFilter">
+          <select
+            id="staffStatusFilter"
+          >
 
             <option value="all">
               Усі статуси
@@ -457,7 +578,9 @@
           </select>
 
 
-          <select id="staffDirectionFilter">
+          <select
+            id="staffDirectionFilter"
+          >
 
             <option value="all">
               Усі напрямки
@@ -467,6 +590,10 @@
 
         </div>
 
+
+        <!-- ================================= -->
+        <!-- STAFF TICKETS -->
+        <!-- ================================= -->
 
         <div
           id="staffTicketsList"
@@ -481,14 +608,15 @@
 
       </section>
 
+
     </div>
 
   </main>
 
 
-  <!-- ==========================================
-       TICKET MODAL
-       ========================================== -->
+  <!-- ====================================== -->
+  <!-- TICKET MODAL -->
+  <!-- ====================================== -->
 
   <div
     id="ticketModal"
@@ -496,12 +624,18 @@
     aria-hidden="true"
   >
 
-    <div class="support-modal-content">
+    <div
+      class="support-modal-content"
+    >
 
 
+      <!-- ================================= -->
       <!-- MODAL HEADER -->
+      <!-- ================================= -->
 
-      <div class="support-modal-header">
+      <div
+        class="support-modal-header"
+      >
 
         <div>
 
@@ -532,7 +666,9 @@
       </div>
 
 
-      <!-- BASIC INFORMATION -->
+      <!-- ================================= -->
+      <!-- TICKET INFORMATION -->
+      <!-- ================================= -->
 
       <div
         id="modalTicketBody"
@@ -540,9 +676,9 @@
       ></div>
 
 
-      <!-- ======================================
-           ASSIGNMENT
-           ====================================== -->
+      <!-- ================================= -->
+      <!-- ASSIGNMENT PANEL -->
+      <!-- ================================= -->
 
       <div
         id="ticketAssignmentPanel"
@@ -550,7 +686,9 @@
         hidden
       >
 
-        <div class="support-subtitle">
+        <div
+          class="support-subtitle"
+        >
 
           <span>
             👨‍💼
@@ -563,7 +701,8 @@
             </h3>
 
             <p>
-              Працівник, який зараз опрацьовує звернення.
+              Працівник, який зараз
+              опрацьовує звернення.
             </p>
 
           </div>
@@ -571,22 +710,34 @@
         </div>
 
 
+        <!-- =============================== -->
+        <!-- CURRENT RESPONSIBLE -->
+        <!-- =============================== -->
+
         <div
           id="assignmentCurrent"
           class="change-review-card"
         ></div>
 
 
+        <!-- =============================== -->
+        <!-- ASSIGNMENT HISTORY -->
+        <!-- =============================== -->
+
         <div
           id="assignmentHistory"
           class="modal-messages"
-          style="margin-top: 12px;"
+          style="margin-top:12px;"
         ></div>
 
 
+        <!-- =============================== -->
+        <!-- TAKE BUTTON -->
+        <!-- =============================== -->
+
         <div
           class="modal-reply-actions"
-          style="margin-top: 12px;"
+          style="margin-top:12px;"
         >
 
           <button
@@ -602,7 +753,9 @@
       </div>
 
 
+      <!-- ================================= -->
       <!-- DATA CHANGES -->
+      <!-- ================================= -->
 
       <div
         id="modalChanges"
@@ -610,7 +763,9 @@
       ></div>
 
 
+      <!-- ================================= -->
       <!-- MESSAGES -->
+      <!-- ================================= -->
 
       <div
         id="modalMessages"
@@ -618,11 +773,12 @@
       ></div>
 
 
-      <!-- ======================================
-           REPLY
-           ====================================== -->
+      <!-- ================================= -->
+      <!-- REPLY -->
+      <!-- ================================= -->
 
       <div class="modal-reply">
+
 
         <textarea
           id="replyMessage"
@@ -631,6 +787,10 @@
           placeholder="Ваше повідомлення..."
         ></textarea>
 
+
+        <!-- =============================== -->
+        <!-- INTERNAL MESSAGE -->
+        <!-- =============================== -->
 
         <label
           id="internalMessageWrap"
@@ -643,12 +803,19 @@
             type="checkbox"
           >
 
-          Внутрішнє повідомлення для працівників
+          Внутрішнє повідомлення
+          для працівників
 
         </label>
 
 
-        <div class="modal-reply-actions">
+        <!-- =============================== -->
+        <!-- SEND -->
+        <!-- =============================== -->
+
+        <div
+          class="modal-reply-actions"
+        >
 
           <button
             id="sendReplyButton"
@@ -660,12 +827,13 @@
 
         </div>
 
+
       </div>
 
 
-      <!-- ======================================
-           DATA CHANGE DECISION
-           ====================================== -->
+      <!-- ================================= -->
+      <!-- STAFF DECISION -->
+      <!-- ================================= -->
 
       <div
         id="staffDecision"
@@ -681,7 +849,9 @@
         ></textarea>
 
 
-        <div class="decision-buttons">
+        <div
+          class="decision-buttons"
+        >
 
           <button
             id="approveTicketButton"
@@ -704,20 +874,31 @@
 
       </div>
 
+
     </div>
 
   </div>
 
 
-  <!-- ==========================================
-       SCRIPTS
-       ========================================== -->
+  <!-- ====================================== -->
+  <!-- SCRIPTS -->
+  <!-- ====================================== -->
 
-  <script src="auth-menu.js"></script>
+  <script
+    src="auth-menu.js"
+  ></script>
 
-  <script src="support.js?v=2"></script>
 
-  <script src="script.js"></script>
+  <!-- ВАЖЛИВО: v=3 -->
+  <script
+    src="support.js?v=3"
+  ></script>
+
+
+  <script
+    src="script.js"
+  ></script>
+
 
 </body>
 
