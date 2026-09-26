@@ -34,6 +34,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   let profileCurrentValues = {};
 
   const memberSummaryCache = new Map();
+  const directionDataCache = new Map();
 
 
   // ==========================================
@@ -115,9 +116,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   function escapeHtml(value) {
 
     return String(
-      value == null
-        ? ""
-        : value
+      value == null ? "" : value
     )
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
@@ -129,10 +128,10 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
   // ==========================================
-  // USER DISPLAY NAME
+  // DISPLAY NAME FALLBACK
   // ==========================================
 
-  function getUserNickname(profile) {
+  function getFallbackNickname(profile) {
 
     if (!profile) {
       return "Користувач";
@@ -157,17 +156,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       ).trim();
 
 
-    /*
-      Порядок:
-
-      1. display_name, якщо це не email
-      2. Discord username
-      3. game nickname
-      4. display_name
-      5. "Користувач"
-    */
-
-
+    // display_name, якщо це не email
     if (
       displayName &&
       !displayName.includes("@")
@@ -178,6 +167,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
 
+    // Discord
     if (discordUsername) {
 
       return discordUsername;
@@ -185,6 +175,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
 
+    // Загальний ігровий нік
     if (gameNickname) {
 
       return gameNickname;
@@ -192,14 +183,280 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
 
-    if (displayName) {
+    return "Користувач";
 
-      return displayName;
+  }
+
+
+  // ==========================================
+  // DIRECTION NICKNAME CONFIG
+  // ==========================================
+
+  function getDirectionNicknameKey(
+    direction
+  ) {
+
+    if (!direction) {
+      return null;
+    }
+
+
+    const code =
+      String(
+        direction.code || ""
+      ).toLowerCase();
+
+
+    const slug =
+      String(
+        direction.slug || ""
+      ).toLowerCase();
+
+
+    const name =
+      String(
+        direction.name || ""
+      ).toLowerCase();
+
+
+    // ETS2
+    if (
+      code === "ets2" ||
+      slug === "ets2" ||
+      name.includes("ets2") ||
+      name.includes("truckersmp")
+    ) {
+
+      return "truckersmp_nick";
 
     }
 
 
-    return "Користувач";
+    // World of Tanks
+    if (
+      code === "wot" ||
+      slug === "wot" ||
+      name.includes("world of tanks")
+    ) {
+
+      return "wot_nickname";
+
+    }
+
+
+    // Dota 2
+    if (
+      code === "dota2" ||
+      slug === "dota2" ||
+      name.includes("dota 2")
+    ) {
+
+      return "dota_nickname";
+
+    }
+
+
+    // World of Warcraft
+    if (
+      code === "wow" ||
+      slug === "wow" ||
+      name.includes("world of warcraft")
+    ) {
+
+      return "wow_character";
+
+    }
+
+
+    return null;
+
+  }
+
+
+  // ==========================================
+  // LOAD USER DIRECTION DATA
+  // ==========================================
+
+  async function loadUserDirectionData(
+    userId,
+    directionId
+  ) {
+
+    if (
+      !userId ||
+      !directionId
+    ) {
+
+      return {};
+
+    }
+
+
+    const cacheKey =
+      `${userId}:${directionId}`;
+
+
+    if (
+      directionDataCache.has(
+        cacheKey
+      )
+    ) {
+
+      return directionDataCache.get(
+        cacheKey
+      );
+
+    }
+
+
+    const result =
+      await supabase
+        .from("user_directions")
+        .select(
+          "direction_id,status,direction_data"
+        )
+        .eq(
+          "user_id",
+          userId
+        )
+        .eq(
+          "direction_id",
+          directionId
+        )
+        .maybeSingle();
+
+
+    if (result.error) {
+
+      console.warn(
+        "Не вдалося завантажити direction_data:",
+        result.error
+      );
+
+      directionDataCache.set(
+        cacheKey,
+        {}
+      );
+
+      return {};
+
+    }
+
+
+    const data =
+      result.data?.direction_data ||
+      {};
+
+
+    directionDataCache.set(
+      cacheKey,
+      data
+    );
+
+
+    return data;
+
+  }
+
+
+  // ==========================================
+  // GET TICKET USER NICKNAME
+  // ==========================================
+
+  async function getTicketUserNickname(
+    userId,
+    directionId,
+    profile
+  ) {
+
+    /*
+      Глобальне звернення:
+      profiles.game_nickname
+
+      Напрямок:
+      user_directions.direction_data
+    */
+
+
+    // ======================================
+    // GLOBAL
+    // ======================================
+
+    if (!directionId) {
+
+      if (
+        profile?.game_nickname &&
+        !String(
+          profile.game_nickname
+        ).includes("@")
+      ) {
+
+        return profile.game_nickname;
+
+      }
+
+
+      return getFallbackNickname(
+        profile
+      );
+
+    }
+
+
+    // ======================================
+    // DIRECTION
+    // ======================================
+
+    const direction =
+      directions.find(
+        item =>
+          String(item.id) ===
+          String(directionId)
+      );
+
+
+    const nicknameKey =
+      getDirectionNicknameKey(
+        direction
+      );
+
+
+    if (nicknameKey) {
+
+      const directionData =
+        await loadUserDirectionData(
+          userId,
+          directionId
+        );
+
+
+      const nickname =
+        String(
+          directionData[
+            nicknameKey
+          ] || ""
+        ).trim();
+
+
+      if (
+        nickname &&
+        !nickname.includes("@")
+      ) {
+
+        return nickname;
+
+      }
+
+    }
+
+
+    // ======================================
+    // FALLBACK
+    // ======================================
+
+    return getFallbackNickname(
+      profile
+    );
 
   }
 
@@ -285,17 +542,13 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     return {
 
-      new:
-        "Нове",
+      new: "Нове",
 
-      in_progress:
-        "В роботі",
+      in_progress: "В роботі",
 
-      resolved:
-        "Вирішено",
+      resolved: "Вирішено",
 
-      closed:
-        "Закрито"
+      closed: "Закрито"
 
     }[status] ||
 
@@ -314,17 +567,13 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     return {
 
-      low:
-        "Низький",
+      low: "Низький",
 
-      normal:
-        "Звичайний",
+      normal: "Звичайний",
 
-      high:
-        "Високий",
+      high: "Високий",
 
-      urgent:
-        "Терміновий"
+      urgent: "Терміновий"
 
     }[priority] ||
 
@@ -542,7 +791,11 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
     ticketDirection.innerHTML =
-      '<option value="">🇺🇦 UA LEGION / Загальне</option>';
+      `
+        <option value="">
+          🇺🇦 UA LEGION / Загальне
+        </option>
+      `;
 
 
     directions.forEach(
@@ -566,7 +819,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                 )}
               </option>
             `
-
           );
 
         }
@@ -602,7 +854,6 @@ document.addEventListener("DOMContentLoaded", async function () {
               )}
             </option>
           `
-
         );
 
       }
@@ -819,7 +1070,6 @@ document.addEventListener("DOMContentLoaded", async function () {
     return fieldsForCurrentDirection()
       .map(
         field => `
-
           <option
             value="${escapeHtml(
               field.field_key
@@ -832,13 +1082,10 @@ document.addEventListener("DOMContentLoaded", async function () {
                 : ""
             }
           >
-
             ${escapeHtml(
               field.field_name
             )}
-
           </option>
-
         `
       )
       .join("");
@@ -1390,7 +1637,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   // RENDER TICKET LIST
   // ==========================================
 
-  function renderTicketList(
+  async function renderTicketList(
     list,
     target,
     staffMode
@@ -1417,6 +1664,43 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
 
+    /*
+      Для Staff Center треба отримати
+      правильний нік відповідно до напрямку.
+    */
+
+    const nicknameMap =
+      new Map();
+
+
+    for (
+      const ticket
+      of list
+    ) {
+
+      if (
+        staffMode &&
+        ticket.user_id
+      ) {
+
+        const nickname =
+          await getTicketUserNickname(
+            ticket.user_id,
+            ticket.direction_id,
+            ticket.profiles
+          );
+
+
+        nicknameMap.set(
+          String(ticket.id),
+          nickname
+        );
+
+      }
+
+    }
+
+
     target.innerHTML =
       list
         .map(
@@ -1432,19 +1716,15 @@ document.addEventListener("DOMContentLoaded", async function () {
               {};
 
 
-            const user =
-              ticket.profiles ||
-              {};
-
-
             const assigned =
               ticket.assigned_user_id;
 
 
             const userNickname =
-              getUserNickname(
-                user
-              );
+              nicknameMap.get(
+                String(ticket.id)
+              ) ||
+              "Користувач";
 
 
             return `
@@ -1648,7 +1928,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       result.data || [];
 
 
-    renderTicketList(
+    await renderTicketList(
       myTickets,
       myTicketsList,
       false
@@ -1780,9 +2060,33 @@ document.addEventListener("DOMContentLoaded", async function () {
       staffTickets.filter(
         ticket => {
 
-          const userName =
-            getUserNickname(
+          /*
+            Для фільтра пошуку тут
+            поки використовуємо всі
+            доступні текстові поля.
+          */
+
+          const displayName =
+            String(
               ticket.profiles
+                ?.display_name ||
+              ""
+            ).toLowerCase();
+
+
+          const discord =
+            String(
+              ticket.profiles
+                ?.discord_username ||
+              ""
+            ).toLowerCase();
+
+
+          const gameNickname =
+            String(
+              ticket.profiles
+                ?.game_nickname ||
+              ""
             ).toLowerCase();
 
 
@@ -1806,7 +2110,15 @@ document.addEventListener("DOMContentLoaded", async function () {
                 search
               ) ||
 
-            userName.includes(
+            displayName.includes(
+              search
+            ) ||
+
+            discord.includes(
+              search
+            ) ||
+
+            gameNickname.includes(
               search
             );
 
@@ -1960,7 +2272,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       userId,
 
       displayName:
-        getUserNickname(
+        getFallbackNickname(
           profileResult.data
         ),
 
@@ -2089,7 +2401,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
           profile.id,
 
-          getUserNickname(
+          getFallbackNickname(
             profile
           )
 
@@ -2211,24 +2523,21 @@ document.addEventListener("DOMContentLoaded", async function () {
               names[
                 item.changed_by
               ] ||
-              item.changed_by ||
-              "—";
+              "Користувач";
 
 
             const newUser =
               names[
                 item.new_user_id
               ] ||
-              item.new_user_id ||
-              "—";
+              "Користувач";
 
 
             const previousUser =
               names[
                 item.previous_user_id
               ] ||
-              item.previous_user_id ||
-              "—";
+              "Користувач";
 
 
             const isFirst =
@@ -2250,11 +2559,8 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                     ${
                       isFirst
-
                         ? "🔵 Взяття в роботу"
-
                         : "🔄 Передача звернення"
-
                     }
 
                   </span>
@@ -2458,6 +2764,42 @@ document.addEventListener("DOMContentLoaded", async function () {
         );
 
 
+      let responsibleNickname =
+        summary?.displayName ||
+        "Користувач";
+
+
+      /*
+        Для відповідального намагаємося
+        показати нік відповідно до напрямку
+        самого звернення.
+      */
+
+      const responsibleProfile =
+        await supabase
+          .from("profiles")
+          .select(
+            "id,display_name,discord_username,game_nickname"
+          )
+          .eq(
+            "id",
+            ticket.assigned_user_id
+          )
+          .maybeSingle();
+
+
+      if (!responsibleProfile.error) {
+
+        responsibleNickname =
+          await getTicketUserNickname(
+            ticket.assigned_user_id,
+            ticket.direction_id,
+            responsibleProfile.data
+          );
+
+      }
+
+
       assignmentCurrent.innerHTML =
         `
 
@@ -2486,8 +2828,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             ${profileLink(
               ticket.assigned_user_id,
-              summary?.displayName ||
-              "Користувач"
+              responsibleNickname
             )}
 
           </div>
@@ -2659,9 +3000,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     showMessage(
 
       hadResponsible
-
         ? "Звернення передано вам."
-
         : "Звернення взято в роботу.",
 
       "success"
@@ -2874,6 +3213,14 @@ document.addEventListener("DOMContentLoaded", async function () {
       {};
 
 
+    const userNickname =
+      await getTicketUserNickname(
+        ticket.user_id,
+        ticket.direction_id,
+        ticket.profiles
+      );
+
+
     modalTitle.textContent =
       `#${ticket.ticket_number} — ${ticket.subject}`;
 
@@ -2903,10 +3250,35 @@ document.addEventListener("DOMContentLoaded", async function () {
       ticket.reviewed_by
     ) {
 
-      const reviewer =
-        await loadMemberSummary(
-          ticket.reviewed_by
-        );
+      const reviewerProfile =
+        await supabase
+          .from("profiles")
+          .select(
+            "id,display_name,discord_username,game_nickname"
+          )
+          .eq(
+            "id",
+            ticket.reviewed_by
+          )
+          .maybeSingle();
+
+
+      let reviewerNickname =
+        "Користувач";
+
+
+      if (
+        !reviewerProfile.error
+      ) {
+
+        reviewerNickname =
+          await getTicketUserNickname(
+            ticket.reviewed_by,
+            ticket.direction_id,
+            reviewerProfile.data
+          );
+
+      }
 
 
       reviewerHtml =
@@ -2924,8 +3296,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
               ${profileLink(
                 ticket.reviewed_by,
-                reviewer?.displayName ||
-                "Користувач"
+                reviewerNickname
               )}
 
             </strong>
@@ -2977,9 +3348,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
               ${profileLink(
                 ticket.user_id,
-                getUserNickname(
-                  ticket.profiles
-                )
+                userNickname
               )}
 
             </strong>
@@ -3036,7 +3405,8 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     renderChanges();
 
-    renderMessages();
+
+    await renderMessages();
 
 
     const canReview =
@@ -3259,7 +3629,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   // RENDER MESSAGES
   // ==========================================
 
-  function renderMessages() {
+  async function renderMessages() {
 
     const messages =
       currentTicket.messages ||
@@ -3282,6 +3652,42 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
 
+    const messageNicknames =
+      new Map();
+
+
+    for (
+      const message
+      of messages
+    ) {
+
+      if (
+        message.is_internal
+      ) {
+
+        continue;
+
+      }
+
+
+      const nickname =
+        await getTicketUserNickname(
+          message.sender_user_id,
+          currentTicket.ticket.direction_id,
+          message.profiles
+        );
+
+
+      messageNicknames.set(
+        String(
+          message.id
+        ),
+        nickname
+      );
+
+    }
+
+
     modalMessages.innerHTML =
       messages
         .map(
@@ -3297,10 +3703,25 @@ document.addEventListener("DOMContentLoaded", async function () {
               true;
 
 
+            const nickname =
+              messageNicknames.get(
+                String(
+                  message.id
+                )
+              ) ||
+              "Користувач";
+
+
             return `
 
               <div
-                class="chat-message ${mine ? "mine" : ""} ${internal ? "internal" : ""}"
+                class="chat-message ${
+                  mine ? "mine" : ""
+                } ${
+                  internal
+                    ? "internal"
+                    : ""
+                }"
               >
 
                 <div
@@ -3313,9 +3734,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                       ? "🔒 Внутрішнє повідомлення"
 
-                      : getUserNickname(
-                          message.profiles
-                        )
+                      : nickname
 
                   )}
 
@@ -3604,140 +4023,200 @@ document.addEventListener("DOMContentLoaded", async function () {
   // EVENT LISTENERS
   // ==========================================
 
-  ticketCategory.addEventListener(
-    "change",
-    updateDataChangeVisibility
-  );
+  if (ticketCategory) {
+
+    ticketCategory.addEventListener(
+      "change",
+      updateDataChangeVisibility
+    );
+
+  }
 
 
-  ticketDirection.addEventListener(
-    "change",
-    () => {
+  if (ticketDirection) {
 
-      if (
-        ticketCategory.value ===
-        "data_change"
-      ) {
+    ticketDirection.addEventListener(
+      "change",
+      () => {
 
-        dataChangeRows.innerHTML =
-          "";
+        if (
+          ticketCategory.value ===
+          "data_change"
+        ) {
 
-        addChangeRow();
+          dataChangeRows.innerHTML =
+            "";
 
-      }
+          addChangeRow();
 
-    }
-  );
-
-
-  addChangeButton.addEventListener(
-    "click",
-    () =>
-      addChangeRow()
-  );
-
-
-  ticketForm.addEventListener(
-    "submit",
-    createTicket
-  );
-
-
-  el(
-    "refreshMyTickets"
-  ).addEventListener(
-    "click",
-    loadMyTickets
-  );
-
-
-  el(
-    "refreshStaffTickets"
-  ).addEventListener(
-    "click",
-    loadStaffTickets
-  );
-
-
-  staffSearch.addEventListener(
-    "input",
-    applyStaffFilters
-  );
-
-
-  staffStatusFilter.addEventListener(
-    "change",
-    applyStaffFilters
-  );
-
-
-  staffDirectionFilter.addEventListener(
-    "change",
-    applyStaffFilters
-  );
-
-
-  closeTicketModal.addEventListener(
-    "click",
-    () => {
-
-      ticketModal.classList.remove(
-        "active"
-      );
-
-
-      ticketModal.setAttribute(
-        "aria-hidden",
-        "true"
-      );
-
-
-      currentTicket =
-        null;
-
-    }
-  );
-
-
-  ticketModal.addEventListener(
-    "click",
-    event => {
-
-      if (
-        event.target ===
-        ticketModal
-      ) {
-
-        closeTicketModal.click();
+        }
 
       }
+    );
 
-    }
-  );
-
-
-  sendReplyButton.addEventListener(
-    "click",
-    sendReply
-  );
+  }
 
 
-  approveTicketButton.addEventListener(
-    "click",
-    () =>
-      reviewTicket(
-        "approved"
-      )
-  );
+  if (addChangeButton) {
+
+    addChangeButton.addEventListener(
+      "click",
+      () =>
+        addChangeRow()
+    );
+
+  }
 
 
-  rejectTicketButton.addEventListener(
-    "click",
-    () =>
-      reviewTicket(
-        "rejected"
-      )
-  );
+  if (ticketForm) {
+
+    ticketForm.addEventListener(
+      "submit",
+      createTicket
+    );
+
+  }
+
+
+  const refreshMyTickets =
+    el("refreshMyTickets");
+
+
+  if (refreshMyTickets) {
+
+    refreshMyTickets.addEventListener(
+      "click",
+      loadMyTickets
+    );
+
+  }
+
+
+  const refreshStaffTickets =
+    el("refreshStaffTickets");
+
+
+  if (refreshStaffTickets) {
+
+    refreshStaffTickets.addEventListener(
+      "click",
+      loadStaffTickets
+    );
+
+  }
+
+
+  if (staffSearch) {
+
+    staffSearch.addEventListener(
+      "input",
+      applyStaffFilters
+    );
+
+  }
+
+
+  if (staffStatusFilter) {
+
+    staffStatusFilter.addEventListener(
+      "change",
+      applyStaffFilters
+    );
+
+  }
+
+
+  if (staffDirectionFilter) {
+
+    staffDirectionFilter.addEventListener(
+      "change",
+      applyStaffFilters
+    );
+
+  }
+
+
+  if (closeTicketModal) {
+
+    closeTicketModal.addEventListener(
+      "click",
+      () => {
+
+        ticketModal.classList.remove(
+          "active"
+        );
+
+
+        ticketModal.setAttribute(
+          "aria-hidden",
+          "true"
+        );
+
+
+        currentTicket =
+          null;
+
+      }
+    );
+
+  }
+
+
+  if (ticketModal) {
+
+    ticketModal.addEventListener(
+      "click",
+      event => {
+
+        if (
+          event.target ===
+          ticketModal
+        ) {
+
+          closeTicketModal.click();
+
+        }
+
+      }
+    );
+
+  }
+
+
+  if (sendReplyButton) {
+
+    sendReplyButton.addEventListener(
+      "click",
+      sendReply
+    );
+
+  }
+
+
+  if (approveTicketButton) {
+
+    approveTicketButton.addEventListener(
+      "click",
+      () =>
+        reviewTicket(
+          "approved"
+        )
+    );
+
+  }
+
+
+  if (rejectTicketButton) {
+
+    rejectTicketButton.addEventListener(
+      "click",
+      () =>
+        reviewTicket(
+          "rejected"
+        )
+    );
+
+  }
 
 
   if (takeTicketButton) {
