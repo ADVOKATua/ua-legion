@@ -786,6 +786,857 @@
 
   <script src="script.js"></script>
 
+
+  <!-- ======================================
+       STAFF CENTER ENHANCEMENTS
+  ======================================= -->
+
+  <script>
+
+  document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+      const supabase =
+        window.supabaseClient;
+
+      const panel =
+        document.getElementById(
+          "staffPanel"
+        );
+
+      const list =
+        document.getElementById(
+          "staffTicketsList"
+        );
+
+      if (
+        !supabase ||
+        !panel ||
+        !list
+      ) {
+        return;
+      }
+
+
+      let currentUserId = null;
+
+      let ticketMeta =
+        new Map();
+
+      let assignedProfiles =
+        new Map();
+
+      let observerTimer = null;
+
+
+      /* ======================================
+         EXTRA STYLES
+      ====================================== */
+
+      const style =
+        document.createElement(
+          "style"
+        );
+
+      style.textContent = `
+
+        .staff-summary {
+
+          display:grid;
+
+          grid-template-columns:
+            repeat(6,1fr);
+
+          gap:10px;
+
+          padding:
+            18px 18px 0;
+
+        }
+
+
+        .staff-stat {
+
+          padding:
+            11px 12px;
+
+          border:
+            1px solid var(--line);
+
+          background:#090e16;
+
+        }
+
+
+        .staff-stat span {
+
+          display:block;
+
+          color:var(--muted);
+
+          font-size:9px;
+
+          font-weight:800;
+
+        }
+
+
+        .staff-stat strong {
+
+          display:block;
+
+          margin-top:4px;
+
+          color:#fff;
+
+          font-size:18px;
+
+          font-weight:900;
+
+        }
+
+
+        .staff-stat.new strong {
+          color:#ffd34d;
+        }
+
+
+        .staff-stat.progress strong {
+          color:#7db0ff;
+        }
+
+
+        .staff-stat.unassigned strong {
+          color:#929aa8;
+        }
+
+
+        .staff-stat.mine strong {
+          color:#8bb8ff;
+        }
+
+
+        .staff-stat.resolved strong {
+          color:#62e59c;
+        }
+
+
+        .staff-assignee {
+
+          margin-top:6px;
+
+          color:#8bb8ff;
+
+          font-size:10px;
+
+        }
+
+
+        .staff-assignee strong {
+
+          color:#fff;
+
+          font-weight:900;
+
+        }
+
+
+        .staff-extra-filters {
+
+          display:grid;
+
+          grid-template-columns:
+            1fr 1fr;
+
+          gap:10px;
+
+          margin-top:10px;
+
+        }
+
+
+        @media(max-width:900px) {
+
+          .staff-summary {
+
+            grid-template-columns:
+              repeat(2,1fr);
+
+          }
+
+        }
+
+
+        @media(max-width:650px) {
+
+          .staff-summary {
+
+            grid-template-columns:1fr;
+
+          }
+
+          .staff-extra-filters {
+
+            grid-template-columns:1fr;
+
+          }
+
+        }
+
+      `;
+
+      document.head.appendChild(
+        style
+      );
+
+
+      /* ======================================
+         CONTROLS
+      ====================================== */
+
+      function ensureControls() {
+
+        if (
+          !document.getElementById(
+            "staffSummaryEnhancement"
+          )
+        ) {
+
+          const summary =
+            document.createElement(
+              "div"
+            );
+
+          summary.id =
+            "staffSummaryEnhancement";
+
+          summary.className =
+            "staff-summary";
+
+          const filters =
+            document.querySelector(
+              ".staff-filters"
+            );
+
+          if (filters) {
+
+            panel.insertBefore(
+              summary,
+              filters
+            );
+
+          }
+
+        }
+
+
+        if (
+          !document.getElementById(
+            "staffAssignmentEnhancement"
+          )
+        ) {
+
+          const filters =
+            document.querySelector(
+              ".staff-filters"
+            );
+
+          if (!filters) {
+            return;
+          }
+
+
+          const extra =
+            document.createElement(
+              "div"
+            );
+
+          extra.className =
+            "staff-extra-filters";
+
+
+          extra.innerHTML = `
+
+            <select
+              id="staffAssignmentEnhancement"
+            >
+
+              <option value="all">
+                Усі відповідальні
+              </option>
+
+              <option value="mine">
+                👤 Мої звернення
+              </option>
+
+              <option value="unassigned">
+                ⚪ Без відповідального
+              </option>
+
+              <option value="assigned">
+                👥 Призначені
+              </option>
+
+            </select>
+
+
+            <select
+              id="staffPriorityEnhancement"
+            >
+
+              <option value="all">
+                Усі пріоритети
+              </option>
+
+              <option value="urgent">
+                🔴 Термінові
+              </option>
+
+              <option value="high">
+                🟠 Високі
+              </option>
+
+              <option value="normal">
+                🔵 Звичайні
+              </option>
+
+              <option value="low">
+                ⚪ Низькі
+              </option>
+
+            </select>
+
+          `;
+
+
+          filters.parentNode.insertBefore(
+            extra,
+            filters.nextSibling
+          );
+
+
+          extra.addEventListener(
+            "change",
+            applyLocalFilters
+          );
+
+        }
+
+      }
+
+
+      /* ======================================
+         SUMMARY
+      ====================================== */
+
+      function renderSummary() {
+
+        const box =
+          document.getElementById(
+            "staffSummaryEnhancement"
+          );
+
+        if (!box) {
+          return;
+        }
+
+
+        const all =
+          [
+            ...ticketMeta.values()
+          ];
+
+
+        const count =
+          status =>
+            all.filter(
+              ticket =>
+                ticket.status ===
+                status
+            ).length;
+
+
+        const unassigned =
+          all.filter(
+            ticket =>
+              !ticket.assigned_user_id
+          ).length;
+
+
+        const mine =
+          currentUserId
+
+            ? all.filter(
+                ticket =>
+                  ticket.assigned_user_id ===
+                  currentUserId
+              ).length
+
+            : 0;
+
+
+        box.innerHTML = `
+
+          <div class="staff-stat">
+
+            <span>
+              Усього
+            </span>
+
+            <strong>
+              ${all.length}
+            </strong>
+
+          </div>
+
+
+          <div class="staff-stat new">
+
+            <span>
+              🆕 Нові
+            </span>
+
+            <strong>
+              ${count("new")}
+            </strong>
+
+          </div>
+
+
+          <div class="staff-stat progress">
+
+            <span>
+              🔵 В роботі
+            </span>
+
+            <strong>
+              ${count("in_progress")}
+            </strong>
+
+          </div>
+
+
+          <div class="staff-stat unassigned">
+
+            <span>
+              ⚪ Без відповідального
+            </span>
+
+            <strong>
+              ${unassigned}
+            </strong>
+
+          </div>
+
+
+          <div class="staff-stat mine">
+
+            <span>
+              👤 Мої
+            </span>
+
+            <strong>
+              ${mine}
+            </strong>
+
+          </div>
+
+
+          <div class="staff-stat resolved">
+
+            <span>
+              ✅ Вирішені
+            </span>
+
+            <strong>
+              ${count("resolved")}
+            </strong>
+
+          </div>
+
+        `;
+
+      }
+
+
+      /* ======================================
+         LOCAL FILTERS
+      ====================================== */
+
+      function applyLocalFilters() {
+
+        const assignment =
+          document.getElementById(
+            "staffAssignmentEnhancement"
+          )?.value ||
+          "all";
+
+
+        const priority =
+          document.getElementById(
+            "staffPriorityEnhancement"
+          )?.value ||
+          "all";
+
+
+        list
+          .querySelectorAll(
+            ".ticket-row"
+          )
+          .forEach(
+            row => {
+
+              const meta =
+                ticketMeta.get(
+                  Number(
+                    row.dataset.ticketId
+                  )
+                );
+
+
+              if (!meta) {
+                return;
+              }
+
+
+              const okAssignment =
+
+                assignment === "all"
+
+                ||
+
+                (
+                  assignment === "mine" &&
+                  meta.assigned_user_id ===
+                  currentUserId
+                )
+
+                ||
+
+                (
+                  assignment === "unassigned" &&
+                  !meta.assigned_user_id
+                )
+
+                ||
+
+                (
+                  assignment === "assigned" &&
+                  Boolean(
+                    meta.assigned_user_id
+                  )
+                );
+
+
+              const okPriority =
+
+                priority === "all"
+
+                ||
+
+                meta.priority ===
+                priority;
+
+
+              row.style.display =
+                okAssignment &&
+                okPriority
+                  ? ""
+                  : "none";
+
+            }
+          );
+
+      }
+
+
+      /* ======================================
+         LOAD TICKET META
+      ====================================== */
+
+      async function loadMeta() {
+
+        const user =
+          await supabase.auth.getUser();
+
+
+        currentUserId =
+          user.data?.user?.id ||
+          null;
+
+
+        if (!currentUserId) {
+          return;
+        }
+
+
+        const result =
+          await supabase
+            .from(
+              "support_tickets"
+            )
+            .select(
+              "id,ticket_number,status,priority,assigned_user_id,direction_id"
+            )
+            .order(
+              "updated_at",
+              {
+                ascending:false
+              }
+            );
+
+
+        if (result.error) {
+
+          console.error(
+            "Staff enhancement:",
+            result.error
+          );
+
+          return;
+        }
+
+
+        ticketMeta =
+          new Map(
+            (
+              result.data ||
+              []
+            ).map(
+              ticket =>
+                [
+                  Number(
+                    ticket.id
+                  ),
+                  ticket
+                ]
+            )
+          );
+
+
+        renderSummary();
+
+
+        const ids =
+          [
+            ...new Set(
+              (
+                result.data ||
+                []
+              )
+                .map(
+                  ticket =>
+                    ticket.assigned_user_id
+                )
+                .filter(Boolean)
+            )
+          ];
+
+
+        assignedProfiles =
+          new Map();
+
+
+        if (ids.length) {
+
+          const profiles =
+            await supabase
+              .from(
+                "profiles"
+              )
+              .select(
+                "id,display_name,discord_username,game_nickname"
+              )
+              .in(
+                "id",
+                ids
+              );
+
+
+          (
+            profiles.data ||
+            []
+          ).forEach(
+            profile => {
+
+              assignedProfiles.set(
+                String(
+                  profile.id
+                ),
+                profile
+              );
+
+            }
+          );
+
+        }
+
+
+        applyLocalFilters();
+
+        decorateRows();
+
+      }
+
+
+      /* ======================================
+         RESPONSIBLE IN LIST
+      ====================================== */
+
+      function decorateRows() {
+
+        list
+          .querySelectorAll(
+            ".ticket-row"
+          )
+          .forEach(
+            row => {
+
+              const meta =
+                ticketMeta.get(
+                  Number(
+                    row.dataset.ticketId
+                  )
+                );
+
+
+              if (!meta) {
+                return;
+              }
+
+
+              let badge =
+                row.querySelector(
+                  ".staff-assignee"
+                );
+
+
+              if (!badge) {
+
+                badge =
+                  document.createElement(
+                    "div"
+                  );
+
+                badge.className =
+                  "staff-assignee";
+
+                row.appendChild(
+                  badge
+                );
+
+              }
+
+
+              if (
+                !meta.assigned_user_id
+              ) {
+
+                badge.textContent =
+                  "⚪ Без відповідального";
+
+                return;
+
+              }
+
+
+              const profile =
+                assignedProfiles.get(
+                  String(
+                    meta.assigned_user_id
+                  )
+                );
+
+
+              const name =
+
+                profile?.display_name ||
+
+                profile?.discord_username ||
+
+                profile?.game_nickname ||
+
+                "Працівник";
+
+
+              badge.textContent =
+                "👨‍💼 Відповідальний: " +
+                name;
+
+            }
+          );
+
+      }
+
+
+      /* ======================================
+         REFRESH
+      ====================================== */
+
+      function refresh() {
+
+        ensureControls();
+
+        loadMeta();
+
+      }
+
+
+      /* ======================================
+         OBSERVER
+      ====================================== */
+
+      const observer =
+        new MutationObserver(
+          () => {
+
+            clearTimeout(
+              observerTimer
+            );
+
+
+            observerTimer =
+              setTimeout(
+                () => {
+
+                  ensureControls();
+
+                  decorateRows();
+
+                  applyLocalFilters();
+
+                },
+                120
+              );
+
+          }
+        );
+
+
+      observer.observe(
+        list,
+        {
+          childList:true,
+          subtree:true
+        }
+      );
+
+
+      refresh();
+
+
+      setInterval(
+        refresh,
+        5000
+      );
+
+    }
+  );
+
+  </script>
+
+
 </body>
 
 </html>
