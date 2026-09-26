@@ -647,15 +647,11 @@
         </div>
 
 
-        <!-- CURRENT RESPONSIBLE -->
-
         <div
           id="assignmentCurrent"
           class="change-review-card"
         ></div>
 
-
-        <!-- ASSIGNMENT HISTORY -->
 
         <div
           id="assignmentHistory"
@@ -663,8 +659,6 @@
           style="margin-top:12px;"
         ></div>
 
-
-        <!-- TAKE / REASSIGN -->
 
         <div
           class="modal-reply-actions"
@@ -1549,13 +1543,30 @@
                 );
 
 
+              /*
+                ПРАВИЛЬНИЙ ПОРЯДОК:
+
+                1. game_nickname
+                2. discord_username
+                3. display_name,
+                   якщо це НЕ email
+                4. Працівник
+              */
+
               const name =
 
-                profile?.display_name ||
+                profile?.game_nickname ||
 
                 profile?.discord_username ||
 
-                profile?.game_nickname ||
+                (
+                  profile?.display_name &&
+                  !String(
+                    profile.display_name
+                  ).includes("@")
+                    ? profile.display_name
+                    : ""
+                ) ||
 
                 "Працівник";
 
