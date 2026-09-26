@@ -1,6 +1,7 @@
 // ======================================
 // UA LEGION — AUTH MENU SYSTEM
 // auth-menu.js
+// VERSION 4
 // ======================================
 
 let authMenuRunning = false;
@@ -80,7 +81,7 @@ async function initAuthMenu() {
         ".admin-menu-item, .members-menu-item, .support-menu-item"
       )
       .forEach(
-        (item) => item.remove()
+        item => item.remove()
       );
 
 
@@ -116,9 +117,10 @@ async function initAuthMenu() {
         session
       },
       error: sessionError
-    } = await supabase
-      .auth
-      .getSession();
+    } =
+      await supabase
+        .auth
+        .getSession();
 
 
     // ======================================
@@ -202,10 +204,11 @@ async function initAuthMenu() {
       const {
         data,
         error
-      } = await supabase
-        .rpc(
-          "is_ua_legion_staff"
-        );
+      } =
+        await supabase
+          .rpc(
+            "is_ua_legion_staff"
+          );
 
 
       if (error) {
@@ -249,18 +252,19 @@ async function initAuthMenu() {
       const {
         data,
         error
-      } = await supabase
-        .from("applications")
-        .select("id")
-        .eq(
-          "user_id",
-          user.id
-        )
-        .eq(
-          "status",
-          "approved"
-        )
-        .limit(1);
+      } =
+        await supabase
+          .from("applications")
+          .select("id")
+          .eq(
+            "user_id",
+            user.id
+          )
+          .eq(
+            "status",
+            "approved"
+          )
+          .limit(1);
 
 
       if (error) {
@@ -302,7 +306,7 @@ async function initAuthMenu() {
           nav.querySelectorAll("a")
         )
         .find(
-          (link) =>
+          link =>
             link.href.includes(
               "tiktok.com"
             )
@@ -508,10 +512,6 @@ async function initAuthMenu() {
       "support-unread-badge";
 
 
-    // ======================================
-    // ПОЧАТКОВО ПРИХОВАНИЙ
-    // ======================================
-
     supportBadge.style.display =
       "none";
 
@@ -602,9 +602,10 @@ async function initAuthMenu() {
       try {
 
         const result =
-          await supabase.rpc(
-            "get_support_unread_count"
-          );
+          await supabase
+            .rpc(
+              "get_support_unread_count"
+            );
 
 
         if (result.error) {
