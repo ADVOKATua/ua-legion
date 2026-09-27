@@ -2,7 +2,15 @@
 // UA LEGION
 // APPLICATIONS SYSTEM
 // applications.js
+//
+// Нова архітектура:
+// - applications — джерело заявок
+// - approve_application — схвалення через RPC
+// - reject_application — відхилення через RPC
+// - user_directions — змінюється тільки через RPC
+// - ролі НЕ призначаються через заявку
 // ==========================================
+
 
 document.addEventListener(
   "DOMContentLoaded",
@@ -20,7 +28,7 @@ document.addEventListener(
     if (!supabase) {
 
       console.error(
-        "Supabase не підключений"
+        "UA LEGION: Supabase не підключений."
       );
 
       return;
@@ -57,7 +65,7 @@ document.addEventListener(
 
 
     // ======================================
-    // ELEMENTS
+    // DOM
     // ======================================
 
     const applicationsList =
@@ -124,29 +132,16 @@ document.addEventListener(
     // DATA
     // ======================================
 
-    let allApplications =
-      [];
+    let allApplications = [];
 
+    let allDirections = [];
 
-    let allRoles =
-      [];
-
-
-    let allDirections =
-      [];
-
-
-    let isStaff =
-      false;
+    let isStaff = false;
 
 
     // ======================================
     // ETS2 DRIVER CLASSES
     // ======================================
-
-    /*
-     * Класи використовуються тільки для ETS2.
-     */
 
     const ets2DriverClasses = [
 
@@ -157,7 +152,7 @@ document.addEventListener(
 
       {
         code: "B",
-        name: "Клас B — Старший водій"
+        name: "Клас B"
       },
 
       {
@@ -237,7 +232,7 @@ document.addEventListener(
 
 
     // ======================================
-    // STATUS NORMALIZATION
+    // NORMALIZE STATUS
     // ======================================
 
     function normalizeStatus(
@@ -286,10 +281,10 @@ document.addEventListener(
 
 
     // ======================================
-    // IS NEW APPLICATION
+    // IS PENDING
     // ======================================
 
-    function isNewApplication(
+    function isPendingApplication(
       application
     ) {
 
@@ -303,15 +298,10 @@ document.addEventListener(
 
 
     // ======================================
-    // STAFF ACCESS CHECK
+    // STAFF ACCESS
     // ======================================
 
     async function checkStaffAccess() {
-
-      console.log(
-        "Перевірка доступу UA LEGION..."
-      );
-
 
       const {
         data,
@@ -326,7 +316,7 @@ document.addEventListener(
       if (error) {
 
         console.error(
-          "Помилка перевірки адміністрації:",
+          "UA LEGION: помилка перевірки адміністрації:",
           error
         );
 
@@ -335,60 +325,7 @@ document.addEventListener(
       }
 
 
-      console.log(
-        "Адміністративний доступ:",
-        data === true
-      );
-
-
       return data === true;
-
-    }
-
-
-    // ======================================
-    // LOAD ROLES
-    // ======================================
-
-    async function loadRoles() {
-
-      const {
-        data,
-        error
-      } =
-        await supabase
-          .from("roles")
-          .select(
-            "id, code, name"
-          )
-          .order(
-            "id",
-            {
-              ascending: true
-            }
-          );
-
-
-      if (error) {
-
-        console.error(
-          "Помилка завантаження ролей:",
-          error
-        );
-
-        return;
-
-      }
-
-
-      allRoles =
-        data || [];
-
-
-      console.log(
-        "Завантажені ролі:",
-        allRoles
-      );
 
     }
 
@@ -406,7 +343,7 @@ document.addEventListener(
         await supabase
           .from("directions")
           .select(
-            "id, name, slug"
+            "id, code, slug, name, is_active"
           )
           .order(
             "id",
@@ -419,7 +356,7 @@ document.addEventListener(
       if (error) {
 
         console.error(
-          "Помилка завантаження напрямків:",
+          "UA LEGION: помилка завантаження напрямків:",
           error
         );
 
@@ -431,360 +368,346 @@ document.addEventListener(
       allDirections =
         data || [];
 
-
-      console.log(
-        "Завантажені напрямки:",
-        allDirections
-      );
-
     }
 
 
     // ======================================
-    // LOAD APPLICATIONS
+    // NORMALIZE DIRECTION
     // ======================================
 
-    async function loadApplications() {
+    function normalizeDirection(
+      value
+    ) {
 
-      if (!applicationsList) {
-        return;
+      if (!value) {
+        return null;
       }
 
 
-      applicationsList.innerHTML = `
-
-        <div class="applications-loading">
-
-          ⏳ Завантаження заявок...
-
-        </div>
-
-      `;
-
-
-      let query =
-        supabase
-          .from("applications")
-          .select("*");
-
-
-      // ====================================
-      // ADMIN SEES ALL
-      // USER SEES ONLY OWN
-      // ====================================
-
-      if (!isStaff) {
-
-        query =
-          query.eq(
-            "user_id",
-            user.id
-          );
-
-      }
-
-
-      const {
-        data,
-        error
-      } =
-        await query;
-
-
-      if (error) {
-
-        console.error(
-          "Помилка завантаження заявок:",
-          error
-        );
-
-
-        applicationsList.innerHTML = `
-
-          <div class="applications-empty">
-
-            ❌ Не вдалося завантажити заявки.
-
-            <br><br>
-
-            <small>
-
-              ${escapeHtml(
-                error.message
-              )}
-
-            </small>
-
-          </div>
-
-        `;
-
-
-        return;
-
-      }
-
-
-      allApplications =
-        data || [];
-
-
-      console.log(
-        "Завантажені заявки:",
-        allApplications
-      );
-
-
-      // ====================================
-      // NO APPLICATIONS FOR USER
-      // ====================================
-
-      if (
-        !isStaff &&
-        allApplications.length === 0
-      ) {
-
-        applicationsList.innerHTML =
-          "";
-
-
-        if (createApplicationBlock) {
-
-          createApplicationBlock.style.display =
-            "block";
-
-        }
-
-
-        return;
-
-      }
-
-
-      if (createApplicationBlock) {
-
-        createApplicationBlock.style.display =
-          "none";
-
-      }
-
-
-      if (isStaff) {
-
-        updateStatistics();
-
-      }
-
-
-      renderApplications();
-
-    }
-
-
-    // ======================================
-    // STATISTICS
-    // ======================================
-
-    function updateStatistics() {
-
-      const newCount =
-        allApplications.filter(
-          item =>
-            isNewApplication(item)
-        ).length;
-
-
-      const approvedCount =
-        allApplications.filter(
-          item =>
-            normalizeStatus(
-              item.status
-            ) === "approved"
-        ).length;
-
-
-      const rejectedCount =
-        allApplications.filter(
-          item =>
-            normalizeStatus(
-              item.status
-            ) === "rejected"
-        ).length;
-
-
-      const newElement =
-        document.getElementById(
-          "newApplicationsCount"
-        );
-
-
-      const approvedElement =
-        document.getElementById(
-          "approvedApplicationsCount"
-        );
-
-
-      const rejectedElement =
-        document.getElementById(
-          "rejectedApplicationsCount"
-        );
-
-
-      if (newElement) {
-
-        newElement.textContent =
-          newCount;
-
-      }
-
-
-      if (approvedElement) {
-
-        approvedElement.textContent =
-          approvedCount;
-
-      }
-
-
-      if (rejectedElement) {
-
-        rejectedElement.textContent =
-          rejectedCount;
-
-      }
-
-    }
-
-
-    // ======================================
-    // FILTER APPLICATIONS
-    // ======================================
-
-    function getFilteredApplications() {
-
-      if (!isStaff) {
-
-        return allApplications;
-
-      }
-
-
-      const status =
-        statusFilter?.value ||
-        "all";
-
-
-      const search =
-        (
-          searchInput?.value ||
-          ""
-        )
+      const normalized =
+        String(value)
           .trim()
           .toLowerCase();
 
 
-      return allApplications.filter(
-        application => {
+      if (
+        normalized === "ets2" ||
+        normalized === "ets2/truckersmp" ||
+        normalized === "ets2 / truckersmp"
+      ) {
 
-          const normalizedApplicationStatus =
-            normalizeStatus(
-              application.status
+        return "ets2";
+
+      }
+
+
+      if (
+        normalized === "wot" ||
+        normalized === "world of tanks"
+      ) {
+
+        return "wot";
+
+      }
+
+
+      if (
+        normalized === "dota" ||
+        normalized === "dota2" ||
+        normalized === "dota 2"
+      ) {
+
+        return "dota2";
+
+      }
+
+
+      if (
+        normalized === "wow" ||
+        normalized === "world of warcraft"
+      ) {
+
+        return "wow";
+
+      }
+
+
+      return normalized;
+
+    }
+
+
+    // ======================================
+    // GET APPLICATION DIRECTION
+    // ======================================
+
+    function getApplicationDirection(
+      application
+    ) {
+
+      if (
+        application?.direction
+      ) {
+
+        return normalizeDirection(
+          application.direction
+        );
+
+      }
+
+
+      if (
+        Array.isArray(
+          application?.directions
+        )
+      ) {
+
+        return normalizeDirection(
+          application.directions[0]
+        );
+
+      }
+
+
+      if (
+        typeof application?.directions ===
+        "string"
+      ) {
+
+        try {
+
+          const parsed =
+            JSON.parse(
+              application.directions
             );
-
-
-          let statusMatch =
-            false;
 
 
           if (
-            status === "all"
+            Array.isArray(parsed)
           ) {
 
-            statusMatch =
-              true;
-
-          }
-
-
-          else if (
-            status === "new"
-          ) {
-
-            statusMatch =
-              normalizedApplicationStatus ===
-              "pending";
-
-          }
-
-
-          else {
-
-            statusMatch =
-              normalizedApplicationStatus ===
-              status;
-
-          }
-
-
-          const name =
-            (
-              application.name ||
-              ""
-            )
-              .toLowerCase();
-
-
-          const discord =
-            (
-              application.discord_nickname ||
-              application.discord_nick ||
-              ""
-            )
-              .toLowerCase();
-
-
-          const gameNickname =
-            (
-              application.game_nickname ||
-              application.game_nick ||
-              application.truckersmp_nick ||
-              application.wot_nickname ||
-              application.dota_nickname ||
-              application.wow_character ||
-              ""
-            )
-              .toLowerCase();
-
-
-          const searchMatch =
-            !search
-            ||
-            name.includes(
-              search
-            )
-            ||
-            discord.includes(
-              search
-            )
-            ||
-            gameNickname.includes(
-              search
+            return normalizeDirection(
+              parsed[0]
             );
 
+          }
 
-          return (
-            statusMatch &&
-            searchMatch
+
+          return normalizeDirection(
+            parsed
           );
 
         }
+
+        catch {
+
+          return normalizeDirection(
+            application.directions
+          );
+
+        }
+
+      }
+
+
+      return null;
+
+    }
+
+
+    // ======================================
+    // GET DIRECTION RECORD
+    // ======================================
+
+    function getDirectionRecord(
+      application
+    ) {
+
+      const slug =
+        getApplicationDirection(
+          application
+        );
+
+
+      if (!slug) {
+        return null;
+      }
+
+
+      return (
+        allDirections.find(
+          direction =>
+            normalizeDirection(
+              direction.slug ||
+              direction.code ||
+              direction.name
+            ) === slug
+        )
+        || null
       );
 
     }
 
 
     // ======================================
-    // STATUS
+    // DIRECTION NAME
+    // ======================================
+
+    function getDirectionName(
+      application
+    ) {
+
+      const direction =
+        getDirectionRecord(
+          application
+        );
+
+
+      if (
+        direction?.name
+      ) {
+
+        return direction.name;
+
+      }
+
+
+      const slug =
+        getApplicationDirection(
+          application
+        );
+
+
+      const names = {
+
+        ets2:
+          "ETS2 / TruckersMP",
+
+        wot:
+          "World of Tanks",
+
+        dota2:
+          "Dota 2",
+
+        wow:
+          "World of Warcraft"
+
+      };
+
+
+      return (
+        names[slug] ||
+        slug ||
+        "Не визначено"
+      );
+
+    }
+
+
+    // ======================================
+    // GAME NICKNAME
+    // ======================================
+
+    function getGameNickname(
+      application
+    ) {
+
+      const direction =
+        getApplicationDirection(
+          application
+        );
+
+
+      if (
+        direction === "ets2"
+      ) {
+
+        return (
+          application.truckersmp_nickname ||
+          application.truckersmp_nick ||
+          application.game_nickname ||
+          application.game_nick ||
+          "-"
+        );
+
+      }
+
+
+      if (
+        direction === "wot"
+      ) {
+
+        return (
+          application.wot_nickname ||
+          application.game_nickname ||
+          application.game_nick ||
+          "-"
+        );
+
+      }
+
+
+      if (
+        direction === "dota2"
+      ) {
+
+        return (
+          application.dota_nickname ||
+          application.game_nickname ||
+          application.game_nick ||
+          "-"
+        );
+
+      }
+
+
+      if (
+        direction === "wow"
+      ) {
+
+        return (
+          application.wow_character ||
+          application.game_nickname ||
+          application.game_nick ||
+          "-"
+        );
+
+      }
+
+
+      return (
+        application.game_nickname ||
+        application.game_nick ||
+        application.truckersmp_nickname ||
+        application.truckersmp_nick ||
+        application.wot_nickname ||
+        application.dota_nickname ||
+        application.wow_character ||
+        "-"
+      );
+
+    }
+
+
+    // ======================================
+    // DISCORD
+    // ======================================
+
+    function getDiscordNickname(
+      application
+    ) {
+
+      return (
+        application.discord_nickname ||
+        application.discord_nick ||
+        "-"
+      );
+
+    }
+
+
+    // ======================================
+    // STATUS LABEL
     // ======================================
 
     function getStatusLabel(
@@ -838,12 +761,14 @@ document.addEventListener(
         statuses[normalized]
         ||
         {
+
           label:
             status ||
             "Невідомо",
 
           className:
             ""
+
         }
       );
 
@@ -859,526 +784,417 @@ document.addEventListener(
     ) {
 
       if (!dateString) {
+        return "-";
+      }
+
+
+      const date =
+        new Date(
+          dateString
+        );
+
+
+      if (
+        Number.isNaN(
+          date.getTime()
+        )
+      ) {
 
         return "-";
 
       }
 
 
-      return new Date(
-        dateString
-      )
-        .toLocaleString(
-          "uk-UA"
-        );
-
-    }
-
-
-    // ======================================
-    // FORMAT DIRECTIONS
-    // ======================================
-
-    function formatDirections(
-      directions
-    ) {
-
-      if (!directions) {
-
-        return "-";
-
-      }
-
-
-      if (
-        Array.isArray(
-          directions
-        )
-      ) {
-
-        if (
-          directions.length === 0
-        ) {
-
-          return "-";
-
-        }
-
-
-        return directions.join(
-          ", "
-        );
-
-      }
-
-
-      return directions;
-
-    }
-
-
-    // ======================================
-    // GET APPLICATION DIRECTION
-    // ======================================
-
-    function getApplicationDirection(
-      application
-    ) {
-
-      if (
-        application?.direction
-      ) {
-
-        return application.direction;
-
-      }
-
-
-      if (
-        application?.directions
-      ) {
-
-        if (
-          Array.isArray(
-            application.directions
-          )
-        ) {
-
-          return (
-            application.directions[0] ||
-            null
-          );
-
-        }
-
-
-        if (
-          typeof application.directions ===
-          "string"
-        ) {
-
-          try {
-
-            const parsed =
-              JSON.parse(
-                application.directions
-              );
-
-
-            if (
-              Array.isArray(parsed)
-            ) {
-
-              return (
-                parsed[0] ||
-                null
-              );
-
-            }
-
-          }
-
-          catch {
-
-            return application.directions;
-
-          }
-
-        }
-
-      }
-
-
-      return null;
-
-    }
-
-
-    // ======================================
-    // GET APPLICATION DIRECTION ID
-    // ======================================
-
-    function getApplicationDirectionId(
-      application
-    ) {
-
-      const applicationDirection =
-        getApplicationDirection(
-          application
-        );
-
-
-      if (!applicationDirection) {
-
-        return null;
-
-      }
-
-
-      const normalized =
-        String(
-          applicationDirection
-        )
-          .trim()
-          .toLowerCase();
-
-
-      const directionMap = {
-
-        "ets2":
-          "ets2",
-
-        "ets2 / truckersmp":
-          "ets2",
-
-        "world of tanks":
-          "wot",
-
-        "wot":
-          "wot",
-
-        "dota 2":
-          "dota2",
-
-        "dota2":
-          "dota2",
-
-        "dota":
-          "dota2",
-
-        "world of warcraft":
-          "wow",
-
-        "wow":
-          "wow"
-
-      };
-
-
-      const slug =
-        directionMap[
-          normalized
-        ];
-
-
-      if (slug) {
-
-        const direction =
-          allDirections.find(
-
-            item =>
-              String(
-                item.slug || ""
-              )
-                .trim()
-                .toLowerCase() ===
-              slug
-
-          );
-
-
-        return (
-          direction?.id ||
-          null
-        );
-
-      }
-
-
-      const foundByName =
-        allDirections.find(
-
-          direction =>
-
-            String(
-              direction.name || ""
-            )
-              .trim()
-              .toLowerCase() ===
-            normalized
-
-        );
-
-
-      return (
-        foundByName?.id ||
-        null
+      return date.toLocaleString(
+        "uk-UA"
       );
 
     }
+
+
     // ======================================
-    // ROLE OPTIONS
+    // FORMAT VALUE
     // ======================================
 
-    function createRoleOptions(
-      directionId = "global"
+    function displayValue(
+      value
     ) {
 
-      let html = `
+      if (
+        value === null ||
+        value === undefined ||
+        String(value).trim() === ""
+      ) {
 
-        <option value="">
+        return "-";
 
-          Оберіть роль...
+      }
 
-        </option>
+
+      return escapeHtml(
+        value
+      );
+
+    }
+
+
+    // ======================================
+    // LOAD APPLICATIONS
+    // ======================================
+
+    async function loadApplications() {
+
+      if (!applicationsList) {
+        return;
+      }
+
+
+      applicationsList.innerHTML = `
+
+        <div class="applications-loading">
+
+          ⏳ Завантаження заявок...
+
+        </div>
 
       `;
 
 
-      const normalizedDirection =
-        String(
-          directionId || "global"
-        )
-          .trim()
-          .toLowerCase();
-
-
-      const globalRoleNames = [
-
-        "Власник UA LEGION",
-
-        "Заступник власника UA LEGION",
-
-        "Генеральний Топ-менеджер UA LEGION",
-
-        "Генеральний HR-менеджер UA LEGION",
-
-        "Генеральний SMM-менеджер UA LEGION",
-
-        "Генеральний PR-менеджер UA LEGION",
-
-        "Генеральний технічний-менеджер UA LEGION",
-
-        "Генеральний івент-менеджер UA LEGION"
-
-      ];
-
-
-      let filteredRoles = [];
-
-
-      if (
-        normalizedDirection ===
-        "global"
-      ) {
-
-        filteredRoles =
-          allRoles.filter(
-            role => {
-
-              const roleName =
-                String(
-                  role.name || ""
-                )
-                  .trim()
-                  .toLowerCase();
-
-
-              return globalRoleNames.some(
-                globalName =>
-                  roleName ===
-                  globalName
-                    .trim()
-                    .toLowerCase()
-              );
-
+      let query =
+        supabase
+          .from("applications")
+          .select("*")
+          .order(
+            "created_at",
+            {
+              ascending: false
             }
+          );
+
+
+      // ====================================
+      // USER:
+      // ONLY OWN APPLICATIONS
+      // ====================================
+
+      if (!isStaff) {
+
+        query =
+          query.eq(
+            "user_id",
+            user.id
           );
 
       }
 
 
-      else {
-
-        const direction =
-          allDirections.find(
-            item =>
-              String(item.id) ===
-              String(directionId)
-          );
+      const {
+        data,
+        error
+      } =
+        await query;
 
 
-        const directionSlug =
-          String(
-            direction?.slug || ""
-          )
-            .trim()
-            .toLowerCase();
+      if (error) {
+
+        console.error(
+          "UA LEGION: помилка завантаження заявок:",
+          error
+        );
 
 
-        const directionTokens = {
+        applicationsList.innerHTML = `
 
-          ets2: [
-            "ets2",
-            "truckersmp"
-          ],
+          <div class="applications-empty">
 
-          wot: [
-            "world of tanks",
-            "wot"
-          ],
+            ❌ Не вдалося завантажити заявки.
 
-          dota2: [
-            "dota 2",
-            "dota2",
-            "dota"
-          ],
+            <br><br>
 
-          wow: [
-            "world of warcraft",
-            "wow"
-          ]
-
-        };
-
-
-        const tokens =
-          directionTokens[
-            directionSlug
-          ] || [];
-
-
-        filteredRoles =
-          allRoles.filter(
-            role => {
-
-              const roleName =
-                String(
-                  role.name || ""
-                )
-                  .trim()
-                  .toLowerCase();
-
-
-              const roleCode =
-                String(
-                  role.code || ""
-                )
-                  .trim()
-                  .toLowerCase();
-
-
-              return tokens.some(
-                token =>
-                  roleName.includes(
-                    token
-                  ) ||
-                  roleCode.includes(
-                    token
-                  )
-              );
-
-            }
-          );
-
-      }
-
-
-      filteredRoles.forEach(
-        role => {
-
-          html += `
-
-            <option
-              value="${role.id}"
-            >
+            <small>
 
               ${escapeHtml(
-                role.name
+                error.message
               )}
 
-            </option>
+            </small>
 
-          `;
+          </div>
 
-        }
-      );
+        `;
 
-
-      return html;
-
-    }
-
-
-    // ======================================
-    // DIRECTION OPTIONS
-    // ======================================
-
-    function createDirectionOptions(
-      application
-    ) {
-
-      const applicationDirectionId =
-        getApplicationDirectionId(
-          application
-        );
-
-
-      let html = `
-
-        <option value="global">
-
-          🌐 Глобальна роль
-
-        </option>
-
-      `;
-
-
-      if (
-        applicationDirectionId
-      ) {
-
-        const direction =
-          allDirections.find(
-
-            item =>
-              String(item.id) ===
-              String(
-                applicationDirectionId
-              )
-
-          );
-
-
-        if (direction) {
-
-          html += `
-
-            <option
-              value="${direction.id}"
-              selected
-            >
-
-              📍 ${escapeHtml(
-                direction.name
-              )}
-
-            </option>
-
-          `;
-
-        }
+        return;
 
       }
 
 
-      return html;
+      allApplications =
+        data || [];
+
+
+      if (
+        !isStaff &&
+        allApplications.length === 0
+      ) {
+
+        applicationsList.innerHTML =
+          "";
+
+
+        if (
+          createApplicationBlock
+        ) {
+
+          createApplicationBlock.style.display =
+            "block";
+
+        }
+
+
+        return;
+
+      }
+
+
+      if (
+        createApplicationBlock
+      ) {
+
+        createApplicationBlock.style.display =
+          "none";
+
+      }
+
+
+      if (isStaff) {
+
+        updateStatistics();
+
+      }
+
+
+      renderApplications();
 
     }
 
 
     // ======================================
-    // DRIVER CLASS OPTIONS
+    // STATISTICS
     // ======================================
 
-    function createDriverClassOptions() {
+    function updateStatistics() {
+
+      const newCount =
+        allApplications.filter(
+          application =>
+            isPendingApplication(
+              application
+            )
+        ).length;
+
+
+      const approvedCount =
+        allApplications.filter(
+          application =>
+            normalizeStatus(
+              application.status
+            ) === "approved"
+        ).length;
+
+
+      const rejectedCount =
+        allApplications.filter(
+          application =>
+            normalizeStatus(
+              application.status
+            ) === "rejected"
+        ).length;
+
+
+      const newElement =
+        document.getElementById(
+          "newApplicationsCount"
+        );
+
+
+      const approvedElement =
+        document.getElementById(
+          "approvedApplicationsCount"
+        );
+
+
+      const rejectedElement =
+        document.getElementById(
+          "rejectedApplicationsCount"
+        );
+
+
+      if (newElement) {
+
+        newElement.textContent =
+          newCount;
+
+      }
+
+
+      if (approvedElement) {
+
+        approvedElement.textContent =
+          approvedCount;
+
+      }
+
+
+      if (rejectedElement) {
+
+        rejectedElement.textContent =
+          rejectedCount;
+
+      }
+
+    }
+
+
+    // ======================================
+    // FILTER
+    // ======================================
+
+    function getFilteredApplications() {
+
+      if (!isStaff) {
+
+        return allApplications;
+
+      }
+
+
+      const status =
+        statusFilter?.value ||
+        "all";
+
+
+      const search =
+        (
+          searchInput?.value ||
+          ""
+        )
+          .trim()
+          .toLowerCase();
+
+
+      return allApplications.filter(
+        application => {
+
+          const applicationStatus =
+            normalizeStatus(
+              application.status
+            );
+
+
+          let statusMatch =
+            true;
+
+
+          if (
+            status === "new"
+          ) {
+
+            statusMatch =
+              applicationStatus ===
+              "pending";
+
+          }
+
+          else if (
+            status !== "all"
+          ) {
+
+            statusMatch =
+              applicationStatus ===
+              status;
+
+          }
+
+
+          const name =
+            String(
+              application.name ||
+              ""
+            )
+              .toLowerCase();
+
+
+          const discord =
+            String(
+              getDiscordNickname(
+                application
+              )
+            )
+              .toLowerCase();
+
+
+          const gameNickname =
+            String(
+              getGameNickname(
+                application
+              )
+            )
+              .toLowerCase();
+
+
+          const direction =
+            String(
+              getDirectionName(
+                application
+              )
+            )
+              .toLowerCase();
+
+
+          const searchMatch =
+            !search
+            ||
+            name.includes(
+              search
+            )
+            ||
+            discord.includes(
+              search
+            )
+            ||
+            gameNickname.includes(
+              search
+            )
+            ||
+            direction.includes(
+              search
+            );
+
+
+          return (
+            statusMatch &&
+            searchMatch
+          );
+
+        }
+      );
+
+    }
+
+
+    // ======================================
+    // ETS2 DRIVER CLASS OPTIONS
+    // ======================================
+
+    function createDriverClassOptions(
+      selectedClass = ""
+    ) {
 
       let html = `
 
         <option value="">
 
-          🚛 Оберіть клас водія...
+          Оберіть клас водія...
 
         </option>
 
@@ -1388,17 +1204,23 @@ document.addEventListener(
       ets2DriverClasses.forEach(
         driverClass => {
 
+          const selected =
+            String(
+              selectedClass
+            ).toUpperCase() ===
+            driverClass.code
+              ? "selected"
+              : "";
+
+
           html += `
 
             <option
-              value="${escapeHtml(
-                driverClass.code
-              )}"
+              value="${driverClass.code}"
+              ${selected}
             >
 
-              ${escapeHtml(
-                driverClass.name
-              )}
+              ${driverClass.name}
 
             </option>
 
@@ -1414,324 +1236,477 @@ document.addEventListener(
 
 
     // ======================================
-    // UPDATE DRIVER CLASS VISIBILITY
+    // RENDER APPLICATION DATA
     // ======================================
 
-    function updateDriverClassVisibility(
-      directionSelect,
-      driverClassSelect
+    function renderApplicationData(
+      application
     ) {
 
-      if (
-        !directionSelect ||
-        !driverClassSelect
-      ) {
-
-        return;
-
-      }
-
-
-      const selectedDirection =
-        directionSelect.value;
-
-
       const direction =
-        allDirections.find(
-          item =>
-            String(item.id) ===
-            String(selectedDirection)
+        getApplicationDirection(
+          application
         );
 
 
-      const isETS2 =
-        direction?.slug ===
-        "ets2";
-
-
-      const wrapper =
-        driverClassSelect.closest(
-          ".driver-class-block"
+      const directionName =
+        getDirectionName(
+          application
         );
 
 
-      if (isETS2) {
+      let html = `
 
-        if (wrapper) {
+        <div class="application-grid">
 
-          wrapper.style.display =
-            "block";
+          <div>
 
-        }
+            <span>👤 Ім'я</span>
 
-        driverClassSelect.disabled =
-          false;
+            <strong>
+              ${displayValue(
+                application.name
+              )}
+            </strong>
 
-      }
-
-      else {
-
-        if (wrapper) {
-
-          wrapper.style.display =
-            "none";
-
-        }
-
-        driverClassSelect.value =
-          "";
-
-        driverClassSelect.disabled =
-          true;
-
-      }
-
-    }
+          </div>
 
 
-    // ======================================
-    // ACTIVATE USER DIRECTION
-    // ======================================
+          <div>
 
-    async function activateUserDirection(
-      application,
-      directionId,
-      driverClass = ""
-    ) {
+            <span>🎂 Вік</span>
 
-      if (!application?.user_id) {
+            <strong>
+              ${displayValue(
+                application.age
+              )}
+            </strong>
 
-        throw new Error(
-          "Не знайдено користувача заявки."
-        );
-
-      }
+          </div>
 
 
-      if (!directionId) {
+          <div>
 
-        throw new Error(
-          "Не знайдено напрямок заявки."
-        );
+            <span>💬 Discord</span>
 
-      }
+            <strong>
+              ${displayValue(
+                getDiscordNickname(
+                  application
+                )
+              )}
+            </strong>
 
-
-      const numericDirectionId =
-        Number(directionId);
-
-
-      if (!Number.isFinite(numericDirectionId)) {
-
-        throw new Error(
-          "Некоректний ID напрямку."
-        );
-
-      }
+          </div>
 
 
-      const direction =
-        allDirections.find(
-          item =>
-            String(item.id) ===
-            String(numericDirectionId)
-        );
+          <div>
+
+            <span>🎮 Ігровий нік</span>
+
+            <strong>
+              ${displayValue(
+                getGameNickname(
+                  application
+                )
+              )}
+            </strong>
+
+          </div>
 
 
-      if (!direction) {
+          <div>
 
-        throw new Error(
-          "Напрямок не знайдено."
-        );
+            <span>📍 Напрямок</span>
 
-      }
+            <strong>
+              ${displayValue(
+                directionName
+              )}
+            </strong>
+
+          </div>
 
 
-      const isETS2 =
-        direction.slug === "ets2";
+          <div>
 
+            <span>📅 Подано</span>
+
+            <strong>
+              ${displayValue(
+                formatDate(
+                  application.created_at
+                )
+              )}
+            </strong>
+
+          </div>
+
+        </div>
+
+      `;
+
+
+      // ====================================
+      // ETS2
+      // ====================================
 
       if (
-        isETS2 &&
-        !driverClass
+        direction === "ets2"
       ) {
 
-        throw new Error(
-          "Для ETS2 потрібно вибрати клас водія."
-        );
+        html += `
+
+          <div class="application-section">
+
+            <span>
+              🚛 ETS2 / TruckersMP
+            </span>
+
+            <div class="application-grid">
+
+              <div>
+
+                <span>TruckersMP Nickname</span>
+
+                <strong>
+                  ${displayValue(
+                    application.truckersmp_nickname ||
+                    application.truckersmp_nick
+                  )}
+                </strong>
+
+              </div>
+
+
+              <div>
+
+                <span>TruckersMP ID</span>
+
+                <strong>
+                  ${displayValue(
+                    application.truckersmp_id
+                  )}
+                </strong>
+
+              </div>
+
+
+              <div>
+
+                <span>TruckersHub Username</span>
+
+                <strong>
+                  ${displayValue(
+                    application.truckershub_username
+                  )}
+                </strong>
+
+              </div>
+
+
+              <div>
+
+                <span>TruckersHub ID</span>
+
+                <strong>
+                  ${displayValue(
+                    application.truckershub_id
+                  )}
+                </strong>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        `;
 
       }
 
 
-      // ------------------------------------
-      // SEARCH EXISTING MEMBERSHIP
-      // ------------------------------------
+      // ====================================
+      // WORLD OF TANKS
+      // ====================================
 
-      const {
-        data: existingDirection,
-        error: findError
-      } =
-        await supabase
-          .from("user_directions")
-          .select(
-            "user_id, direction_id, status, driver_class"
-          )
-          .eq(
-            "user_id",
-            application.user_id
-          )
-          .eq(
-            "direction_id",
-            numericDirectionId
-          )
-          .maybeSingle();
+      if (
+        direction === "wot"
+      ) {
 
+        html += `
 
-      if (findError) {
+          <div class="application-section">
 
-        console.error(
-          "Помилка пошуку user_directions:",
-          findError
-        );
+            <span>
+              🪖 World of Tanks
+            </span>
 
-        throw findError;
+            <div class="application-grid">
 
-      }
+              <div>
+
+                <span>Нікнейм</span>
+
+                <strong>
+                  ${displayValue(
+                    application.wot_nickname
+                  )}
+                </strong>
+
+              </div>
 
 
-      // ------------------------------------
-      // UPDATE EXISTING MEMBERSHIP
-      // ------------------------------------
+              <div>
 
-      if (existingDirection) {
+                <span>Wargaming ID</span>
 
-        const updateData = {
+                <strong>
+                  ${displayValue(
+                    application.wargaming_id
+                  )}
+                </strong>
 
-          status:
-            "active"
-
-        };
-
-
-        // Клас ETS2 залишається окремим
-        // параметром членства.
-
-        if (
-          isETS2 &&
-          driverClass
-        ) {
-
-          updateData.driver_class =
-            driverClass;
-
-        }
+              </div>
 
 
-        const {
-          error: updateError
-        } =
-          await supabase
-            .from("user_directions")
-            .update(
-              updateData
-            )
-            .eq(
-              "user_id",
-              application.user_id
-            )
-            .eq(
-              "direction_id",
-              numericDirectionId
-            );
+              <div>
 
+                <span>Регіон</span>
 
-        if (updateError) {
+                <strong>
+                  ${displayValue(
+                    application.wot_region
+                  )}
+                </strong>
 
-          console.error(
-            "Помилка оновлення user_directions:",
-            updateError
-          );
+              </div>
 
-          throw updateError;
+            </div>
 
-        }
+          </div>
+
+        `;
 
       }
 
 
-      // ------------------------------------
-      // CREATE NEW MEMBERSHIP
-      // ------------------------------------
+      // ====================================
+      // DOTA 2
+      // ====================================
 
-      else {
+      if (
+        direction === "dota2"
+      ) {
 
-        const membershipData = {
+        html += `
 
-          user_id:
-            application.user_id,
+          <div class="application-section">
 
-          direction_id:
-            numericDirectionId,
+            <span>
+              ⚔️ Dota 2
+            </span>
 
-          status:
-            "active"
+            <div class="application-grid">
 
-        };
+              <div>
 
+                <span>Нікнейм</span>
 
-        if (
-          isETS2 &&
-          driverClass
-        ) {
+                <strong>
+                  ${displayValue(
+                    application.dota_nickname
+                  )}
+                </strong>
 
-          membershipData.driver_class =
-            driverClass;
-
-        }
-
-
-        const {
-          error: insertError
-        } =
-          await supabase
-            .from("user_directions")
-            .insert(
-              membershipData
-            );
+              </div>
 
 
-        if (insertError) {
+              <div>
 
-          console.error(
-            "Помилка створення user_directions:",
-            insertError
-          );
+                <span>Friend ID</span>
 
-          throw insertError;
+                <strong>
+                  ${displayValue(
+                    application.dota_friend_id
+                  )}
+                </strong>
 
-        }
+              </div>
+
+
+              <div>
+
+                <span>Ранг</span>
+
+                <strong>
+                  ${displayValue(
+                    application.dota_rank
+                  )}
+                </strong>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        `;
 
       }
 
 
-      console.log(
-        "Напрямок користувача активовано:",
-        {
-          user_id:
-            application.user_id,
+      // ====================================
+      // WORLD OF WARCRAFT
+      // ====================================
 
-          direction_id:
-            numericDirectionId,
+      if (
+        direction === "wow"
+      ) {
 
-          direction:
-            direction.slug,
+        html += `
 
-          driver_class:
-            isETS2
-              ? driverClass
-              : null
-        }
-      );
+          <div class="application-section">
+
+            <span>
+              🐉 World of Warcraft
+            </span>
+
+            <div class="application-grid">
+
+              <div>
+
+                <span>BattleTag</span>
+
+                <strong>
+                  ${displayValue(
+                    application.battletag ||
+                    application.battle_tag
+                  )}
+                </strong>
+
+              </div>
+
+
+              <div>
+
+                <span>Персонаж</span>
+
+                <strong>
+                  ${displayValue(
+                    application.wow_character
+                  )}
+                </strong>
+
+              </div>
+
+
+              <div>
+
+                <span>Realm</span>
+
+                <strong>
+                  ${displayValue(
+                    application.wow_realm
+                  )}
+                </strong>
+
+              </div>
+
+
+              <div>
+
+                <span>Фракція</span>
+
+                <strong>
+                  ${displayValue(
+                    application.wow_faction
+                  )}
+                </strong>
+
+              </div>
+
+
+              <div>
+
+                <span>Клас</span>
+
+                <strong>
+                  ${displayValue(
+                    application.wow_class
+                  )}
+                </strong>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        `;
+
+      }
+
+
+      // ====================================
+      // STEAM
+      // ====================================
+
+      if (
+        application.steam_id
+      ) {
+
+        html += `
+
+          <div class="application-section">
+
+            <span>
+              🎮 Steam ID
+            </span>
+
+            <strong>
+              ${displayValue(
+                application.steam_id
+              )}
+            </strong>
+
+          </div>
+
+        `;
+
+      }
+
+
+      // ====================================
+      // ABOUT
+      // ====================================
+
+      if (
+        application.about
+      ) {
+
+        html += `
+
+          <div class="application-section">
+
+            <span>
+              📝 Про себе
+            </span>
+
+            <p>
+              ${displayValue(
+                application.about
+              )}
+            </p>
+
+          </div>
+
+        `;
+
+      }
+
+
+      return html;
 
     }
 
@@ -1763,12 +1738,12 @@ document.addEventListener(
 
           <div class="applications-empty">
 
-            📭 Заявок не знайдено.
+            📭 Заявок за вибраними параметрами
+            не знайдено.
 
           </div>
 
         `;
-
 
         return;
 
@@ -1778,9 +1753,27 @@ document.addEventListener(
       applications.forEach(
         application => {
 
+          const status =
+            getStatusLabel(
+              application.status
+            );
+
+
+          const pending =
+            isPendingApplication(
+              application
+            );
+
+
+          const direction =
+            getApplicationDirection(
+              application
+            );
+
+
           const card =
             document.createElement(
-              "div"
+              "article"
             );
 
 
@@ -1788,203 +1781,30 @@ document.addEventListener(
             "application-card";
 
 
-          const status =
-            getStatusLabel(
-              application.status
-            );
-
-
-          const isNew =
-            isNewApplication(
-              application
-            );
-
-
-          const applicationDirection =
-            getApplicationDirection(
-              application
-            );
-
-
-          const applicationDirectionId =
-            getApplicationDirectionId(
-              application
-            );
-
-
           // ==================================
-          // ADMIN CARD
+          // HEADER
           // ==================================
 
-          if (isStaff) {
+          let html = `
 
-            card.innerHTML = `
+            <div class="application-card-header">
 
-              <div
-                class="application-card-header"
-              >
+              <div>
 
-                <div>
+                <h2>
 
-                  <h2>
-
-                    👤
-
-                    ${escapeHtml(
-                      application.name ||
-                      "Без імені"
-                    )}
-
-                  </h2>
-
-
-                  <p>
-
-                    🎮
-
-                    ${escapeHtml(
-                      application.game_nickname ||
-                      application.game_nick ||
-                      application.truckersmp_nick ||
-                      application.wot_nickname ||
-                      application.dota_nickname ||
-                      application.wow_character ||
-                      "-"
-                    )}
-
-                  </p>
-
-                </div>
-
-
-                <span
-                  class="
-                    application-status
-                    ${status.className}
-                  "
-                >
-
-                  ${status.label}
-
-                </span>
-
-              </div>
-
-
-              <div
-                class="application-grid"
-              >
-
-                <div>
-
-                  <span>
-                    🎂 Вік
-                  </span>
-
-                  <strong>
-
-                    ${escapeHtml(
-                      application.age ||
-                      "-"
-                    )}
-
-                  </strong>
-
-                </div>
-
-
-                <div>
-
-                  <span>
-                    💬 Discord
-                  </span>
-
-                  <strong>
-
-                    ${escapeHtml(
-                      application.discord_nickname ||
-                      application.discord_nick ||
-                      "-"
-                    )}
-
-                  </strong>
-
-                </div>
-
-
-                <div>
-
-                  <span>
-                    🆔 Discord ID
-                  </span>
-
-                  <strong>
-
-                    ${escapeHtml(
-                      application.discord_id ||
-                      "-"
-                    )}
-
-                  </strong>
-
-                </div>
-
-
-                <div>
-
-                  <span>
-                    🎮 Steam
-                  </span>
-
-                  <strong>
-
-                    ${escapeHtml(
-                      application.steam_id ||
-                      "-"
-                    )}
-
-                  </strong>
-
-                </div>
-
-              </div>
-
-
-              <div
-                class="application-section"
-              >
-
-                <span>
-                  📍 Напрямок заявки
-                </span>
-
-                <strong>
-
-                  ${escapeHtml(
-                    applicationDirection ||
-                    formatDirections(
-                      application.directions
-                    )
+                  📄 Заявка #${escapeHtml(
+                    application.id
                   )}
 
-                </strong>
-
-              </div>
-
-
-              <div
-                class="application-section"
-              >
-
-                <span>
-                  📝 Про користувача
-                </span>
+                </h2>
 
                 <p>
 
-                  ${escapeHtml(
-                    application.about ||
-                    "Не вказано"
+                  🎮 ${displayValue(
+                    getGameNickname(
+                      application
+                    )
                   )}
 
                 </p>
@@ -1992,101 +1812,145 @@ document.addEventListener(
               </div>
 
 
-              <div
-                class="application-section"
+              <span
+                class="
+                  application-status
+                  ${status.className}
+                "
               >
 
-                <span>
-                  🔎 Звідки дізнався
-                </span>
+                ${status.label}
 
-                <strong>
+              </span>
 
-                  ${escapeHtml(
-                    application.source ||
-                    "-"
-                  )}
+            </div>
 
-                </strong>
-
-              </div>
+          `;
 
 
-              <div
-                class="application-date"
-              >
+          // ==================================
+          // APPLICATION DATA
+          // ==================================
 
-                📅 Подано:
+          html +=
+            renderApplicationData(
+              application
+            );
 
-                ${formatDate(
-                  application.created_at
+
+          // ==================================
+          // REVIEW INFORMATION
+          // ==================================
+
+          if (
+            application.reviewed_at
+          ) {
+
+            html += `
+
+              <div class="application-date">
+
+                🕒 Розглянуто:
+
+                ${displayValue(
+                  formatDate(
+                    application.reviewed_at
+                  )
                 )}
 
               </div>
 
+            `;
 
-              <div
-                class="application-section"
-              >
-
-                <span>
-                  🎖️ Посада / роль
-                </span>
+          }
 
 
-                <select
-                  class="application-role-select"
-                  data-id="${application.id}"
-                  ${isNew ? "" : "disabled"}
-                >
+          if (
+            application.review_comment
+          ) {
 
-                  ${createRoleOptions(
-                    applicationDirectionId ||
-                    "global"
+            html += `
+
+              <div class="admin-comment-block">
+
+                <label>
+
+                  💬 Коментар адміністрації
+
+                </label>
+
+                <p>
+
+                  ${displayValue(
+                    application.review_comment
                   )}
 
-                </select>
+                </p>
+
+              </div>
+
+            `;
+
+          }
 
 
-                <select
-                  class="application-direction-select"
-                  data-id="${application.id}"
-                  ${isNew ? "" : "disabled"}
-                >
+          // ==================================
+          // STAFF REVIEW PANEL
+          // ==================================
 
-                  ${createDirectionOptions(
-                    application
-                  )}
+          if (
+            isStaff &&
+            pending
+          ) {
 
-                </select>
+            html += `
+
+              <div class="admin-comment-block">
+
+                <label>
+
+                  💬 Коментар до рішення
+
+                </label>
 
 
-                <div
-                  class="driver-class-block"
-                  data-id="${application.id}"
-                  style="${
-                    applicationDirectionId &&
-                    allDirections.find(
-                      item =>
-                        String(item.id) ===
-                        String(
-                          applicationDirectionId
-                        )
-                    )?.slug === "ets2"
-                      ? ""
-                      : "display:none;"
-                  }"
-                >
+                <textarea
+                  class="review-comment"
+                  data-id="${escapeHtml(
+                    application.id
+                  )}"
+                  placeholder="Введіть коментар адміністрації..."
+                ></textarea>
 
-                  <span>
+              </div>
+
+            `;
+
+
+            // =================================
+            // ETS2 CLASS
+            // =================================
+
+            if (
+              direction === "ets2"
+            ) {
+
+              html += `
+
+                <div class="admin-comment-block">
+
+                  <label>
+
                     🚛 Клас водія ETS2
-                  </span>
+
+                  </label>
 
 
                   <select
                     class="application-driver-class-select"
-                    data-id="${application.id}"
-                    ${isNew ? "" : "disabled"}
+                    data-id="${escapeHtml(
+                      application.id
+                    )}"
                   >
 
                     ${createDriverClassOptions()}
@@ -2095,44 +1959,28 @@ document.addEventListener(
 
                 </div>
 
-              </div>
+              `;
+
+            }
 
 
-              <div
-                class="admin-comment-block"
-              >
+            // =================================
+            // ACTIONS
+            // =================================
 
-                <label>
+            html += `
 
-                  💬 Коментар адміністратора
-
-                </label>
-
-
-                <textarea
-                  class="review-comment"
-                  data-id="${application.id}"
-                  placeholder="Коментар для заявки..."
-                  ${isNew ? "" : "readonly"}
-                >${escapeHtml(
-                  application.review_comment ||
-                  ""
-                )}</textarea>
-
-              </div>
-
-
-              <div
-                class="application-actions"
-              >
+              <div class="application-actions">
 
                 <button
+                  type="button"
                   class="
                     application-btn
                     approve-btn
                   "
-                  data-id="${application.id}"
-                  ${isNew ? "" : "disabled"}
+                  data-id="${escapeHtml(
+                    application.id
+                  )}"
                 >
 
                   🟢 СХВАЛИТИ
@@ -2141,12 +1989,14 @@ document.addEventListener(
 
 
                 <button
+                  type="button"
                   class="
                     application-btn
                     reject-btn
                   "
-                  data-id="${application.id}"
-                  ${isNew ? "" : "disabled"}
+                  data-id="${escapeHtml(
+                    application.id
+                  )}"
                 >
 
                   🔴 ВІДХИЛИТИ
@@ -2161,174 +2011,34 @@ document.addEventListener(
 
 
           // ==================================
-          // NORMAL USER CARD
+          // USER WAITING
           // ==================================
 
-          else {
+          if (
+            !isStaff &&
+            pending
+          ) {
 
-            card.innerHTML = `
+            html += `
 
-              <div
-                class="application-card-header"
-              >
+              <div class="application-section">
 
-                <div>
+                <p>
 
-                  <h2>
+                  ⏳ Ваша заявка очікує
+                  на розгляд адміністрації.
 
-                    📄 Моя заявка
-
-                  </h2>
-
-
-                  <p>
-
-                    🎮
-
-                    ${escapeHtml(
-                      application.game_nickname ||
-                      application.game_nick ||
-                      application.truckersmp_nick ||
-                      application.wot_nickname ||
-                      application.dota_nickname ||
-                      application.wow_character ||
-                      "UA LEGION"
-                    )}
-
-                  </p>
-
-                </div>
-
-
-                <span
-                  class="
-                    application-status
-                    ${status.className}
-                  "
-                >
-
-                  ${status.label}
-
-                </span>
+                </p>
 
               </div>
-
-
-              <div
-                class="application-section"
-              >
-
-                <span>
-                  📍 Обраний напрямок
-                </span>
-
-                <strong>
-
-                  ${escapeHtml(
-                    applicationDirection ||
-                    formatDirections(
-                      application.directions
-                    )
-                  )}
-
-                </strong>
-
-              </div>
-
-
-              <div
-                class="application-date"
-              >
-
-                📅 Заявку подано:
-
-                ${formatDate(
-                  application.created_at
-                )}
-
-              </div>
-
-
-              ${
-                application.review_comment
-
-                  ?
-
-                  `
-
-                    <div
-                      class="admin-comment-block"
-                    >
-
-                      <label>
-
-                        💬 Відповідь адміністрації
-
-                      </label>
-
-
-                      <p>
-
-                        ${escapeHtml(
-                          application.review_comment
-                        )}
-
-                      </p>
-
-                    </div>
-
-                  `
-
-                  :
-
-                  `
-
-                    <div
-                      class="application-section"
-                    >
-
-                      <p>
-
-                        ⏳ Ваша заявка очікує
-                        на розгляд адміністрації.
-
-                      </p>
-
-                    </div>
-
-                  `
-              }
-
-
-              ${
-                application.reviewed_at
-
-                  ?
-
-                  `
-
-                    <div
-                      class="application-date"
-                    >
-
-                      🕒 Розглянуто:
-
-                      ${formatDate(
-                        application.reviewed_at
-                      )}
-
-                    </div>
-
-                  `
-
-                  :
-
-                  ""
-              }
 
             `;
 
           }
+
+
+          card.innerHTML =
+            html;
 
 
           applicationsList.appendChild(
@@ -2346,29 +2056,150 @@ document.addEventListener(
       }
 
     }
+
+
+    // ======================================
+    // GET REVIEW COMMENT
+    // ======================================
+
+    function getReviewComment(
+      applicationId
+    ) {
+
+      const element =
+        document.querySelector(
+          `.review-comment[data-id="${applicationId}"]`
+        );
+
+
+      if (!element) {
+        return null;
+      }
+
+
+      const value =
+        element.value.trim();
+
+
+      return value || null;
+
+    }
+
+
+    // ======================================
+    // GET DRIVER CLASS
+    // ======================================
+
+    function getDriverClass(
+      applicationId
+    ) {
+
+      const element =
+        document.querySelector(
+          `.application-driver-class-select[data-id="${applicationId}"]`
+        );
+
+
+      if (!element) {
+        return null;
+      }
+
+
+      const value =
+        element.value.trim();
+
+
+      return value || null;
+
+    }
+
+
+    // ======================================
+    // RPC ERROR MESSAGE
+    // ======================================
+
+    function getRpcErrorMessage(
+      error
+    ) {
+
+      if (!error) {
+
+        return "Невідома помилка.";
+
+      }
+
+
+      const message =
+        String(
+          error.message ||
+          error.details ||
+          error.hint ||
+          ""
+        );
+
+
+      const messages = {
+
+        AUTH_REQUIRED:
+          "Потрібна авторизація.",
+
+        INVALID_REVIEWER:
+          "Некоректний користувач, який розглядає заявку.",
+
+        APPLICATION_NOT_FOUND:
+          "Заявку не знайдено.",
+
+        APPLICATION_USER_NOT_FOUND:
+          "У заявки не визначено користувача.",
+
+        APPLICATION_IS_NOT_PENDING:
+          "Ця заявка вже була розглянута.",
+
+        APPLICATION_DIRECTION_NOT_FOUND:
+          "Не вдалося визначити напрямок заявки.",
+
+        FORBIDDEN_APPLICATION_APPROVE:
+          "У вас немає права схвалювати заявки цього напрямку.",
+
+        FORBIDDEN_APPLICATION_REJECT:
+          "У вас немає права відхиляти заявки цього напрямку.",
+
+        ETS2_DRIVER_CLASS_REQUIRED:
+          "Для ETS2 потрібно обрати клас водія."
+
+      };
+
+
+      for (
+        const code
+        of Object.keys(messages)
+      ) {
+
+        if (
+          message.includes(code)
+        ) {
+
+          return messages[code];
+
+        }
+
+      }
+
+
+      return message ||
+        "Сталася помилка під час обробки заявки.";
+
+    }
+
+
     // ======================================
     // APPROVE APPLICATION
     // ======================================
 
     async function approveApplication(
-
       applicationId,
-
-      roleId,
-
-      directionId,
-
-      driverClass,
-
-      reviewComment,
-
       button
-
     ) {
-
-      // ====================================
-      // FIND APPLICATION
-      // ====================================
 
       const application =
         allApplications.find(
@@ -2390,6 +2221,62 @@ document.addEventListener(
       }
 
 
+      if (
+        !isPendingApplication(
+          application
+        )
+      ) {
+
+        showMessage(
+          "Ця заявка вже була розглянута.",
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      const direction =
+        getApplicationDirection(
+          application
+        );
+
+
+      let driverClass =
+        null;
+
+
+      if (
+        direction === "ets2"
+      ) {
+
+        driverClass =
+          getDriverClass(
+            applicationId
+          );
+
+
+        if (!driverClass) {
+
+          showMessage(
+            "Для ETS2 потрібно обрати клас водія.",
+            "error"
+          );
+
+          return;
+
+        }
+
+      }
+
+
+      const reviewComment =
+        getReviewComment(
+          applicationId
+        );
+
+
       if (button) {
 
         button.disabled =
@@ -2402,270 +2289,48 @@ document.addEventListener(
 
 
       // ====================================
-      // CHECK DIRECTION
-      // ====================================
-
-      if (
-        !directionId ||
-        directionId === "global"
-      ) {
-
-        showMessage(
-          "Перед схваленням потрібно вибрати напрямок.",
-          "error"
-        );
-
-
-        if (button) {
-
-          button.disabled =
-            false;
-
-          button.textContent =
-            "🟢 СХВАЛИТИ";
-
-        }
-
-
-        return;
-
-      }
-
-
-      const finalDirectionId =
-        Number(
-          directionId
-        );
-
-
-      if (
-        !Number.isFinite(
-          finalDirectionId
-        )
-      ) {
-
-        showMessage(
-          "Некоректний ID напрямку.",
-          "error"
-        );
-
-
-        if (button) {
-
-          button.disabled =
-            false;
-
-          button.textContent =
-            "🟢 СХВАЛИТИ";
-
-        }
-
-
-        return;
-
-      }
-
-
-      const selectedDirection =
-        allDirections.find(
-
-          direction =>
-            String(direction.id) ===
-            String(finalDirectionId)
-
-        );
-
-
-      if (!selectedDirection) {
-
-        showMessage(
-          "Вибраний напрямок не знайдено.",
-          "error"
-        );
-
-
-        if (button) {
-
-          button.disabled =
-            false;
-
-          button.textContent =
-            "🟢 СХВАЛИТИ";
-
-        }
-
-
-        return;
-
-      }
-
-
-      // ====================================
-      // CHECK ETS2
-      // ====================================
-
-      const isETS2 =
-        selectedDirection.slug ===
-        "ets2";
-
-
-      if (
-        isETS2 &&
-        !driverClass
-      ) {
-
-        showMessage(
-          "Для ETS2 перед схваленням потрібно вибрати клас водія.",
-          "error"
-        );
-
-
-        if (button) {
-
-          button.disabled =
-            false;
-
-          button.textContent =
-            "🟢 СХВАЛИТИ";
-
-        }
-
-
-        return;
-
-      }
-
-
-      // ====================================
-      // ACTIVATE DIRECTION
-      // ====================================
-
-      try {
-
-        await activateUserDirection(
-
-          application,
-
-          finalDirectionId,
-
-          driverClass
-
-        );
-
-      }
-
-      catch (directionError) {
-
-        console.error(
-          "Помилка активації напрямку:",
-          directionError
-        );
-
-
-        showMessage(
-          "Не вдалося активувати напрямок: " +
-          directionError.message,
-          "error"
-        );
-
-
-        if (button) {
-
-          button.disabled =
-            false;
-
-          button.textContent =
-            "🟢 СХВАЛИТИ";
-
-        }
-
-
-        return;
-
-      }
-
-
-      // ====================================
-      // ВАЖЛИВО
-      // ====================================
-      //
-      // Тут НЕ призначається роль.
-      //
-      // roleId передається з форми тільки
-      // для сумісності зі старим інтерфейсом,
-      // але user_roles НЕ змінюється.
-      //
-      // Посада буде призначатися окремо
-      // через систему керування учасником.
-      //
-      // ====================================
-
-
-      console.log(
-        "Заявку схвалено без автоматичного призначення ролі:",
-        {
-          application_id:
-            application.id,
-
-          user_id:
-            application.user_id,
-
-          direction_id:
-            finalDirectionId,
-
-          direction:
-            selectedDirection.name,
-
-          driver_class:
-            isETS2
-              ? driverClass
-              : null,
-
-          selected_role:
-            roleId || null
-        }
-      );
-
-
-      // ====================================
-      // UPDATE APPLICATION
+      // RPC
       // ====================================
 
       const {
-        error: applicationError
+        data,
+        error
       } =
         await supabase
-          .from("applications")
-          .update({
+          .rpc(
+            "approve_application",
+            {
 
-            status:
-              "approved",
+              p_application_id:
+                Number(
+                  applicationId
+                ),
 
-            review_comment:
-              reviewComment,
+              p_reviewer_id:
+                user.id,
 
-            reviewed_at:
-              new Date()
-                .toISOString()
+              p_driver_class:
+                driverClass,
 
-          })
-          .eq(
-            "id",
-            applicationId
+              p_review_comment:
+                reviewComment
+
+            }
           );
 
 
-      if (applicationError) {
+      if (error) {
 
         console.error(
-          "Помилка оновлення заявки:",
-          applicationError
+          "UA LEGION: approve_application error:",
+          error
         );
 
 
         showMessage(
-          "Напрямок активовано, але статус заявки не оновлено: " +
-          applicationError.message,
+          getRpcErrorMessage(
+            error
+          ),
           "error"
         );
 
@@ -2686,39 +2351,36 @@ document.addEventListener(
       }
 
 
-      // ====================================
-      // SUCCESS
-      // ====================================
+      console.log(
+        "UA LEGION: заявка схвалена:",
+        data
+      );
 
-      if (isETS2) {
+
+      if (
+        direction === "ets2"
+      ) {
 
         showMessage(
-
-          `🎉 Заявку схвалено. Користувача додано до напрямку "${selectedDirection.name}". Клас ETS2: ${driverClass}. Посаду не призначено.`,
-
+          `🎉 Заявку схвалено. Користувача додано до напрямку "${getDirectionName(
+            application
+          )}". Клас ETS2: ${driverClass}.`,
           "success"
-
         );
 
       }
-
 
       else {
 
         showMessage(
-
-          `🎉 Заявку схвалено. Користувача додано до напрямку "${selectedDirection.name}". Посаду не призначено.`,
-
+          `🎉 Заявку схвалено. Користувача додано до напрямку "${getDirectionName(
+            application
+          )}".`,
           "success"
-
         );
 
       }
 
-
-      // ====================================
-      // RELOAD
-      // ====================================
 
       await loadApplications();
 
@@ -2730,14 +2392,51 @@ document.addEventListener(
     // ======================================
 
     async function rejectApplication(
-
       applicationId,
-
-      reviewComment,
-
       button
-
     ) {
+
+      const application =
+        allApplications.find(
+          item =>
+            String(item.id) ===
+            String(applicationId)
+        );
+
+
+      if (!application) {
+
+        showMessage(
+          "Заявку не знайдено.",
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      if (
+        !isPendingApplication(
+          application
+        )
+      ) {
+
+        showMessage(
+          "Ця заявка вже була розглянута.",
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      const reviewComment =
+        getReviewComment(
+          applicationId
+        );
+
 
       if (button) {
 
@@ -2750,40 +2449,46 @@ document.addEventListener(
       }
 
 
+      // ====================================
+      // RPC
+      // ====================================
+
       const {
+        data,
         error
       } =
         await supabase
-          .from("applications")
-          .update({
+          .rpc(
+            "reject_application",
+            {
 
-            status:
-              "rejected",
+              p_application_id:
+                Number(
+                  applicationId
+                ),
 
-            review_comment:
-              reviewComment,
+              p_reviewer_id:
+                user.id,
 
-            reviewed_at:
-              new Date()
-                .toISOString()
+              p_review_comment:
+                reviewComment
 
-          })
-          .eq(
-            "id",
-            applicationId
+            }
           );
 
 
       if (error) {
 
         console.error(
-          "Помилка відхилення заявки:",
+          "UA LEGION: reject_application error:",
           error
         );
 
 
         showMessage(
-          error.message,
+          getRpcErrorMessage(
+            error
+          ),
           "error"
         );
 
@@ -2804,6 +2509,12 @@ document.addEventListener(
       }
 
 
+      console.log(
+        "UA LEGION: заявка відхилена:",
+        data
+      );
+
+
       showMessage(
         "🔴 Заявку відхилено.",
         "success"
@@ -2822,67 +2533,6 @@ document.addEventListener(
     function attachApplicationEvents() {
 
       // ====================================
-      // DIRECTION CHANGE
-      // ====================================
-
-      document
-        .querySelectorAll(
-          ".application-direction-select"
-        )
-        .forEach(
-          directionSelect => {
-
-            directionSelect.addEventListener(
-              "change",
-              () => {
-
-                const applicationId =
-                  directionSelect.dataset.id;
-
-
-                /*
-                 * При зміні напрямку автоматично
-                 * перебудовуємо список посад.
-                 */
-
-                const roleSelect =
-                  document.querySelector(
-                    `.application-role-select[data-id="${applicationId}"]`
-                  );
-
-
-                if (roleSelect) {
-
-                  roleSelect.innerHTML =
-                    createRoleOptions(
-                      directionSelect.value
-                    );
-
-                  roleSelect.value =
-                    "";
-
-                }
-
-
-                const driverClassSelect =
-                  document.querySelector(
-                    `.application-driver-class-select[data-id="${applicationId}"]`
-                  );
-
-
-                updateDriverClassVisibility(
-                  directionSelect,
-                  driverClassSelect
-                );
-
-              }
-            );
-
-          }
-        );
-
-
-      // ====================================
       // APPROVE
       // ====================================
 
@@ -2891,88 +2541,16 @@ document.addEventListener(
           ".approve-btn"
         )
         .forEach(
-
           button => {
 
             button.addEventListener(
-
               "click",
 
               async () => {
 
-                const applicationId =
-                  button.dataset.id;
-
-
-                const roleSelect =
-                  document.querySelector(
-
-                    `.application-role-select[data-id="${applicationId}"]`
-
-                  );
-
-
-                const directionSelect =
-                  document.querySelector(
-
-                    `.application-direction-select[data-id="${applicationId}"]`
-
-                  );
-
-
-                const driverClassSelect =
-                  document.querySelector(
-
-                    `.application-driver-class-select[data-id="${applicationId}"]`
-
-                  );
-
-
-                const commentElement =
-                  document.querySelector(
-
-                    `.review-comment[data-id="${applicationId}"]`
-
-                  );
-
-
-                const roleId =
-                  roleSelect?.value ||
-                  "";
-
-
-                const directionId =
-                  directionSelect?.value ||
-                  "";
-
-
-                const driverClass =
-                  driverClassSelect?.value ||
-                  "";
-
-
-                const reviewComment =
-                  commentElement
-                    ?.value
-                    .trim()
-                  ||
-                  null;
-
-
                 await approveApplication(
-
-                  applicationId,
-
-                  roleId,
-
-                  directionId,
-
-                  driverClass,
-
-                  reviewComment,
-
+                  button.dataset.id,
                   button
-
                 );
 
               }
@@ -2980,7 +2558,6 @@ document.addEventListener(
             );
 
           }
-
         );
 
 
@@ -2993,43 +2570,16 @@ document.addEventListener(
           ".reject-btn"
         )
         .forEach(
-
           button => {
 
             button.addEventListener(
-
               "click",
 
               async () => {
 
-                const applicationId =
-                  button.dataset.id;
-
-
-                const commentElement =
-                  document.querySelector(
-
-                    `.review-comment[data-id="${applicationId}"]`
-
-                  );
-
-
-                const reviewComment =
-                  commentElement
-                    ?.value
-                    .trim()
-                  ||
-                  null;
-
-
                 await rejectApplication(
-
-                  applicationId,
-
-                  reviewComment,
-
+                  button.dataset.id,
                   button
-
                 );
 
               }
@@ -3037,7 +2587,6 @@ document.addEventListener(
             );
 
           }
-
         );
 
     }
@@ -3048,7 +2597,6 @@ document.addEventListener(
     // ======================================
 
     statusFilter?.addEventListener(
-
       "change",
 
       () => {
@@ -3060,12 +2608,10 @@ document.addEventListener(
         }
 
       }
-
     );
 
 
     searchInput?.addEventListener(
-
       "input",
 
       () => {
@@ -3077,7 +2623,6 @@ document.addEventListener(
         }
 
       }
-
     );
 
 
@@ -3089,9 +2634,9 @@ document.addEventListener(
       await checkStaffAccess();
 
 
-    // ====================================
-    // ADMIN MODE
-    // ====================================
+    // ======================================
+    // STAFF MODE
+    // ======================================
 
     if (isStaff) {
 
@@ -3137,9 +2682,9 @@ document.addEventListener(
     }
 
 
-    // ====================================
+    // ======================================
     // USER MODE
-    // ====================================
+    // ======================================
 
     else {
 
@@ -3161,18 +2706,16 @@ document.addEventListener(
     }
 
 
-    // ====================================
-    // LOAD DATA
-    // ====================================
+    // ======================================
+    // LOAD DIRECTIONS
+    // ======================================
 
-    if (isStaff) {
+    await loadDirections();
 
-      await loadRoles();
 
-      await loadDirections();
-
-    }
-
+    // ======================================
+    // LOAD APPLICATIONS
+    // ======================================
 
     await loadApplications();
 
