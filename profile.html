@@ -361,248 +361,6 @@
 
 
     /* =========================================
-       WORLD OF TANKS
-       ========================================= */
-
-    .wot-region-select {
-
-      width: 100%;
-
-      box-sizing: border-box;
-
-      padding: 12px 14px;
-
-      border:
-        1px solid
-        rgba(
-          255,
-          255,
-          255,
-          0.12
-        );
-
-      border-radius: 9px;
-
-      background:
-        rgba(
-          0,
-          0,
-          0,
-          0.2
-        );
-
-      color: white;
-
-      font-size: 14px;
-
-      outline: none;
-
-    }
-
-
-    .wot-region-select:focus {
-
-      border-color: #ffd34d;
-
-    }
-
-
-    .wot-region-select option {
-
-      background: #101820;
-
-      color: white;
-
-    }
-
-
-    .wot-verify-button {
-
-      width: 100%;
-
-      margin-top: 15px;
-
-      border: none;
-
-      border-radius: 9px;
-
-      padding: 12px 14px;
-
-      background: #ffd34d;
-
-      color: #111;
-
-      font-size: 12px;
-
-      font-weight: 800;
-
-      cursor: pointer;
-
-      transition: 0.15s;
-
-    }
-
-
-    .wot-verify-button:hover {
-
-      filter:
-        brightness(1.08);
-
-    }
-
-
-    .wot-verify-button:disabled {
-
-      opacity: 0.55;
-
-      cursor: wait;
-
-    }
-
-
-    .wot-account-status {
-
-      margin-top: 12px;
-
-      padding: 11px 13px;
-
-      border-radius: 9px;
-
-      font-size: 12px;
-
-      line-height: 1.45;
-
-      background:
-        rgba(
-          255,
-          255,
-          255,
-          0.04
-        );
-
-    }
-
-
-    .wot-account-status.info {
-
-      color:
-        rgba(
-          255,
-          255,
-          255,
-          0.7
-        );
-
-      border:
-        1px solid
-        rgba(
-          255,
-          255,
-          255,
-          0.08
-        );
-
-    }
-
-
-    .wot-account-status.success {
-
-      color: #62e59c;
-
-      border:
-        1px solid
-        rgba(
-          98,
-          229,
-          156,
-          0.25
-        );
-
-    }
-
-
-    .wot-account-status.error {
-
-      color: #ff7070;
-
-      border:
-        1px solid
-        rgba(
-          255,
-          112,
-          112,
-          0.25
-        );
-
-    }
-
-
-    .wot-account-result {
-
-      margin-top: 12px;
-
-      display: grid;
-
-      grid-template-columns:
-        repeat(
-          2,
-          minmax(
-            0,
-            1fr
-          )
-        );
-
-      gap: 8px 18px;
-
-      font-size: 12px;
-
-      color:
-        rgba(
-          255,
-          255,
-          255,
-          0.7
-        );
-
-      padding:
-        13px;
-
-      border:
-        1px solid
-        rgba(
-          98,
-          229,
-          156,
-          0.18
-        );
-
-      border-radius: 10px;
-
-      background:
-        rgba(
-          98,
-          229,
-          156,
-          0.035
-        );
-
-    }
-
-
-    .wot-account-result strong {
-
-      color:
-        rgba(
-          255,
-          255,
-          255,
-          0.95
-        );
-
-    }
-
-
-    /* =========================================
        GLOBAL ROLES
        ========================================= */
 
@@ -1226,13 +984,6 @@
       }
 
 
-      .wot-account-result {
-
-        grid-template-columns: 1fr;
-
-      }
-
-
       .profile-actions {
 
         flex-direction: column;
@@ -1403,15 +1154,18 @@
 
           <div class="avatar-info">
 
+
             <h2
               id="profileNamePreview"
             >
               UA LEGION Member
             </h2>
 
+
             <p>
               Особистий профіль
             </p>
+
 
           </div>
 
@@ -1555,181 +1309,6 @@
 
 
           <!-- =====================================
-               WORLD OF TANKS
-               ===================================== -->
-
-          <section
-            class="profile-section"
-            id="wotAccountSection"
-          >
-
-            <h2
-              class="profile-section-title"
-            >
-              🪖 World of Tanks
-            </h2>
-
-
-            <p
-              class="profile-section-description"
-            >
-              Прив'яжіть свій World of Tanks акаунт до профілю UA LEGION.
-            </p>
-
-
-            <div
-              class="profile-grid"
-            >
-
-
-              <!-- WOT NICK -->
-
-              <div
-                class="profile-field"
-              >
-
-                <label
-                  for="wotNickname"
-                >
-                  🎮 Нік у World of Tanks
-                </label>
-
-
-                <input
-                  type="text"
-                  id="wotNickname"
-                  maxlength="24"
-                  placeholder="Введіть нік у WoT"
-                  autocomplete="off"
-                >
-
-              </div>
-
-
-              <!-- REGION -->
-
-              <div
-                class="profile-field"
-              >
-
-                <label
-                  for="wotRegion"
-                >
-                  🌍 Регіон
-                </label>
-
-
-                <select
-                  id="wotRegion"
-                  class="wot-region-select"
-                >
-
-                  <option value="eu">
-                    EU
-                  </option>
-
-                  <option value="na">
-                    NA
-                  </option>
-
-                  <option value="asia">
-                    ASIA
-                  </option>
-
-                </select>
-
-              </div>
-
-
-            </div>
-
-
-            <!-- VERIFY -->
-
-            <button
-              type="button"
-              id="verifyWotButton"
-              class="wot-verify-button"
-            >
-              🛡️ ПЕРЕВІРИТИ WOТ АКАУНТ
-            </button>
-
-
-            <!-- STATUS -->
-
-            <div
-              id="wotAccountStatus"
-              class="wot-account-status info"
-            >
-              Введіть нік та натисніть «Перевірити WoT акаунт».
-            </div>
-
-
-            <!-- RESULT -->
-
-            <div
-              id="wotAccountResult"
-              class="wot-account-result"
-              hidden
-            >
-
-              <div>
-
-                <strong>
-                  WoT нік:
-                </strong>
-
-                <span
-                  id="wotResultNickname"
-                ></span>
-
-              </div>
-
-
-              <div>
-
-                <strong>
-                  Wargaming ID:
-                </strong>
-
-                <span
-                  id="wotResultAccountId"
-                ></span>
-
-              </div>
-
-
-              <div>
-
-                <strong>
-                  Регіон:
-                </strong>
-
-                <span
-                  id="wotResultRegion"
-                ></span>
-
-              </div>
-
-
-              <div>
-
-                <strong>
-                  Статус:
-                </strong>
-
-                <span>
-                  🟢 Підтверджено
-                </span>
-
-              </div>
-
-            </div>
-
-          </section>
-
-
-          <!-- =====================================
                GLOBAL ROLES
                ===================================== -->
 
@@ -1737,6 +1316,7 @@
             class="profile-section"
             id="globalRolesSection"
           >
+
 
             <h2
               class="profile-section-title"
@@ -1765,6 +1345,7 @@
 
             </div>
 
+
           </section>
 
 
@@ -1775,6 +1356,7 @@
           <section
             class="profile-section"
           >
+
 
             <h2
               class="profile-section-title"
@@ -1803,6 +1385,7 @@
 
             </div>
 
+
           </section>
 
 
@@ -1813,6 +1396,7 @@
           <div
             class="profile-actions"
           >
+
 
             <button
               type="submit"
@@ -1828,6 +1412,7 @@
             >
               🚪 ВИЙТИ
             </button>
+
 
           </div>
 
@@ -1873,11 +1458,6 @@
 
   <script
     src="profile.js?v=8"
-  ></script>
-
-
-  <script
-    src="wot-profile.js?v=1"
   ></script>
 
 
