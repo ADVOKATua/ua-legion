@@ -408,6 +408,19 @@
     }
 
 
+    .direction-disabled {
+
+      opacity: 0.45 !important;
+
+      cursor: not-allowed !important;
+
+      pointer-events: none !important;
+
+      transform: none !important;
+
+    }
+
+
     /* =========================================
        GAME FORMS
        ========================================= */
@@ -459,6 +472,254 @@
 
 
     /* =========================================
+       WOT VERIFICATION
+       ========================================= */
+
+    .wot-verification {
+
+      margin-top: 8px;
+
+      padding: 18px;
+
+      border:
+        1px solid
+        rgba(
+          255,
+          211,
+          77,
+          0.18
+        );
+
+      background:
+        rgba(
+          255,
+          211,
+          77,
+          0.025
+        );
+
+    }
+
+
+    .wot-verification-title {
+
+      margin:
+        0 0 7px;
+
+      color: #fff;
+
+      font-size: 15px;
+
+      font-weight: 800;
+
+    }
+
+
+    .wot-verification-description {
+
+      margin:
+        0 0 18px;
+
+      color: #778294;
+
+      font-size: 12px;
+
+      line-height: 1.6;
+
+    }
+
+
+    .wot-verify-button {
+
+      width: 100%;
+
+      margin-top: 12px;
+
+      padding:
+        13px
+        15px;
+
+      border: 0;
+
+      background:
+        #ffd34d;
+
+      color: #111;
+
+      font-family: inherit;
+
+      font-size: 12px;
+
+      font-weight: 800;
+
+      cursor: pointer;
+
+      transition:
+        0.2s ease;
+
+    }
+
+
+    .wot-verify-button:hover {
+
+      filter:
+        brightness(1.08);
+
+      transform:
+        translateY(-1px);
+
+    }
+
+
+    .wot-verify-button:disabled {
+
+      opacity: 0.6;
+
+      cursor: wait;
+
+      transform: none;
+
+    }
+
+
+    .wot-account-status {
+
+      margin-top: 10px;
+
+      padding:
+        11px
+        13px;
+
+      font-size: 12px;
+
+      line-height: 1.5;
+
+      background:
+        rgba(
+          255,
+          255,
+          255,
+          0.035
+        );
+
+      border:
+        1px solid
+        rgba(
+          255,
+          255,
+          255,
+          0.08
+        );
+
+    }
+
+
+    .wot-account-status.info {
+
+      color:
+        rgba(
+          255,
+          255,
+          255,
+          0.7
+        );
+
+    }
+
+
+    .wot-account-status.success {
+
+      color:
+        #62e59c;
+
+      border-color:
+        rgba(
+          98,
+          229,
+          156,
+          0.28
+        );
+
+    }
+
+
+    .wot-account-status.error {
+
+      color:
+        #ff7070;
+
+      border-color:
+        rgba(
+          255,
+          112,
+          112,
+          0.28
+        );
+
+    }
+
+
+    .wot-account-result {
+
+      margin-top: 10px;
+
+      display: grid;
+
+      grid-template-columns:
+        repeat(
+          2,
+          minmax(0, 1fr)
+        );
+
+      gap:
+        8px 18px;
+
+      padding: 13px;
+
+      border:
+        1px solid
+        rgba(
+          98,
+          229,
+          156,
+          0.18
+        );
+
+      background:
+        rgba(
+          98,
+          229,
+          156,
+          0.035
+        );
+
+      color:
+        rgba(
+          255,
+          255,
+          255,
+          0.7
+        );
+
+      font-size: 12px;
+
+    }
+
+
+    .wot-account-result strong {
+
+      color:
+        rgba(
+          255,
+          255,
+          255,
+          0.95
+        );
+
+    }
+
+
+    /* =========================================
        SUBMIT
        ========================================= */
 
@@ -503,7 +764,8 @@
 
       cursor: pointer;
 
-      transition: 0.2s ease;
+      transition:
+        0.2s ease;
 
     }
 
@@ -634,6 +896,14 @@
 
         font-size:
           42px;
+
+      }
+
+
+      .wot-account-result {
+
+        grid-template-columns:
+          1fr;
 
       }
 
@@ -948,9 +1218,7 @@
           <div class="form-group">
 
             <label for="truckersmpNick">
-
               🚛 Нікнейм TruckersMP
-
             </label>
 
             <input
@@ -966,9 +1234,7 @@
           <div class="form-group">
 
             <label for="truckersmpId">
-
               🆔 TruckersMP ID
-
             </label>
 
             <input
@@ -984,9 +1250,7 @@
           <div class="form-group">
 
             <label for="truckershubUsername">
-
               🎮 Ім'я користувача TruckersHub
-
             </label>
 
             <input
@@ -1002,9 +1266,7 @@
           <div class="form-group">
 
             <label for="truckershubId">
-
               🆔 TruckersHub ID
-
             </label>
 
             <input
@@ -1029,76 +1291,163 @@
           id="wotForm"
         >
 
+          <div class="wot-verification">
 
-          <div class="form-group">
+            <h3 class="wot-verification-title">
+              🪖 Перевірка World of Tanks
+            </h3>
 
-            <label for="wotNickname">
 
-              🪖 Нікнейм World of Tanks
+            <p class="wot-verification-description">
+              Підтвердьте свій WoT акаунт через Wargaming.
+              Після успішної перевірки Wargaming ID буде
+              отримано автоматично.
+            </p>
 
-            </label>
 
-            <input
-              type="text"
-              id="wotNickname"
-              name="wot_nickname"
-              placeholder="Ваш нік у World of Tanks"
+            <div class="form-group">
+
+              <label for="wotNickname">
+                🪖 Нікнейм World of Tanks
+              </label>
+
+              <input
+                type="text"
+                id="wotNickname"
+                name="wot_nickname"
+                maxlength="24"
+                placeholder="Ваш нік у World of Tanks"
+                autocomplete="off"
+              >
+
+            </div>
+
+
+            <div class="form-group">
+
+              <label for="wotRegion">
+                🌍 Регіон
+              </label>
+
+              <select
+                id="wotRegion"
+                name="wot_region"
+              >
+
+                <option value="">
+                  Оберіть регіон
+                </option>
+
+                <option value="eu">
+                  EU
+                </option>
+
+                <option value="na">
+                  NA
+                </option>
+
+                <option value="asia">
+                  ASIA
+                </option>
+
+              </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+              <label for="wargamingId">
+                🆔 Wargaming ID
+              </label>
+
+              <input
+                type="text"
+                id="wargamingId"
+                name="wargaming_id"
+                placeholder="Буде отримано автоматично"
+                readonly
+                autocomplete="off"
+              >
+
+            </div>
+
+
+            <button
+              type="button"
+              id="verifyWotButton"
+              class="wot-verify-button"
+            >
+              🛡️ ПЕРЕВІРИТИ WOT АКАУНТ
+            </button>
+
+
+            <div
+              id="wotAccountStatus"
+              class="wot-account-status info"
+            >
+              Введіть нік та регіон і натисніть
+              «Перевірити WoT акаунт».
+            </div>
+
+
+            <div
+              id="wotAccountResult"
+              class="wot-account-result"
+              hidden
             >
 
-          </div>
+              <div>
+
+                <strong>
+                  WoT нік:
+                </strong>
+
+                <span id="wotResultNickname">
+                </span>
+
+              </div>
 
 
-          <div class="form-group">
+              <div>
 
-            <label for="wargamingId">
+                <strong>
+                  Wargaming ID:
+                </strong>
 
-              🆔 Wargaming ID
+                <span id="wotResultAccountId">
+                </span>
 
-            </label>
-
-            <input
-              type="text"
-              id="wargamingId"
-              name="wargaming_id"
-              placeholder="Ваш Wargaming ID"
-            >
-
-          </div>
+              </div>
 
 
-          <div class="form-group">
+              <div>
 
-            <label for="wotRegion">
+                <strong>
+                  Регіон:
+                </strong>
 
-              🌍 Регіон
+                <span id="wotResultRegion">
+                </span>
 
-            </label>
+              </div>
 
-            <select
-              id="wotRegion"
-              name="wot_region"
-            >
 
-              <option value="">
-                Оберіть регіон
-              </option>
+              <div>
 
-              <option value="EU">
-                EU
-              </option>
+                <strong>
+                  Статус:
+                </strong>
 
-              <option value="NA">
-                NA
-              </option>
+                <span>
+                  🟢 Підтверджено
+                </span>
 
-              <option value="ASIA">
-                ASIA
-              </option>
+              </div>
 
-            </select>
+            </div>
 
           </div>
-
 
         </div>
 
@@ -1116,9 +1465,7 @@
           <div class="form-group">
 
             <label for="dotaNickname">
-
               ⚔️ Нікнейм Dota 2
-
             </label>
 
             <input
@@ -1134,9 +1481,7 @@
           <div class="form-group">
 
             <label for="dotaFriendId">
-
               🆔 Dota 2 Friend ID
-
             </label>
 
             <input
@@ -1187,9 +1532,7 @@
           <div class="form-group">
 
             <label for="battleTag">
-
               🎮 BattleTag
-
             </label>
 
             <input
@@ -1205,9 +1548,7 @@
           <div class="form-group">
 
             <label for="wowCharacter">
-
               🧙 Основний персонаж
-
             </label>
 
             <input
@@ -1223,9 +1564,7 @@
           <div class="form-group">
 
             <label for="wowRealm">
-
               🌍 Realm / сервер
-
             </label>
 
             <input
@@ -1241,9 +1580,7 @@
           <div class="form-group">
 
             <label for="wowFaction">
-
               ⚔️ Фракція
-
             </label>
 
             <select
@@ -1271,9 +1608,7 @@
           <div class="form-group">
 
             <label for="wowClass">
-
               🛡️ Клас персонажа
-
             </label>
 
             <input
@@ -1349,9 +1684,7 @@
           class="submit-btn"
           id="submitApplication"
         >
-
           НАДІСЛАТИ ЗАЯВКУ
-
         </button>
 
 
@@ -1372,9 +1705,7 @@
           href="profile.html"
           class="back-link"
         >
-
           ← Повернутися до кабінету
-
         </a>
 
 
@@ -1390,21 +1721,17 @@
        JAVASCRIPT
        ========================================= -->
 
-
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 
   <script src="supabase.js"></script>
 
-
   <script src="script.js"></script>
-
 
   <script src="auth-menu.js"></script>
 
+  <script src="wot-profile.js?v=2"></script>
 
   <script src="join.js"></script>
-
 
 </body>
 
