@@ -1,5 +1,5 @@
 // ======================================
-// UA LEGION — WORLD OF TANKS PROFILE
+// UA LEGION — WORLD OF TANKS VERIFICATION
 // wot-profile.js
 // ======================================
 
@@ -22,7 +22,6 @@ document.addEventListener(
       );
 
       return;
-
     }
 
 
@@ -49,7 +48,6 @@ document.addEventListener(
       );
 
       return;
-
     }
 
 
@@ -66,6 +64,12 @@ document.addEventListener(
     const regionSelect =
       document.getElementById(
         "wotRegion"
+      );
+
+
+    const wargamingIdInput =
+      document.getElementById(
+        "wargamingId"
       );
 
 
@@ -112,17 +116,20 @@ document.addEventListener(
     if (
       !nicknameInput ||
       !regionSelect ||
+      !wargamingIdInput ||
       !verifyButton ||
       !statusBox ||
-      !resultBox
+      !resultBox ||
+      !resultNickname ||
+      !resultAccountId ||
+      !resultRegion
     ) {
 
       console.warn(
-        "WOT: елементи профілю не знайдені"
+        "WOT: елементи форми не знайдені"
       );
 
       return;
-
     }
 
 
@@ -141,7 +148,6 @@ document.addEventListener(
       statusBox.className =
         "wot-account-status " +
         type;
-
     }
 
 
@@ -172,7 +178,6 @@ document.addEventListener(
           return region || "";
 
       }
-
     }
 
 
@@ -198,6 +203,10 @@ document.addEventListener(
         );
 
 
+      wargamingIdInput.value =
+        accountId || "";
+
+
       resultBox.hidden =
         false;
 
@@ -206,7 +215,32 @@ document.addEventListener(
         "🟢 WoT акаунт успішно підтверджено.",
         "success"
       );
+    }
 
+
+    // ======================================
+    // CLEAR VERIFICATION
+    // ======================================
+
+    function clearVerification(
+      showMessage = true
+    ) {
+
+      resultBox.hidden =
+        true;
+
+
+      wargamingIdInput.value =
+        "";
+
+
+      if (showMessage) {
+
+        setStatus(
+          "Дані WoT змінено. Потрібно повторно підтвердити акаунт.",
+          "info"
+        );
+      }
     }
 
 
@@ -240,14 +274,12 @@ document.addEventListener(
         );
 
         return;
-
       }
 
 
       if (!data) {
 
         return;
-
       }
 
 
@@ -261,7 +293,6 @@ document.addEventListener(
 
         nicknameInput.value =
           data.wot_nickname;
-
       }
 
 
@@ -274,8 +305,9 @@ document.addEventListener(
       ) {
 
         regionSelect.value =
-          data.wot_region;
-
+          String(
+            data.wot_region
+          ).toLowerCase();
       }
 
 
@@ -294,8 +326,35 @@ document.addEventListener(
         );
 
       }
-
     }
+
+
+    // ======================================
+    // NICKNAME CHANGED
+    // ======================================
+
+    nicknameInput.addEventListener(
+      "input",
+      () => {
+
+        clearVerification();
+
+      }
+    );
+
+
+    // ======================================
+    // REGION CHANGED
+    // ======================================
+
+    regionSelect.addEventListener(
+      "change",
+      () => {
+
+        clearVerification();
+
+      }
+    );
 
 
     // ======================================
@@ -311,7 +370,9 @@ document.addEventListener(
 
 
         const region =
-          regionSelect.value;
+          String(
+            regionSelect.value || ""
+          ).toLowerCase();
 
 
         // ==================================
@@ -328,7 +389,6 @@ document.addEventListener(
           nicknameInput.focus();
 
           return;
-
         }
 
 
@@ -345,7 +405,6 @@ document.addEventListener(
           nicknameInput.focus();
 
           return;
-
         }
 
 
@@ -369,7 +428,6 @@ document.addEventListener(
           );
 
           return;
-
         }
 
 
@@ -383,6 +441,10 @@ document.addEventListener(
 
         resultBox.hidden =
           true;
+
+
+        wargamingIdInput.value =
+          "";
 
 
         setStatus(
@@ -411,7 +473,6 @@ document.addEventListener(
                   region
 
                 }
-
               }
             );
 
@@ -431,7 +492,6 @@ document.addEventListener(
               error.message ||
               "Помилка перевірки акаунта."
             );
-
           }
 
 
@@ -451,7 +511,36 @@ document.addEventListener(
             );
 
             return;
+          }
 
+
+          // =================================
+          // NORMALIZE RESULT
+          // =================================
+
+          const verifiedNickname =
+            data.nickname ||
+            nickname;
+
+
+          const verifiedAccountId =
+            data.account_id;
+
+
+          const verifiedRegion =
+            String(
+              data.region ||
+              region
+            ).toLowerCase();
+
+
+          if (
+            !verifiedAccountId
+          ) {
+
+            throw new Error(
+              "Wargaming не повернув Account ID."
+            );
           }
 
 
@@ -467,13 +556,13 @@ document.addEventListener(
               .update({
 
                 wot_nickname:
-                  data.nickname,
+                  verifiedNickname,
 
                 wot_account_id:
-                  data.account_id,
+                  verifiedAccountId,
 
                 wot_region:
-                  data.region,
+                  verifiedRegion,
 
                 wot_verified_at:
                   new Date()
@@ -500,7 +589,6 @@ document.addEventListener(
             throw new Error(
               "Акаунт знайдено, але не вдалося зберегти його у профіль."
             );
-
           }
 
 
@@ -509,17 +597,17 @@ document.addEventListener(
           // =================================
 
           nicknameInput.value =
-            data.nickname;
+            verifiedNickname;
 
 
           regionSelect.value =
-            data.region;
+            verifiedRegion;
 
 
           showVerifiedResult(
-            data.nickname,
-            data.account_id,
-            data.region
+            verifiedNickname,
+            verifiedAccountId,
+            verifiedRegion
           );
 
         }
