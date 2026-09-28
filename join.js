@@ -1,11 +1,25 @@
 /* =========================================================
    UA LEGION — JOIN SYSTEM
+
    Подача заявки + профіль + напрямок
+
+   ВАЖЛИВО:
+   - email НЕ використовується як ім'я
+   - одна заявка = один напрямок
+   - активний напрямок блокує повторну заявку
+   - pending/new заявка блокує повторну заявку
+   - rejected дозволяє подати повторно
 ========================================================= */
+
 
 document.addEventListener(
   "DOMContentLoaded",
+
   async () => {
+
+    // =====================================================
+    // SUPABASE
+    // =====================================================
 
     const supabase =
       window.supabaseClient;
@@ -18,12 +32,13 @@ document.addEventListener(
       );
 
       return;
+
     }
 
 
-    /* =======================================================
-       ELEMENTS
-    ======================================================= */
+    // =====================================================
+    // ELEMENTS
+    // =====================================================
 
     const applicationForm =
       document.getElementById(
@@ -76,9 +91,9 @@ document.addEventListener(
     };
 
 
-    /* =======================================================
-       MESSAGE
-    ======================================================= */
+    // =====================================================
+    // MESSAGE
+    // =====================================================
 
     function showMessage(
       message,
@@ -96,6 +111,7 @@ document.addEventListener(
 
       formMessage.className =
         type;
+
     }
 
 
@@ -112,14 +128,17 @@ document.addEventListener(
 
       formMessage.className =
         "";
+
     }
 
 
-    /* =======================================================
-       VALUE
-    ======================================================= */
+    // =====================================================
+    // VALUE
+    // =====================================================
 
-    function getValue(id) {
+    function getValue(
+      id
+    ) {
 
       const element =
         document.getElementById(
@@ -139,12 +158,13 @@ document.addEventListener(
       return value === ""
         ? null
         : value;
+
     }
 
 
-    /* =======================================================
-       NORMALIZE DIRECTION
-    ======================================================= */
+    // =====================================================
+    // NORMALIZE DIRECTION
+    // =====================================================
 
     function normalizeDirection(
       value
@@ -168,6 +188,7 @@ document.addEventListener(
       ) {
 
         return "ets2";
+
       }
 
 
@@ -178,6 +199,7 @@ document.addEventListener(
       ) {
 
         return "wot";
+
       }
 
 
@@ -188,6 +210,7 @@ document.addEventListener(
       ) {
 
         return "dota2";
+
       }
 
 
@@ -198,16 +221,18 @@ document.addEventListener(
       ) {
 
         return "wow";
+
       }
 
 
       return text;
+
     }
 
 
-    /* =======================================================
-       LABEL
-    ======================================================= */
+    // =====================================================
+    // DIRECTION LABEL
+    // =====================================================
 
     function getDirectionLabel(
       direction
@@ -247,12 +272,13 @@ document.addEventListener(
           );
 
       }
+
     }
 
 
-    /* =======================================================
-       AGE
-    ======================================================= */
+    // =====================================================
+    // AGE
+    // =====================================================
 
     function calculateAge(
       birthDate
@@ -276,6 +302,7 @@ document.addEventListener(
       ) {
 
         return null;
+
       }
 
 
@@ -303,53 +330,177 @@ document.addEventListener(
       ) {
 
         age--;
+
       }
 
 
       return age >= 0
         ? age
         : null;
+
     }
 
 
-    /* =======================================================
-       FALLBACK NAME
-    ======================================================= */
+    // =====================================================
+    // CHECK EMAIL-LIKE VALUE
+    // =====================================================
 
-    function getFallbackName(
+    function isEmailLike(
+      value
+    ) {
+
+      if (!value) {
+        return false;
+      }
+
+
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        .test(
+          String(value).trim()
+        );
+
+    }
+
+
+    // =====================================================
+    // GET APPLICATION NAME
+    //
+    // Email НІКОЛИ не використовується.
+    // =====================================================
+
+    function getApplicationName(
       user,
       profile
     ) {
 
-      return (
+      const profileName =
+        String(
+          profile?.display_name ||
+          ""
+        )
+          .trim();
 
-        profile?.display_name?.trim() ||
 
-        user?.user_metadata
-          ?.full_name
-          ?.trim() ||
+      if (
+        profileName &&
+        !isEmailLike(
+          profileName
+        )
+      ) {
 
-        user?.user_metadata
-          ?.name
-          ?.trim() ||
+        return profileName;
 
-        user?.user_metadata
-          ?.display_name
-          ?.trim() ||
+      }
 
-        user?.email
-          ?.split("@")[0]
-          ?.trim() ||
 
-        null
+      const metadataFullName =
+        String(
+          user?.user_metadata?.full_name ||
+          ""
+        )
+          .trim();
 
-      );
+
+      if (
+        metadataFullName &&
+        !isEmailLike(
+          metadataFullName
+        )
+      ) {
+
+        return metadataFullName;
+
+      }
+
+
+      const metadataName =
+        String(
+          user?.user_metadata?.name ||
+          ""
+        )
+          .trim();
+
+
+      if (
+        metadataName &&
+        !isEmailLike(
+          metadataName
+        )
+      ) {
+
+        return metadataName;
+
+      }
+
+
+      const metadataDisplayName =
+        String(
+          user?.user_metadata?.display_name ||
+          ""
+        )
+          .trim();
+
+
+      if (
+        metadataDisplayName &&
+        !isEmailLike(
+          metadataDisplayName
+        )
+      ) {
+
+        return metadataDisplayName;
+
+      }
+
+
+      const gameNickname =
+        String(
+          profile?.game_nickname ||
+          ""
+        )
+          .trim();
+
+
+      if (
+        gameNickname &&
+        !isEmailLike(
+          gameNickname
+        )
+      ) {
+
+        return gameNickname;
+
+      }
+
+
+      const discordNickname =
+        String(
+          profile?.discord_username ||
+          ""
+        )
+          .trim();
+
+
+      if (
+        discordNickname &&
+        !isEmailLike(
+          discordNickname
+        )
+      ) {
+
+        return discordNickname;
+
+      }
+
+
+      return null;
+
     }
 
 
-    /* =======================================================
-       ENABLE / DISABLE FORM
-    ======================================================= */
+    // =====================================================
+    // ENABLE / DISABLE FORM
+    // =====================================================
 
     function setFormEnabled(
       container,
@@ -373,12 +524,13 @@ document.addEventListener(
 
           }
         );
+
     }
 
 
-    /* =======================================================
-       HIDE ALL GAME FORMS
-    ======================================================= */
+    // =====================================================
+    // HIDE ALL GAME FORMS
+    // =====================================================
 
     function hideAllGameForms() {
 
@@ -404,12 +556,13 @@ document.addEventListener(
 
           }
         );
+
     }
 
 
-    /* =======================================================
-       SHOW GAME FORM
-    ======================================================= */
+    // =====================================================
+    // SHOW GAME FORM
+    // =====================================================
 
     function showGameForm(
       direction
@@ -442,12 +595,13 @@ document.addEventListener(
         form,
         true
       );
+
     }
 
 
-    /* =======================================================
-       SELECTED DIRECTION
-    ======================================================= */
+    // =====================================================
+    // SELECTED DIRECTION
+    // =====================================================
 
     function getSelectedDirection() {
 
@@ -460,12 +614,13 @@ document.addEventListener(
       return selected
         ? selected.value
         : null;
+
     }
 
 
-    /* =======================================================
-       APPLICATION DIRECTIONS
-    ======================================================= */
+    // =====================================================
+    // APPLICATION DIRECTIONS
+    // =====================================================
 
     function getDirectionsFromApplication(
       application
@@ -481,6 +636,7 @@ document.addEventListener(
         result.push(
           application.direction
         );
+
       }
 
 
@@ -551,12 +707,13 @@ document.addEventListener(
           normalizeDirection
         )
         .filter(Boolean);
+
     }
 
 
-    /* =======================================================
-       ACTIVE APPLICATION STATUS
-    ======================================================= */
+    // =====================================================
+    // ACTIVE APPLICATION STATUS
+    // =====================================================
 
     function isActiveApplicationStatus(
       status
@@ -579,12 +736,13 @@ document.addEventListener(
           .toLowerCase()
 
       );
+
     }
 
 
-    /* =======================================================
-       DIRECTION RECORD
-    ======================================================= */
+    // =====================================================
+    // GET DIRECTION
+    // =====================================================
 
     async function getDirectionRecord(
       direction
@@ -628,6 +786,7 @@ document.addEventListener(
 
 
           return null;
+
         }
 
 
@@ -644,13 +803,15 @@ document.addEventListener(
 
 
         return null;
+
       }
+
     }
 
 
-    /* =======================================================
-       ACTIVE MEMBERSHIP
-    ======================================================= */
+    // =====================================================
+    // ACTIVE MEMBERSHIP
+    // =====================================================
 
     async function hasActiveDirectionMembership(
       userId,
@@ -669,6 +830,7 @@ document.addEventListener(
       ) {
 
         return false;
+
       }
 
 
@@ -685,6 +847,7 @@ document.addEventListener(
         ) {
 
           return false;
+
         }
 
 
@@ -722,6 +885,7 @@ document.addEventListener(
 
 
           return false;
+
         }
 
 
@@ -740,13 +904,15 @@ document.addEventListener(
 
 
         return false;
+
       }
+
     }
 
 
-    /* =======================================================
-       DISABLE DIRECTION
-    ======================================================= */
+    // =====================================================
+    // DISABLE DIRECTION
+    // =====================================================
 
     function markDirectionAsDisabled(
       input
@@ -778,6 +944,7 @@ document.addEventListener(
             ?.querySelector(
               "label"
             );
+
       }
 
 
@@ -790,13 +957,15 @@ document.addEventListener(
 
         label.title =
           "Ви вже є учасником цього напрямку";
+
       }
+
     }
 
 
-    /* =======================================================
-       DISABLE ACTIVE DIRECTIONS
-    ======================================================= */
+    // =====================================================
+    // DISABLE ACTIVE DIRECTIONS
+    // =====================================================
 
     async function disableActiveDirections() {
 
@@ -828,22 +997,20 @@ document.addEventListener(
           markDirectionAsDisabled(
             input
           );
+
         }
+
       }
 
 
-      /*
-        При звичайному відкритті
-        нічого автоматично не вибираємо.
-      */
-
       hideAllGameForms();
+
     }
 
 
-    /* =======================================================
-       AUTH
-    ======================================================= */
+    // =====================================================
+    // AUTH
+    // =====================================================
 
     const {
       data: {
@@ -869,6 +1036,7 @@ document.addEventListener(
 
 
       return;
+
     }
 
 
@@ -892,12 +1060,13 @@ document.addEventListener(
 
 
       return;
+
     }
 
 
-    /* =======================================================
-       PROFILE
-    ======================================================= */
+    // =====================================================
+    // PROFILE
+    // =====================================================
 
     const {
       data: profile,
@@ -930,25 +1099,34 @@ document.addEventListener(
 
 
       return;
+
     }
 
 
-    /* =======================================================
-       PROFILE DISPLAY
-    ======================================================= */
+    // =====================================================
+    // APPLICATION NAME
+    // =====================================================
 
-    const profileName =
-      getFallbackName(
+    const applicationName =
+      getApplicationName(
         user,
         profile
       );
 
+
+    // =====================================================
+    // AGE
+    // =====================================================
 
     const profileAge =
       calculateAge(
         profile?.birth_date
       );
 
+
+    // =====================================================
+    // PROFILE DISPLAY
+    // =====================================================
 
     const joinProfileName =
       document.getElementById(
@@ -989,8 +1167,9 @@ document.addEventListener(
     if (joinProfileName) {
 
       joinProfileName.textContent =
-        profileName ||
+        applicationName ||
         "Не заповнено";
+
     }
 
 
@@ -1002,6 +1181,7 @@ document.addEventListener(
           : String(
               profileAge
             );
+
     }
 
 
@@ -1010,6 +1190,7 @@ document.addEventListener(
       joinProfileDiscord.textContent =
         profile?.discord_username ||
         "Не заповнено";
+
     }
 
 
@@ -1018,6 +1199,7 @@ document.addEventListener(
       joinProfileDiscordId.textContent =
         profile?.discord_user_id ||
         "Не заповнено";
+
     }
 
 
@@ -1026,6 +1208,7 @@ document.addEventListener(
       joinProfileSteam.textContent =
         profile?.steam_id ||
         "Не заповнено";
+
     }
 
 
@@ -1034,28 +1217,29 @@ document.addEventListener(
       joinProfileGameNick.textContent =
         profile?.game_nickname ||
         "Не заповнено";
+
     }
 
 
-    /* =======================================================
-       PROFILE VALIDATION
-    ======================================================= */
+    // =====================================================
+    // PROFILE VALIDATION
+    // =====================================================
 
-    if (!profileName) {
+    if (!applicationName) {
 
       showMessage(
-        "Спочатку заповніть ім'я у своєму профілі.",
+        "Спочатку заповніть нормальне ім'я або нікнейм у своєму профілі. Email не може використовуватися як ім'я.",
         "error"
       );
 
 
       return;
+
     }
 
 
     if (
-      profileAge ===
-      null
+      profileAge === null
     ) {
 
       showMessage(
@@ -1065,12 +1249,13 @@ document.addEventListener(
 
 
       return;
+
     }
 
 
-    /* =======================================================
-       FORM SELECTION
-    ======================================================= */
+    // =====================================================
+    // FORM SELECTION
+    // =====================================================
 
     hideAllGameForms();
 
@@ -1080,6 +1265,7 @@ document.addEventListener(
 
         input.addEventListener(
           "change",
+
           () => {
 
             if (
@@ -1087,6 +1273,7 @@ document.addEventListener(
             ) {
 
               return;
+
             }
 
 
@@ -1104,31 +1291,16 @@ document.addEventListener(
     );
 
 
-    /* =======================================================
-       ACTIVE DIRECTIONS
-    ======================================================= */
+    // =====================================================
+    // ACTIVE DIRECTIONS
+    // =====================================================
 
     await disableActiveDirections();
 
 
-    /* =======================================================
-       URL DIRECTION
-       
-       join.html
-         -> нічого не вибирається
-
-       join.html?direction=wot
-         -> WoT
-
-       join.html?direction=ets2
-         -> ETS2
-
-       join.html?direction=dota2
-         -> Dota 2
-
-       join.html?direction=wow
-         -> WoW
-    ======================================================= */
+    // =====================================================
+    // URL DIRECTION
+    // =====================================================
 
     const urlParams =
       new URLSearchParams(
@@ -1143,10 +1315,6 @@ document.addEventListener(
         )
       );
 
-
-    /* =======================================================
-       OPEN REQUESTED DIRECTION
-    ======================================================= */
 
     if (
       requestedDirection
@@ -1176,13 +1344,15 @@ document.addEventListener(
         showGameForm(
           requestedInput.value
         );
+
       }
+
     }
 
 
-    /* =======================================================
-       APPLICATION FORM
-    ======================================================= */
+    // =====================================================
+    // FORM
+    // =====================================================
 
     if (!applicationForm) {
 
@@ -1192,15 +1362,17 @@ document.addEventListener(
 
 
       return;
+
     }
 
 
-    /* =======================================================
-       SUBMIT
-    ======================================================= */
+    // =====================================================
+    // SUBMIT
+    // =====================================================
 
     applicationForm.addEventListener(
       "submit",
+
       async event => {
 
         event.preventDefault();
@@ -1224,12 +1396,13 @@ document.addEventListener(
 
 
           return;
+
         }
 
 
-        /* ===================================================
-           ACTIVE MEMBERSHIP
-        =================================================== */
+        // =================================================
+        // ACTIVE MEMBERSHIP
+        // =================================================
 
         const alreadyActive =
           await hasActiveDirectionMembership(
@@ -1268,16 +1441,18 @@ document.addEventListener(
             markDirectionAsDisabled(
               selectedInput
             );
+
           }
 
 
           return;
+
         }
 
 
-        /* ===================================================
-           EXISTING APPLICATIONS
-        =================================================== */
+        // =================================================
+        // EXISTING APPLICATIONS
+        // =================================================
 
         const {
           data: existingApplications,
@@ -1318,6 +1493,7 @@ document.addEventListener(
 
 
           return;
+
         }
 
 
@@ -1365,12 +1541,13 @@ document.addEventListener(
 
 
           return;
+
         }
 
 
-        /* ===================================================
-           WOT VERIFICATION
-        =================================================== */
+        // =================================================
+        // WOT VERIFICATION
+        // =================================================
 
         let verifiedWotProfile =
           null;
@@ -1414,6 +1591,7 @@ document.addEventListener(
 
 
             return;
+
           }
 
 
@@ -1449,10 +1627,12 @@ document.addEventListener(
                 wotForm,
                 true
               );
+
             }
 
 
             return;
+
           }
 
 
@@ -1502,14 +1682,15 @@ document.addEventListener(
 
 
             return;
+
           }
 
         }
 
 
-        /* ===================================================
-           APPLICATION DATA
-        =================================================== */
+        // =================================================
+        // APPLICATION DATA
+        // =================================================
 
         const applicationData = {
 
@@ -1517,7 +1698,7 @@ document.addEventListener(
             user.id,
 
           name:
-            profileName,
+            applicationName,
 
           age:
             profileAge,
@@ -1553,9 +1734,9 @@ document.addEventListener(
         };
 
 
-        /* ===================================================
-           ETS2
-        =================================================== */
+        // =================================================
+        // ETS2
+        // =================================================
 
         if (
           direction ===
@@ -1590,12 +1771,13 @@ document.addEventListener(
             applicationData.truckersmp_nick ||
             profile?.game_nickname ||
             null;
+
         }
 
 
-        /* ===================================================
-           WOT
-        =================================================== */
+        // =================================================
+        // WORLD OF TANKS
+        // =================================================
 
         if (
           direction ===
@@ -1627,12 +1809,13 @@ document.addEventListener(
             applicationData.wot_nickname ||
             profile?.game_nickname ||
             null;
+
         }
 
 
-        /* ===================================================
-           DOTA 2
-        =================================================== */
+        // =================================================
+        // DOTA 2
+        // =================================================
 
         if (
           direction ===
@@ -1661,12 +1844,13 @@ document.addEventListener(
             applicationData.dota_nickname ||
             profile?.game_nickname ||
             null;
+
         }
 
 
-        /* ===================================================
-           WOW
-        =================================================== */
+        // =================================================
+        // WORLD OF WARCRAFT
+        // =================================================
 
         if (
           direction ===
@@ -1707,12 +1891,13 @@ document.addEventListener(
             applicationData.wow_character ||
             profile?.game_nickname ||
             null;
+
         }
 
 
-        /* ===================================================
-           BUTTON
-        =================================================== */
+        // =================================================
+        // BUTTON
+        // =================================================
 
         if (submitButton) {
 
@@ -1726,12 +1911,13 @@ document.addEventListener(
 
           submitButton.textContent =
             "Відправлення...";
+
         }
 
 
-        /* ===================================================
-           INSERT
-        =================================================== */
+        // =================================================
+        // INSERT
+        // =================================================
 
         try {
 
@@ -1776,7 +1962,7 @@ document.addEventListener(
             ) {
 
               showMessage(
-                "Не вдалося створити заявку: у профілі не заповнене ім'я.",
+                "Не вдалося створити заявку: у профілі не заповнене ім'я або нікнейм.",
                 "error"
               );
 
@@ -1791,10 +1977,12 @@ document.addEventListener(
                 }`,
                 "error"
               );
+
             }
 
 
             return;
+
           }
 
 
@@ -1823,7 +2011,6 @@ document.addEventListener(
           );
 
         }
-
 
         catch (error) {
 
@@ -1854,12 +2041,15 @@ document.addEventListener(
                 .dataset
                 .originalText ||
               "НАДІСЛАТИ ЗАЯВКУ";
+
           }
 
         }
 
       }
+
     );
 
   }
+
 );
