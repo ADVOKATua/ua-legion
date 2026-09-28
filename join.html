@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="uk">
+
 <head>
+
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -9,12 +11,14 @@
   <link rel="stylesheet" href="style.css">
 
   <style>
+
     /* =========================================================
        JOIN PAGE
     ========================================================= */
 
     .join-page {
       min-height: 100vh;
+
       background:
         radial-gradient(
           circle at 80% 20%,
@@ -24,16 +28,19 @@
         #05070b;
     }
 
+
     .join-main {
       width: min(900px, 92%);
       margin: 0 auto;
       padding: 110px 0 70px;
     }
 
+
     .join-header {
       text-align: center;
       margin-bottom: 35px;
     }
+
 
     .join-header .eyebrow {
       color: #f5b800;
@@ -43,6 +50,7 @@
       margin-bottom: 12px;
     }
 
+
     .join-header h1 {
       margin: 0;
       font-size: clamp(38px, 6vw, 70px);
@@ -50,9 +58,11 @@
       color: #f4f6fb;
     }
 
+
     .join-header h1 span {
       color: #f5b800;
     }
+
 
     .join-header p {
       max-width: 650px;
@@ -61,6 +71,7 @@
       line-height: 1.7;
       font-size: 16px;
     }
+
 
     /* =========================================================
        CARDS
@@ -74,11 +85,13 @@
       margin-bottom: 18px;
     }
 
+
     .join-card-title {
       margin: 0 0 7px;
       color: #fff;
       font-size: 21px;
     }
+
 
     .join-card-description {
       margin: 0 0 18px;
@@ -87,9 +100,11 @@
       line-height: 1.6;
     }
 
+
     .join-card-description a {
       color: #f5b800;
     }
+
 
     /* =========================================================
        PROFILE
@@ -101,11 +116,13 @@
       gap: 12px;
     }
 
+
     .join-profile-item {
       padding: 13px 15px;
       background: #080b10;
       border: 1px solid #252c38;
     }
+
 
     .join-profile-item span {
       display: block;
@@ -114,6 +131,7 @@
       margin-bottom: 5px;
     }
 
+
     .join-profile-item strong {
       display: block;
       color: #fff;
@@ -121,95 +139,6 @@
       overflow-wrap: anywhere;
     }
 
-    /* =========================================================
-       YOUR DIRECTIONS
-    ========================================================= */
-
-    .join-directions-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
-    }
-
-    .join-direction-card {
-      padding: 16px;
-      background: #080b10;
-      border: 1px solid #252c38;
-    }
-
-    .join-direction-card.active {
-      border-color: rgba(98, 229, 156, .55);
-    }
-
-    .join-direction-card.pending,
-    .join-direction-card.approved_waiting {
-      border-color: rgba(255, 211, 77, .55);
-    }
-
-    .join-direction-card.rejected {
-      border-color: rgba(255, 112, 112, .55);
-    }
-
-    .join-direction-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-
-    .join-direction-name {
-      margin: 0;
-      color: #fff;
-      font-size: 15px;
-      line-height: 1.35;
-    }
-
-    .join-direction-status {
-      flex-shrink: 0;
-      font-size: 11px;
-      font-weight: 800;
-      white-space: nowrap;
-    }
-
-    .join-direction-status.active {
-      color: #62e59c;
-    }
-
-    .join-direction-status.pending,
-    .join-direction-status.approved_waiting {
-      color: #ffd34d;
-    }
-
-    .join-direction-status.rejected {
-      color: #ff7070;
-    }
-
-    .join-direction-status.none {
-      color: #8792a3;
-    }
-
-    .join-direction-detail {
-      margin: 5px 0 0;
-      color: #8f9aaa;
-      font-size: 12px;
-      line-height: 1.45;
-    }
-
-    .join-direction-detail strong {
-      color: #e9edf5;
-    }
-
-    .join-direction-apply {
-      display: inline-flex;
-      margin-top: 12px;
-      padding: 8px 12px;
-      background: #f5b800;
-      color: #111;
-      text-decoration: none;
-      font-size: 11px;
-      font-weight: 800;
-    }
 
     /* =========================================================
        APPLICATION
@@ -222,15 +151,18 @@
       padding: 35px;
     }
 
+
     .join-form-title {
       margin-bottom: 25px;
     }
+
 
     .join-form-title h2 {
       margin: 0 0 7px;
       color: #fff;
       font-size: 22px;
     }
+
 
     .join-form-title p {
       margin: 0;
@@ -239,6 +171,7 @@
       line-height: 1.6;
     }
 
+
     /* =========================================================
        FORM SECTIONS
     ========================================================= */
@@ -246,6 +179,7 @@
     .form-section {
       margin-bottom: 38px;
     }
+
 
     .form-section-title {
       display: flex;
@@ -256,6 +190,7 @@
       border-bottom: 1px solid rgba(255, 255, 255, .08);
     }
 
+
     .form-section-title span {
       color: #f5b800;
       font-size: 12px;
@@ -263,11 +198,13 @@
       letter-spacing: 1px;
     }
 
+
     .form-section-title h2 {
       margin: 0;
       color: #fff;
       font-size: 20px;
     }
+
 
     /* =========================================================
        INPUTS
@@ -277,6 +214,7 @@
       margin-bottom: 20px;
     }
 
+
     .form-group label {
       display: block;
       margin-bottom: 8px;
@@ -285,12 +223,14 @@
       font-weight: 700;
     }
 
+
     .optional {
       color: #687384;
       font-weight: 400;
       font-size: 12px;
       margin-left: 5px;
     }
+
 
     .form-group input,
     .form-group select,
@@ -306,10 +246,12 @@
       outline: none;
     }
 
+
     .form-group textarea {
       min-height: 130px;
       resize: vertical;
     }
+
 
     .form-group input:focus,
     .form-group select:focus,
@@ -317,6 +259,7 @@
       border-color: #2878ff;
       box-shadow: 0 0 0 3px rgba(40, 120, 255, .1);
     }
+
 
     /* =========================================================
        DIRECTION SELECTOR
@@ -328,15 +271,18 @@
       gap: 12px;
     }
 
+
     .choice {
       position: relative;
     }
+
 
     .choice input {
       position: absolute;
       opacity: 0;
       pointer-events: none;
     }
+
 
     .choice label {
       display: block;
@@ -347,10 +293,12 @@
       transition: .2s ease;
     }
 
+
     .choice label:hover {
       border-color: #3b4657;
       transform: translateY(-1px);
     }
+
 
     .choice input:checked + label {
       border-color: #2878ff;
@@ -358,11 +306,13 @@
       box-shadow: inset 3px 0 0 #2878ff;
     }
 
+
     .choice label.direction-disabled {
       opacity: .45;
       cursor: not-allowed;
       filter: grayscale(.3);
     }
+
 
     .choice-title {
       display: block;
@@ -371,11 +321,13 @@
       margin-bottom: 5px;
     }
 
+
     .choice-description {
       display: block;
       color: #778294;
       font-size: 12px;
     }
+
 
     /* =========================================================
        GAME FORMS
@@ -385,12 +337,15 @@
       display: none;
     }
 
+
     .game-form.active {
       display: block;
       animation: fadeIn .25s ease;
     }
 
+
     @keyframes fadeIn {
+
       from {
         opacity: 0;
         transform: translateY(8px);
@@ -400,7 +355,9 @@
         opacity: 1;
         transform: translateY(0);
       }
+
     }
+
 
     /* =========================================================
        WOT
@@ -413,11 +370,13 @@
       margin-bottom: 8px;
     }
 
+
     .wot-verification-title {
       margin: 0 0 7px;
       color: #fff;
       font-size: 16px;
     }
+
 
     .wot-verification-description {
       margin: 0 0 18px;
@@ -425,6 +384,7 @@
       font-size: 12px;
       line-height: 1.6;
     }
+
 
     .wot-verify-button {
       width: 100%;
@@ -436,10 +396,12 @@
       cursor: pointer;
     }
 
+
     .wot-verify-button:disabled {
       opacity: .6;
       cursor: not-allowed;
     }
+
 
     .wot-account-status {
       margin-top: 10px;
@@ -447,17 +409,21 @@
       line-height: 1.5;
     }
 
+
     .wot-account-status.success {
       color: #62e59c;
     }
+
 
     .wot-account-status.error {
       color: #ff7070;
     }
 
+
     .wot-account-status.info {
       color: #8f9aaa;
     }
+
 
     .wot-account-result {
       margin-top: 12px;
@@ -469,11 +435,13 @@
       line-height: 1.7;
     }
 
+
     .wot-account-result div {
       display: flex;
       justify-content: space-between;
       gap: 15px;
     }
+
 
     /* =========================================================
        FOOTER
@@ -486,6 +454,7 @@
       text-align: center;
     }
 
+
     .submit-btn {
       border: 0;
       padding: 15px 35px;
@@ -497,10 +466,12 @@
       cursor: pointer;
     }
 
+
     .submit-btn:hover {
       background: #3d87ff;
       transform: translateY(-1px);
     }
+
 
     .submit-btn:disabled {
       opacity: .6;
@@ -508,19 +479,23 @@
       transform: none;
     }
 
+
     #formMessage {
       margin-top: 18px;
       min-height: 20px;
       font-size: 14px;
     }
 
+
     #formMessage.success {
       color: #62e59c;
     }
 
+
     #formMessage.error {
       color: #ff7070;
     }
+
 
     .form-note {
       margin-top: 15px;
@@ -528,6 +503,7 @@
       font-size: 12px;
       line-height: 1.6;
     }
+
 
     .back-link {
       display: inline-block;
@@ -537,9 +513,11 @@
       font-size: 13px;
     }
 
+
     .back-link:hover {
       color: #fff;
     }
+
 
     /* =========================================================
        MOBILE
@@ -551,41 +529,42 @@
         padding: 90px 0 40px;
       }
 
+
       .application-form,
       .join-card {
         padding: 22px;
       }
 
+
       .direction-grid,
-      .join-profile-grid,
-      .join-directions-grid {
+      .join-profile-grid {
         grid-template-columns: 1fr;
       }
+
 
       .join-header h1 {
         font-size: 42px;
       }
 
-      .join-direction-header {
-        flex-direction: column;
-      }
-
-      .join-direction-status {
-        white-space: normal;
-      }
     }
+
   </style>
+
 </head>
+
 
 <body class="join-page">
 
+
   <div class="noise"></div>
+
 
   <!-- =======================================================
        HEADER
-  ======================================================== -->
+  ========================================================= -->
 
   <header class="topbar">
+
 
     <a class="brand" href="index.html">
 
@@ -598,6 +577,7 @@
 
     </a>
 
+
     <button
       class="menu-btn"
       aria-label="Відкрити меню"
@@ -605,35 +585,44 @@
       ☰
     </button>
 
+
     <nav class="nav">
+
 
       <a href="index.html">
         Головна
       </a>
 
+
       <a href="about.html">
         Про нас
       </a>
+
 
       <a href="games.html">
         Ігри
       </a>
 
+
       <a href="events.html">
         Події
       </a>
+
 
       <a href="media.html">
         Медіа
       </a>
 
+
       <a href="gallery.html">
         Галерея
       </a>
 
+
       <a href="join.html">
         Подати заявку
       </a>
+
 
       <a
         href="https://www.tiktok.com/@ua_legion_"
@@ -642,6 +631,7 @@
       >
         TikTok
       </a>
+
 
       <a
         href="https://discord.gg/gfunf3yq7"
@@ -652,6 +642,7 @@
         Discord
       </a>
 
+
       <a
         href="login.html"
         id="authButton"
@@ -659,39 +650,47 @@
         Увійти / Реєстрація
       </a>
 
+
     </nav>
 
   </header>
 
 
+
   <!-- =======================================================
        MAIN
-  ======================================================== -->
+  ========================================================= -->
 
   <main class="join-main">
 
 
+
     <div class="join-header">
+
 
       <div class="eyebrow">
         🇺🇦 UA LEGION / COMMUNITY
       </div>
+
 
       <h1>
         ПОДАТИ ЗАЯВКУ
         <span>UA LEGION</span>
       </h1>
 
+
       <p>
-        Тут ви бачите свої дані та статус у всіх напрямках.
-        Оберіть доступний напрямок, якщо хочете подати заявку.
+        Оберіть напрямок, до якого хочете приєднатися,
+        та заповніть заявку.
       </p>
+
 
     </div>
 
 
+
     <!-- =====================================================
-         USER OVERVIEW
+         USER PROFILE
     ====================================================== -->
 
     <section class="join-overview">
@@ -701,9 +700,11 @@
 
       <div class="join-card">
 
+
         <h2 class="join-card-title">
           👤 Ваш профіль
         </h2>
+
 
         <p class="join-card-description">
 
@@ -711,13 +712,16 @@
           під час подання заявки.
 
           Змінити їх можна у
+
           <a href="profile.html">
             Моєму кабінеті
           </a>.
 
         </p>
 
+
         <div class="join-profile-grid">
+
 
 
           <div class="join-profile-item">
@@ -733,6 +737,7 @@
           </div>
 
 
+
           <div class="join-profile-item">
 
             <span>
@@ -744,6 +749,7 @@
             </strong>
 
           </div>
+
 
 
           <div class="join-profile-item">
@@ -759,6 +765,7 @@
           </div>
 
 
+
           <div class="join-profile-item">
 
             <span>
@@ -770,6 +777,7 @@
             </strong>
 
           </div>
+
 
 
           <div class="join-profile-item">
@@ -785,6 +793,7 @@
           </div>
 
 
+
           <div class="join-profile-item">
 
             <span>
@@ -797,44 +806,6 @@
 
           </div>
 
-        </div>
-
-      </div>
-
-
-      <!-- =================================================
-           YOUR DIRECTIONS
-
-           ВАЖЛИВО:
-           id="joinDirectionsCard"
-           JS ховає цей блок, якщо є ?direction=
-      ================================================== -->
-
-      <div
-        class="join-card"
-        id="joinDirectionsCard"
-      >
-
-        <h2 class="join-card-title">
-          📍 Ваші напрямки
-        </h2>
-
-        <p class="join-card-description">
-
-          Тут видно, де ви вже берете участь,
-          де заявка розглядається
-          і до яких напрямків ще можна подати заявку.
-
-        </p>
-
-        <div
-          id="joinDirectionsStatus"
-          class="join-directions-grid"
-        >
-
-          <div class="join-direction-detail">
-            Завантаження напрямків...
-          </div>
 
         </div>
 
@@ -842,6 +813,7 @@
 
 
     </section>
+
 
 
     <!-- =====================================================
@@ -854,42 +826,56 @@
     >
 
 
+
       <div class="join-form-title">
+
 
         <h2>
           📝 Подати заявку
         </h2>
 
+
         <p>
           Оберіть напрямок, до якого хочете подати заявку.
         </p>
 
+
       </div>
 
 
-      <!-- STEP 01 -->
+
+      <!-- =================================================
+           STEP 01
+      ================================================== -->
 
       <div class="form-section">
 
+
         <div class="form-section-title">
+
 
           <span>
             01
           </span>
 
+
           <h2>
             Оберіть напрямок
           </h2>
 
+
         </div>
+
 
 
         <div class="direction-grid">
 
 
+
           <!-- ETS2 -->
 
           <div class="choice">
+
 
             <input
               type="radio"
@@ -898,24 +884,31 @@
               value="ets2"
             >
 
+
             <label for="ets2">
+
 
               <span class="choice-title">
                 🚛 ETS2 / TruckersMP
               </span>
 
+
               <span class="choice-description">
                 Конвої, рейси та TruckersMP
               </span>
 
+
             </label>
 
+
           </div>
+
 
 
           <!-- WOT -->
 
           <div class="choice">
+
 
             <input
               type="radio"
@@ -924,24 +917,31 @@
               value="wot"
             >
 
+
             <label for="wot">
+
 
               <span class="choice-title">
                 🪖 World of Tanks
               </span>
 
+
               <span class="choice-description">
                 Взводи та командна гра
               </span>
 
+
             </label>
 
+
           </div>
+
 
 
           <!-- DOTA -->
 
           <div class="choice">
+
 
             <input
               type="radio"
@@ -950,24 +950,31 @@
               value="dota2"
             >
 
+
             <label for="dota2">
+
 
               <span class="choice-title">
                 ⚔️ Dota 2
               </span>
 
+
               <span class="choice-description">
                 Команди та спільна гра
               </span>
 
+
             </label>
 
+
           </div>
+
 
 
           <!-- WOW -->
 
           <div class="choice">
+
 
             <input
               type="radio"
@@ -976,19 +983,25 @@
               value="wow"
             >
 
+
             <label for="wow">
+
 
               <span class="choice-title">
                 🐉 World of Warcraft
               </span>
 
+
               <span class="choice-description">
                 PvE, PvP та спільна гра
               </span>
 
+
             </label>
 
+
           </div>
+
 
 
         </div>
@@ -996,35 +1009,48 @@
       </div>
 
 
-      <!-- STEP 02 -->
+
+      <!-- =================================================
+           STEP 02
+      ================================================== -->
 
       <div class="form-section">
 
+
         <div class="form-section-title">
+
 
           <span>
             02
           </span>
 
+
           <h2>
             Дані напрямку
           </h2>
 
+
         </div>
 
 
-        <!-- ETS2 -->
+
+        <!-- =================================================
+             ETS2
+        ================================================== -->
 
         <div
           class="game-form"
           id="ets2Form"
         >
 
+
           <div class="form-group">
+
 
             <label for="truckersmpNick">
               🚛 Нікнейм TruckersMP
             </label>
+
 
             <input
               type="text"
@@ -1033,14 +1059,18 @@
               placeholder="Ваш нік у TruckersMP"
             >
 
+
           </div>
+
 
 
           <div class="form-group">
 
+
             <label for="truckersmpId">
               🆔 TruckersMP ID
             </label>
+
 
             <input
               type="text"
@@ -1049,14 +1079,18 @@
               placeholder="Ваш TruckersMP ID"
             >
 
+
           </div>
+
 
 
           <div class="form-group">
 
+
             <label for="truckershubUsername">
               🎮 Ім'я користувача TruckersHub
             </label>
+
 
             <input
               type="text"
@@ -1065,14 +1099,18 @@
               placeholder="Ваше ім'я користувача TruckersHub"
             >
 
+
           </div>
+
 
 
           <div class="form-group">
 
+
             <label for="truckershubId">
               🆔 TruckersHub ID
             </label>
+
 
             <input
               type="text"
@@ -1081,38 +1119,50 @@
               placeholder="Ваш TruckersHub ID"
             >
 
+
           </div>
+
 
         </div>
 
 
-        <!-- WOT -->
+
+        <!-- =================================================
+             WOT
+        ================================================== -->
 
         <div
           class="game-form"
           id="wotForm"
         >
 
+
           <div class="wot-verification">
+
 
             <h3 class="wot-verification-title">
               🪖 Перевірка World of Tanks
             </h3>
 
+
             <p class="wot-verification-description">
 
               Підтвердьте свій WoT акаунт через Wargaming.
+
               Після успішної перевірки Wargaming ID
               буде отримано автоматично.
 
             </p>
 
 
+
             <div class="form-group">
+
 
               <label for="wotNickname">
                 🪖 Нікнейм World of Tanks
               </label>
+
 
               <input
                 type="text"
@@ -1123,46 +1173,59 @@
                 autocomplete="off"
               >
 
+
             </div>
+
 
 
             <div class="form-group">
 
+
               <label for="wotRegion">
                 🌍 Регіон
               </label>
+
 
               <select
                 id="wotRegion"
                 name="wot_region"
               >
 
+
                 <option value="">
                   Оберіть регіон
                 </option>
+
 
                 <option value="eu">
                   EU
                 </option>
 
+
                 <option value="na">
                   NA
                 </option>
+
 
                 <option value="asia">
                   ASIA
                 </option>
 
+
               </select>
+
 
             </div>
 
 
+
             <div class="form-group">
+
 
               <label for="wargamingId">
                 🆔 Wargaming ID
               </label>
+
 
               <input
                 type="text"
@@ -1173,7 +1236,9 @@
                 autocomplete="off"
               >
 
+
             </div>
+
 
 
             <button
@@ -1185,6 +1250,7 @@
             </button>
 
 
+
             <div
               id="wotAccountStatus"
               class="wot-account-status info"
@@ -1194,37 +1260,49 @@
             </div>
 
 
+
             <div
               id="wotAccountResult"
               class="wot-account-result"
               hidden
             >
 
+
               <div>
+
                 <strong>
                   WoT нік:
                 </strong>
 
                 <span id="wotResultNickname"></span>
+
               </div>
 
+
               <div>
+
                 <strong>
                   Wargaming ID:
                 </strong>
 
                 <span id="wotResultAccountId"></span>
+
               </div>
 
+
               <div>
+
                 <strong>
                   Регіон:
                 </strong>
 
                 <span id="wotResultRegion"></span>
+
               </div>
 
+
               <div>
+
                 <strong>
                   Статус:
                 </strong>
@@ -1232,27 +1310,37 @@
                 <span>
                   🟢 Підтверджено
                 </span>
+
               </div>
+
 
             </div>
 
+
           </div>
+
 
         </div>
 
 
-        <!-- DOTA -->
+
+        <!-- =================================================
+             DOTA
+        ================================================== -->
 
         <div
           class="game-form"
           id="dota2Form"
         >
 
+
           <div class="form-group">
+
 
             <label for="dotaNickname">
               ⚔️ Нікнейм Dota 2
             </label>
+
 
             <input
               type="text"
@@ -1261,14 +1349,18 @@
               placeholder="Ваш нік у Dota 2"
             >
 
+
           </div>
+
 
 
           <div class="form-group">
 
+
             <label for="dotaFriendId">
               🆔 Dota 2 Friend ID
             </label>
+
 
             <input
               type="text"
@@ -1277,10 +1369,13 @@
               placeholder="Ваш Dota 2 Friend ID"
             >
 
+
           </div>
 
 
+
           <div class="form-group">
+
 
             <label for="dotaRank">
 
@@ -1292,6 +1387,7 @@
 
             </label>
 
+
             <input
               type="text"
               id="dotaRank"
@@ -1299,23 +1395,31 @@
               placeholder="Наприклад: Legend або 3500 MMR"
             >
 
+
           </div>
+
 
         </div>
 
 
-        <!-- WOW -->
+
+        <!-- =================================================
+             WOW
+        ================================================== -->
 
         <div
           class="game-form"
           id="wowForm"
         >
 
+
           <div class="form-group">
+
 
             <label for="battleTag">
               🎮 BattleTag
             </label>
+
 
             <input
               type="text"
@@ -1324,14 +1428,18 @@
               placeholder="Наприклад: Player#1234"
             >
 
+
           </div>
+
 
 
           <div class="form-group">
 
+
             <label for="wowCharacter">
               🧙 Основний персонаж
             </label>
+
 
             <input
               type="text"
@@ -1340,14 +1448,18 @@
               placeholder="Ім'я основного персонажа"
             >
 
+
           </div>
+
 
 
           <div class="form-group">
 
+
             <label for="wowRealm">
               🌍 Realm / сервер
             </label>
+
 
             <input
               type="text"
@@ -1356,42 +1468,54 @@
               placeholder="Ваш сервер"
             >
 
+
           </div>
+
 
 
           <div class="form-group">
 
+
             <label for="wowFaction">
               ⚔️ Фракція
             </label>
+
 
             <select
               id="wowFaction"
               name="wow_faction"
             >
 
+
               <option value="">
                 Оберіть фракцію
               </option>
+
 
               <option value="Alliance">
                 Alliance
               </option>
 
+
               <option value="Horde">
                 Horde
               </option>
 
+
             </select>
+
 
           </div>
 
 
+
           <div class="form-group">
+
 
             <label for="wowClass">
               🛡️ Клас персонажа
             </label>
+
 
             <input
               type="text"
@@ -1400,31 +1524,43 @@
               placeholder="Наприклад: Warrior, Mage, Paladin"
             >
 
+
           </div>
 
+
         </div>
+
 
       </div>
 
 
-      <!-- STEP 03 -->
+
+      <!-- =================================================
+           STEP 03
+      ================================================== -->
 
       <div class="form-section">
 
+
         <div class="form-section-title">
+
 
           <span>
             03
           </span>
 
+
           <h2>
             Про вас
           </h2>
 
+
         </div>
 
 
+
         <div class="form-group">
+
 
           <label for="about">
 
@@ -1436,20 +1572,27 @@
 
           </label>
 
+
           <textarea
             id="about"
             name="about"
             placeholder="Розкажіть про свій досвід у вибраному напрямку..."
           ></textarea>
 
+
         </div>
+
 
       </div>
 
 
-      <!-- SUBMIT -->
+
+      <!-- =================================================
+           SUBMIT
+      ================================================== -->
 
       <div class="form-footer">
+
 
         <button
           type="submit"
@@ -1459,11 +1602,14 @@
           НАДІСЛАТИ ЗАЯВКУ
         </button>
 
+
         <div id="formMessage"></div>
+
 
         <div class="form-note">
           Ви подаєте заявку до конкретного напрямку UA LEGION.
         </div>
+
 
         <a
           href="profile.html"
@@ -1472,17 +1618,20 @@
           ← Повернутися до кабінету
         </a>
 
+
       </div>
 
 
     </form>
 
+
   </main>
+
 
 
   <!-- =======================================================
        SCRIPTS
-  ======================================================== -->
+  ========================================================= -->
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -1496,5 +1645,7 @@
 
   <script src="join.js"></script>
 
+
 </body>
+
 </html>
