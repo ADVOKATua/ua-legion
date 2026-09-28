@@ -14,9 +14,9 @@
    - rejected дозволяє подати заявку повторно.
    - Активні напрямки блокуються прямо у формі.
    - Перед INSERT повторно перевіряється активне членство.
+   - WoT заявка потребує підтвердженого Wargaming акаунта.
    - Неактивні форми ігрових напрямків вимикаються,
      щоб required-поля прихованих форм не заважали submit.
-   - Streaming НЕ використовується.
    ========================================================= */
 
 document.addEventListener(
@@ -50,15 +50,18 @@ document.addEventListener(
         "applicationForm"
       );
 
+
     const submitButton =
       document.getElementById(
         "submitApplication"
       );
 
+
     const formMessage =
       document.getElementById(
         "formMessage"
       );
+
 
     const directionInputs =
       document.querySelectorAll(
@@ -104,10 +107,13 @@ document.addEventListener(
         return;
       }
 
+
       formMessage.textContent =
         message;
 
+
       formMessage.className = "";
+
 
       formMessage.classList.add(
         "show",
@@ -122,8 +128,10 @@ document.addEventListener(
         return;
       }
 
+
       formMessage.textContent =
         "";
+
 
       formMessage.className =
         "";
@@ -137,14 +145,19 @@ document.addEventListener(
     function getValue(id) {
 
       const element =
-        document.getElementById(id);
+        document.getElementById(
+          id
+        );
+
 
       if (!element) {
         return null;
       }
 
+
       const value =
         element.value?.trim();
+
 
       return value === ""
         ? null
@@ -163,6 +176,7 @@ document.addEventListener(
           'input[name="direction"]:checked'
         );
 
+
       return selected
         ? selected.value
         : null;
@@ -180,6 +194,7 @@ document.addEventListener(
       if (!value) {
         return null;
       }
+
 
       const text =
         String(value)
@@ -277,6 +292,7 @@ document.addEventListener(
             direction ||
             "напрямок"
           );
+
       }
     }
 
@@ -547,6 +563,7 @@ document.addEventListener(
             result.push(
               directions
             );
+
           }
 
         }
@@ -558,6 +575,7 @@ document.addEventListener(
           );
 
         }
+
       }
 
 
@@ -571,8 +589,6 @@ document.addEventListener(
 
     // =====================================================
     // ACTIVE APPLICATION STATUS
-    //
-    // approved спеціально НЕ блокує заявку.
     // =====================================================
 
     function isActiveApplicationStatus(
@@ -607,12 +623,6 @@ document.addEventListener(
 
     // =====================================================
     // FIND DIRECTION
-    //
-    // Шукаємо напрямок у таблиці directions.
-    //
-    // Підтримуємо:
-    // - slug
-    // - code
     // =====================================================
 
     async function getDirectionRecord(
@@ -658,6 +668,7 @@ document.addEventListener(
             error
           );
 
+
           return null;
         }
 
@@ -673,6 +684,7 @@ document.addEventListener(
           error
         );
 
+
         return null;
       }
     }
@@ -680,16 +692,6 @@ document.addEventListener(
 
     // =====================================================
     // CHECK ACTIVE MEMBERSHIP
-    //
-    // БЕЗ RPC.
-    //
-    // Перевіряємо:
-    //
-    // directions
-    //      ↓
-    // user_directions
-    //
-    // status = active
     // =====================================================
 
     async function hasActiveDirectionMembership(
@@ -714,10 +716,6 @@ document.addEventListener(
 
       try {
 
-        // -------------------------------------------------
-        // 1. Знаходимо ID напрямку
-        // -------------------------------------------------
-
         const directionRecord =
           await getDirectionRecord(
             normalizedDirection
@@ -733,13 +731,10 @@ document.addEventListener(
             normalizedDirection
           );
 
+
           return false;
         }
 
-
-        // -------------------------------------------------
-        // 2. Перевіряємо user_directions
-        // -------------------------------------------------
 
         const {
           data,
@@ -776,13 +771,6 @@ document.addEventListener(
             error
           );
 
-          /*
-           * Якщо RLS не дозволяє читати user_directions,
-           * ми НЕ вважаємо користувача активним.
-           *
-           * Це краще, ніж блокувати нову заявку
-           * через помилку RPC.
-           */
 
           return false;
         }
@@ -800,6 +788,7 @@ document.addEventListener(
           "UA LEGION: неочікувана помилка перевірки членства:",
           error
         );
+
 
         return false;
       }
@@ -830,17 +819,6 @@ document.addEventListener(
       }
 
 
-      /*
-       * У join.html структура:
-       *
-       * <div class="choice">
-       *   <input ...>
-       *   <label ...>
-       *
-       * Тому шукаємо label
-       * через for/id.
-       */
-
       let label =
         document.querySelector(
           `label[for="${input.id}"]`
@@ -862,18 +840,6 @@ document.addEventListener(
         label.classList.add(
           "direction-disabled"
         );
-
-
-        label.style.opacity =
-          "0.45";
-
-
-        label.style.cursor =
-          "not-allowed";
-
-
-        label.style.pointerEvents =
-          "none";
 
 
         label.title =
@@ -927,10 +893,6 @@ document.addEventListener(
       }
 
 
-      // ---------------------------------------------------
-      // Знаходимо доступний напрямок
-      // ---------------------------------------------------
-
       const availableDirection =
         Array.from(
           directionInputs
@@ -943,10 +905,6 @@ document.addEventListener(
       const selectedDirection =
         getSelectedDirection();
 
-
-      // ---------------------------------------------------
-      // Якщо вже був вибраний доступний напрямок
-      // ---------------------------------------------------
 
       if (
         selectedDirection
@@ -961,9 +919,9 @@ document.addEventListener(
               normalizeDirection(
                 input.value
               ) ===
-                normalizeDirection(
-                  selectedDirection
-                )
+              normalizeDirection(
+                selectedDirection
+              )
           );
 
 
@@ -973,15 +931,11 @@ document.addEventListener(
             selectedInput.value
           );
 
+
           return;
         }
       }
 
-
-      // ---------------------------------------------------
-      // Якщо є доступний напрямок —
-      // вибираємо його
-      // ---------------------------------------------------
 
       if (
         availableDirection
@@ -999,10 +953,6 @@ document.addEventListener(
         return;
       }
 
-
-      // ---------------------------------------------------
-      // Усі напрямки активні
-      // ---------------------------------------------------
 
       hideAllGameForms();
 
@@ -1198,6 +1148,60 @@ document.addEventListener(
 
 
     // =====================================================
+    // URL DIRECTION
+    //
+    // join.html?direction=wot
+    // =====================================================
+
+    const urlParams =
+      new URLSearchParams(
+        window.location.search
+      );
+
+
+    const requestedDirection =
+      normalizeDirection(
+        urlParams.get(
+          "direction"
+        )
+      );
+
+
+    if (
+      requestedDirection
+    ) {
+
+      const requestedInput =
+        Array.from(
+          directionInputs
+        ).find(
+          input =>
+            !input.disabled &&
+            normalizeDirection(
+              input.value
+            ) ===
+            requestedDirection
+        );
+
+
+      if (
+        requestedInput
+      ) {
+
+        requestedInput.checked =
+          true;
+
+
+        showGameForm(
+          requestedInput.value
+        );
+
+      }
+
+    }
+
+
+    // =====================================================
     // APPLICATION FORM
     // =====================================================
 
@@ -1250,8 +1254,6 @@ document.addEventListener(
 
         // -------------------------------------------------
         // CHECK ACTIVE MEMBERSHIP
-        //
-        // Повторна перевірка перед INSERT.
         // -------------------------------------------------
 
         const alreadyActive =
@@ -1351,8 +1353,6 @@ document.addEventListener(
 
         // -------------------------------------------------
         // FIND ACTIVE APPLICATION
-        //
-        // approved тут НЕ враховується.
         // -------------------------------------------------
 
         const sameDirectionActiveApplication =
@@ -1394,6 +1394,150 @@ document.addEventListener(
 
 
           return;
+        }
+
+
+        // =================================================
+        // WORLD OF TANKS VERIFICATION
+        // =================================================
+
+        let verifiedWotProfile =
+          null;
+
+
+        if (
+          direction ===
+          "wot"
+        ) {
+
+          const {
+            data:
+              wotProfile,
+            error:
+              wotProfileError
+          } =
+            await supabase
+              .from(
+                "profiles"
+              )
+              .select(
+                "wot_nickname,wot_account_id,wot_region,wot_verified_at"
+              )
+              .eq(
+                "id",
+                user.id
+              )
+              .maybeSingle();
+
+
+          if (
+            wotProfileError
+          ) {
+
+            console.error(
+              "UA LEGION: помилка перевірки WoT профілю:",
+              wotProfileError
+            );
+
+
+            showMessage(
+              "Не вдалося перевірити підтвердження WoT акаунта. Спробуйте ще раз.",
+              "error"
+            );
+
+
+            return;
+          }
+
+
+          verifiedWotProfile =
+            wotProfile;
+
+
+          if (
+            !wotProfile ||
+            !wotProfile.wot_account_id
+          ) {
+
+            showMessage(
+              "Спочатку підтвердьте свій World of Tanks акаунт через Wargaming.",
+              "error"
+            );
+
+
+            const wotForm =
+              document.getElementById(
+                "wotForm"
+              );
+
+
+            if (
+              wotForm
+            ) {
+
+              wotForm.classList.add(
+                "active"
+              );
+
+              setFormEnabled(
+                wotForm,
+                true
+              );
+
+            }
+
+
+            return;
+          }
+
+
+          const formNickname =
+            getValue(
+              "wotNickname"
+            );
+
+
+          const formRegion =
+            String(
+              getValue(
+                "wotRegion"
+              ) ||
+              ""
+            ).toLowerCase();
+
+
+          const profileNickname =
+            String(
+              wotProfile.wot_nickname ||
+              ""
+            ).trim();
+
+
+          const profileRegion =
+            String(
+              wotProfile.wot_region ||
+              ""
+            ).toLowerCase();
+
+
+          if (
+            !formNickname ||
+            !formRegion ||
+            formNickname !==
+              profileNickname ||
+            formRegion !==
+              profileRegion
+          ) {
+
+            showMessage(
+              "Дані WoT акаунта змінено. Повторно підтвердьте акаунт через Wargaming.",
+              "error"
+            );
+
+
+            return;
+          }
+
         }
 
 
@@ -1525,18 +1669,24 @@ document.addEventListener(
         ) {
 
           applicationData.wot_nickname =
+            verifiedWotProfile
+              ?.wot_nickname ||
             getValue(
               "wotNickname"
             );
 
 
           applicationData.wargaming_id =
-            getValue(
-              "wargamingId"
+            String(
+              verifiedWotProfile
+                ?.wot_account_id ||
+              ""
             );
 
 
           applicationData.wot_region =
+            verifiedWotProfile
+              ?.wot_region ||
             getValue(
               "wotRegion"
             );
@@ -1769,12 +1919,8 @@ document.addEventListener(
             1500
           );
 
-
         }
 
-        // =================================================
-        // UNEXPECTED ERROR
-        // =================================================
 
         catch (
           error
