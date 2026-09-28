@@ -17,6 +17,8 @@
    - WoT заявка потребує підтвердженого Wargaming акаунта.
    - Неактивні форми ігрових напрямків вимикаються,
      щоб required-поля прихованих форм не заважали submit.
+   - ЖОДЕН напрямок не вибирається автоматично.
+     Користувач сам вибирає гру.
    ========================================================= */
 
 document.addEventListener(
@@ -893,14 +895,17 @@ document.addEventListener(
       }
 
 
-      const availableDirection =
-        Array.from(
-          directionInputs
-        ).find(
-          input =>
-            !input.disabled
-        );
-
+      /*
+       * ВАЖЛИВО:
+       *
+       * Раніше тут автоматично вибирався
+       * перший доступний напрямок.
+       *
+       * Тепер цього НЕ робимо.
+       *
+       * Користувач сам повинен вибрати
+       * потрібну гру.
+       */
 
       const selectedDirection =
         getSelectedDirection();
@@ -937,28 +942,18 @@ document.addEventListener(
       }
 
 
-      if (
-        availableDirection
-      ) {
-
-        availableDirection.checked =
-          true;
-
-
-        showGameForm(
-          availableDirection.value
-        );
-
-
-        return;
-      }
-
+      /*
+       * Немає вибраного напрямку.
+       *
+       * Залишаємо всі форми закритими.
+       */
 
       hideAllGameForms();
 
 
       if (
-        activeDirectionsCount > 0
+        activeDirectionsCount ===
+          directionInputs.length
       ) {
 
         showMessage(
@@ -1150,55 +1145,13 @@ document.addEventListener(
     // =====================================================
     // URL DIRECTION
     //
-    // join.html?direction=wot
+    // ВАЖЛИВО:
+    //
+    // Параметр ?direction=wot більше НЕ
+    // вибирає WoT автоматично.
+    //
+    // Користувач завжди сам вибирає напрямок.
     // =====================================================
-
-    const urlParams =
-      new URLSearchParams(
-        window.location.search
-      );
-
-
-    const requestedDirection =
-      normalizeDirection(
-        urlParams.get(
-          "direction"
-        )
-      );
-
-
-    if (
-      requestedDirection
-    ) {
-
-      const requestedInput =
-        Array.from(
-          directionInputs
-        ).find(
-          input =>
-            !input.disabled &&
-            normalizeDirection(
-              input.value
-            ) ===
-            requestedDirection
-        );
-
-
-      if (
-        requestedInput
-      ) {
-
-        requestedInput.checked =
-          true;
-
-
-        showGameForm(
-          requestedInput.value
-        );
-
-      }
-
-    }
 
 
     // =====================================================
@@ -1478,6 +1431,7 @@ document.addEventListener(
               wotForm.classList.add(
                 "active"
               );
+
 
               setFormEnabled(
                 wotForm,
