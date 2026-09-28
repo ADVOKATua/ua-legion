@@ -1,7 +1,7 @@
 /* =========================================================
-   UA LEGION — join.js
-   Подача заявки + огляд профілю та напрямків
-   ========================================================= */
+   UA LEGION — JOIN SYSTEM
+   Подача заявки + профіль + напрямки
+========================================================= */
 
 document.addEventListener("DOMContentLoaded", async () => {
 
@@ -12,53 +12,117 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
-  const applicationForm = document.getElementById("applicationForm");
-  const submitButton = document.getElementById("submitApplication");
-  const formMessage = document.getElementById("formMessage");
 
-  const directionInputs = Array.from(
-    document.querySelectorAll('input[name="direction"]')
-  );
+  /* =======================================================
+     ELEMENTS
+  ======================================================= */
+
+  const applicationForm =
+    document.getElementById("applicationForm");
+
+  const submitButton =
+    document.getElementById("submitApplication");
+
+  const formMessage =
+    document.getElementById("formMessage");
+
+  const directionInputs =
+    Array.from(
+      document.querySelectorAll(
+        'input[name="direction"]'
+      )
+    );
+
 
   const gameForms = {
-    ets2: document.getElementById("ets2Form"),
-    wot: document.getElementById("wotForm"),
-    dota2: document.getElementById("dota2Form"),
-    wow: document.getElementById("wowForm")
+
+    ets2:
+      document.getElementById("ets2Form"),
+
+    wot:
+      document.getElementById("wotForm"),
+
+    dota2:
+      document.getElementById("dota2Form"),
+
+    wow:
+      document.getElementById("wowForm")
+
   };
 
-  function showMessage(message, type = "error") {
-    if (!formMessage) return;
 
-    formMessage.textContent = message;
-    formMessage.className = type;
+  /* =======================================================
+     MESSAGE
+  ======================================================= */
+
+  function showMessage(
+    message,
+    type = "error"
+  ) {
+
+    if (!formMessage) {
+      return;
+    }
+
+    formMessage.textContent =
+      message;
+
+    formMessage.className =
+      type;
   }
+
 
   function clearMessage() {
-    if (!formMessage) return;
 
-    formMessage.textContent = "";
-    formMessage.className = "";
+    if (!formMessage) {
+      return;
+    }
+
+    formMessage.textContent =
+      "";
+
+    formMessage.className =
+      "";
   }
+
+
+  /* =======================================================
+     VALUE
+  ======================================================= */
 
   function getValue(id) {
-    const element = document.getElementById(id);
 
-    if (!element) return null;
+    const element =
+      document.getElementById(id);
 
-    const value = element.value?.trim();
+    if (!element) {
+      return null;
+    }
 
-    return value === "" ? null : value;
+    const value =
+      element.value?.trim();
+
+    return value === ""
+      ? null
+      : value;
   }
+
+
+  /* =======================================================
+     NORMALIZE DIRECTION
+  ======================================================= */
 
   function normalizeDirection(value) {
 
-    if (!value) return null;
+    if (!value) {
+      return null;
+    }
 
     const text =
       String(value)
         .trim()
         .toLowerCase();
+
 
     if (
       text === "ets2" ||
@@ -68,6 +132,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       return "ets2";
     }
 
+
     if (
       text === "wot" ||
       text === "world of tanks" ||
@@ -75,6 +140,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     ) {
       return "wot";
     }
+
 
     if (
       text === "dota" ||
@@ -84,6 +150,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       return "dota2";
     }
 
+
     if (
       text === "wow" ||
       text === "world of warcraft" ||
@@ -92,8 +159,14 @@ document.addEventListener("DOMContentLoaded", async () => {
       return "wow";
     }
 
+
     return text;
   }
+
+
+  /* =======================================================
+     LABEL
+  ======================================================= */
 
   function getDirectionLabel(direction) {
 
@@ -121,15 +194,22 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
+
+  /* =======================================================
+     ICON
+  ======================================================= */
+
   function getDirectionIcon(direction) {
 
+    const value =
+      direction?.slug ||
+      direction?.code ||
+      direction?.name ||
+      direction;
+
+
     switch (
-      normalizeDirection(
-        direction?.slug ||
-        direction?.code ||
-        direction?.name ||
-        direction
-      )
+      normalizeDirection(value)
     ) {
 
       case "ets2":
@@ -149,15 +229,23 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
+
+  /* =======================================================
+     NAME
+  ======================================================= */
+
   function getDirectionName(direction) {
 
     const key =
       normalizeDirection(
+
         direction?.slug ||
         direction?.code ||
         direction?.name ||
         direction
+
       );
+
 
     switch (key) {
 
@@ -183,34 +271,31 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
+
+  /* =======================================================
+     ESCAPE HTML
+  ======================================================= */
+
   function escapeHtml(value) {
 
     return String(
       value ?? ""
     )
-      .replace(
-        /&/g,
-        "&amp;"
-      )
-      .replace(
-        /</g,
-        "&lt;"
-      )
-      .replace(
-        />/g,
-        "&gt;"
-      )
-      .replace(
-        /"/g,
-        "&quot;"
-      )
-      .replace(
-        /'/g,
-        "&#039;"
-      );
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
   }
 
-  function calculateAge(birthDate) {
+
+  /* =======================================================
+     AGE
+  ======================================================= */
+
+  function calculateAge(
+    birthDate
+  ) {
 
     if (!birthDate) {
       return null;
@@ -221,6 +306,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         `${birthDate}T00:00:00`
       );
 
+
     if (
       Number.isNaN(
         birth.getTime()
@@ -229,16 +315,20 @@ document.addEventListener("DOMContentLoaded", async () => {
       return null;
     }
 
+
     const today =
       new Date();
+
 
     let age =
       today.getFullYear() -
       birth.getFullYear();
 
+
     const monthDifference =
       today.getMonth() -
       birth.getMonth();
+
 
     if (
       monthDifference < 0 ||
@@ -248,13 +338,21 @@ document.addEventListener("DOMContentLoaded", async () => {
         birth.getDate()
       )
     ) {
+
       age--;
+
     }
+
 
     return age >= 0
       ? age
       : null;
   }
+
+
+  /* =======================================================
+     FALLBACK NAME
+  ======================================================= */
 
   function getFallbackName(
     user,
@@ -286,6 +384,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     );
   }
 
+
+  /* =======================================================
+     ENABLE / DISABLE FORM
+  ======================================================= */
+
   function setFormEnabled(
     container,
     enabled
@@ -294,6 +397,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!container) {
       return;
     }
+
 
     container
       .querySelectorAll(
@@ -309,6 +413,11 @@ document.addEventListener("DOMContentLoaded", async () => {
       );
   }
 
+
+  /* =======================================================
+     HIDE ALL GAME FORMS
+  ======================================================= */
+
   function hideAllGameForms() {
 
     Object
@@ -320,9 +429,11 @@ document.addEventListener("DOMContentLoaded", async () => {
             return;
           }
 
+
           form.classList.remove(
             "active"
           );
+
 
           setFormEnabled(
             form,
@@ -333,33 +444,48 @@ document.addEventListener("DOMContentLoaded", async () => {
       );
   }
 
+
+  /* =======================================================
+     SHOW GAME FORM
+  ======================================================= */
+
   function showGameForm(
     direction
   ) {
 
     hideAllGameForms();
 
+
     const key =
       normalizeDirection(
         direction
       );
 
+
     const form =
       gameForms[key];
+
 
     if (!form) {
       return;
     }
 
+
     form.classList.add(
       "active"
     );
+
 
     setFormEnabled(
       form,
       true
     );
   }
+
+
+  /* =======================================================
+     SELECTED DIRECTION
+  ======================================================= */
 
   function getSelectedDirection() {
 
@@ -368,16 +494,23 @@ document.addEventListener("DOMContentLoaded", async () => {
         'input[name="direction"]:checked'
       );
 
+
     return selected
       ? selected.value
       : null;
   }
+
+
+  /* =======================================================
+     APPLICATION DIRECTIONS
+  ======================================================= */
 
   function getDirectionsFromApplication(
     application
   ) {
 
     const result = [];
+
 
     if (
       application?.direction
@@ -386,10 +519,13 @@ document.addEventListener("DOMContentLoaded", async () => {
       result.push(
         application.direction
       );
+
     }
+
 
     const directions =
       application?.directions;
+
 
     if (
       Array.isArray(
@@ -403,6 +539,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     }
 
+
     else if (
       typeof directions ===
       "string"
@@ -414,6 +551,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           JSON.parse(
             directions
           );
+
 
         if (
           Array.isArray(
@@ -447,12 +585,18 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     }
 
+
     return result
       .map(
         normalizeDirection
       )
       .filter(Boolean);
   }
+
+
+  /* =======================================================
+     ACTIVE APPLICATION STATUS
+  ======================================================= */
 
   function isActiveApplicationStatus(
     status
@@ -461,13 +605,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     return [
 
       "pending",
-
       "new",
-
       "review",
-
       "under_review",
-
       "in_review"
 
     ].includes(
@@ -481,6 +621,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     );
   }
 
+
+  /* =======================================================
+     DIRECTION RECORD
+  ======================================================= */
+
   async function getDirectionRecord(
     direction
   ) {
@@ -490,9 +635,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         direction
       );
 
+
     if (!key) {
       return null;
     }
+
 
     try {
 
@@ -501,19 +648,16 @@ document.addEventListener("DOMContentLoaded", async () => {
         error
       } =
         await supabase
-          .from(
-            "directions"
-          )
+          .from("directions")
           .select(
             "id,code,slug,name,is_active"
           )
           .or(
             `slug.eq.${key},code.eq.${key}`
           )
-          .limit(
-            1
-          )
+          .limit(1)
           .maybeSingle();
+
 
       if (error) {
 
@@ -525,6 +669,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         return null;
       }
 
+
       return data || null;
 
     }
@@ -532,13 +677,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     catch (error) {
 
       console.error(
-        "UA LEGION: неочікувана помилка пошуку напрямку:",
+        "UA LEGION: помилка пошуку напрямку:",
         error
       );
 
       return null;
     }
   }
+
+
+  /* =======================================================
+     ACTIVE MEMBERSHIP
+  ======================================================= */
 
   async function hasActiveDirectionMembership(
     userId,
@@ -550,12 +700,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         direction
       );
 
+
     if (
       !userId ||
       !key
     ) {
       return false;
     }
+
 
     try {
 
@@ -564,26 +716,21 @@ document.addEventListener("DOMContentLoaded", async () => {
           key
         );
 
+
       if (
         !directionRecord?.id
       ) {
 
-        console.warn(
-          "UA LEGION: напрямок не знайдено:",
-          key
-        );
-
         return false;
       }
+
 
       const {
         data,
         error
       } =
         await supabase
-          .from(
-            "user_directions"
-          )
+          .from("user_directions")
           .select(
             "id,user_id,direction_id,status"
           )
@@ -599,10 +746,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             "status",
             "active"
           )
-          .limit(
-            1
-          )
+          .limit(1)
           .maybeSingle();
+
 
       if (error) {
 
@@ -614,6 +760,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         return false;
       }
 
+
       return Boolean(
         data?.id
       );
@@ -623,13 +770,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     catch (error) {
 
       console.error(
-        "UA LEGION: неочікувана помилка перевірки членства:",
+        "UA LEGION: помилка перевірки членства:",
         error
       );
 
       return false;
     }
   }
+
+
+  /* =======================================================
+     DISABLE DIRECTION
+  ======================================================= */
 
   function markDirectionAsDisabled(
     input
@@ -639,16 +791,19 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
     }
 
+
     input.disabled =
       true;
 
     input.checked =
       false;
 
+
     let label =
       document.querySelector(
         `label[for="${input.id}"]`
       );
+
 
     if (!label) {
 
@@ -658,6 +813,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             "label"
           );
     }
+
 
     if (label) {
 
@@ -669,6 +825,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         "Ви вже є учасником цього напрямку";
     }
   }
+
+
+  /* =======================================================
+     DISABLE ACTIVE DIRECTIONS
+  ======================================================= */
 
   async function disableActiveDirections() {
 
@@ -682,15 +843,18 @@ document.addEventListener("DOMContentLoaded", async () => {
           input.value
         );
 
+
       if (!direction) {
         continue;
       }
+
 
       const isActive =
         await hasActiveDirectionMembership(
           user.id,
           direction
         );
+
 
       if (isActive) {
 
@@ -700,18 +864,19 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
     }
 
+
     /*
-      ВАЖЛИВО:
-
       При звичайному відкритті
-      join.html нічого не вибираємо.
-
-      URL ?direction=...
-      обробляється окремо нижче.
+      нічого автоматично не вибираємо.
     */
 
     hideAllGameForms();
   }
+
+
+  /* =======================================================
+     APPLICATION DIRECTION KEY
+  ======================================================= */
 
   function getApplicationDirectionKey(
     application,
@@ -727,6 +892,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       );
     }
 
+
     if (
       Array.isArray(
         application?.directions
@@ -738,6 +904,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         application.directions[0]
       );
     }
+
 
     if (
       typeof application?.directions ===
@@ -756,6 +923,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       );
     }
 
+
     if (
       application?.direction_id
     ) {
@@ -763,25 +931,32 @@ document.addEventListener("DOMContentLoaded", async () => {
       const direction =
         directions.find(
           item =>
-            String(
-              item.id
-            ) ===
+            String(item.id) ===
             String(
               application.direction_id
             )
         );
 
+
       return direction
+
         ? normalizeDirection(
             direction.slug ||
             direction.code ||
             direction.name
           )
+
         : "";
     }
 
+
     return "";
   }
+
+
+  /* =======================================================
+     LATEST APPLICATION
+  ======================================================= */
 
   function getLatestApplication(
     direction,
@@ -799,6 +974,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       );
 
+
     return applications.find(
       application =>
 
@@ -809,6 +985,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     ) || null;
   }
+
+
+  /* =======================================================
+     DIRECTION STATE
+  ======================================================= */
 
   function getJoinDirectionState(
     direction,
@@ -827,12 +1008,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       );
 
+
     const managementDirections =
       Array.isArray(
         management?.directions
       )
         ? management.directions
         : [];
+
 
     const active =
       managementDirections.find(
@@ -849,6 +1032,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             );
 
+
           return (
 
             itemKey === key &&
@@ -864,12 +1048,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
       ) || null;
 
+
     const application =
       getLatestApplication(
         direction,
         applications,
         directions
       );
+
 
     if (active) {
 
@@ -885,12 +1071,14 @@ document.addEventListener("DOMContentLoaded", async () => {
       };
     }
 
+
     const status =
       String(
         application?.status || ""
       )
         .trim()
         .toLowerCase();
+
 
     if (
       [
@@ -899,9 +1087,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         "review",
         "under_review",
         "in_review"
-      ].includes(
-        status
-      )
+      ].includes(status)
     ) {
 
       return {
@@ -916,6 +1102,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       };
     }
+
 
     if (
       status ===
@@ -935,6 +1122,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       };
     }
 
+
     if (
       status ===
       "rejected"
@@ -953,6 +1141,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       };
     }
 
+
     return {
 
       type:
@@ -966,6 +1155,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     };
   }
+
+
+  /* =======================================================
+     RENDER OVERVIEW
+  ======================================================= */
 
   function renderJoinOverview(
     profile,
@@ -1009,10 +1203,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         "joinDirectionsStatus"
       );
 
+
     const age =
       calculateAge(
         profile?.birth_date
       );
+
 
     if (nameEl) {
 
@@ -1020,6 +1216,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         profile?.display_name ||
         "Не заповнено";
     }
+
 
     if (ageEl) {
 
@@ -1029,12 +1226,14 @@ document.addEventListener("DOMContentLoaded", async () => {
           : String(age);
     }
 
+
     if (discordEl) {
 
       discordEl.textContent =
         profile?.discord_username ||
         "Не заповнено";
     }
+
 
     if (discordIdEl) {
 
@@ -1043,12 +1242,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         "Не заповнено";
     }
 
+
     if (steamEl) {
 
       steamEl.textContent =
         profile?.steam_id ||
         "Не заповнено";
     }
+
 
     if (gameNickEl) {
 
@@ -1057,20 +1258,28 @@ document.addEventListener("DOMContentLoaded", async () => {
         "Не заповнено";
     }
 
+
     if (!directionsEl) {
       return;
     }
 
+
     directionsEl.innerHTML =
       "";
+
 
     if (!directions.length) {
 
       directionsEl.innerHTML =
-        '<div class="join-direction-detail">Напрямки поки недоступні.</div>';
+        `
+          <div class="join-direction-detail">
+            Напрямки поки недоступні.
+          </div>
+        `;
 
       return;
     }
+
 
     directions.forEach(
       direction => {
@@ -1084,29 +1293,29 @@ document.addEventListener("DOMContentLoaded", async () => {
 
           );
 
+
         const state =
           getJoinDirectionState(
-
             direction,
-
             applications,
-
             management,
-
             directions
-
           );
+
 
         const card =
           document.createElement(
             "div"
           );
 
+
         card.className =
           `join-direction-card ${state.type}`;
 
+
         let statusText =
           "⚪ Не подавав";
+
 
         if (
           state.type ===
@@ -1145,11 +1354,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
           statusText =
             "🔴 Відхилено";
-
         }
+
 
         let details =
           "";
+
 
         if (
           state.type ===
@@ -1157,8 +1367,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         ) {
 
           const active =
-            state.active ||
-            {};
+            state.active || {};
+
 
           const roles =
             Array.isArray(
@@ -1167,218 +1377,147 @@ document.addEventListener("DOMContentLoaded", async () => {
               ? active.roles
               : [];
 
+
           details += `
-
             <p class="join-direction-detail">
-
               <strong>Посади:</strong>
-
-              ${escapeHtml(
-
-                roles.length
-
-                  ? roles
-                      .map(
-
-                        role =>
-
-                          role.name ||
-                          role.code ||
-                          "Невідома посада"
-
-                      )
-                      .join(", ")
-
-                  : "ще не призначено"
-
-              )}
-
+              ${
+                escapeHtml(
+                  roles.length
+                    ? roles
+                        .map(
+                          role =>
+                            role.name ||
+                            role.code ||
+                            "Невідома посада"
+                        )
+                        .join(", ")
+                    : "ще не призначено"
+                )
+              }
             </p>
-
           `;
+
 
           if (
             key ===
             "ets2"
           ) {
 
+            const driverClass =
+              active.driver_class ||
+              active.driverClass ||
+              active.class ||
+              "";
+
+
+            if (driverClass) {
+
+              details += `
+                <p class="join-direction-detail">
+                  <strong>Клас:</strong>
+                  ${escapeHtml(
+                    driverClass
+                  )}
+                </p>
+              `;
+            }
+          }
+
+
+          if (
+            state.application?.created_at
+          ) {
+
             details += `
-
               <p class="join-direction-detail">
-
-                <strong>Клас:</strong>
-
+                <strong>Остання заявка:</strong>
                 ${escapeHtml(
-
-                  active.driver_class ||
-                  "не призначено"
-
+                  new Date(
+                    state.application.created_at
+                  ).toLocaleDateString(
+                    "uk-UA"
+                  )
                 )}
-
               </p>
-
             `;
           }
+
         }
 
-        if (
+        else if (
           state.type ===
           "pending"
         ) {
 
-          details += `
-
+          details = `
             <p class="join-direction-detail">
-
-              Ваша заявка очікує рішення адміністрації.
-
+              Ваша заявка зараз розглядається.
             </p>
-
           `;
+
         }
 
-        if (
+        else if (
           state.type ===
           "approved_waiting"
         ) {
 
-          details += `
-
+          details = `
             <p class="join-direction-detail">
-
-              Заявку схвалено.
-              Очікується активація членства.
-
+              Заявку схвалено. Очікується активація участі.
             </p>
-
           `;
+
         }
 
-        if (
+        else if (
           state.type ===
           "rejected"
         ) {
 
-          details += `
-
+          details = `
             <p class="join-direction-detail">
-
-              Останню заявку було відхилено.
-
+              Попередню заявку було відхилено.
+              Ви можете подати нову заявку.
             </p>
-
           `;
 
-          const reason =
-
-            state.application
-              ?.review_comment ||
-
-            state.application
-              ?.rejection_reason ||
-
-            state.application
-              ?.review_reason;
-
-          if (reason) {
-
-            details += `
-
-              <p class="join-direction-detail">
-
-                <strong>Причина:</strong>
-
-                ${escapeHtml(
-                  reason
-                )}
-
-              </p>
-
-            `;
-          }
         }
 
-        if (
-          state.type ===
-          "none"
-        ) {
+        else {
 
-          details += `
-
+          details = `
             <p class="join-direction-detail">
-
-              Ви ще не подавали заявку
-              до цього напрямку.
-
+              Ви ще не подавали заявку до цього напрямку.
             </p>
-
           `;
         }
 
-        if (
-          state.application
-            ?.created_at
-        ) {
-
-          details += `
-
-            <p class="join-direction-detail">
-
-              <strong>Остання заявка:</strong>
-
-              ${escapeHtml(
-
-                new Date(
-                  state.application.created_at
-                )
-                  .toLocaleDateString(
-                    "uk-UA"
-                  )
-
-              )}
-
-            </p>
-
-          `;
-        }
 
         let button =
           "";
 
+
         if (
           state.type ===
-          "none" ||
+            "none" ||
           state.type ===
-          "rejected"
+            "rejected"
         ) {
 
-          const text =
-
-            state.type ===
-            "rejected"
-
-              ? "📝 ПОДАТИ ПОВТОРНО"
-
-              : "📝 ПОДАТИ ЗАЯВКУ";
-
           button = `
-
             <a
-
               class="join-direction-apply"
-
               href="join.html?direction=${encodeURIComponent(
                 key
               )}"
-
             >
-
-              ${text}
-
+              📝 ПОДАТИ ЗАЯВКУ
             </a>
-
           `;
         }
+
 
         card.innerHTML = `
 
@@ -1400,19 +1539,23 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             </h3>
 
-            <span class="join-direction-status ${state.type}">
 
+            <span
+              class="join-direction-status ${state.type}"
+            >
               ${statusText}
-
             </span>
 
           </div>
 
+
           ${details}
+
 
           ${button}
 
         `;
+
 
         directionsEl.appendChild(
           card
@@ -1422,9 +1565,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     );
   }
 
-  /*
-    AUTH
-  */
+
+  /* =======================================================
+     AUTH
+  ======================================================= */
 
   const {
     data: {
@@ -1433,6 +1577,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     error: authError
   } =
     await supabase.auth.getUser();
+
 
   if (authError) {
 
@@ -1449,12 +1594,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
+
   if (!user) {
 
     showMessage(
       "Щоб подати заявку, спочатку увійдіть у свій акаунт.",
       "error"
     );
+
 
     setTimeout(
       () => {
@@ -1466,12 +1613,14 @@ document.addEventListener("DOMContentLoaded", async () => {
       1200
     );
 
+
     return;
   }
 
-  /*
-    PROFILE
-  */
+
+  /* =======================================================
+     PROFILE
+  ======================================================= */
 
   const {
     data: profile,
@@ -1488,6 +1637,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       )
       .maybeSingle();
 
+
   if (profileError) {
 
     console.error(
@@ -1503,16 +1653,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
+
   const profileName =
     getFallbackName(
       user,
       profile
     );
 
+
   const profileAge =
     calculateAge(
       profile?.birth_date
     );
+
 
   if (!profileName) {
 
@@ -1523,6 +1676,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     return;
   }
+
 
   if (
     profileAge ===
@@ -1537,9 +1691,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
-  /*
-    OVERVIEW DATA
-  */
+
+  /* =======================================================
+     OVERVIEW DATA
+  ======================================================= */
 
   let allDirections =
     [];
@@ -1550,20 +1705,15 @@ document.addEventListener("DOMContentLoaded", async () => {
   let management =
     null;
 
+
   try {
 
     const {
-      data:
-        directionsData,
-
-      error:
-        directionsError
-
+      data: directionsData,
+      error: directionsError
     } =
       await supabase
-        .from(
-          "directions"
-        )
+        .from("directions")
         .select("*")
         .order(
           "id",
@@ -1572,6 +1722,7 @@ document.addEventListener("DOMContentLoaded", async () => {
               true
           }
         );
+
 
     if (
       !directionsError &&
@@ -1584,6 +1735,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         directionsData;
     }
 
+
     if (
       !allDirections.length
     ) {
@@ -1591,88 +1743,47 @@ document.addEventListener("DOMContentLoaded", async () => {
       allDirections = [
 
         {
-          id:
-            1,
-
-          code:
-            "ets2",
-
-          slug:
-            "ets2",
-
-          name:
-            "ETS2 / TruckersMP",
-
-          icon:
-            "🚛"
+          id: 1,
+          code: "ets2",
+          slug: "ets2",
+          name: "ETS2 / TruckersMP",
+          icon: "🚛"
         },
 
         {
-          id:
-            2,
-
-          code:
-            "wot",
-
-          slug:
-            "wot",
-
-          name:
-            "World of Tanks",
-
-          icon:
-            "🪖"
+          id: 2,
+          code: "wot",
+          slug: "wot",
+          name: "World of Tanks",
+          icon: "🪖"
         },
 
         {
-          id:
-            3,
-
-          code:
-            "dota2",
-
-          slug:
-            "dota2",
-
-          name:
-            "Dota 2",
-
-          icon:
-            "🎮"
+          id: 3,
+          code: "dota2",
+          slug: "dota2",
+          name: "Dota 2",
+          icon: "🎮"
         },
 
         {
-          id:
-            4,
-
-          code:
-            "wow",
-
-          slug:
-            "wow",
-
-          name:
-            "World of Warcraft",
-
-          icon:
-            "🐉"
+          id: 4,
+          code: "wow",
+          slug: "wow",
+          name: "World of Warcraft",
+          icon: "🐉"
         }
 
       ];
     }
 
+
     const {
-      data:
-        applicationsData,
-
-      error:
-        applicationsError
-
+      data: applicationsData,
+      error: applicationsError
     } =
       await supabase
-        .from(
-          "applications"
-        )
+        .from("applications")
         .select("*")
         .eq(
           "user_id",
@@ -1686,6 +1797,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           }
         );
 
+
     if (
       !applicationsError &&
       Array.isArray(
@@ -1697,13 +1809,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         applicationsData;
     }
 
+
     const {
-      data:
-        managementData,
-
-      error:
-        managementError
-
+      data: managementData,
+      error: managementError
     } =
       await supabase.rpc(
         "get_user_direction_management",
@@ -1712,6 +1821,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             user.id
         }
       );
+
 
     if (
       !managementError &&
@@ -1734,6 +1844,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     );
   }
 
+
   renderJoinOverview(
     profile,
     allDirections,
@@ -1741,11 +1852,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     management
   );
 
-  /*
-    DIRECTION SELECTION
-  */
+
+  /* =======================================================
+     FORM SELECTION
+  ======================================================= */
 
   hideAllGameForms();
+
 
   directionInputs.forEach(
     input => {
@@ -1760,7 +1873,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             return;
           }
 
+
           clearMessage();
+
 
           showGameForm(
             input.value
@@ -1768,39 +1883,46 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         }
       );
+
     }
   );
 
-  /*
-    ACTIVE DIRECTIONS
-  */
+
+  /* =======================================================
+     ACTIVE DIRECTIONS
+  ======================================================= */
 
   await disableActiveDirections();
 
-  /*
-    URL:
 
-      join.html
-        -> нічого не вибрано
+  /* =======================================================
+     URL DIRECTION
+     
+     join.html
+       -> нічого не вибирається
 
-      join.html?direction=wot
-        -> відкривається WoT
+     join.html?direction=wot
+       -> WoT
 
-      join.html?direction=ets2
-        -> відкривається ETS2
+     join.html?direction=ets2
+       -> ETS2
 
-      join.html?direction=dota2
-        -> відкривається Dota 2
+     join.html?direction=dota2
+       -> Dota 2
 
-      join.html?direction=wow
-        -> відкривається WoW
+     join.html?direction=wow
+       -> WoW
 
-  */
+     ВАЖЛИВО:
+     якщо direction є в URL,
+     блок «Ваші напрямки» ховаємо.
+  ======================================================= */
 
   const urlParams =
     new URLSearchParams(
       window.location.search
     );
+
 
   const requestedDirection =
     normalizeDirection(
@@ -1808,6 +1930,31 @@ document.addEventListener("DOMContentLoaded", async () => {
         "direction"
       )
     );
+
+
+  /* =======================================================
+     HIDE YOUR DIRECTIONS ON SPECIFIC APPLICATION
+  ======================================================= */
+
+  const joinDirectionsCard =
+    document.getElementById(
+      "joinDirectionsCard"
+    );
+
+
+  if (
+    requestedDirection &&
+    joinDirectionsCard
+  ) {
+
+    joinDirectionsCard.style.display =
+      "none";
+  }
+
+
+  /* =======================================================
+     OPEN REQUESTED DIRECTION
+  ======================================================= */
 
   if (
     requestedDirection
@@ -1825,6 +1972,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           requestedDirection
       );
 
+
     if (
       requestedInput
     ) {
@@ -1832,11 +1980,17 @@ document.addEventListener("DOMContentLoaded", async () => {
       requestedInput.checked =
         true;
 
+
       showGameForm(
         requestedInput.value
       );
     }
   }
+
+
+  /* =======================================================
+     APPLICATION FORM
+  ======================================================= */
 
   if (!applicationForm) {
 
@@ -1847,9 +2001,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
-  /*
-    SUBMIT
-  */
+
+  /* =======================================================
+     SUBMIT
+  ======================================================= */
 
   applicationForm.addEventListener(
     "submit",
@@ -1857,12 +2012,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       event.preventDefault();
 
+
       clearMessage();
+
 
       const direction =
         normalizeDirection(
           getSelectedDirection()
         );
+
 
       if (!direction) {
 
@@ -1874,11 +2032,17 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
       }
 
+
+      /* ===================================================
+         ACTIVE MEMBERSHIP
+      =================================================== */
+
       const alreadyActive =
         await hasActiveDirectionMembership(
           user.id,
           direction
         );
+
 
       if (
         alreadyActive
@@ -1891,6 +2055,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           "error"
         );
 
+
         const selectedInput =
           directionInputs.find(
             input =>
@@ -1901,6 +2066,7 @@ document.addEventListener("DOMContentLoaded", async () => {
               direction
           );
 
+
         if (
           selectedInput
         ) {
@@ -1910,25 +2076,21 @@ document.addEventListener("DOMContentLoaded", async () => {
           );
         }
 
+
         return;
       }
 
-      /*
-        EXISTING APPLICATIONS
-      */
+
+      /* ===================================================
+         EXISTING APPLICATIONS
+      =================================================== */
 
       const {
-        data:
-          existingApplications,
-
-        error:
-          existingError
-
+        data: existingApplications,
+        error: existingError
       } =
         await supabase
-          .from(
-            "applications"
-          )
+          .from("applications")
           .select(
             "id,status,direction,directions,created_at"
           )
@@ -1944,6 +2106,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
           );
 
+
       if (
         existingError
       ) {
@@ -1953,17 +2116,21 @@ document.addEventListener("DOMContentLoaded", async () => {
           existingError
         );
 
+
         showMessage(
           "Не вдалося перевірити попередні заявки. Спробуйте ще раз.",
           "error"
         );
 
+
         return;
       }
+
 
       const applications =
         existingApplications ||
         [];
+
 
       const sameDirectionActiveApplication =
         applications.find(
@@ -1973,6 +2140,7 @@ document.addEventListener("DOMContentLoaded", async () => {
               getDirectionsFromApplication(
                 application
               );
+
 
             return (
 
@@ -1985,8 +2153,10 @@ document.addEventListener("DOMContentLoaded", async () => {
               )
 
             );
+
           }
         );
+
 
       if (
         sameDirectionActiveApplication
@@ -1999,15 +2169,18 @@ document.addEventListener("DOMContentLoaded", async () => {
           "error"
         );
 
+
         return;
       }
 
-      /*
-        WOT VERIFICATION
-      */
+
+      /* ===================================================
+         WOT VERIFICATION
+      =================================================== */
 
       let verifiedWotProfile =
         null;
+
 
       if (
         direction ===
@@ -2015,17 +2188,11 @@ document.addEventListener("DOMContentLoaded", async () => {
       ) {
 
         const {
-          data:
-            wotProfile,
-
-          error:
-            wotProfileError
-
+          data: wotProfile,
+          error: wotProfileError
         } =
           await supabase
-            .from(
-              "profiles"
-            )
+            .from("profiles")
             .select(
               "wot_nickname,wot_account_id,wot_region,wot_verified_at"
             )
@@ -2034,6 +2201,7 @@ document.addEventListener("DOMContentLoaded", async () => {
               user.id
             )
             .maybeSingle();
+
 
         if (
           wotProfileError
@@ -2044,16 +2212,20 @@ document.addEventListener("DOMContentLoaded", async () => {
             wotProfileError
           );
 
+
           showMessage(
             "Не вдалося перевірити підтвердження WoT акаунта. Спробуйте ще раз.",
             "error"
           );
 
+
           return;
         }
 
+
         verifiedWotProfile =
           wotProfile;
+
 
         if (
           !wotProfile ||
@@ -2065,18 +2237,19 @@ document.addEventListener("DOMContentLoaded", async () => {
             "error"
           );
 
+
           const wotForm =
             document.getElementById(
               "wotForm"
             );
 
-          if (
-            wotForm
-          ) {
+
+          if (wotForm) {
 
             wotForm.classList.add(
               "active"
             );
+
 
             setFormEnabled(
               wotForm,
@@ -2084,22 +2257,25 @@ document.addEventListener("DOMContentLoaded", async () => {
             );
           }
 
+
           return;
         }
+
 
         const formNickname =
           getValue(
             "wotNickname"
           );
 
+
         const formRegion =
           String(
             getValue(
               "wotRegion"
-            ) ||
-            ""
+            ) || ""
           )
             .toLowerCase();
+
 
         const profileNickname =
           String(
@@ -2107,12 +2283,14 @@ document.addEventListener("DOMContentLoaded", async () => {
             ""
           ).trim();
 
+
         const profileRegion =
           String(
             wotProfile.wot_region ||
             ""
           )
             .toLowerCase();
+
 
         if (
           !formNickname ||
@@ -2128,13 +2306,15 @@ document.addEventListener("DOMContentLoaded", async () => {
             "error"
           );
 
+
           return;
         }
       }
 
-      /*
-        APPLICATION DATA
-      */
+
+      /* ===================================================
+         APPLICATION DATA
+      =================================================== */
 
       const applicationData = {
 
@@ -2177,9 +2357,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       };
 
-      /*
-        ETS2
-      */
+
+      /* ===================================================
+         ETS2
+      =================================================== */
 
       if (
         direction ===
@@ -2191,33 +2372,35 @@ document.addEventListener("DOMContentLoaded", async () => {
             "truckersmpNick"
           );
 
+
         applicationData.truckersmp_id =
           getValue(
             "truckersmpId"
           );
+
 
         applicationData.truckershub_username =
           getValue(
             "truckershubUsername"
           );
 
+
         applicationData.truckershub_id =
           getValue(
             "truckershubId"
           );
 
+
         applicationData.game_nick =
-          applicationData
-            .truckersmp_nick ||
-
+          applicationData.truckersmp_nick ||
           profile?.game_nickname ||
-
           null;
       }
 
-      /*
-        WOT
-      */
+
+      /* ===================================================
+         WOT
+      =================================================== */
 
       if (
         direction ===
@@ -2225,43 +2408,36 @@ document.addEventListener("DOMContentLoaded", async () => {
       ) {
 
         applicationData.wot_nickname =
-          verifiedWotProfile
-            ?.wot_nickname ||
-
+          verifiedWotProfile?.wot_nickname ||
           getValue(
             "wotNickname"
           );
 
+
         applicationData.wargaming_id =
           String(
-
-            verifiedWotProfile
-              ?.wot_account_id ||
-
+            verifiedWotProfile?.wot_account_id ||
             ""
-
           );
 
-        applicationData.wot_region =
-          verifiedWotProfile
-            ?.wot_region ||
 
+        applicationData.wot_region =
+          verifiedWotProfile?.wot_region ||
           getValue(
             "wotRegion"
           );
 
+
         applicationData.game_nick =
-          applicationData
-            .wot_nickname ||
-
+          applicationData.wot_nickname ||
           profile?.game_nickname ||
-
           null;
       }
 
-      /*
-        DOTA 2
-      */
+
+      /* ===================================================
+         DOTA 2
+      =================================================== */
 
       if (
         direction ===
@@ -2273,28 +2449,29 @@ document.addEventListener("DOMContentLoaded", async () => {
             "dotaNickname"
           );
 
+
         applicationData.dota_friend_id =
           getValue(
             "dotaFriendId"
           );
+
 
         applicationData.dota_rank =
           getValue(
             "dotaRank"
           );
 
+
         applicationData.game_nick =
-          applicationData
-            .dota_nickname ||
-
+          applicationData.dota_nickname ||
           profile?.game_nickname ||
-
           null;
       }
 
-      /*
-        WOW
-      */
+
+      /* ===================================================
+         WOW
+      =================================================== */
 
       if (
         direction ===
@@ -2306,48 +2483,60 @@ document.addEventListener("DOMContentLoaded", async () => {
             "battleTag"
           );
 
+
         applicationData.wow_character =
           getValue(
             "wowCharacter"
           );
+
 
         applicationData.wow_realm =
           getValue(
             "wowRealm"
           );
 
+
         applicationData.wow_faction =
           getValue(
             "wowFaction"
           );
+
 
         applicationData.wow_class =
           getValue(
             "wowClass"
           );
 
+
         applicationData.game_nick =
-          applicationData
-            .wow_character ||
-
+          applicationData.wow_character ||
           profile?.game_nickname ||
-
           null;
       }
 
-      if (
-        submitButton
-      ) {
+
+      /* ===================================================
+         BUTTON
+      =================================================== */
+
+      if (submitButton) {
 
         submitButton.disabled =
           true;
 
+
         submitButton.dataset.originalText =
           submitButton.textContent;
+
 
         submitButton.textContent =
           "Відправлення...";
       }
+
+
+      /* ===================================================
+         INSERT
+      =================================================== */
 
       try {
 
@@ -2356,23 +2545,19 @@ document.addEventListener("DOMContentLoaded", async () => {
           applicationData
         );
 
+
         const {
-          data:
-            insertedApplication,
-
-          error:
-            insertError
-
+          data: insertedApplication,
+          error: insertError
         } =
           await supabase
-            .from(
-              "applications"
-            )
+            .from("applications")
             .insert(
               applicationData
             )
             .select()
             .single();
+
 
         if (
           insertError
@@ -2383,10 +2568,10 @@ document.addEventListener("DOMContentLoaded", async () => {
             insertError
           );
 
+
           if (
             insertError.code ===
               "23502" &&
-
             String(
               insertError.message ||
               ""
@@ -2413,13 +2598,16 @@ document.addEventListener("DOMContentLoaded", async () => {
             );
           }
 
+
           return;
         }
+
 
         console.log(
           "UA LEGION: заявку створено:",
           insertedApplication
         );
+
 
         showMessage(
           `Заявку на напрямок ${getDirectionLabel(
@@ -2427,6 +2615,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           )} успішно відправлено.`,
           "success"
         );
+
 
         setTimeout(
           () => {
@@ -2440,14 +2629,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       }
 
-      catch (
-        error
-      ) {
+
+      catch (error) {
 
         console.error(
           "UA LEGION: неочікувана помилка:",
           error
         );
+
 
         showMessage(
           "Сталася неочікувана помилка. Спробуйте ще раз.",
@@ -2456,24 +2645,24 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       }
 
+
       finally {
 
-        if (
-          submitButton
-        ) {
+        if (submitButton) {
 
           submitButton.disabled =
             false;
+
 
           submitButton.textContent =
             submitButton
               .dataset
               .originalText ||
-
             "НАДІСЛАТИ ЗАЯВКУ";
         }
       }
 
     }
   );
+
 });
