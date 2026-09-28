@@ -10,41 +10,50 @@
     content="width=device-width, initial-scale=1.0"
   >
 
-  <title>Подати заявку — UA LEGION</title>
-
   <meta
-    name="description"
-    content="Подати заявку до одного з напрямків UA LEGION."
+    name="theme-color"
+    content="#05070b"
   >
 
-  <link rel="stylesheet" href="style.css">
+  <title>
+    Мій кабінет — UA LEGION
+  </title>
 
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
 
   <style>
 
     /* =========================================
-       UA LEGION — ЗАЯВКА
+       PAGE
        ========================================= */
 
-    .join-page {
-      min-height: 100vh;
+    .profile-page {
 
-      background:
-        radial-gradient(
-          circle at 80% 20%,
-          rgba(20, 80, 180, 0.18),
-          transparent 35%
-        ),
-        #05070b;
+      width: 100%;
+
+      min-height:
+        calc(100vh - 76px);
+
+      display: flex;
+
+      justify-content: center;
+
+      padding: 45px 20px;
+
+      box-sizing: border-box;
+
     }
 
 
-    .join-main {
-      width: min(900px, 92%);
-      margin: 0 auto;
+    .profile-container {
 
-      padding:
-        110px 0 70px;
+      width: 100%;
+
+      max-width: 900px;
+
     }
 
 
@@ -52,72 +61,397 @@
        HEADER
        ========================================= */
 
-    .join-header {
-      text-align: center;
+    .profile-header {
 
-      margin-bottom: 45px;
+      margin-bottom: 25px;
+
     }
 
 
-    .join-header .eyebrow {
-      color: #f5b800;
+    .profile-header h1 {
 
-      font-size: 12px;
-      font-weight: 800;
-
-      letter-spacing: 2px;
-
-      margin-bottom: 12px;
-    }
-
-
-    .join-header h1 {
-      margin: 0;
+      margin: 0 0 8px;
 
       font-size:
         clamp(
-          38px,
-          6vw,
-          70px
+          30px,
+          5vw,
+          48px
         );
 
-      line-height: 1;
-
-      color: #f4f6fb;
     }
 
 
-    .join-header h1 span {
-      color: #f5b800;
-    }
+    .profile-header p {
 
+      margin: 0;
 
-    .join-header p {
-      max-width: 650px;
+      opacity: 0.65;
 
-      margin:
-        20px auto 0;
-
-      color: #8f9aaa;
-
-      line-height: 1.7;
-
-      font-size: 16px;
     }
 
 
     /* =========================================
-       FORM
+       MAIN CARD
        ========================================= */
 
-    .application-form {
+    .profile-card {
 
       background:
         rgba(
-          10,
-          14,
-          22,
-          0.92
+          255,
+          255,
+          255,
+          0.035
+        );
+
+      border:
+        1px solid
+        rgba(
+          255,
+          255,
+          255,
+          0.1
+        );
+
+      border-radius: 20px;
+
+      padding: 25px;
+
+      box-sizing: border-box;
+
+      backdrop-filter: blur(12px);
+
+    }
+
+
+    /* =========================================
+       AVATAR
+       ========================================= */
+
+    .avatar-section {
+
+      display: flex;
+
+      align-items: center;
+
+      gap: 20px;
+
+      padding-bottom: 25px;
+
+      margin-bottom: 25px;
+
+      border-bottom:
+        1px solid
+        rgba(
+          255,
+          255,
+          255,
+          0.1
+        );
+
+    }
+
+
+    .profile-avatar {
+
+      width: 100px;
+
+      height: 100px;
+
+      flex-shrink: 0;
+
+      border-radius: 50%;
+
+      object-fit: cover;
+
+      background:
+        rgba(
+          255,
+          255,
+          255,
+          0.06
+        );
+
+      border:
+        2px solid
+        rgba(
+          255,
+          255,
+          255,
+          0.15
+        );
+
+    }
+
+
+    .avatar-info h2 {
+
+      margin: 0 0 7px;
+
+    }
+
+
+    .avatar-info p {
+
+      margin: 0;
+
+      opacity: 0.6;
+
+    }
+
+
+    /* =========================================
+       PROFILE GRID
+       ========================================= */
+
+    .profile-grid {
+
+      display: grid;
+
+      grid-template-columns:
+        repeat(
+          2,
+          minmax(
+            0,
+            1fr
+          )
+        );
+
+      gap: 17px;
+
+    }
+
+
+    .profile-field {
+
+      display: flex;
+
+      flex-direction: column;
+
+      gap: 7px;
+
+    }
+
+
+    .profile-field.full {
+
+      grid-column: 1 / -1;
+
+    }
+
+
+    .profile-field label {
+
+      font-size: 13px;
+
+      opacity: 0.7;
+
+    }
+
+
+    .profile-field input {
+
+      width: 100%;
+
+      box-sizing: border-box;
+
+      padding: 12px 14px;
+
+      border:
+        1px solid
+        rgba(
+          255,
+          255,
+          255,
+          0.12
+        );
+
+      border-radius: 9px;
+
+      background:
+        rgba(
+          0,
+          0,
+          0,
+          0.2
+        );
+
+      color: white;
+
+      font-size: 14px;
+
+      outline: none;
+
+    }
+
+
+    .profile-field input:focus {
+
+      border-color: #ffd34d;
+
+    }
+
+
+    .profile-field input[readonly] {
+
+      opacity: 0.7;
+
+      cursor: not-allowed;
+
+    }
+
+
+    /* =========================================
+       SECTION
+       ========================================= */
+
+    .profile-section {
+
+      margin-top: 28px;
+
+      padding-top: 25px;
+
+      border-top:
+        1px solid
+        rgba(
+          255,
+          255,
+          255,
+          0.1
+        );
+
+    }
+
+
+    .profile-section-title {
+
+      display: flex;
+
+      align-items: center;
+
+      gap: 9px;
+
+      margin: 0 0 7px;
+
+      font-size: 21px;
+
+    }
+
+
+    .profile-section-description {
+
+      margin: 0 0 17px;
+
+      font-size: 13px;
+
+      opacity: 0.6;
+
+    }
+
+
+    /* =========================================
+       GLOBAL ROLES
+       ========================================= */
+
+    .global-roles-list {
+
+      display: grid;
+
+      grid-template-columns:
+        repeat(
+          2,
+          minmax(
+            0,
+            1fr
+          )
+        );
+
+      gap: 12px;
+
+    }
+
+
+    .global-role-card {
+
+      padding: 15px;
+
+      border-radius: 11px;
+
+      border:
+        1px solid
+        rgba(
+          255,
+          211,
+          77,
+          0.45
+        );
+
+      background:
+        rgba(
+          255,
+          255,
+          255,
+          0.035
+        );
+
+    }
+
+
+    .global-role-card h3 {
+
+      margin: 0 0 5px;
+
+      font-size: 14px;
+
+    }
+
+
+    .global-role-card p {
+
+      margin: 0;
+
+      font-size: 11px;
+
+      opacity: 0.55;
+
+    }
+
+
+    /* =========================================
+       DIRECTIONS
+       ========================================= */
+
+    .directions-status {
+
+      display: grid;
+
+      grid-template-columns:
+        repeat(
+          2,
+          minmax(
+            0,
+            1fr
+          )
+        );
+
+      gap: 12px;
+
+    }
+
+
+    .direction-status-card {
+
+      padding: 17px;
+
+      border-radius: 12px;
+
+      background:
+        rgba(
+          255,
+          255,
+          255,
+          0.035
         );
 
       border:
@@ -129,492 +463,182 @@
           0.09
         );
 
-      box-shadow:
-        0 25px 80px
+      box-sizing: border-box;
+
+      transition:
+        transform 0.15s ease,
+        background 0.15s ease;
+
+    }
+
+
+    .direction-status-card:hover {
+
+      transform:
+        translateY(-1px);
+
+      background:
         rgba(
-          0,
-          0,
-          0,
-          0.35
+          255,
+          255,
+          255,
+          0.05
         );
 
-      padding: 35px;
     }
 
 
-    .form-section {
+    .direction-status-card.active {
 
-      margin-bottom: 38px;
+      border-color:
+        rgba(
+          98,
+          229,
+          156,
+          0.65
+        );
 
     }
 
 
-    .form-section-title {
+    .direction-status-card.pending {
+
+      border-color:
+        rgba(
+          255,
+          211,
+          77,
+          0.55
+        );
+
+    }
+
+
+    .direction-status-card.rejected {
+
+      border-color:
+        rgba(
+          255,
+          112,
+          112,
+          0.55
+        );
+
+    }
+
+
+    .direction-status-card.approved_waiting {
+
+      border-color:
+        rgba(
+          255,
+          211,
+          77,
+          0.55
+        );
+
+    }
+
+
+    /* =========================================
+       DIRECTION HEADER
+       ========================================= */
+
+    .direction-card-header {
 
       display: flex;
 
-      align-items: center;
+      justify-content: space-between;
 
-      gap: 12px;
+      align-items: flex-start;
 
-      margin-bottom: 22px;
+      gap: 10px;
 
-      padding-bottom: 12px;
-
-      border-bottom:
-        1px solid
-        rgba(
-          255,
-          255,
-          255,
-          0.08
-        );
+      margin-bottom: 10px;
 
     }
 
 
-    .form-section-title span {
-
-      color: #f5b800;
-
-      font-size: 12px;
-
-      font-weight: 800;
-
-      letter-spacing: 1px;
-
-    }
-
-
-    .form-section-title h2 {
+    .direction-card-title {
 
       margin: 0;
 
-      color: #fff;
+      font-size: 16px;
 
-      font-size: 20px;
-
-    }
-
-
-    /* =========================================
-       FIELDS
-       ========================================= */
-
-    .form-group {
-
-      margin-bottom: 20px;
+      line-height: 1.3;
 
     }
 
 
-    .form-group label {
+    .direction-member-status {
 
-      display: block;
+      flex-shrink: 0;
 
-      margin-bottom: 8px;
-
-      color: #e9edf5;
-
-      font-size: 14px;
+      font-size: 12px;
 
       font-weight: 700;
 
-    }
-
-
-    .optional {
-
-      color: #687384;
-
-      font-weight: 400;
-
-      font-size: 12px;
-
-      margin-left: 5px;
+      white-space: nowrap;
 
     }
 
 
-    .form-group input,
-    .form-group select,
-    .form-group textarea {
+    .direction-member-status.active {
 
-      width: 100%;
-
-      box-sizing: border-box;
-
-      padding: 14px 15px;
-
-      background: #080b10;
-
-      border:
-        1px solid
-        #252c38;
-
-      color: #fff;
-
-      font-family: inherit;
-
-      font-size: 14px;
-
-      outline: none;
-
-      transition: 0.2s ease;
+      color: #62e59c;
 
     }
 
 
-    .form-group textarea {
+    .direction-member-status.pending {
 
-      min-height: 130px;
-
-      resize: vertical;
+      color: #ffd34d;
 
     }
 
 
-    .form-group input:focus,
-    .form-group select:focus,
-    .form-group textarea:focus {
+    .direction-member-status.rejected {
 
-      border-color:
-        #2878ff;
+      color: #ff7070;
 
-      box-shadow:
-        0 0 0 3px
+    }
+
+
+    .direction-member-status.none {
+
+      color:
         rgba(
-          40,
-          120,
           255,
-          0.10
+          255,
+          255,
+          0.65
         );
 
     }
 
 
     /* =========================================
-       DIRECTIONS
+       DETAILS
        ========================================= */
 
-    .direction-grid {
+    .direction-details {
 
-      display: grid;
+      display: flex;
 
-      grid-template-columns:
-        repeat(
-          2,
-          1fr
-        );
+      flex-direction: column;
 
-      gap: 12px;
+      gap: 6px;
 
     }
 
 
-    .choice {
+    .direction-detail {
 
-      position: relative;
-
-    }
-
-
-    .choice input {
-
-      position: absolute;
-
-      opacity: 0;
-
-      pointer-events: none;
-
-    }
-
-
-    .choice label {
-
-      display: block;
-
-      padding: 16px;
-
-      background:
-        #080b10;
-
-      border:
-        1px solid
-        #252c38;
-
-      cursor: pointer;
-
-      transition: 0.2s ease;
-
-    }
-
-
-    .choice label:hover {
-
-      border-color:
-        #3b4657;
-
-      transform:
-        translateY(-1px);
-
-    }
-
-
-    .choice input:checked + label {
-
-      border-color:
-        #2878ff;
-
-      background:
-        rgba(
-          40,
-          120,
-          255,
-          0.10
-        );
-
-      box-shadow:
-        inset
-        3px
-        0
-        0
-        #2878ff;
-
-    }
-
-
-    .choice-title {
-
-      display: block;
-
-      color: #fff;
-
-      font-weight: 800;
-
-      margin-bottom: 5px;
-
-    }
-
-
-    .choice-description {
-
-      display: block;
-
-      color: #778294;
+      margin: 0;
 
       font-size: 12px;
 
-    }
-
-
-    .direction-disabled {
-
-      opacity: 0.45 !important;
-
-      cursor: not-allowed !important;
-
-      pointer-events: none !important;
-
-      transform: none !important;
-
-    }
-
-
-    /* =========================================
-       GAME FORMS
-       ========================================= */
-
-    .game-form {
-
-      display: none;
-
-    }
-
-
-    .game-form.active {
-
-      display: block;
-
-      animation:
-        fadeIn
-        0.25s
-        ease;
-
-    }
-
-
-    @keyframes fadeIn {
-
-      from {
-
-        opacity: 0;
-
-        transform:
-          translateY(
-            8px
-          );
-
-      }
-
-      to {
-
-        opacity: 1;
-
-        transform:
-          translateY(
-            0
-          );
-
-      }
-
-    }
-
-
-    /* =========================================
-       WOT VERIFICATION
-       ========================================= */
-
-    .wot-verification {
-
-      margin-top: 8px;
-
-      padding: 18px;
-
-      border:
-        1px solid
-        rgba(
-          255,
-          211,
-          77,
-          0.18
-        );
-
-      background:
-        rgba(
-          255,
-          211,
-          77,
-          0.025
-        );
-
-    }
-
-
-    .wot-verification-title {
-
-      margin:
-        0 0 7px;
-
-      color: #fff;
-
-      font-size: 15px;
-
-      font-weight: 800;
-
-    }
-
-
-    .wot-verification-description {
-
-      margin:
-        0 0 18px;
-
-      color: #778294;
-
-      font-size: 12px;
-
-      line-height: 1.6;
-
-    }
-
-
-    .wot-verify-button {
-
-      width: 100%;
-
-      margin-top: 12px;
-
-      padding:
-        13px
-        15px;
-
-      border: 0;
-
-      background:
-        #ffd34d;
-
-      color: #111;
-
-      font-family: inherit;
-
-      font-size: 12px;
-
-      font-weight: 800;
-
-      cursor: pointer;
-
-      transition:
-        0.2s ease;
-
-    }
-
-
-    .wot-verify-button:hover {
-
-      filter:
-        brightness(1.08);
-
-      transform:
-        translateY(-1px);
-
-    }
-
-
-    .wot-verify-button:disabled {
-
-      opacity: 0.6;
-
-      cursor: wait;
-
-      transform: none;
-
-    }
-
-
-    .wot-account-status {
-
-      margin-top: 10px;
-
-      padding:
-        11px
-        13px;
-
-      font-size: 12px;
-
-      line-height: 1.5;
-
-      background:
-        rgba(
-          255,
-          255,
-          255,
-          0.035
-        );
-
-      border:
-        1px solid
-        rgba(
-          255,
-          255,
-          255,
-          0.08
-        );
-
-    }
-
-
-    .wot-account-status.info {
+      line-height: 1.4;
 
       color:
         rgba(
@@ -627,107 +651,28 @@
     }
 
 
-    .wot-account-status.success {
-
-      color:
-        #62e59c;
-
-      border-color:
-        rgba(
-          98,
-          229,
-          156,
-          0.28
-        );
-
-    }
-
-
-    .wot-account-status.error {
-
-      color:
-        #ff7070;
-
-      border-color:
-        rgba(
-          255,
-          112,
-          112,
-          0.28
-        );
-
-    }
-
-
-    .wot-account-result {
-
-      margin-top: 10px;
-
-      display: grid;
-
-      grid-template-columns:
-        repeat(
-          2,
-          minmax(0, 1fr)
-        );
-
-      gap:
-        8px 18px;
-
-      padding: 13px;
-
-      border:
-        1px solid
-        rgba(
-          98,
-          229,
-          156,
-          0.18
-        );
-
-      background:
-        rgba(
-          98,
-          229,
-          156,
-          0.035
-        );
+    .direction-detail strong {
 
       color:
         rgba(
           255,
           255,
           255,
-          0.7
-        );
-
-      font-size: 12px;
-
-    }
-
-
-    .wot-account-result strong {
-
-      color:
-        rgba(
-          255,
-          255,
-          255,
-          0.95
+          0.9
         );
 
     }
 
 
     /* =========================================
-       SUBMIT
+       APPLICATION
        ========================================= */
 
-    .form-footer {
+    .direction-application {
 
-      margin-top: 35px;
+      margin-top: 10px;
 
-      padding-top: 25px;
+      padding-top: 10px;
 
       border-top:
         1px solid
@@ -738,42 +683,68 @@
           0.08
         );
 
-      text-align: center;
+    }
+
+
+    .direction-application-status {
+
+      margin: 0;
+
+      font-size: 12px;
+
+      font-weight: 600;
 
     }
 
 
-    .submit-btn {
+    .direction-application-date {
 
-      border: 0;
+      margin: 4px 0 0;
 
-      padding:
-        15px
-        35px;
+      font-size: 11px;
 
-      background:
-        #2878ff;
+      opacity: 0.5;
 
-      color: #fff;
+    }
 
-      font-family: inherit;
+
+    /* =========================================
+       APPLY BUTTON
+       ========================================= */
+
+    .direction-apply-button {
+
+      display: inline-flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      margin-top: 11px;
+
+      padding: 9px 13px;
+
+      border-radius: 8px;
+
+      background: #ffd34d;
+
+      color: #111;
+
+      text-decoration: none;
+
+      font-size: 11px;
 
       font-weight: 800;
 
-      font-size: 14px;
-
-      cursor: pointer;
-
-      transition:
-        0.2s ease;
+      transition: 0.15s;
 
     }
 
 
-    .submit-btn:hover {
+    .direction-apply-button:hover {
 
-      background:
-        #3d87ff;
+      filter:
+        brightness(1.08);
 
       transform:
         translateY(-1px);
@@ -781,50 +752,117 @@
     }
 
 
-    .submit-btn:disabled {
+    /* =========================================
+       EMPTY
+       ========================================= */
 
-      opacity: 0.6;
+    .roles-empty {
 
-      cursor:
-        not-allowed;
+      grid-column: 1 / -1;
 
-      transform:
-        none;
+      padding: 15px;
 
-    }
+      border-radius: 10px;
 
-
-    .form-note {
-
-      margin-top: 15px;
-
-      color: #697486;
-
-      font-size: 12px;
-
-      line-height: 1.6;
-
-    }
-
-
-    .back-link {
-
-      display: inline-block;
-
-      margin-top: 25px;
-
-      color: #8792a3;
-
-      text-decoration: none;
+      background:
+        rgba(
+          255,
+          255,
+          255,
+          0.035
+        );
 
       font-size: 13px;
 
+      opacity: 0.6;
+
     }
 
 
-    .back-link:hover {
+    /* =========================================
+       ACTIONS
+       ========================================= */
 
-      color: #fff;
+    .profile-actions {
+
+      display: flex;
+
+      gap: 10px;
+
+      margin-top: 28px;
+
+      padding-top: 22px;
+
+      border-top:
+        1px solid
+        rgba(
+          255,
+          255,
+          255,
+          0.1
+        );
+
+    }
+
+
+    .profile-actions button {
+
+      border: none;
+
+      border-radius: 9px;
+
+      padding: 12px 20px;
+
+      font-size: 12px;
+
+      font-weight: 800;
+
+      cursor: pointer;
+
+    }
+
+
+    #saveProfile {
+
+      background: #ffd34d;
+
+      color: #111;
+
+    }
+
+
+    #saveProfile:hover {
+
+      filter:
+        brightness(1.08);
+
+    }
+
+
+    #logoutButton {
+
+      background:
+        rgba(
+          255,
+          255,
+          255,
+          0.08
+        );
+
+      color: white;
+
+    }
+
+
+    #logoutButton:hover {
+
+      background:
+        rgba(
+          255,
+          255,
+          255,
+          0.13
+        );
 
     }
 
@@ -833,29 +871,27 @@
        MESSAGE
        ========================================= */
 
-    #formMessage {
+    .profile-message {
 
-      margin-top: 18px;
+      margin-top: 12px;
 
-      min-height: 20px;
+      min-height: 18px;
 
-      font-size: 14px;
-
-    }
-
-
-    #formMessage.success {
-
-      color:
-        #62e59c;
+      font-size: 12px;
 
     }
 
 
-    #formMessage.error {
+    .profile-message.success {
 
-      color:
-        #ff7070;
+      color: #62e59c;
+
+    }
+
+
+    .profile-message.error {
+
+      color: #ff7070;
 
     }
 
@@ -864,46 +900,86 @@
        MOBILE
        ========================================= */
 
-    @media (max-width: 650px) {
+    @media (
+      max-width: 700px
+    ) {
 
-      .join-main {
-
-        padding:
-          90px
-          0
-          40px;
-
-      }
-
-
-      .application-form {
+      .profile-page {
 
         padding:
-          22px;
+          30px 12px;
 
       }
 
 
-      .direction-grid {
+      .profile-card {
 
-        grid-template-columns:
-          1fr;
-
-      }
-
-
-      .join-header h1 {
-
-        font-size:
-          42px;
+        padding: 18px;
 
       }
 
 
-      .wot-account-result {
+      .avatar-section {
 
-        grid-template-columns:
-          1fr;
+        flex-direction: column;
+
+        text-align: center;
+
+      }
+
+
+      .profile-grid {
+
+        grid-template-columns: 1fr;
+
+      }
+
+
+      .profile-field.full {
+
+        grid-column: auto;
+
+      }
+
+
+      .directions-status {
+
+        grid-template-columns: 1fr;
+
+      }
+
+
+      .global-roles-list {
+
+        grid-template-columns: 1fr;
+
+      }
+
+
+      .direction-card-header {
+
+        flex-direction: column;
+
+      }
+
+
+      .direction-member-status {
+
+        white-space: normal;
+
+      }
+
+
+      .profile-actions {
+
+        flex-direction: column;
+
+      }
+
+
+      .profile-actions button {
+
+        width: 100%;
 
       }
 
@@ -914,7 +990,7 @@
 </head>
 
 
-<body class="join-page">
+<body>
 
   <div class="noise"></div>
 
@@ -976,10 +1052,6 @@
         Галерея
       </a>
 
-      <a href="join.html">
-        Подати заявку
-      </a>
-
       <a
         href="https://www.tiktok.com/@ua_legion_"
         target="_blank"
@@ -998,10 +1070,10 @@
       </a>
 
       <a
-        href="login.html"
+        href="profile.html"
         id="authButton"
       >
-        Увійти / Реєстрація
+        Мій кабінет
       </a>
 
     </nav>
@@ -1010,709 +1082,284 @@
 
 
   <!-- =========================================
-       MAIN
+       PROFILE
        ========================================= -->
 
-  <main class="join-main">
+  <main class="profile-page">
 
+    <div class="profile-container">
 
-    <div class="join-header">
+      <div class="profile-header">
 
-      <div class="eyebrow">
-        🇺🇦 UA LEGION / COMMUNITY
-      </div>
+        <h1>
+          👤 Мій кабінет
+        </h1>
 
-
-      <h1>
-
-        ПОДАТИ ЗАЯВКУ
-
-        <span>
-          UA LEGION
-        </span>
-
-      </h1>
-
-
-      <p>
-        Оберіть напрямок, до якого бажаєте
-        приєднатися, та заповніть заявку.
-      </p>
-
-    </div>
-
-
-    <!-- =========================================
-         FORM
-         ========================================= -->
-
-    <form
-      class="application-form"
-      id="applicationForm"
-    >
-
-
-      <!-- =====================================
-           01 — DIRECTION
-           ===================================== -->
-
-      <div class="form-section">
-
-
-        <div class="form-section-title">
-
-          <span>
-            01
-          </span>
-
-          <h2>
-            Оберіть напрямок
-          </h2>
-
-        </div>
-
-
-        <div class="direction-grid">
-
-
-          <!-- ETS2 -->
-
-          <div class="choice">
-
-            <input
-              type="radio"
-              id="ets2"
-              name="direction"
-              value="ets2"
-              required
-            >
-
-            <label for="ets2">
-
-              <span class="choice-title">
-                🚛 ETS2 / TruckersMP
-              </span>
-
-              <span class="choice-description">
-                Конвої, рейси та TruckersMP
-              </span>
-
-            </label>
-
-          </div>
-
-
-          <!-- WOT -->
-
-          <div class="choice">
-
-            <input
-              type="radio"
-              id="wot"
-              name="direction"
-              value="wot"
-            >
-
-            <label for="wot">
-
-              <span class="choice-title">
-                🪖 World of Tanks
-              </span>
-
-              <span class="choice-description">
-                Взводи та командна гра
-              </span>
-
-            </label>
-
-          </div>
-
-
-          <!-- DOTA -->
-
-          <div class="choice">
-
-            <input
-              type="radio"
-              id="dota2"
-              name="direction"
-              value="dota2"
-            >
-
-            <label for="dota2">
-
-              <span class="choice-title">
-                ⚔️ Dota 2
-              </span>
-
-              <span class="choice-description">
-                Команди та спільна гра
-              </span>
-
-            </label>
-
-          </div>
-
-
-          <!-- WOW -->
-
-          <div class="choice">
-
-            <input
-              type="radio"
-              id="wow"
-              name="direction"
-              value="wow"
-            >
-
-            <label for="wow">
-
-              <span class="choice-title">
-                🐉 World of Warcraft
-              </span>
-
-              <span class="choice-description">
-                PvE, PvP та спільна гра
-              </span>
-
-            </label>
-
-          </div>
-
-
-        </div>
+        <p>
+          Налаштуйте свій профіль UA LEGION
+        </p>
 
       </div>
 
 
-      <!-- =====================================
-           02 — GAME DATA
-           ===================================== -->
-
-      <div class="form-section">
+      <div class="profile-card">
 
 
-        <div class="form-section-title">
+        <!-- AVATAR -->
 
-          <span>
-            02
-          </span>
+        <div class="avatar-section">
 
-          <h2>
-            Дані напрямку
-          </h2>
+          <img
+            id="profileAvatar"
+            class="profile-avatar"
+            src="ua-legion-logo.png"
+            alt="Аватар"
+          >
 
-        </div>
+          <div class="avatar-info">
 
-
-        <!-- =================================
-             ETS2 FORM
-             ================================= -->
-
-        <div
-          class="game-form"
-          id="ets2Form"
-        >
-
-
-          <div class="form-group">
-
-            <label for="truckersmpNick">
-              🚛 Нікнейм TruckersMP
-            </label>
-
-            <input
-              type="text"
-              id="truckersmpNick"
-              name="truckersmp_nick"
-              placeholder="Ваш нік у TruckersMP"
+            <h2
+              id="profileNamePreview"
             >
+              UA LEGION Member
+            </h2>
 
-          </div>
-
-
-          <div class="form-group">
-
-            <label for="truckersmpId">
-              🆔 TruckersMP ID
-            </label>
-
-            <input
-              type="text"
-              id="truckersmpId"
-              name="truckersmp_id"
-              placeholder="Ваш TruckersMP ID"
-            >
-
-          </div>
-
-
-          <div class="form-group">
-
-            <label for="truckershubUsername">
-              🎮 Ім'я користувача TruckersHub
-            </label>
-
-            <input
-              type="text"
-              id="truckershubUsername"
-              name="truckershub_username"
-              placeholder="Ваше ім'я користувача TruckersHub"
-            >
-
-          </div>
-
-
-          <div class="form-group">
-
-            <label for="truckershubId">
-              🆔 TruckersHub ID
-            </label>
-
-            <input
-              type="text"
-              id="truckershubId"
-              name="truckershub_id"
-              placeholder="Ваш TruckersHub ID"
-            >
-
-          </div>
-
-
-        </div>
-
-
-        <!-- =================================
-             WOT FORM
-             ================================= -->
-
-        <div
-          class="game-form"
-          id="wotForm"
-        >
-
-          <div class="wot-verification">
-
-            <h3 class="wot-verification-title">
-              🪖 Перевірка World of Tanks
-            </h3>
-
-
-            <p class="wot-verification-description">
-              Підтвердьте свій WoT акаунт через Wargaming.
-              Після успішної перевірки Wargaming ID буде
-              отримано автоматично.
+            <p>
+              Особистий профіль
             </p>
 
+          </div>
 
-            <div class="form-group">
+        </div>
 
-              <label for="wotNickname">
-                🪖 Нікнейм World of Tanks
+
+        <!-- PROFILE FORM -->
+
+        <form
+          id="profileForm"
+        >
+
+          <div class="profile-grid">
+
+
+            <div class="profile-field">
+
+              <label>
+                👤 Ім'я
               </label>
 
               <input
                 type="text"
-                id="wotNickname"
-                name="wot_nickname"
-                maxlength="24"
-                placeholder="Ваш нік у World of Tanks"
-                autocomplete="off"
+                id="displayName"
+                placeholder="Ваше ім'я"
               >
 
             </div>
 
 
-            <div class="form-group">
+            <div class="profile-field">
 
-              <label for="wotRegion">
-                🌍 Регіон
+              <label>
+                🎂 Дата народження
               </label>
 
-              <select
-                id="wotRegion"
-                name="wot_region"
+              <input
+                type="date"
+                id="birthDate"
               >
-
-                <option value="">
-                  Оберіть регіон
-                </option>
-
-                <option value="eu">
-                  EU
-                </option>
-
-                <option value="na">
-                  NA
-                </option>
-
-                <option value="asia">
-                  ASIA
-                </option>
-
-              </select>
 
             </div>
 
 
-            <div class="form-group">
+            <div class="profile-field full">
 
-              <label for="wargamingId">
-                🆔 Wargaming ID
+              <label>
+                🖼️ Фото профілю
+              </label>
+
+              <input
+                type="file"
+                id="avatarUrl"
+                accept="image/*"
+              >
+
+            </div>
+
+
+            <div class="profile-field">
+
+              <label>
+                💬 Discord
               </label>
 
               <input
                 type="text"
-                id="wargamingId"
-                name="wargaming_id"
-                placeholder="Буде отримано автоматично"
+                id="discordUsername"
+                placeholder="Discord"
                 readonly
-                autocomplete="off"
               >
 
             </div>
+
+
+            <div class="profile-field">
+
+              <label>
+                🆔 Discord ID
+              </label>
+
+              <input
+                type="text"
+                id="discordUserId"
+                placeholder="Discord ID"
+                readonly
+              >
+
+            </div>
+
+
+            <div class="profile-field">
+
+              <label>
+                🎮 Steam ID
+              </label>
+
+              <input
+                type="text"
+                id="steamId"
+                placeholder="Ваш Steam ID"
+              >
+
+            </div>
+
+
+            <div class="profile-field">
+
+              <label>
+                🎮 Ігровий нік
+              </label>
+
+              <input
+                type="text"
+                id="gameNickname"
+                placeholder="Ваш ігровий нік"
+              >
+
+            </div>
+
+          </div>
+
+
+          <!-- =====================================
+               GLOBAL ROLES
+               ===================================== -->
+
+          <section
+            class="profile-section"
+            id="globalRolesSection"
+          >
+
+            <h2
+              class="profile-section-title"
+            >
+              👑 Глобальні ролі
+            </h2>
+
+            <p
+              class="profile-section-description"
+            >
+              Ролі, які діють на рівні всієї спільноти UA LEGION.
+            </p>
+
+            <div
+              id="rolesList"
+              class="global-roles-list"
+            >
+
+              <div
+                class="roles-empty"
+              >
+                Завантаження ролей...
+              </div>
+
+            </div>
+
+          </section>
+
+
+          <!-- =====================================
+               DIRECTIONS
+               ===================================== -->
+
+          <section
+            class="profile-section"
+          >
+
+            <h2
+              class="profile-section-title"
+            >
+              📍 Мої напрямки
+            </h2>
+
+            <p
+              class="profile-section-description"
+            >
+              Статус участі, остання заявка, посади та клас відображаються разом у кожному напрямку.
+            </p>
+
+            <div
+              id="directionsStatus"
+              class="directions-status"
+            >
+
+              <div
+                class="roles-empty"
+              >
+                Завантаження напрямків...
+              </div>
+
+            </div>
+
+          </section>
+
+
+          <!-- =====================================
+               ACTIONS
+               ===================================== -->
+
+          <div
+            class="profile-actions"
+          >
+
+            <button
+              type="submit"
+              id="saveProfile"
+            >
+              💾 ЗБЕРЕГТИ ПРОФІЛЬ
+            </button>
 
 
             <button
               type="button"
-              id="verifyWotButton"
-              class="wot-verify-button"
+              id="logoutButton"
             >
-              🛡️ ПЕРЕВІРИТИ WOT АКАУНТ
+              🚪 ВИЙТИ
             </button>
 
-
-            <div
-              id="wotAccountStatus"
-              class="wot-account-status info"
-            >
-              Введіть нік та регіон і натисніть
-              «Перевірити WoT акаунт».
-            </div>
-
-
-            <div
-              id="wotAccountResult"
-              class="wot-account-result"
-              hidden
-            >
-
-              <div>
-
-                <strong>
-                  WoT нік:
-                </strong>
-
-                <span id="wotResultNickname">
-                </span>
-
-              </div>
-
-
-              <div>
-
-                <strong>
-                  Wargaming ID:
-                </strong>
-
-                <span id="wotResultAccountId">
-                </span>
-
-              </div>
-
-
-              <div>
-
-                <strong>
-                  Регіон:
-                </strong>
-
-                <span id="wotResultRegion">
-                </span>
-
-              </div>
-
-
-              <div>
-
-                <strong>
-                  Статус:
-                </strong>
-
-                <span>
-                  🟢 Підтверджено
-                </span>
-
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
-
-
-        <!-- =================================
-             DOTA 2 FORM
-             ================================= -->
-
-        <div
-          class="game-form"
-          id="dota2Form"
-        >
-
-
-          <div class="form-group">
-
-            <label for="dotaNickname">
-              ⚔️ Нікнейм Dota 2
-            </label>
-
-            <input
-              type="text"
-              id="dotaNickname"
-              name="dota_nickname"
-              placeholder="Ваш нік у Dota 2"
-            >
-
           </div>
 
 
-          <div class="form-group">
-
-            <label for="dotaFriendId">
-              🆔 Dota 2 Friend ID
-            </label>
-
-            <input
-              type="text"
-              id="dotaFriendId"
-              name="dota_friend_id"
-              placeholder="Ваш Dota 2 Friend ID"
-            >
-
-          </div>
+          <div
+            id="profileMessage"
+            class="profile-message"
+          ></div>
 
 
-          <div class="form-group">
-
-            <label for="dotaRank">
-
-              📊 Ранг / MMR
-
-              <span class="optional">
-                (необов'язково)
-              </span>
-
-            </label>
-
-            <input
-              type="text"
-              id="dotaRank"
-              name="dota_rank"
-              placeholder="Наприклад: Legend або 3500 MMR"
-            >
-
-          </div>
-
-
-        </div>
-
-
-        <!-- =================================
-             WOW FORM
-             ================================= -->
-
-        <div
-          class="game-form"
-          id="wowForm"
-        >
-
-
-          <div class="form-group">
-
-            <label for="battleTag">
-              🎮 BattleTag
-            </label>
-
-            <input
-              type="text"
-              id="battleTag"
-              name="battletag"
-              placeholder="Наприклад: Player#1234"
-            >
-
-          </div>
-
-
-          <div class="form-group">
-
-            <label for="wowCharacter">
-              🧙 Основний персонаж
-            </label>
-
-            <input
-              type="text"
-              id="wowCharacter"
-              name="wow_character"
-              placeholder="Ім'я основного персонажа"
-            >
-
-          </div>
-
-
-          <div class="form-group">
-
-            <label for="wowRealm">
-              🌍 Realm / сервер
-            </label>
-
-            <input
-              type="text"
-              id="wowRealm"
-              name="wow_realm"
-              placeholder="Ваш сервер"
-            >
-
-          </div>
-
-
-          <div class="form-group">
-
-            <label for="wowFaction">
-              ⚔️ Фракція
-            </label>
-
-            <select
-              id="wowFaction"
-              name="wow_faction"
-            >
-
-              <option value="">
-                Оберіть фракцію
-              </option>
-
-              <option value="Alliance">
-                Alliance
-              </option>
-
-              <option value="Horde">
-                Horde
-              </option>
-
-            </select>
-
-          </div>
-
-
-          <div class="form-group">
-
-            <label for="wowClass">
-              🛡️ Клас персонажа
-            </label>
-
-            <input
-              type="text"
-              id="wowClass"
-              name="wow_class"
-              placeholder="Наприклад: Warrior, Mage, Paladin"
-            >
-
-          </div>
-
-
-        </div>
-
+        </form>
 
       </div>
 
-
-      <!-- =====================================
-           03 — ABOUT
-           ===================================== -->
-
-      <div class="form-section">
-
-
-        <div class="form-section-title">
-
-          <span>
-            03
-          </span>
-
-          <h2>
-            Про вас
-          </h2>
-
-        </div>
-
-
-        <div class="form-group">
-
-          <label for="about">
-
-            Розкажіть трохи про себе
-
-            <span class="optional">
-              (необов'язково)
-            </span>
-
-          </label>
-
-
-          <textarea
-            id="about"
-            name="about"
-            placeholder="Розкажіть про свій досвід у вибраному напрямку..."
-          ></textarea>
-
-        </div>
-
-
-      </div>
-
-
-      <!-- =====================================
-           04 — SUBMIT
-           ===================================== -->
-
-      <div class="form-footer">
-
-
-        <button
-          type="submit"
-          class="submit-btn"
-          id="submitApplication"
-        >
-          НАДІСЛАТИ ЗАЯВКУ
-        </button>
-
-
-        <div
-          id="formMessage"
-        ></div>
-
-
-        <div class="form-note">
-
-          Ви подаєте заявку
-          до конкретного напрямку UA LEGION.
-
-        </div>
-
-
-        <a
-          href="profile.html"
-          class="back-link"
-        >
-          ← Повернутися до кабінету
-        </a>
-
-
-      </div>
-
-
-    </form>
+    </div>
 
   </main>
 
@@ -1721,17 +1368,25 @@
        JAVASCRIPT
        ========================================= -->
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+  ></script>
 
-  <script src="supabase.js"></script>
+  <script
+    src="supabase.js"
+  ></script>
 
-  <script src="script.js"></script>
+  <script
+    src="auth-menu.js"
+  ></script>
 
-  <script src="auth-menu.js"></script>
+  <script
+    src="profile.js?v=8"
+  ></script>
 
-  <script src="wot-profile.js?v=2"></script>
-
-  <script src="join.js"></script>
+  <script
+    src="script.js"
+  ></script>
 
 </body>
 
