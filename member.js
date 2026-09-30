@@ -122,7 +122,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             message
         );
 
-
         if (memberError) {
 
             memberError.textContent =
@@ -155,7 +154,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (!element) {
             return;
         }
-
 
         element.innerHTML = `
             <div class="management-locked">
@@ -243,34 +241,56 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
 
-        // ----------------------------------
+        // ==================================
         // NAME
-        // ----------------------------------
+        // ==================================
+
+        const displayName =
+            String(
+                data.display_name || ""
+            ).trim();
+
+        const gameNickname =
+            String(
+                data.game_nickname || ""
+            ).trim();
+
+        const isEmail =
+            /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
+                displayName
+            );
+
+        const memberDisplayName =
+            displayName &&
+            !isEmail
+                ? displayName
+                : gameNickname ||
+                  "Учасник UA LEGION";
+
 
         if (memberName) {
 
             memberName.textContent =
-                data.display_name ||
-                "Без імені";
+                memberDisplayName;
         }
 
 
-        // ----------------------------------
+        // ==================================
         // NICKNAME
-        // ----------------------------------
+        // ==================================
 
         if (memberNickname) {
 
             memberNickname.textContent =
-                data.game_nickname ||
+                gameNickname ||
                 data.discord_username ||
                 "";
         }
 
 
-        // ----------------------------------
+        // ==================================
         // AVATAR
-        // ----------------------------------
+        // ==================================
 
         if (memberAvatar) {
 
@@ -288,7 +308,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                 memberAvatar.src =
                     "https://ui-avatars.com/api/?name=" +
                     encodeURIComponent(
-                        data.display_name ||
+                        memberDisplayName ||
+                        gameNickname ||
                         "User"
                     ) +
                     "&background=171a20&color=ffffff";
@@ -347,7 +368,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                 error
             );
 
-
             memberGlobalRoles.innerHTML = `
                 <span class="empty-role">
                     Не вдалося завантажити глобальні посади
@@ -364,7 +384,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                     const role =
                         row.roles;
-
 
                     if (
                         !role ||
@@ -535,15 +554,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
 
-        // RPC returns:
-        //
-        // {
-        //     success: true,
-        //     direction_id: 1,
-        //     roles: [...]
-        // }
-        //
-
         return Array.isArray(data.roles)
             ? data.roles
             : [];
@@ -597,7 +607,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                 error
             );
 
-
             alert(
                 "Помилка додавання до напрямку:\n" +
                 error.message
@@ -607,7 +616,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (button) {
                 button.disabled = false;
             }
-
 
             return;
         }
@@ -624,7 +632,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (button) {
                 button.disabled = false;
             }
-
 
             return;
         }
@@ -683,7 +690,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                 error
             );
 
-
             alert(
                 "Помилка виключення:\n" +
                 error.message
@@ -693,7 +699,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (button) {
                 button.disabled = false;
             }
-
 
             return;
         }
@@ -710,7 +715,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (button) {
                 button.disabled = false;
             }
-
 
             return;
         }
@@ -746,15 +750,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
 
-        // ==================================
-        // IMPORTANT:
-        // assign_direction_role signature:
-        //
-        // p_user_id uuid
-        // p_direction_id bigint
-        // p_role_id bigint
-        // ==================================
-
         const {
             data,
             error
@@ -780,7 +775,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                 error
             );
 
-
             alert(
                 "Помилка призначення посади:\n" +
                 error.message
@@ -790,7 +784,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (button) {
                 button.disabled = false;
             }
-
 
             return;
         }
@@ -807,7 +800,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (button) {
                 button.disabled = false;
             }
-
 
             return;
         }
@@ -869,7 +861,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                 error
             );
 
-
             alert(
                 "Помилка зняття посади:\n" +
                 error.message
@@ -879,7 +870,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (button) {
                 button.disabled = false;
             }
-
 
             return;
         }
@@ -896,7 +886,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (button) {
                 button.disabled = false;
             }
-
 
             return;
         }
@@ -945,10 +934,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
 
-        // ==================================
-        // CURRENT ROLE IDS
-        // ==================================
-
         const roleIds =
             (membership.roles || [])
                 .map(
@@ -964,38 +949,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                         )
                 );
 
-
-        // ==================================
-        // DEBUG
-        // ==================================
-
-        console.log(
-            "SAVE ETS2 MEMBER MANAGEMENT:",
-            {
-                p_target_user_id:
-                    targetUserId,
-
-                p_role_ids:
-                    roleIds,
-
-                p_driver_class:
-                    driverClass
-            }
-        );
-
-
-        // ==================================
-        // IMPORTANT:
-        //
-        // REAL FUNCTION SIGNATURE:
-        //
-        // save_ets2_member_management(
-        //     p_target_user_id uuid,
-        //     p_role_ids bigint[],
-        //     p_driver_class text
-        // )
-        //
-        // ==================================
 
         const {
             data,
@@ -1022,7 +975,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                 error
             );
 
-
             alert(
                 "Помилка збереження класу:\n" +
                 error.message
@@ -1032,7 +984,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (button) {
                 button.disabled = false;
             }
-
 
             return;
         }
@@ -1050,15 +1001,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                 button.disabled = false;
             }
 
-
             return;
         }
-
-
-        console.log(
-            "ETS2 MEMBER MANAGEMENT SAVED:",
-            data
-        );
 
 
         await loadPage();
@@ -1095,6 +1039,178 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         return names[driverClass] ||
             "";
+    }
+
+
+    // ======================================
+    // RENDER DIRECTION DATA
+    // ======================================
+
+    function renderDirectionData(
+        direction,
+        membership
+    ) {
+
+        const data =
+            membership?.direction_data || {};
+
+        const code =
+            String(
+                direction?.code ||
+                direction?.slug ||
+                ""
+            ).toLowerCase();
+
+        const fields = [];
+
+
+        function addField(
+            label,
+            value
+        ) {
+
+            if (
+                value !== null &&
+                value !== undefined &&
+                String(value).trim() !== ""
+            ) {
+
+                fields.push(`
+                    <div class="direction-data-row">
+
+                        <span class="direction-data-label">
+                            ${escapeHtml(label)}
+                        </span>
+
+                        <span class="direction-data-value">
+                            ${escapeHtml(value)}
+                        </span>
+
+                    </div>
+                `);
+            }
+        }
+
+
+        // ==================================
+        // ETS2
+        // ==================================
+
+        if (code === "ets2") {
+
+            addField(
+                "TruckersMP",
+                data.truckersmp_nick
+            );
+
+            addField(
+                "TruckersMP ID",
+                data.truckersmp_id
+            );
+
+            addField(
+                "TruckersHub",
+                data.truckershub_username
+            );
+
+            addField(
+                "TruckersHub ID",
+                data.truckershub_id
+            );
+        }
+
+
+        // ==================================
+        // WORLD OF TANKS
+        // ==================================
+
+        else if (code === "wot") {
+
+            addField(
+                "Нікнейм",
+                data.wot_nickname
+            );
+
+            addField(
+                "Wargaming ID",
+                data.wargaming_id
+            );
+
+            addField(
+                "Регіон",
+                data.wot_region
+            );
+        }
+
+
+        // ==================================
+        // DOTA 2
+        // ==================================
+
+        else if (code === "dota2") {
+
+            addField(
+                "Нікнейм",
+                data.dota_nickname
+            );
+
+            addField(
+                "Friend ID",
+                data.dota_friend_id
+            );
+
+            addField(
+                "Ранг",
+                data.dota_rank
+            );
+        }
+
+
+        // ==================================
+        // WORLD OF WARCRAFT
+        // ==================================
+
+        else if (code === "wow") {
+
+            addField(
+                "BattleTag",
+                data.battletag
+            );
+
+            addField(
+                "Персонаж",
+                data.wow_character
+            );
+
+            addField(
+                "Реалм",
+                data.wow_realm
+            );
+
+            addField(
+                "Фракція",
+                data.wow_faction
+            );
+
+            addField(
+                "Клас",
+                data.wow_class
+            );
+        }
+
+
+        if (!fields.length) {
+            return "";
+        }
+
+
+        return `
+            <div class="direction-data">
+
+                ${fields.join("")}
+
+            </div>
+        `;
     }
 
 
@@ -1346,6 +1462,20 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                 `;
             }
+        }
+
+
+        // ==================================
+        // DIRECTION DATA
+        // ==================================
+
+        if (isActive) {
+
+            html +=
+                renderDirectionData(
+                    direction,
+                    membership
+                );
         }
 
 
@@ -1954,9 +2084,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             clearError();
 
 
-            // ----------------------------------
+            // ==================================
             // LOADING
-            // ----------------------------------
+            // ==================================
 
             if (memberName) {
 
@@ -1981,23 +2111,23 @@ document.addEventListener("DOMContentLoaded", async () => {
             );
 
 
-            // ----------------------------------
+            // ==================================
             // PROFILE
-            // ----------------------------------
+            // ==================================
 
             await loadProfile();
 
 
-            // ----------------------------------
+            // ==================================
             // GLOBAL ROLES
-            // ----------------------------------
+            // ==================================
 
             await loadGlobalRoles();
 
 
-            // ----------------------------------
+            // ==================================
             // DIRECTIONS + MANAGEMENT
-            // ----------------------------------
+            // ==================================
 
             const [
                 directions,
@@ -2011,9 +2141,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             ]);
 
 
-            // ----------------------------------
+            // ==================================
             // RENDER
-            // ----------------------------------
+            // ==================================
 
             await renderDirections(
                 directions,
@@ -2021,9 +2151,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             );
 
 
-            // ----------------------------------
+            // ==================================
             // OLD ETS2 BLOCK
-            // ----------------------------------
+            // ==================================
 
             hideLegacyETS2Block();
 
