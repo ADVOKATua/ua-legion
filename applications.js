@@ -3,12 +3,30 @@
 // APPLICATIONS SYSTEM
 // applications.js
 //
-// Нова архітектура:
+// Архітектура:
+//
 // - applications — джерело заявок
 // - approve_application — схвалення через RPC
 // - reject_application — відхилення через RPC
 // - user_directions — змінюється тільки через RPC
 // - ролі НЕ призначаються через заявку
+//
+// Доступ:
+//
+// GLOBAL
+//   → applications.view глобально
+//   → бачить усі заявки
+//
+// DIRECTION
+//   → applications.view для конкретного напрямку
+//   → бачить тільки заявки дозволених напрямків
+//
+// USER
+//   → бачить тільки власні заявки
+//
+// Важливо:
+// approve/reject додатково захищені RPC
+// approve_application / reject_application.
 // ==========================================
 
 
@@ -136,7 +154,52 @@ document.addEventListener(
 
     let allDirections = [];
 
-    let isStaff = false;
+
+    // ======================================
+    // ACCESS MODE
+    //
+    // user
+    // direction
+    // global
+    // ======================================
+
+    let accessMode =
+      "user";
+
+
+    // ======================================
+    // GLOBAL PERMISSIONS
+    // ======================================
+
+    let globalPermissions = {
+
+      view: false,
+
+      review: false,
+
+      approve: false,
+
+      reject: false
+
+    };
+
+
+    // ======================================
+    // DIRECTION PERMISSIONS
+    //
+    // Map:
+    //
+    // direction_id => {
+    //   view,
+    //   review,
+    //   approve,
+    //   reject,
+    //   direction
+    // }
+    // ======================================
+
+    const directionPermissions =
+      new Map();
 
 
     // ======================================
@@ -293,39 +356,6 @@ document.addEventListener(
           application?.status
         ) === "pending"
       );
-
-    }
-
-
-    // ======================================
-    // STAFF ACCESS
-    // ======================================
-
-    async function checkStaffAccess() {
-
-      const {
-        data,
-        error
-      } =
-        await supabase
-          .rpc(
-            "is_ua_legion_staff"
-          );
-
-
-      if (error) {
-
-        console.error(
-          "UA LEGION: помилка перевірки адміністрації:",
-          error
-        );
-
-        return false;
-
-      }
-
-
-      return data === true;
 
     }
 
@@ -536,12 +566,57 @@ document.addEventListener(
 
       return (
         allDirections.find(
-          direction =>
-            normalizeDirection(
-              direction.slug ||
-              direction.code ||
+          direction => {
+
+            const directionValues = [
+
+              direction.slug,
+
+              direction.code,
+
               direction.name
-            ) === slug
+
+            ];
+
+
+            return directionValues.some(
+              value =>
+                normalizeDirection(
+                  value
+                ) === slug
+            );
+
+          }
+        )
+        || null
+      );
+
+    }
+
+
+    // ======================================
+    // GET DIRECTION BY ID
+    // ======================================
+
+    function getDirectionById(
+      directionId
+    ) {
+
+      if (
+        directionId === null ||
+        directionId === undefined
+      ) {
+
+        return null;
+
+      }
+
+
+      return (
+        allDirections.find(
+          direction =>
+            Number(direction.id) ===
+            Number(directionId)
         )
         || null
       );
@@ -839,6 +914,525 @@ document.addEventListener(
 
 
     // ======================================
+    // CHECK PERMISSION
+    // ======================================
+
+    async function checkPermission(
+      permissionCode,
+      directionId = null,
+      globalOnly = false
+    ) {
+
+      const functionName =
+        globalOnly
+          ? "has_global_permission"
+          : "has_permission";
+
+
+      const args =
+        globalOnly
+          ? {
+              p_permission_code:
+                permissionCode
+            }
+          : {
+              p_permission_code:
+                permissionCode,
+
+              p_direction_id:
+                directionId
+            };
+
+
+      const {
+        data,
+        error
+      } =
+        await supabase.rpc(
+          functionName,
+          args
+        );
+
+
+      if (error) {
+
+        console.error(
+          `UA LEGION: помилка permission ${permissionCode}:`,
+          error
+        );
+
+        return false;
+
+      }
+
+
+      return data === true;
+
+    }
+
+
+    // ======================================
+    // CHECK APPLICATION ACCESS
+    // ======================================
+
+    async function checkApplicationAccess() {
+
+      // ------------------------------------
+      // GLOBAL VIEW
+      // ------------------------------------
+
+      const globalView =
+        await checkPermission(
+          "applications.view",
+          null,
+          true
+        );
+
+
+      // ------------------------------------
+      // GLOBAL ACCESS
+      // ------------------------------------
+
+      if (globalView) {
+
+        const [
+          globalReview,
+          globalApprove,
+          globalReject
+        ] =
+          await Promise.all([
+
+            checkPermission(
+              "applications.review",
+              null,
+              true
+            ),
+
+            checkPermission(
+              "applications.approve",
+              null,
+              true
+            ),
+
+            checkPermission(
+              "applications.reject",
+              null,
+              true
+            )
+
+          ]);
+
+
+        globalPermissions = {
+
+          view:
+            true,
+
+          review:
+            globalReview,
+
+          approve:
+            globalApprove,
+
+          reject:
+            globalReject
+
+        };
+
+
+        accessMode =
+          "global";
+
+
+        console.log(
+          "UA LEGION: глобальний доступ до заявок."
+        );
+
+
+        return;
+
+      }
+
+
+      // ------------------------------------
+      // DIRECTION ACCESS
+      // ------------------------------------
+
+      directionPermissions.clear();
+
+
+      const activeDirections =
+        allDirections.filter(
+          direction =>
+            direction.is_active !== false
+        );
+
+
+      for (
+        const direction
+        of activeDirections
+      ) {
+
+        const directionId =
+          Number(
+            direction.id
+          );
+
+
+        const view =
+          await checkPermission(
+            "applications.view",
+            directionId
+          );
+
+
+        if (!view) {
+
+          continue;
+
+        }
+
+
+        const [
+          review,
+          approve,
+          reject
+        ] =
+          await Promise.all([
+
+            checkPermission(
+              "applications.review",
+              directionId
+            ),
+
+            checkPermission(
+              "applications.approve",
+              directionId
+            ),
+
+            checkPermission(
+              "applications.reject",
+              directionId
+            )
+
+          ]);
+
+
+        directionPermissions.set(
+          directionId,
+          {
+
+            view,
+
+            review,
+
+            approve,
+
+            reject,
+
+            direction
+
+          }
+        );
+
+      }
+
+
+      // ------------------------------------
+      // DIRECTION MODE
+      // ------------------------------------
+
+      if (
+        directionPermissions.size > 0
+      ) {
+
+        accessMode =
+          "direction";
+
+
+        console.log(
+          "UA LEGION: напрямковий доступ до заявок.",
+          Array.from(
+            directionPermissions.values()
+          )
+        );
+
+
+        return;
+
+      }
+
+
+      // ------------------------------------
+      // NORMAL USER
+      // ------------------------------------
+
+      accessMode =
+        "user";
+
+
+      console.log(
+        "UA LEGION: звичайний режим заявок."
+      );
+
+    }
+
+
+    // ======================================
+    // GET APPLICATION ACCESS
+    // ======================================
+
+    function getApplicationAccess(
+      application
+    ) {
+
+      // ------------------------------------
+      // GLOBAL
+      // ------------------------------------
+
+      if (
+        accessMode === "global"
+      ) {
+
+        return {
+
+          view:
+            globalPermissions.view,
+
+          review:
+            globalPermissions.review,
+
+          approve:
+            globalPermissions.approve,
+
+          reject:
+            globalPermissions.reject
+
+        };
+
+      }
+
+
+      // ------------------------------------
+      // USER
+      // ------------------------------------
+
+      if (
+        accessMode === "user"
+      ) {
+
+        return {
+
+          view:
+            String(
+              application?.user_id
+            ) ===
+            String(
+              user.id
+            ),
+
+          review:
+            false,
+
+          approve:
+            false,
+
+          reject:
+            false
+
+        };
+
+      }
+
+
+      // ------------------------------------
+      // DIRECTION
+      // ------------------------------------
+
+      const direction =
+        getDirectionRecord(
+          application
+        );
+
+
+      if (!direction) {
+
+        return {
+
+          view: false,
+
+          review: false,
+
+          approve: false,
+
+          reject: false
+
+        };
+
+      }
+
+
+      const permissions =
+        directionPermissions.get(
+          Number(direction.id)
+        );
+
+
+      if (!permissions) {
+
+        return {
+
+          view: false,
+
+          review: false,
+
+          approve: false,
+
+          reject: false
+
+        };
+
+      }
+
+
+      return {
+
+        view:
+          permissions.view,
+
+        review:
+          permissions.review,
+
+        approve:
+          permissions.approve,
+
+        reject:
+          permissions.reject
+
+      };
+
+    }
+
+
+    // ======================================
+    // CAN MANAGE APPLICATION
+    // ======================================
+
+    function canManageApplication(
+      application
+    ) {
+
+      const access =
+        getApplicationAccess(
+          application
+        );
+
+
+      return (
+        access.review ||
+        access.approve ||
+        access.reject
+      );
+
+    }
+
+
+    // ======================================
+    // GET APPLICATION QUERY VALUES
+    //
+    // Для direction mode враховуємо
+    // slug + code + name.
+    // ======================================
+
+    function getAllowedApplicationDirections() {
+
+      const values = [];
+
+
+      directionPermissions.forEach(
+        permission => {
+
+          const direction =
+            permission.direction;
+
+
+          if (
+            direction.slug
+          ) {
+
+            values.push(
+              direction.slug
+            );
+
+          }
+
+
+          if (
+            direction.code
+          ) {
+
+            values.push(
+              direction.code
+            );
+
+          }
+
+
+          if (
+            direction.name
+          ) {
+
+            values.push(
+              direction.name
+            );
+
+          }
+
+        }
+      );
+
+
+      return [
+        ...new Set(
+          values.filter(Boolean)
+        )
+      ];
+
+    }
+
+
+    // ======================================
+    // APPLICATION BELONGS TO ALLOWED
+    // DIRECTION
+    // ======================================
+
+    function applicationBelongsToAllowedDirection(
+      application
+    ) {
+
+      const directionRecord =
+        getDirectionRecord(
+          application
+        );
+
+
+      if (!directionRecord) {
+
+        return false;
+
+      }
+
+
+      return directionPermissions.has(
+        Number(
+          directionRecord.id
+        )
+      );
+
+    }
+
+
+    // ======================================
     // LOAD APPLICATIONS
     // ======================================
 
@@ -873,11 +1467,12 @@ document.addEventListener(
 
 
       // ====================================
-      // USER:
-      // ONLY OWN APPLICATIONS
+      // NORMAL USER
       // ====================================
 
-      if (!isStaff) {
+      if (
+        accessMode === "user"
+      ) {
 
         query =
           query.eq(
@@ -886,6 +1481,47 @@ document.addEventListener(
           );
 
       }
+
+
+      // ====================================
+      // DIRECTION STAFF
+      // ====================================
+
+      if (
+        accessMode === "direction"
+      ) {
+
+        const allowedDirections =
+          getAllowedApplicationDirections();
+
+
+        if (
+          allowedDirections.length === 0
+        ) {
+
+          allApplications = [];
+
+          renderApplications();
+
+          return;
+
+        }
+
+
+        query =
+          query.in(
+            "direction",
+            allowedDirections
+          );
+
+      }
+
+
+      // ====================================
+      // GLOBAL
+      //
+      // Без direction filter.
+      // ====================================
 
 
       const {
@@ -932,8 +1568,34 @@ document.addEventListener(
         data || [];
 
 
+      // ====================================
+      // ADDITIONAL CLIENT FILTER
+      //
+      // Не покладаємося лише на значення
+      // direction у applications.
+      // ====================================
+
       if (
-        !isStaff &&
+        accessMode === "direction"
+      ) {
+
+        allApplications =
+          allApplications.filter(
+            application =>
+              applicationBelongsToAllowedDirection(
+                application
+              )
+          );
+
+      }
+
+
+      // ====================================
+      // USER WITHOUT APPLICATIONS
+      // ====================================
+
+      if (
+        accessMode === "user" &&
         allApplications.length === 0
       ) {
 
@@ -966,7 +1628,13 @@ document.addEventListener(
       }
 
 
-      if (isStaff) {
+      // ====================================
+      // STATISTICS
+      // ====================================
+
+      if (
+        accessMode !== "user"
+      ) {
 
         updateStatistics();
 
@@ -1061,7 +1729,9 @@ document.addEventListener(
 
     function getFilteredApplications() {
 
-      if (!isStaff) {
+      if (
+        accessMode === "user"
+      ) {
 
         return allApplications;
 
@@ -1753,6 +2423,25 @@ document.addEventListener(
       applications.forEach(
         application => {
 
+          // --------------------------------
+          // ACCESS FOR THIS APPLICATION
+          // --------------------------------
+
+          const applicationAccess =
+            getApplicationAccess(
+              application
+            );
+
+
+          if (
+            !applicationAccess.view
+          ) {
+
+            return;
+
+          }
+
+
           const status =
             getStatusLabel(
               application.status
@@ -1899,9 +2588,16 @@ document.addEventListener(
           // ==================================
 
           if (
-            isStaff &&
-            pending
+            accessMode !== "user" &&
+            pending &&
+            canManageApplication(
+              application
+            )
           ) {
+
+            // --------------------------------
+            // REVIEW COMMENT
+            // --------------------------------
 
             html += `
 
@@ -1927,12 +2623,16 @@ document.addEventListener(
             `;
 
 
-            // =================================
+            // --------------------------------
             // ETS2 CLASS
-            // =================================
+            //
+            // Потрібен тільки тому,
+            // хто має approve.
+            // --------------------------------
 
             if (
-              direction === "ets2"
+              direction === "ets2" &&
+              applicationAccess.approve
             ) {
 
               html += `
@@ -1964,13 +2664,19 @@ document.addEventListener(
             }
 
 
-            // =================================
-            // ACTIONS
-            // =================================
+            // --------------------------------
+            // ACTION BUTTONS
+            // --------------------------------
 
-            html += `
+            let actionButtons =
+              "";
 
-              <div class="application-actions">
+
+            if (
+              applicationAccess.approve
+            ) {
+
+              actionButtons += `
 
                 <button
                   type="button"
@@ -1987,6 +2693,16 @@ document.addEventListener(
 
                 </button>
 
+              `;
+
+            }
+
+
+            if (
+              applicationAccess.reject
+            ) {
+
+              actionButtons += `
 
                 <button
                   type="button"
@@ -2003,9 +2719,26 @@ document.addEventListener(
 
                 </button>
 
-              </div>
+              `;
 
-            `;
+            }
+
+
+            if (
+              actionButtons
+            ) {
+
+              html += `
+
+                <div class="application-actions">
+
+                  ${actionButtons}
+
+                </div>
+
+              `;
+
+            }
 
           }
 
@@ -2015,7 +2748,7 @@ document.addEventListener(
           // ==================================
 
           if (
-            !isStaff &&
+            accessMode === "user" &&
             pending
           ) {
 
@@ -2049,7 +2782,13 @@ document.addEventListener(
       );
 
 
-      if (isStaff) {
+      // ====================================
+      // EVENTS
+      // ====================================
+
+      if (
+        accessMode !== "user"
+      ) {
 
         attachApplicationEvents();
 
@@ -2221,6 +2960,30 @@ document.addEventListener(
       }
 
 
+      // ------------------------------------
+      // CHECK ACCESS
+      // ------------------------------------
+
+      const applicationAccess =
+        getApplicationAccess(
+          application
+        );
+
+
+      if (
+        !applicationAccess.approve
+      ) {
+
+        showMessage(
+          "У вас немає права схвалювати цю заявку.",
+          "error"
+        );
+
+        return;
+
+      }
+
+
       if (
         !isPendingApplication(
           application
@@ -2247,6 +3010,10 @@ document.addEventListener(
         null;
 
 
+      // ------------------------------------
+      // ETS2 DRIVER CLASS
+      // ------------------------------------
+
       if (
         direction === "ets2"
       ) {
@@ -2270,6 +3037,10 @@ document.addEventListener(
 
       }
 
+
+      // ------------------------------------
+      // REVIEW COMMENT
+      // ------------------------------------
 
       const reviewComment =
         getReviewComment(
@@ -2416,6 +3187,30 @@ document.addEventListener(
       }
 
 
+      // ------------------------------------
+      // CHECK ACCESS
+      // ------------------------------------
+
+      const applicationAccess =
+        getApplicationAccess(
+          application
+        );
+
+
+      if (
+        !applicationAccess.reject
+      ) {
+
+        showMessage(
+          "У вас немає права відхиляти цю заявку.",
+          "error"
+        );
+
+        return;
+
+      }
+
+
       if (
         !isPendingApplication(
           application
@@ -2431,6 +3226,10 @@ document.addEventListener(
 
       }
 
+
+      // ------------------------------------
+      // REVIEW COMMENT
+      // ------------------------------------
 
       const reviewComment =
         getReviewComment(
@@ -2601,7 +3400,9 @@ document.addEventListener(
 
       () => {
 
-        if (isStaff) {
+        if (
+          accessMode !== "user"
+        ) {
 
           renderApplications();
 
@@ -2616,7 +3417,9 @@ document.addEventListener(
 
       () => {
 
-        if (isStaff) {
+        if (
+          accessMode !== "user"
+        ) {
 
           renderApplications();
 
@@ -2630,15 +3433,27 @@ document.addEventListener(
     // START
     // ======================================
 
-    isStaff =
-      await checkStaffAccess();
+    // --------------------------------------
+    // 1. Завантажуємо напрямки
+    // --------------------------------------
+
+    await loadDirections();
+
+
+    // --------------------------------------
+    // 2. Визначаємо RBAC доступ
+    // --------------------------------------
+
+    await checkApplicationAccess();
 
 
     // ======================================
-    // STAFF MODE
+    // GLOBAL MODE
     // ======================================
 
-    if (isStaff) {
+    if (
+      accessMode === "global"
+    ) {
 
       if (applicationsKicker) {
 
@@ -2683,6 +3498,56 @@ document.addEventListener(
 
 
     // ======================================
+    // DIRECTION MODE
+    // ======================================
+
+    else if (
+      accessMode === "direction"
+    ) {
+
+      if (applicationsKicker) {
+
+        applicationsKicker.textContent =
+          "UA LEGION DIRECTION";
+
+      }
+
+
+      if (applicationsTitle) {
+
+        applicationsTitle.textContent =
+          "📋 Заявки напрямків";
+
+      }
+
+
+      if (applicationsSubtitle) {
+
+        applicationsSubtitle.textContent =
+          "Заявки напрямків, для яких у вас є відповідні права.";
+
+      }
+
+
+      if (adminApplicationsPanel) {
+
+        adminApplicationsPanel.style.display =
+          "block";
+
+      }
+
+
+      if (userApplicationsInfo) {
+
+        userApplicationsInfo.style.display =
+          "none";
+
+      }
+
+    }
+
+
+    // ======================================
     // USER MODE
     // ======================================
 
@@ -2704,13 +3569,6 @@ document.addEventListener(
       }
 
     }
-
-
-    // ======================================
-    // LOAD DIRECTIONS
-    // ======================================
-
-    await loadDirections();
 
 
     // ======================================
