@@ -1857,7 +1857,11 @@ document.addEventListener(
           "wow"
         ) {
 
-          applicationData.battle_tag =
+          // ВАЖЛИВО:
+          // У таблиці applications колонка називається
+          // battletag, а не battle_tag.
+
+          applicationData.battletag =
             getValue(
               "battleTag"
             );
