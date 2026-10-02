@@ -14,13 +14,10 @@ document.addEventListener(
     const supabase =
       window.supabaseClient;
 
-
     if (!supabase) {
-
       console.error(
         "PROFILE: Supabase не підключений"
       );
-
       return;
     }
 
@@ -37,15 +34,12 @@ document.addEventListener(
     } =
       await supabase.auth.getUser();
 
-
     if (
       userError ||
       !user
     ) {
-
       window.location.href =
         "login.html";
-
       return;
     }
 
@@ -59,84 +53,70 @@ document.addEventListener(
         "profileForm"
       );
 
-
     const displayName =
       document.getElementById(
         "displayName"
       );
-
 
     const birthDate =
       document.getElementById(
         "birthDate"
       );
 
-
     const avatarUrl =
       document.getElementById(
         "avatarUrl"
       );
-
 
     const discordUsername =
       document.getElementById(
         "discordUsername"
       );
 
-
     const discordUserId =
       document.getElementById(
         "discordUserId"
       );
-
 
     const steamId =
       document.getElementById(
         "steamId"
       );
 
-
     const gameNickname =
       document.getElementById(
         "gameNickname"
       );
-
 
     const profileAvatar =
       document.getElementById(
         "profileAvatar"
       );
 
-
     const profileNamePreview =
       document.getElementById(
         "profileNamePreview"
       );
-
 
     const messageBox =
       document.getElementById(
         "profileMessage"
       );
 
-
     const logoutButton =
       document.getElementById(
         "logoutButton"
       );
-
 
     const rolesList =
       document.getElementById(
         "rolesList"
       );
 
-
     const globalRolesSection =
       document.getElementById(
         "globalRolesSection"
       );
-
 
     const directionsStatus =
       document.getElementById(
@@ -151,20 +131,30 @@ document.addEventListener(
     let currentAvatarUrl =
       null;
 
-
     let previewObjectUrl =
       null;
-
 
     let currentManagement =
       null;
 
-
     let allDirections =
       [];
 
-
     let allApplications =
+      [];
+
+    /*
+      ВАЖЛИВО:
+
+      user_directions — основне джерело
+      фактичного активного членства.
+
+      get_user_direction_management()
+      використовується для ролей,
+      посад та адміністративної інформації.
+    */
+
+    let activeMemberships =
       [];
 
 
@@ -181,10 +171,8 @@ document.addEventListener(
         return;
       }
 
-
       messageBox.textContent =
         message;
-
 
       messageBox.className =
         "profile-message " +
@@ -305,7 +293,6 @@ document.addEventListener(
           direction
         );
 
-
       switch (key) {
 
         case "ets2":
@@ -315,13 +302,11 @@ document.addEventListener(
 
           return "🚛";
 
-
         case "wot":
         case "world_of_tanks":
         case "world of tanks":
 
           return "🪖";
-
 
         case "dota":
         case "dota2":
@@ -329,13 +314,11 @@ document.addEventListener(
 
           return "🎮";
 
-
         case "wow":
         case "world_of_warcraft":
         case "world of warcraft":
 
           return "🐉";
-
 
         default:
 
@@ -362,7 +345,6 @@ document.addEventListener(
           direction
         );
 
-
       switch (key) {
 
         case "ets2":
@@ -372,13 +354,11 @@ document.addEventListener(
 
           return "ETS2 / TruckersMP";
 
-
         case "wot":
         case "world_of_tanks":
         case "world of tanks":
 
           return "World of Tanks";
-
 
         case "dota":
         case "dota2":
@@ -386,13 +366,11 @@ document.addEventListener(
 
           return "Dota 2";
 
-
         case "wow":
         case "world_of_warcraft":
         case "world of warcraft":
 
           return "World of Warcraft";
-
 
         default:
 
@@ -453,14 +431,12 @@ document.addEventListener(
 
       };
 
-
       const key =
         String(
           driverClass ?? ""
         )
           .trim()
           .toUpperCase();
-
 
       return (
         names[key] ||
@@ -487,22 +463,15 @@ document.addEventListener(
       ) {
 
         case "pending":
-
           return "🟡 На розгляді";
 
-
         case "approved":
-
           return "🟢 Схвалено";
 
-
         case "rejected":
-
           return "🔴 Відхилено";
 
-
         default:
-
           return (
             status ||
             "Невідомий статус"
@@ -521,8 +490,6 @@ document.addEventListener(
       application
     ) {
 
-      // direction
-
       if (
         application?.direction !==
           null &&
@@ -539,9 +506,6 @@ document.addEventListener(
 
       }
 
-
-      // directions array
-
       if (
         Array.isArray(
           application?.directions
@@ -554,9 +518,6 @@ document.addEventListener(
         );
 
       }
-
-
-      // directions string
 
       if (
         typeof application?.directions ===
@@ -574,9 +535,6 @@ document.addEventListener(
 
       }
 
-
-      // direction_id
-
       if (
         application?.direction_id
       ) {
@@ -592,7 +550,6 @@ document.addEventListener(
               )
           );
 
-
         if (direction) {
 
           return getDirectionKey(
@@ -602,7 +559,6 @@ document.addEventListener(
         }
 
       }
-
 
       return "";
 
@@ -622,11 +578,9 @@ document.addEventListener(
           const file =
             avatarUrl.files?.[0];
 
-
           if (!file) {
             return;
           }
-
 
           if (
             !file.type.startsWith(
@@ -646,7 +600,6 @@ document.addEventListener(
 
           }
 
-
           if (
             file.size >
             10 * 1024 * 1024
@@ -664,7 +617,6 @@ document.addEventListener(
 
           }
 
-
           if (
             previewObjectUrl
           ) {
@@ -675,12 +627,10 @@ document.addEventListener(
 
           }
 
-
           previewObjectUrl =
             URL.createObjectURL(
               file
             );
-
 
           if (profileAvatar) {
 
@@ -714,7 +664,6 @@ document.addEventListener(
           )
           .maybeSingle();
 
-
       if (error) {
 
         console.error(
@@ -731,7 +680,6 @@ document.addEventListener(
 
       }
 
-
       if (!profile) {
         return;
       }
@@ -746,7 +694,6 @@ document.addEventListener(
           "";
 
       }
-
 
       if (profileNamePreview) {
 
@@ -774,7 +721,6 @@ document.addEventListener(
         profile.avatar_url ||
         null;
 
-
       if (
         currentAvatarUrl &&
         profileAvatar
@@ -795,7 +741,6 @@ document.addEventListener(
           "";
 
       }
-
 
       if (discordUserId) {
 
@@ -845,7 +790,6 @@ document.addEventListener(
           await supabase.auth
             .getUserIdentities();
 
-
         if (error) {
 
           console.warn(
@@ -857,11 +801,9 @@ document.addEventListener(
 
         }
 
-
         const identities =
           data?.identities ||
           [];
-
 
         const discordIdentity =
           identities.find(
@@ -872,7 +814,6 @@ document.addEventListener(
               "discord"
           );
 
-
         if (
           !discordIdentity
         ) {
@@ -881,18 +822,15 @@ document.addEventListener(
 
         }
 
-
         const identityData =
           discordIdentity.identity_data ||
           {};
-
 
         const discordId =
           identityData.provider_id ||
           identityData.user_id ||
           discordIdentity.id ||
           null;
-
 
         const discordName =
           identityData.full_name ||
@@ -901,9 +839,7 @@ document.addEventListener(
           identityData.username ||
           null;
 
-
         const updateData = {};
-
 
         if (discordId) {
 
@@ -914,7 +850,6 @@ document.addEventListener(
 
         }
 
-
         if (discordName) {
 
           updateData.discord_username =
@@ -923,7 +858,6 @@ document.addEventListener(
             );
 
         }
-
 
         if (
           !Object.keys(
@@ -934,7 +868,6 @@ document.addEventListener(
           return;
 
         }
-
 
         const {
           error: updateError
@@ -949,7 +882,6 @@ document.addEventListener(
               user.id
             );
 
-
         if (updateError) {
 
           console.warn(
@@ -961,7 +893,6 @@ document.addEventListener(
 
         }
 
-
         if (
           discordUsername &&
           updateData.discord_username
@@ -972,7 +903,6 @@ document.addEventListener(
 
         }
 
-
         if (
           discordUserId &&
           updateData.discord_user_id
@@ -982,7 +912,6 @@ document.addEventListener(
             updateData.discord_user_id;
 
         }
-
 
       } catch (error) {
 
@@ -1016,16 +945,12 @@ document.addEventListener(
             }
           );
 
-
       if (error) {
 
         console.error(
           "PROFILE: directions:",
           error
         );
-
-
-        // FALLBACK
 
         allDirections = [
 
@@ -1071,13 +996,57 @@ document.addEventListener(
 
         ];
 
+        return;
+
+      }
+
+      allDirections =
+        Array.isArray(data)
+          ? data
+          : [];
+
+    }
+
+
+    // ======================================
+    // LOAD ACTIVE MEMBERSHIPS
+    // ======================================
+
+    async function loadActiveMemberships() {
+
+      const {
+        data,
+        error
+      } =
+        await supabase
+          .from("user_directions")
+          .select(
+            "id,user_id,direction_id,status,driver_class,direction_data"
+          )
+          .eq(
+            "user_id",
+            user.id
+          )
+          .eq(
+            "status",
+            "active"
+          );
+
+      if (error) {
+
+        console.error(
+          "PROFILE: active memberships:",
+          error
+        );
+
+        activeMemberships =
+          [];
 
         return;
 
       }
 
-
-      allDirections =
+      activeMemberships =
         Array.isArray(data)
           ? data
           : [];
@@ -1103,7 +1072,6 @@ document.addEventListener(
           }
         );
 
-
       if (error) {
 
         console.error(
@@ -1111,17 +1079,14 @@ document.addEventListener(
           error
         );
 
+        /*
+          Не очищаємо activeMemberships.
 
-        if (directionsStatus) {
-
-          directionsStatus.innerHTML = `
-            <div class="roles-empty">
-              Не вдалося завантажити статуси напрямків.
-            </div>
-          `;
-
-        }
-
+          Звичайний учасник може не мати
+          permission на перегляд management RPC,
+          але він все одно повинен бачити
+          власне активне членство.
+        */
 
         if (globalRolesSection) {
 
@@ -1130,11 +1095,9 @@ document.addEventListener(
 
         }
 
-
         return;
 
       }
-
 
       if (
         !data ||
@@ -1150,10 +1113,8 @@ document.addEventListener(
 
       }
 
-
       currentManagement =
         data;
-
 
       window.currentUserRoles =
         data;
@@ -1186,7 +1147,6 @@ document.addEventListener(
             }
           );
 
-
       if (error) {
 
         console.error(
@@ -1194,15 +1154,12 @@ document.addEventListener(
           error
         );
 
-
         allApplications =
           [];
-
 
         return;
 
       }
-
 
       allApplications =
         Array.isArray(data)
@@ -1220,8 +1177,77 @@ document.addEventListener(
       direction
     ) {
 
+      const targetKey =
+        getDirectionKey(
+          direction
+        );
+
+
+      // ==================================
+      // DIRECT MEMBERSHIP
+      // user_directions
+      // ==================================
+
+      const membershipActive =
+        activeMemberships.find(
+          item => {
+
+            return (
+              String(
+                item?.direction_id
+              ) ===
+                String(
+                  direction?.id
+                ) &&
+
+              normalize(
+                item?.status
+              ) ===
+                "active"
+            );
+
+          }
+        ) || null;
+
+
+      // ==================================
+      // MANAGEMENT DATA
+      // ==================================
+
+      const managementDirections =
+        Array.isArray(
+          currentManagement?.directions
+        )
+          ? currentManagement.directions
+          : [];
+
+      const managementActive =
+        managementDirections.find(
+          item => {
+
+            return (
+              normalize(
+                item?.status
+              ) ===
+                "active" &&
+
+              getDirectionKey(
+                item
+              ) ===
+                targetKey
+            );
+
+          }
+        ) || null;
+
+
+      // ==================================
+      // NO ACTIVE MEMBERSHIP
+      // ==================================
+
       if (
-        !currentManagement
+        !membershipActive &&
+        !managementActive
       ) {
 
         return null;
@@ -1229,40 +1255,24 @@ document.addEventListener(
       }
 
 
-      const managementDirections =
-        Array.isArray(
-          currentManagement.directions
-        )
-          ? currentManagement.directions
-          : [];
+      // ==================================
+      // MERGE
+      // ======================================
 
+      return {
 
-      const targetKey =
-        getDirectionKey(
-          direction
-        );
+        ...(membershipActive || {}),
+        ...(managementActive || {}),
 
+        direction_id:
+          membershipActive?.direction_id ||
+          managementActive?.direction_id ||
+          direction?.id,
 
-      return (
-        managementDirections.find(
-          item => {
+        status:
+          "active"
 
-            return (
-              normalize(
-                item.status
-              ) ===
-              "active" &&
-
-              getDirectionKey(
-                item
-              ) ===
-              targetKey
-            );
-
-          }
-        ) ||
-        null
-      );
+      };
 
     }
 
@@ -1280,7 +1290,6 @@ document.addEventListener(
           direction
         );
 
-
       const applications =
         allApplications.filter(
           application =>
@@ -1289,7 +1298,6 @@ document.addEventListener(
             ) ===
             targetKey
         );
-
 
       return (
         applications[0] ||
@@ -1312,14 +1320,15 @@ document.addEventListener(
           direction
         );
 
-
       const latestApplication =
         getLatestApplication(
           direction
         );
 
 
+      // ==================================
       // ACTIVE MEMBER
+      // ==================================
 
       if (active) {
 
@@ -1338,7 +1347,9 @@ document.addEventListener(
       }
 
 
+      // ==================================
       // NO APPLICATION
+      // ==================================
 
       if (
         !latestApplication
@@ -1366,7 +1377,9 @@ document.addEventListener(
         );
 
 
+      // ==================================
       // PENDING
+      // ==================================
 
       if (
         status ===
@@ -1389,7 +1402,9 @@ document.addEventListener(
       }
 
 
+      // ==================================
       // REJECTED
+      // ==================================
 
       if (
         status ===
@@ -1412,7 +1427,9 @@ document.addEventListener(
       }
 
 
+      // ==================================
       // APPROVED WITHOUT ACTIVE MEMBERSHIP
+      // ==================================
 
       if (
         status ===
@@ -1461,18 +1478,12 @@ document.addEventListener(
         return;
       }
 
-
       const globalRoles =
         Array.isArray(
           currentManagement?.global_roles
         )
           ? currentManagement.global_roles
           : [];
-
-
-      // ==================================
-      // НЕТ ГЛОБАЛЬНОЙ РОЛИ
-      // ==================================
 
       if (
         !globalRoles.length
@@ -1489,11 +1500,6 @@ document.addEventListener(
 
       }
 
-
-      // ==================================
-      // ЕСТЬ ГЛОБАЛЬНАЯ РОЛЬ
-      // ==================================
-
       if (globalRolesSection) {
 
         globalRolesSection.style.display =
@@ -1501,10 +1507,8 @@ document.addEventListener(
 
       }
 
-
       rolesList.innerHTML =
         "";
-
 
       globalRoles.forEach(
         role => {
@@ -1514,16 +1518,13 @@ document.addEventListener(
               "div"
             );
 
-
           card.className =
             "global-role-card";
-
 
           const icon =
             getGlobalRoleIcon(
               role.code
             );
-
 
           card.innerHTML = `
 
@@ -1540,7 +1541,6 @@ document.addEventListener(
             </p>
 
           `;
-
 
           rolesList.appendChild(
             card
@@ -1562,10 +1562,8 @@ document.addEventListener(
         return;
       }
 
-
       directionsStatus.innerHTML =
         "";
-
 
       if (
         !allDirections.length
@@ -1581,7 +1579,6 @@ document.addEventListener(
 
       }
 
-
       allDirections.forEach(
         direction => {
 
@@ -1590,12 +1587,10 @@ document.addEventListener(
               direction
             );
 
-
           const key =
             getDirectionKey(
               direction
             );
-
 
           const icon =
             direction.icon ||
@@ -1603,18 +1598,15 @@ document.addEventListener(
               direction
             );
 
-
           const name =
             getDirectionName(
               direction
             );
 
-
           const card =
             document.createElement(
               "div"
             );
-
 
           card.className =
             "direction-status-card " +
@@ -1742,7 +1734,6 @@ document.addEventListener(
               state.active ||
               {};
 
-
             const roles =
               Array.isArray(
                 active.roles
@@ -1768,7 +1759,6 @@ document.addEventListener(
                   .join(
                     ", "
                   );
-
 
               html += `
                 <p
@@ -1913,7 +1903,6 @@ document.addEventListener(
               </p>
             `;
 
-
             if (
               state.application?.created_at
             ) {
@@ -1968,13 +1957,11 @@ document.addEventListener(
               </p>
             `;
 
-
             const reason =
               state.application?.review_comment ||
               state.application?.rejection_reason ||
               state.application?.review_reason ||
               null;
-
 
             if (reason) {
 
@@ -1992,7 +1979,6 @@ document.addEventListener(
               `;
 
             }
-
 
             html += `
               <a
@@ -2058,10 +2044,8 @@ document.addEventListener(
             </div>
           `;
 
-
           card.innerHTML =
             html;
-
 
           directionsStatus.appendChild(
             card
@@ -2085,15 +2069,12 @@ document.addEventListener(
 
           event.preventDefault();
 
-
           showMessage(
             "Збереження профілю..."
           );
 
-
           let uploadedAvatarUrl =
             null;
-
 
           const avatarFile =
             avatarUrl?.files?.[0];
@@ -2120,7 +2101,6 @@ document.addEventListener(
 
             }
 
-
             if (
               avatarFile.size >
               10 * 1024 * 1024
@@ -2135,14 +2115,12 @@ document.addEventListener(
 
             }
 
-
             const extension =
               avatarFile.name
                 .split(".")
                 .pop()
                 ?.toLowerCase() ||
               "png";
-
 
             const safeExtension =
               /^[a-z0-9]+$/.test(
@@ -2151,10 +2129,8 @@ document.addEventListener(
                 ? extension
                 : "png";
 
-
             const filePath =
               `${user.id}/avatar-${Date.now()}.${safeExtension}`;
-
 
             const {
               error:
@@ -2178,7 +2154,6 @@ document.addEventListener(
                   }
                 );
 
-
             if (
               uploadError
             ) {
@@ -2188,7 +2163,6 @@ document.addEventListener(
                 uploadError
               );
 
-
               showMessage(
                 uploadError.message,
                 "error"
@@ -2197,7 +2171,6 @@ document.addEventListener(
               return;
 
             }
-
 
             const {
               data:
@@ -2210,11 +2183,9 @@ document.addEventListener(
                   filePath
                 );
 
-
             uploadedAvatarUrl =
               publicUrlData?.publicUrl ||
               null;
-
 
             if (
               !uploadedAvatarUrl
@@ -2228,7 +2199,6 @@ document.addEventListener(
               return;
 
             }
-
 
             if (profileAvatar) {
 
@@ -2308,7 +2278,6 @@ document.addEventListener(
                 }
               );
 
-
           if (
             saveError
           ) {
@@ -2317,7 +2286,6 @@ document.addEventListener(
               "PROFILE: save:",
               saveError
             );
-
 
             showMessage(
               saveError.message,
@@ -2328,10 +2296,8 @@ document.addEventListener(
 
           }
 
-
           currentAvatarUrl =
             profileData.avatar_url;
-
 
           if (
             previewObjectUrl
@@ -2346,14 +2312,12 @@ document.addEventListener(
 
           }
 
-
           if (avatarUrl) {
 
             avatarUrl.value =
               "";
 
           }
-
 
           if (
             profileNamePreview
@@ -2364,7 +2328,6 @@ document.addEventListener(
               "Учасник UA LEGION";
 
           }
-
 
           showMessage(
             "Профіль успішно збережено!",
@@ -2394,7 +2357,6 @@ document.addEventListener(
               .auth
               .signOut();
 
-
           if (error) {
 
             showMessage(
@@ -2405,7 +2367,6 @@ document.addEventListener(
             return;
 
           }
-
 
           window.location.href =
             "index.html";
@@ -2437,22 +2398,27 @@ document.addEventListener(
       await loadDirections();
 
 
-      // 4. RBAC
+      // 4. ACTIVE MEMBERSHIPS
+
+      await loadActiveMemberships();
+
+
+      // 5. RBAC
 
       await loadManagement();
 
 
-      // 5. APPLICATIONS
+      // 6. APPLICATIONS
 
       await loadApplications();
 
 
-      // 6. GLOBAL ROLES
+      // 7. GLOBAL ROLES
 
       renderGlobalRoles();
 
 
-      // 7. DIRECTIONS
+      // 8. DIRECTIONS
 
       renderDirections();
 
@@ -2465,6 +2431,9 @@ document.addEventListener(
 
           applications:
             allApplications,
+
+          activeMemberships:
+            activeMemberships,
 
           management:
             currentManagement
@@ -2479,7 +2448,6 @@ document.addEventListener(
         error
       );
 
-
       if (
         directionsStatus
       ) {
@@ -2492,7 +2460,6 @@ document.addEventListener(
 
       }
 
-
       if (
         globalRolesSection
       ) {
@@ -2501,7 +2468,6 @@ document.addEventListener(
           "none";
 
       }
-
 
       showMessage(
         "Помилка завантаження профілю.",
