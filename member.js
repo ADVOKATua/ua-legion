@@ -1678,14 +1678,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         } = await supabase.rpc(
             "assign_direction_role",
             {
-                p_target_user_id:
+                p_user_id:
                     targetUserId,
 
                 p_direction_id:
-                    directionId,
+                    Number(directionId),
 
                 p_role_id:
-                    roleId
+                    Number(roleId)
             }
         );
 
