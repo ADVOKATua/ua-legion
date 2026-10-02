@@ -20,6 +20,167 @@
     .member-role-management-wrapper{margin-top:14px}.member-role-management{padding-top:14px;border-top:1px solid rgba(255,255,255,.07)}.member-current-roles{flex-direction:column;gap:7px}.member-current-role{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 11px;border-radius:9px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.07);font-size:13px}.member-assign-role{display:flex;gap:9px;margin-top:10px}.member-assign-role .direction-role-select{flex:1}
     .management-locked{padding:15px;border-radius:10px;background:rgba(255,255,255,.035);opacity:.7}.member-message{margin-top:15px;min-height:20px}.member-message.error{color:#ff8d8d}.back-link{display:inline-flex;margin-top:10px;padding:11px 17px;border-radius:10px;background:rgba(255,255,255,.06);color:#fff;text-decoration:none}.back-link:hover{background:rgba(255,255,255,.1)}
     @media(max-width:600px){.member-page{padding:30px 12px}.member-card,.directions-card{padding:18px;border-radius:15px}.member-main{align-items:flex-start;flex-direction:column}.member-avatar{width:85px;height:85px}.member-direction-header{align-items:flex-start;flex-direction:column}.member-game-row{grid-template-columns:1fr;gap:3px}.member-management-row,.member-assign-role{flex-direction:column;align-items:stretch}.member-management-row label{min-width:0}.member-management-box button,.member-assign-role button,.member-assign-role select,.ets2-driver-class-select{width:100%;box-sizing:border-box}}
+
+
+    /* =====================================================
+       INLINE DROPDOWNS — UA LEGION
+       Меню відкривається всередині потоку документа,
+       тому не перекриває сусідні блоки.
+       ===================================================== */
+
+    .member-management-row-stack {
+      align-items: stretch;
+      flex-wrap: wrap;
+    }
+
+    .member-management-field {
+      flex: 1 1 320px;
+      min-width: 0;
+    }
+
+    .member-management-field > label {
+      display: block;
+      margin-bottom: 7px;
+      font-size: 12px;
+      font-weight: 700;
+      color: rgba(255,255,255,.58);
+    }
+
+    .member-inline-dropdown {
+      width: 100%;
+      position: relative;
+      box-sizing: border-box;
+    }
+
+    .member-inline-dropdown > summary {
+      list-style: none;
+    }
+
+    .member-inline-dropdown > summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .member-inline-dropdown-trigger {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      width: 100%;
+      min-height: 42px;
+      padding: 10px 12px;
+      box-sizing: border-box;
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 9px;
+      background: #11151d;
+      color: #fff;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 700;
+      transition: border-color .15s ease, background .15s ease;
+    }
+
+    .member-inline-dropdown-trigger:hover,
+    .member-inline-dropdown[open] > .member-inline-dropdown-trigger {
+      border-color: rgba(255,211,77,.45);
+      background: #151a23;
+    }
+
+    .member-inline-dropdown-arrow {
+      flex-shrink: 0;
+      opacity: .65;
+      transition: transform .15s ease;
+    }
+
+    .member-inline-dropdown[open] .member-inline-dropdown-arrow {
+      transform: rotate(180deg);
+    }
+
+    .member-inline-dropdown-menu {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      margin-top: 7px;
+      padding: 7px;
+      max-height: 240px;
+      overflow-y: auto;
+      box-sizing: border-box;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 10px;
+      background: #0f131a;
+      box-shadow: 0 10px 28px rgba(0,0,0,.28);
+    }
+
+    .member-inline-option {
+      width: 100%;
+      padding: 10px 11px;
+      border: 1px solid transparent;
+      border-radius: 7px;
+      background: transparent;
+      color: rgba(255,255,255,.88);
+      text-align: left;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .member-inline-option:hover,
+    .member-inline-option:focus-visible {
+      background: rgba(255,211,77,.10);
+      border-color: rgba(255,211,77,.18);
+      outline: none;
+    }
+
+    .member-inline-option.is-selected {
+      background: rgba(255,211,77,.13);
+      color: #ffd34d;
+    }
+
+    .member-action-primary,
+    .member-action-danger {
+      flex-shrink: 0;
+    }
+
+    .member-management-row-actions {
+      justify-content: flex-start;
+    }
+
+    .member-role-management {
+      margin-top: 2px;
+    }
+
+    .member-role-dropdown {
+      flex: 1 1 320px;
+      min-width: 0;
+    }
+
+    .member-current-role-name {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+
+    @media (max-width: 600px) {
+      .member-management-row-stack {
+        flex-direction: column;
+      }
+
+      .member-management-row-stack .member-action-primary,
+      .member-management-row-actions .member-action-danger {
+        width: 100%;
+      }
+
+      .member-assign-role {
+        align-items: stretch;
+      }
+
+      .member-role-dropdown {
+        width: 100%;
+      }
+
+      .member-assign-role .member-action-primary {
+        width: 100%;
+      }
+    }
+
   </style>
 </head>
 <body>
