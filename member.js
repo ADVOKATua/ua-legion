@@ -1755,7 +1755,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         } = await supabase.rpc(
             "remove_direction_role",
             {
-                p_target_user_id:
+                p_user_id:
                     targetUserId,
 
                 p_direction_id:
