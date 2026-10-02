@@ -498,7 +498,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
         return data;
-        return data;
     }
 
 
@@ -1424,7 +1423,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                     await saveETS2DriverClass(
                         directionId,
-                        value
+                        value,
+                        managementDirection?.roles || []
                     );
                 }
             );
@@ -1549,7 +1549,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     async function saveETS2DriverClass(
         directionId,
-        driverClass
+        driverClass,
+        currentRoles = []
     ) {
 
         const button =
@@ -1579,8 +1580,26 @@ document.addEventListener("DOMContentLoaded", async () => {
                     p_target_user_id:
                         targetUserId,
 
-                    p_direction_id:
-                        directionId,
+                    p_role_ids:
+                        (Array.isArray(currentRoles)
+                            ? currentRoles
+                            : []
+                        )
+                            .map(role =>
+                                role?.role_id ??
+                                role?.id
+                            )
+                            .filter(id =>
+                                id !== null &&
+                                id !== undefined &&
+                                id !== ""
+                            )
+                            .map(id =>
+                                Number(id)
+                            )
+                            .filter(id =>
+                                Number.isFinite(id)
+                            ),
 
                     p_driver_class:
                         driverClass || null
