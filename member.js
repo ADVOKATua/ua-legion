@@ -689,7 +689,14 @@ document.addEventListener("DOMContentLoaded", async () => {
                     </div>
 
                     <div class="member-direction-status">
-                        Учасник
+                        ${
+                            String(
+                                managementDirection?.status ||
+                                ""
+                            ).toLowerCase() === "active"
+                                ? "Учасник"
+                                : "Не активний"
+                        }
                     </div>
 
                 </div>
@@ -2339,69 +2346,20 @@ document.addEventListener("DOMContentLoaded", async () => {
             const allDirections =
                 await loadActiveDirections();
 
-            const activeMemberships =
-                Array.isArray(
-                    management?.directions
-                )
-                    ? management.directions
-                    : Array.isArray(
-                        memberData?.directions
-                    )
-                        ? memberData.directions
-                        : [];
-
-            // Only ACTIVE memberships of the target user may be rendered.
-            // Some management RPC responses can still contain a historical
-            // membership row after remove_user_from_direction() changes its
-            // status to "left". Do not treat that row as active.
-            const isActiveMembership = item => {
-
-                const status = String(
-                    item?.status ??
-                    item?.membership_status ??
-                    ""
-                ).trim().toLowerCase();
-
-                if (status) {
-                    return status === "active";
-                }
-
-                if (
-                    typeof item?.is_active === "boolean"
-                ) {
-                    return item.is_active;
-                }
-
-                // If the RPC omits status entirely, preserve the previous
-                // behaviour and trust that its directions list is active.
-                return true;
-            };
-
-            const activeDirectionIds =
-                new Set(
-                    activeMemberships
-                        .filter(isActiveMembership)
-                        .map(item =>
-                            item?.direction_id ??
-                            item?.id
-                        )
-                        .filter(id =>
-                            id !== null &&
-                            id !== undefined &&
-                            id !== ""
-                        )
-                        .map(id => String(id))
-                );
-
+            // IMPORTANT:
+            // The member page is also an administrative management page.
+            // Do NOT filter directions by the target user's active membership
+            // here. A user with status "left" must remain visible to an
+            // administrator so the administrator can assign a role and the
+            // assign_direction_role() RPC can reactivate the membership.
+            //
+            // get_active_directions() returns the currently configured game
+            // directions, while management.directions contains the target
+            // user's status/roles/data for each direction.
             const directions =
-                allDirections.filter(direction =>
-                    activeDirectionIds.has(
-                        String(
-                            direction?.id ??
-                            direction?.direction_id
-                        )
-                    )
-                );
+                Array.isArray(allDirections)
+                    ? allDirections
+                    : [];
 
 
             // ==================================
