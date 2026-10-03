@@ -689,7 +689,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     </div>
 
                     <div class="member-direction-status">
-                        ACTIVE
+                        Учасник
                     </div>
 
                 </div>
