@@ -2285,14 +2285,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
             // ==================================
-            // DIRECTIONS
-            // ==================================
-
-            const directions =
-                await loadActiveDirections();
-
-
-            // ==================================
             // MANAGEMENT
             // ==================================
             // Якщо management RPC недоступний
@@ -2334,6 +2326,82 @@ document.addEventListener("DOMContentLoaded", async () => {
                 };
 
             }
+
+
+            // ==================================
+            // DIRECTIONS OF THIS USER ONLY
+            // ==================================
+            // get_active_directions() returns the global list
+            // of active directions, not the target user's
+            // memberships. Filter that list by the active
+            // memberships returned by management/fallback.
+
+            const allDirections =
+                await loadActiveDirections();
+
+            const activeMemberships =
+                Array.isArray(
+                    management?.directions
+                )
+                    ? management.directions
+                    : Array.isArray(
+                        memberData?.directions
+                    )
+                        ? memberData.directions
+                        : [];
+
+            // Only ACTIVE memberships of the target user may be rendered.
+            // Some management RPC responses can still contain a historical
+            // membership row after remove_user_from_direction() changes its
+            // status to "left". Do not treat that row as active.
+            const isActiveMembership = item => {
+
+                const status = String(
+                    item?.status ??
+                    item?.membership_status ??
+                    ""
+                ).trim().toLowerCase();
+
+                if (status) {
+                    return status === "active";
+                }
+
+                if (
+                    typeof item?.is_active === "boolean"
+                ) {
+                    return item.is_active;
+                }
+
+                // If the RPC omits status entirely, preserve the previous
+                // behaviour and trust that its directions list is active.
+                return true;
+            };
+
+            const activeDirectionIds =
+                new Set(
+                    activeMemberships
+                        .filter(isActiveMembership)
+                        .map(item =>
+                            item?.direction_id ??
+                            item?.id
+                        )
+                        .filter(id =>
+                            id !== null &&
+                            id !== undefined &&
+                            id !== ""
+                        )
+                        .map(id => String(id))
+                );
+
+            const directions =
+                allDirections.filter(direction =>
+                    activeDirectionIds.has(
+                        String(
+                            direction?.id ??
+                            direction?.direction_id
+                        )
+                    )
+                );
 
 
             // ==================================
