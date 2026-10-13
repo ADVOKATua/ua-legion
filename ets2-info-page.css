@@ -48,3 +48,123 @@
 .legion-bottom-cta{padding:clamp(28px,3.5vw,44px)}
 .legion-eyebrow{letter-spacing:1.7px}
 @media(max-width:800px){.legion-section{padding:32px 18px}.legion-section-head{margin-bottom:18px}.legion-story-card{padding:20px}.legion-value{padding:18px}.legion-join-panel{padding:20px}}
+
+
+/* Full-page cinematic background + top-aligned ETS2 layout */
+.ets2-info-page {
+  position: relative;
+  min-height: 100vh;
+  background: #05070b;
+}
+.legion-page-background {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background: #05070b url('assets/ets2/ua-legion-ets2-poster.jpg') center center / cover no-repeat;
+}
+.legion-page-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 52%;
+  filter: saturate(1.05);
+}
+.legion-page-shade {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(3,6,11,.78) 0%, rgba(3,6,11,.54) 45%, rgba(3,6,11,.36) 100%),
+    linear-gradient(180deg, rgba(3,6,11,.42) 0%, rgba(3,6,11,.20) 40%, rgba(3,6,11,.70) 100%);
+}
+.ets2-info-page .noise {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+.ets2-info-page > .topbar {
+  position: relative;
+  z-index: 5;
+  background: rgba(5,7,11,.60);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+.ets2-info-page > .ets-info-main,
+.ets2-info-page > footer {
+  position: relative;
+  z-index: 2;
+}
+.legion-content-wrap {
+  padding-top: 0;
+  align-items: stretch;
+}
+.legion-content-wrap .ets-sidebar {
+  margin-top: 0;
+  top: 0;
+  align-self: start;
+  background: rgba(5,7,11,.58);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,.10);
+}
+.legion-content {
+  background: rgba(7,10,16,.48);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+}
+.legion-hero {
+  min-height: clamp(620px, calc(100svh - 72px), 900px);
+  background: transparent;
+  border-bottom: 1px solid rgba(242,178,28,.28);
+  overflow: hidden;
+}
+.legion-hero-inner {
+  padding-top: clamp(70px, 9vh, 115px);
+  padding-bottom: clamp(80px, 10vh, 125px);
+}
+.legion-hero-shade,
+.legion-hero-video {
+  display: none !important;
+}
+.legion-section {
+  background: rgba(5,8,13,.26);
+  scroll-margin-top: 24px;
+}
+.legion-story-card,
+.legion-stat,
+.legion-value,
+.legion-activity,
+.legion-facts > div {
+  background-color: rgba(8,12,19,.82);
+}
+.legion-bottom-cta {
+  background: linear-gradient(180deg, rgba(8,12,18,.78), rgba(8,12,18,.92));
+}
+.ets2-info-page > footer {
+  background: rgba(5,7,11,.78);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+@media (max-width: 800px) {
+  .legion-content-wrap .ets-sidebar {
+    margin: 0;
+    top: 0;
+  }
+  .legion-hero {
+    min-height: clamp(610px, calc(92svh - 60px), 800px);
+  }
+  .legion-hero-inner {
+    padding: 90px 26px 100px;
+  }
+  .legion-content {
+    background: rgba(7,10,16,.38);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .legion-page-video { display: none; }
+  .legion-page-background { background-image: url('assets/ets2/ua-legion-ets2-poster.jpg'); }
+}
