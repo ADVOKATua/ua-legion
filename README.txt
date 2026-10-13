@@ -1,29 +1,16 @@
-UA LEGION ETS2 — розділення сторінок
-=====================================
+UA LEGION ETS2 — повна сторінка інформації
 
 Файли:
-- ets2.html — головна ETS2
-- ets2-info.html — інформація
-- ets2-rules.html — правила
-- ets2-news.html — новини
-- ets2-leadership.html — склад керівництва
-- ets2-hierarchy.html — ієрархія та обов'язки
-- ets2-join.html — вступ
-- ets2-roles.html — отримання ролей
-- ets2-partners.html — партнери
-- ets2-blacklist.html — чорний список
-- ets2-fleet.html — автопарк
-- ets2-events.html — конвої та події
-- ets2-deliveries.html — завершені доставки (підготовлено під API, ще не підключено)
-- ets2-classes.html — класи водіїв
-- ets2-drivers.html — водії
-- ets2-gallery.html — фотогалерея
+- ets2-info.html — повний HTML сторінки
+- ets2-info-page.css — додаткові стилі нового дизайну
+- assets/ets2/ua-legion-ets2-bg.mp4 — відеофон
+- assets/ets2/ua-legion-ets2-poster.jpg — постер на час завантаження відео
 
-ВАЖЛИВО:
-1. Розпакуйте файли у корінь репозиторію поруч із style.css, ets2.css, script.js,
-   supabase.js, auth-menu.js та ua-legion-logo.png.
-2. Архів містить HTML-сторінки, а не ваші CSS/JS/зображення — вони мають залишитися з репозиторію.
-3. Збережено посилання на спільні CSS/JS та Supabase. Перевірте форми/авторизацію після розміщення.
-4. Для завершених доставок API-токен TruckersHub не вставляти у браузерний JavaScript.
-   Наступний етап — Supabase Edge Function або інший серверний проксі + синхронізація Discord.
-5. Цей перший поділ переносить основні наявні секції. Окремі картки новин/партнерів/вступу наразі використовують наявний контент із ets2.html.
+ІНСТАЛЯЦІЯ В ADVOKATua/ua-legion:
+1. Замініть файл ets2-info.html в корені репозиторію на цей.
+2. Додайте ets2-info-page.css в корінь репозиторію.
+3. Додайте папку assets/ets2/ з MP4 і постером у корінь репозиторію.
+4. Не видаляйте наявні style.css, ets2.css, script.js, supabase.js, auth-menu.js та ua-legion-logo.png.
+5. Зробіть commit і дочекайтеся оновлення GitHub Pages.
+
+HTML посилається на наявні у вашому сайті файли й розділи. Перевірте, що ets2-join.html, ets2-rules.html та ua-legion-logo.png є в корені репозиторію.
