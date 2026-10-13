@@ -22,3 +22,29 @@
 .legion-value-wide p{max-width:850px}
 .legion-bottom-copy{max-width:650px;margin:0 auto 25px;color:#aeb7c4;font-size:13px;line-height:1.8}
 @media(max-width:520px){.legion-value-wide{grid-column:auto}}
+
+
+/* Compact polish: cleaner layout without decorative section numbering */
+.legion-section{padding:clamp(28px,3.2vw,46px) clamp(20px,3vw,40px)}
+.legion-section-head{margin-bottom:20px}
+.legion-section-head h2{font-size:clamp(31px,3.6vw,48px);margin:10px 0}
+.legion-section-head>p{margin-top:10px;line-height:1.65}
+.legion-story-card{padding:clamp(20px,2.3vw,30px)}
+.legion-story-card h3{font-size:27px;margin:12px 0}
+.legion-story-card p{line-height:1.7}
+.legion-stat{min-height:100px;padding:15px}
+.legion-stat-stack{gap:8px}
+.legion-values-grid,.legion-activities-grid{gap:8px}
+.legion-value{min-height:0;padding:18px 17px}
+.legion-value h3{margin:13px 0 7px;font-size:20px}
+.legion-value p,.legion-activity p{line-height:1.6}
+.value-number{display:none!important}
+.legion-value-wide{min-height:0}
+.legion-activity{padding:18px;gap:10px}
+.legion-join-panel{padding:clamp(20px,2.5vw,30px);gap:18px}
+.legion-join-panel h2{margin:9px 0;font-size:clamp(30px,3vw,40px)}
+.join-copy>p{line-height:1.65}
+.legion-facts>div{padding:14px 17px}
+.legion-bottom-cta{padding:clamp(28px,3.5vw,44px)}
+.legion-eyebrow{letter-spacing:1.7px}
+@media(max-width:800px){.legion-section{padding:32px 18px}.legion-section-head{margin-bottom:18px}.legion-story-card{padding:20px}.legion-value{padding:18px}.legion-join-panel{padding:20px}}
