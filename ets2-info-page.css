@@ -1,7 +1,7 @@
 
 /* ==========================================
-   UA LEGION ETS2 — СТОРІНКА ІНФОРМАЦІЇ
-   Виправлення розташування та адаптивності
+   UA LEGION ETS2 — КОМПАКТНИЙ ДИЗАЙН
+   Більше видимого відеофону
    ========================================== */
 
 .ets2-info-page {
@@ -10,20 +10,14 @@
   color: #f5f7fb;
 }
 
-/* Відеофон */
+/* Відеофон — помітніший і світліший */
 .legion-page-background {
   position: fixed;
   inset: 78px 0 0;
   z-index: -1;
   overflow: hidden;
   pointer-events: none;
-  background:
-    radial-gradient(
-      ellipse at 70% 15%,
-      rgba(23, 104, 255, 0.15),
-      transparent 45%
-    ),
-    #05070b;
+  background: #05070b;
 }
 
 .legion-page-video {
@@ -32,7 +26,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: 0.25;
+  opacity: 0.72;
 }
 
 .legion-page-shade {
@@ -40,155 +34,149 @@
   inset: 0;
   background: linear-gradient(
     180deg,
-    rgba(5, 7, 11, 0.48),
-    rgba(5, 7, 11, 0.82) 65%,
-    #05070b
+    rgba(5, 7, 11, 0.12) 0%,
+    rgba(5, 7, 11, 0.30) 55%,
+    rgba(5, 7, 11, 0.62) 100%
   );
 }
 
-/* Основний контейнер сторінки */
+/* Основна структура */
 .ets-info-main {
   position: relative;
   min-height: calc(100vh - 78px);
-  padding: 105px 0 35px;
+  padding: 92px 0 20px;
 }
 
 .legion-content-wrap {
-  width: min(1600px, 94%);
+  width: min(1500px, 96%);
   margin: 0 auto;
   display: grid;
-  grid-template-columns: 245px minmax(0, 1fr);
+  grid-template-columns: 215px minmax(0, 1fr);
   align-items: start;
-  gap: 22px;
+  gap: 14px;
 }
 
-/* Ліва панель навігації */
+/* Ліва панель */
 .ets2-info-page .ets-sidebar {
   position: sticky;
-  top: 96px;
+  top: 88px;
   height: max-content;
-  max-height: calc(100vh - 112px);
+  max-height: calc(100vh - 100px);
   overflow-y: auto;
-  padding: 14px 0;
-  background: rgba(7, 11, 18, 0.96);
-  border: 1px solid rgba(255, 255, 255, 0.10);
+  padding: 8px 0;
+  background: rgba(5, 9, 16, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .ets2-info-page .side-logo {
   display: block;
-  padding: 12px 15px 20px;
+  padding: 8px 10px 12px;
   text-align: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.09);
 }
 
 .ets2-info-page .side-logo img {
   display: block;
-  width: 70px;
+  width: 52px;
   margin: 0 auto;
 }
 
 .ets2-info-page .side-logo b {
   display: block;
-  margin-top: 5px;
-  font: 700 20px Rajdhani, sans-serif;
+  margin-top: 3px;
+  font: 700 17px Rajdhani, sans-serif;
 }
 
 .ets2-info-page .side-logo small {
   color: #e8b326;
-  font-size: 8px;
-  letter-spacing: 1.5px;
+  font-size: 7px;
+  letter-spacing: 1.2px;
 }
 
 .ets2-info-page .side-group {
-  padding: 15px 12px 4px;
+  padding: 8px 9px 2px;
 }
 
 .ets2-info-page .side-group > span {
   display: block;
-  padding: 0 10px 7px;
-  color: #778293;
+  padding: 0 7px 5px;
+  color: #aeb8c8;
   font-size: 8px;
   font-weight: 800;
-  letter-spacing: 1.5px;
+  letter-spacing: 1.2px;
 }
 
 .ets2-info-page .side-group a {
   display: block;
-  padding: 9px 10px;
-  color: #aeb7c4;
-  font-size: 11px;
+  padding: 6px 7px;
+  color: #e0e6ef;
+  font-size: 10px;
   border-radius: 3px;
-  transition: background 0.2s, color 0.2s;
+  transition: background 0.2s;
 }
 
 .ets2-info-page .side-group a:hover,
 .ets2-info-page .side-group a.active {
+  background: rgba(23, 104, 255, 0.25);
   color: #fff;
-  background: rgba(23, 104, 255, 0.13);
 }
 
 .ets2-info-page .sidebar-discord {
   display: block;
-  margin: 16px 10px 4px;
-  padding: 12px 8px;
+  margin: 10px 8px 3px;
+  padding: 9px 5px;
   background: #5865f2;
   color: #fff;
   text-align: center;
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 900;
 }
 
-/* Основна колонка */
+/* Контент */
 .legion-content {
   min-width: 0;
   width: 100%;
 }
 
-/* Секції */
 .legion-section {
   min-width: 0;
-  margin: 0 0 18px;
-  padding: clamp(24px, 3vw, 42px);
-  background: linear-gradient(
-    145deg,
-    rgba(10, 15, 24, 0.94),
-    rgba(5, 8, 14, 0.94)
-  );
-  border: 1px solid rgba(255, 255, 255, 0.10);
-  box-shadow: 0 18px 55px rgba(0, 0, 0, 0.18);
+  margin: 0 0 10px;
+  padding: clamp(16px, 2vw, 25px);
+  background: rgba(5, 9, 16, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  backdrop-filter: blur(3px);
 }
 
 .legion-section-head {
-  margin: 0 0 24px;
+  margin: 0 0 14px;
 }
 
 .legion-eyebrow {
   display: inline-block;
-  color: #e8b326;
-  font-size: 10px;
+  color: #ffd45a;
+  font-size: 9px;
   font-weight: 900;
-  letter-spacing: 2px;
+  letter-spacing: 1.7px;
 }
 
 .legion-section-head h2 {
-  margin: 10px 0 12px;
-  color: #f5f7fb;
-  font: 700 clamp(32px, 3.5vw, 52px)/1 Rajdhani, sans-serif;
+  margin: 6px 0 8px;
+  color: #fff;
+  font: 700 clamp(27px, 3vw, 40px)/1 Rajdhani, sans-serif;
 }
 
 .legion-section-head h2 em {
-  color: #e8b326;
+  color: #ffd45a;
   font-style: normal;
 }
 
 .legion-section-head p {
   max-width: 850px;
-  color: #aeb7c4;
-  font-size: 13px;
-  line-height: 1.75;
+  color: #e0e6ef;
+  font-size: 12px;
+  line-height: 1.6;
 }
 
-/* Історія — одна широка картка */
+/* Історія */
 .legion-about-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
@@ -198,29 +186,29 @@
 .legion-story-card {
   width: 100%;
   min-width: 0;
-  padding: clamp(20px, 2.5vw, 32px);
-  background: rgba(7, 11, 18, 0.88);
-  border: 1px solid rgba(255, 255, 255, 0.10);
+  padding: 18px;
+  background: rgba(5, 9, 16, 0.58);
+  border: 1px solid rgba(255, 255, 255, 0.13);
 }
 
 .card-index {
-  color: #e8b326;
-  font-size: 9px;
+  color: #ffd45a;
+  font-size: 8px;
   font-weight: 800;
-  letter-spacing: 1.8px;
+  letter-spacing: 1.5px;
 }
 
 .legion-story-card h3 {
-  margin: 12px 0 16px;
+  margin: 7px 0 10px;
   color: #fff;
-  font: 700 clamp(25px, 2.6vw, 36px)/1.1 Rajdhani, sans-serif;
+  font: 700 27px/1.1 Rajdhani, sans-serif;
 }
 
 .legion-story-card p {
-  margin: 0 0 13px;
-  color: #b4bdc9;
-  font-size: 13px;
-  line-height: 1.8;
+  margin: 0 0 8px;
+  color: #e0e6ef;
+  font-size: 12px;
+  line-height: 1.65;
 }
 
 .legion-story-card p:last-child {
@@ -228,21 +216,21 @@
 }
 
 .legion-story-card strong {
-  color: #f5f7fb;
+  color: #fff;
 }
 
 /* Цінності */
 .legion-values-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
+  gap: 8px;
 }
 
 .legion-value {
   min-width: 0;
-  padding: 20px;
-  background: rgba(7, 11, 18, 0.88);
-  border: 1px solid rgba(255, 255, 255, 0.09);
+  padding: 13px;
+  background: rgba(5, 9, 16, 0.60);
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .legion-value-wide {
@@ -250,41 +238,41 @@
 }
 
 .value-icon {
-  font-size: 25px;
+  font-size: 21px;
 }
 
 .legion-value h3,
 .legion-activity h3 {
-  margin: 9px 0 6px;
-  color: #f4f6fa;
-  font: 700 21px/1.15 Rajdhani, sans-serif;
+  margin: 5px 0;
+  color: #fff;
+  font: 700 18px/1.15 Rajdhani, sans-serif;
 }
 
 .legion-value p,
 .legion-activity p {
-  color: #aeb7c4;
-  font-size: 12px;
-  line-height: 1.7;
+  color: #e0e6ef;
+  font-size: 11px;
+  line-height: 1.55;
 }
 
-/* Активності компанії */
+/* Активності */
 .legion-activities-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
+  gap: 8px;
 }
 
 .legion-activity {
   display: grid;
-  grid-template-columns: 38px minmax(0, 1fr);
-  gap: 12px;
-  padding: 20px;
-  background: rgba(7, 11, 18, 0.88);
-  border: 1px solid rgba(255, 255, 255, 0.09);
+  grid-template-columns: 30px minmax(0, 1fr);
+  gap: 8px;
+  padding: 13px;
+  background: rgba(5, 9, 16, 0.60);
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .legion-activity > span {
-  font-size: 27px;
+  font-size: 23px;
 }
 
 .legion-activity h3 {
@@ -295,36 +283,33 @@
   margin: 0;
 }
 
-/* ==========================================
-   ВСТУП — 5 КРОКІВ
-   ========================================== */
-
+/* Вступ — компактні п'ять кроків */
 .join-steps-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
+  gap: 7px;
 }
 
 .join-step {
   display: grid;
-  grid-template-columns: 34px minmax(0, 1fr);
+  grid-template-columns: 28px minmax(0, 1fr);
   align-items: start;
-  gap: 10px;
+  gap: 8px;
   min-width: 0;
-  padding: 13px;
-  background: rgba(8, 12, 19, 0.90);
-  border: 1px solid rgba(255, 255, 255, 0.10);
+  padding: 10px;
+  background: rgba(5, 9, 16, 0.66);
+  border: 1px solid rgba(255, 255, 255, 0.13);
   transition: border-color 0.2s, background 0.2s;
 }
 
 .join-step:hover {
-  border-color: rgba(232, 179, 38, 0.48);
-  background: rgba(13, 19, 29, 0.96);
+  border-color: rgba(255, 212, 90, 0.65);
+  background: rgba(5, 9, 16, 0.82);
 }
 
 .join-step-number {
-  color: #e8b326;
-  font: 700 23px/1 Rajdhani, sans-serif;
+  color: #ffd45a;
+  font: 700 20px/1 Rajdhani, sans-serif;
 }
 
 .join-step-content {
@@ -332,73 +317,65 @@
 }
 
 .join-step h3 {
-  margin: 0 0 5px;
-  color: #f4f6fa;
-  font: 700 18px/1.15 Rajdhani, sans-serif;
+  margin: 0 0 4px;
+  color: #fff;
+  font: 700 16px/1.15 Rajdhani, sans-serif;
 }
 
 .join-step p {
-  margin: 0 0 8px;
-  color: #aeb7c4;
-  font-size: 11px;
-  line-height: 1.5;
+  margin: 0 0 6px;
+  color: #e0e6ef;
+  font-size: 10px;
+  line-height: 1.45;
 }
 
 .join-step a {
   display: inline-block;
-  color: #e8b326;
-  font-size: 11px;
+  color: #ffd45a;
+  font-size: 10px;
   font-weight: 800;
   text-decoration: none;
 }
 
 .join-step a:hover {
-  color: #ffd45a;
+  color: #fff;
 }
 
 .join-step-discord {
   grid-column: 1 / -1;
-  background:
-    linear-gradient(90deg, rgba(88, 101, 242, 0.12), transparent 75%),
-    rgba(8, 12, 19, 0.92);
-  border-color: rgba(88, 101, 242, 0.35);
-}
-
-.join-step-discord:hover {
-  border-color: rgba(88, 101, 242, 0.75);
+  background: rgba(40, 48, 110, 0.42);
+  border-color: rgba(140, 150, 255, 0.45);
 }
 
 .join-step-discord .join-step-number,
 .join-step-discord a {
-  color: #aeb8ff;
+  color: #cbd0ff;
 }
 
 .join-steps-note {
-  margin: 10px 0 0;
-  color: #929dad;
+  margin: 8px 0 0;
+  color: #d0d7e3;
   font-size: 10px;
-  line-height: 1.5;
+  line-height: 1.45;
 }
 
 /* Футер */
 .ets2-info-page footer {
   position: relative;
   z-index: 1;
+  background: rgba(3, 5, 9, 0.72);
 }
 
-/* ==========================================
-   ПЛАНШЕТИ
-   ========================================== */
-
+/* Планшети */
 @media (max-width: 1000px) {
   .legion-content-wrap {
-    width: 96%;
-    grid-template-columns: 210px minmax(0, 1fr);
-    gap: 14px;
+    width: 97%;
+    grid-template-columns: 190px minmax(0, 1fr);
+    gap: 10px;
   }
 
   .legion-section {
-    padding: 24px;
+    padding: 16px;
   }
 
   .legion-values-grid,
@@ -411,24 +388,25 @@
   }
 }
 
-/* ==========================================
-   ТЕЛЕФОНИ
-   ========================================== */
-
+/* Телефони */
 @media (max-width: 760px) {
   .legion-page-background {
     top: 78px;
   }
 
+  .legion-page-video {
+    opacity: 0.58;
+  }
+
   .ets-info-main {
-    padding: 90px 0 20px;
+    padding: 88px 0 15px;
   }
 
   .legion-content-wrap {
     display: flex;
     flex-direction: column;
-    width: calc(100% - 24px);
-    gap: 12px;
+    width: calc(100% - 20px);
+    gap: 8px;
   }
 
   .ets2-info-page .ets-sidebar {
@@ -447,19 +425,19 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 12px;
-    padding: 10px 14px;
+    gap: 10px;
+    padding: 8px;
     text-align: left;
   }
 
   .ets2-info-page .side-logo img {
-    width: 42px;
+    width: 38px;
     margin: 0;
   }
 
   .ets2-info-page .side-logo b {
     margin: 0;
-    font-size: 17px;
+    font-size: 16px;
   }
 
   .ets2-info-page .side-logo small {
@@ -467,7 +445,7 @@
   }
 
   .ets2-info-page .sidebar-discord {
-    margin: 0 10px 10px;
+    margin: 0 8px 8px;
   }
 
   .legion-content {
@@ -475,20 +453,27 @@
   }
 
   .legion-section {
-    padding: 20px;
-    margin-bottom: 12px;
+    padding: 14px;
+    margin-bottom: 8px;
+    background: rgba(5, 9, 16, 0.67);
   }
 
   .legion-section-head {
-    margin-bottom: 18px;
+    margin-bottom: 12px;
   }
 
   .legion-section-head h2 {
-    font-size: clamp(30px, 8vw, 42px);
+    font-size: clamp(27px, 7vw, 36px);
+  }
+
+  .legion-story-card {
+    padding: 13px;
+    background: rgba(5, 9, 16, 0.62);
   }
 
   .legion-story-card p {
-    font-size: 12px;
+    font-size: 11px;
+    line-height: 1.6;
   }
 
   .join-steps-grid {
@@ -502,16 +487,16 @@
 
 @media (max-width: 420px) {
   .legion-section {
-    padding: 15px;
+    padding: 11px;
   }
 
   .legion-story-card,
   .legion-value,
   .legion-activity {
-    padding: 15px;
+    padding: 11px;
   }
 
   .join-step {
-    padding: 11px;
+    padding: 9px;
   }
 }
