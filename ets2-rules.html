@@ -1,122 +1,426 @@
+
 <!DOCTYPE html>
 <html lang="uk">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#05070b">
-  <title>Правила ETS2 — UA LEGION ETS2</title>
-  <meta name="description" content="Правила ETS2 транспортного підрозділу UA LEGION ETS2.">
+  <title>Правила ETS2 — UA LEGION</title>
+  <meta name="description" content="Правила транспортного підрозділу UA LEGION ETS2 та вимоги TruckersMP.">
+
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="ets2.css">
+  <link rel="stylesheet" href="ets2-info-page.css">
+
+  <style>
+    .ets2-rules-page .rules-intro,
+    .ets2-rules-page .rules-card {
+      background: rgba(5, 9, 16, .68);
+      border: 1px solid rgba(255,255,255,.14);
+      padding: 12px;
+      min-width: 0;
+    }
+
+    .ets2-rules-page .rules-intro {
+      color: #e0e6ef;
+      font-size: 11px;
+      line-height: 1.55;
+    }
+
+    .ets2-rules-page .rules-notice {
+      border-left: 3px solid #ffd45a;
+      padding: 9px 11px;
+      margin-top: 9px;
+      background: rgba(255,212,90,.08);
+      color: #f4e8bd;
+      font-size: 10px;
+      line-height: 1.5;
+    }
+
+    .ets2-rules-page .rules-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 7px;
+    }
+
+    .ets2-rules-page .rules-card h3 {
+      margin: 0 0 8px;
+      color: #fff;
+      font: 700 19px/1.15 Rajdhani, sans-serif;
+    }
+
+    .ets2-rules-page .rules-card h3 span {
+      color: #ffd45a;
+      font-size: 10px;
+      letter-spacing: 1px;
+      margin-right: 6px;
+    }
+
+    .ets2-rules-page .rules-card ul {
+      margin: 0;
+      padding-left: 17px;
+      color: #e0e6ef;
+      font-size: 10px;
+      line-height: 1.55;
+    }
+
+    .ets2-rules-page .rules-card li {
+      margin-bottom: 6px;
+    }
+
+    .ets2-rules-page .rules-card strong {
+      color: #fff;
+    }
+
+    .ets2-rules-page .sanction {
+      margin-top: 9px;
+      padding-top: 7px;
+      border-top: 1px solid rgba(255,255,255,.1);
+      color: #ffd45a;
+      font-size: 9px;
+      line-height: 1.5;
+    }
+
+    .ets2-rules-page .rules-card-wide {
+      grid-column: 1 / -1;
+    }
+
+    .ets2-rules-page .rules-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 10px;
+    }
+
+    .ets2-rules-page .rules-links a {
+      display: inline-block;
+      padding: 7px 10px;
+      border: 1px solid rgba(255,212,90,.45);
+      color: #ffd45a;
+      text-decoration: none;
+      font-size: 10px;
+      font-weight: 800;
+    }
+
+    .ets2-rules-page .rules-links a:hover {
+      background: rgba(255,212,90,.12);
+      color: #fff;
+    }
+
+    @media (max-width: 1000px) and (min-width: 761px) {
+      .ets2-rules-page .rules-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .ets2-rules-page .rules-card-wide {
+        grid-column: auto;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .ets2-rules-page .rules-grid {
+        grid-template-columns: 1fr;
+        gap: 6px;
+      }
+
+      .ets2-rules-page .rules-card-wide {
+        grid-column: auto;
+      }
+
+      .ets2-rules-page .rules-intro,
+      .ets2-rules-page .rules-card {
+        padding: 10px;
+      }
+    }
+  </style>
 </head>
-<body>
-  <div class="noise"></div>
+
+<body class="ets2-info-page ets2-rules-page">
+
+  <div class="noise" aria-hidden="true"></div>
+
+  <div class="legion-page-background" aria-hidden="true">
+    <video class="legion-page-video" autoplay muted loop playsinline preload="metadata"
+      poster="assets/ets2/ua-legion-ets2-poster.jpg">
+      <source src="assets/ets2/ua-legion-ets2-bg.mp4" type="video/mp4">
+    </video>
+    <div class="legion-page-shade"></div>
+  </div>
+
   <header class="topbar">
-      <a class="brand" href="index.html"><img src="ua-legion-logo.png" alt="UA LEGION"><span>UA LEGION</span></a>
-      <button class="menu-btn" aria-label="Відкрити меню">☰</button>
-      <nav class="nav">
-        <a href="index.html">Головна</a>
-        <a href="about.html">Про нас</a>
-        <a href="games.html">Ігри</a>
-        <a href="events.html">Події</a>
-        <a href="media.html">Медіа</a>
-        <a href="gallery.html">Галерея</a>
-        <a href="https://www.tiktok.com/@ua_legion_" target="_blank" rel="noopener">TikTok</a>
-        <a href="https://discord.gg/gfunf3yq7" target="_blank" rel="noopener" class="nav-cta">Discord</a>
-        <a href="login.html" id="authButton">Увійти / Реєстрація</a>
-      </nav>
-    </header>
-  <main>
-    
-    <div class="ets-shell">
-      <aside class="ets-sidebar">
-<a class="side-logo" href="ets2.html">
+    <a class="brand" href="index.html">
       <img src="ua-legion-logo.png" alt="UA LEGION">
-      <b>UA LEGION ETS2</b><small>TRANSPORT DIVISION</small>
+      <span>UA LEGION</span>
     </a>
-<div class="side-group"><span>ГОЛОВНА</span>
-<a href="ets2.html">🏠 Головна ETS2</a>
-</div>
-<div class="side-group"><span>ГОЛОВНИЙ РОЗДІЛ</span>
-<a href="ets2-info.html">ℹ️ Інформація</a>
-<a class="active" href="ets2-rules.html">📋 Правила ETS2</a>
-<a href="ets2-news.html">📰 Новини та оголошення</a>
-<a href="ets2-classes.html">⭐ Класи водіїв</a>
-</div>
-<div class="side-group"><span>КЕРІВНИЦТВО</span>
-<a href="ets2-leadership.html">🛡️ Склад керівництва</a>
-<a href="ets2-hierarchy.html">👑 Ієрархія та обов’язки</a>
-</div>
-<div class="side-group"><span>СПІЛЬНОТА</span>
-<a href="https://discord.gg/gfunf3yq7" target="_blank" rel="noopener">💬 Чат ETS2</a>
-<a href="ets2-join.html">📝 Заявка на вступ</a>
-<a href="ets2-roles.html">🎫 Отримання ролей</a>
-<a href="ets2-partners.html">📣 Партнери</a>
-<a href="ets2-blacklist.html">⛔ Чорний список</a>
-</div>
-<div class="side-group"><span>ETS2</span>
-<a href="ets2-fleet.html">🚚 Автопарк</a>
-<a href="ets2-events.html">🏁 Події та конвої</a>
-<a href="ets2-deliveries.html">📦 Завершені доставки</a>
-<a href="ets2-drivers.html">👨‍✈️ Водії</a>
-<a href="ets2-gallery.html">📸 Галерея</a>
-</div>
-<a href="https://discord.gg/gfunf3yq7" target="_blank" rel="noopener" class="sidebar-discord">💬 ВІДКРИТИ DISCORD</a>
-</aside>
-      <div class="ets-main">
-        <section class="content-section" id="rules">
-<div class="section-head compact">
-<span>
-              02 / ПРАВИЛА
-            </span>
-<h2>
-              Правила <em>ETS2</em>
-</h2>
-</div>
-<div class="rule-grid">
-<div class="rule">
-<b>01</b>
-<h3>Повага</h3>
-<p>Повага до водіїв, керівництва та інших учасників спільноти.</p>
-</div>
-<div class="rule">
-<b>02</b>
-<h3>Безпека</h3>
-<p>Дотримання правил дорожнього руху та домовленостей конвою.</p>
-</div>
-<div class="rule">
-<b>03</b>
-<h3>Дисципліна</h3>
-<p>Виконання організаційних вимог під час спільних поїздок.</p>
-</div>
-<div class="rule">
-<b>04</b>
-<h3>Командна гра</h3>
-<p>Головна мета — комфортна та організована поїздка всієї колони.</p>
-</div>
-</div>
-</section>
-        <section class="discord-join" id="discord">
+
+    <button class="menu-btn" aria-label="Відкрити меню" aria-expanded="false">☰</button>
+
+    <nav class="nav">
+      <a href="index.html">Головна</a>
+      <a href="about.html">Про нас</a>
+      <a href="games.html">Ігри</a>
+      <a href="events.html">Події</a>
+      <a href="media.html">Медіа</a>
+      <a href="gallery.html">Галерея</a>
+      <a href="https://www.tiktok.com/@ua_legion_" target="_blank" rel="noopener">TikTok</a>
+      <a href="https://discord.gg/gfunf3yq7" target="_blank" rel="noopener" class="nav-cta">Discord</a>
+      <a href="login.html" id="authButton">Увійти / Реєстрація</a>
+    </nav>
+  </header>
+
+  <main class="ets-info-main">
+    <div class="legion-content-wrap">
+
+      <aside class="ets-sidebar">
+        <a class="side-logo" href="ets2-info.html">
           <img src="ua-legion-logo.png" alt="UA LEGION">
-          <div><span class="eyebrow">COMMUNITY HUB</span>
-            <h2>UA LEGION <em>Discord</em></h2>
-            <p>Заявки, конвої, ролі та внутрішнє життя транспортного підрозділу.</p>
-            <small class="server-id">SERVER ID: 1378021555736412180</small>
+          <b>UA LEGION ETS2</b>
+          <small>TRANSPORT DIVISION</small>
+        </a>
+
+        <div class="side-group">
+          <span>ETS2 / КОМПАНІЯ</span>
+          <a href="ets2-info.html">ℹ️ Інформація</a>
+          <a class="active" href="ets2-rules.html">📋 Правила ETS2</a>
+          <a href="ets2-news.html">📰 Новини та оголошення</a>
+          <a href="ets2-classes.html">⭐ Класи водіїв</a>
+        </div>
+
+        <div class="side-group">
+          <span>КЕРІВНИЦТВО</span>
+          <a href="ets2-leadership.html">🛡️ Склад керівництва</a>
+          <a href="ets2-hierarchy.html">👑 Ієрархія та обов’язки</a>
+        </div>
+
+        <div class="side-group">
+          <span>СПІЛЬНОТА</span>
+          <a href="https://discord.gg/gfunf3yq7" target="_blank" rel="noopener">💬 Чат ETS2</a>
+          <a href="ets2-join.html">📝 Заявка на вступ</a>
+          <a href="ets2-roles.html">🎫 Отримання ролей</a>
+          <a href="ets2-partners.html">📣 Партнери</a>
+          <a href="ets2-blacklist.html">⛔ Чорний список</a>
+        </div>
+
+        <div class="side-group">
+          <span>НА ДОРОЗІ</span>
+          <a href="ets2-fleet.html">🚚 Автопарк</a>
+          <a href="ets2-events.html">🏁 Події та конвої</a>
+          <a href="ets2-deliveries.html">📦 Завершені доставки</a>
+          <a href="ets2-drivers.html">👨‍✈️ Водії</a>
+          <a href="ets2-gallery.html">📸 Галерея</a>
+        </div>
+      </aside>
+
+      <div class="legion-content">
+
+        <section class="legion-section">
+          <div class="legion-section-head">
+            <span class="legion-eyebrow">UA LEGION / ETS2</span>
+            <h2>Правила <em>компанії</em></h2>
+            <p>
+              Вимоги до поведінки учасників, спілкування,
+              спільних рейсів та офіційних конвоїв.
+            </p>
           </div>
-          <a href="https://discord.gg/gfunf3yq7" target="_blank" rel="noopener" class="btn btn-primary">ПЕРЕЙТИ В DISCORD</a>
-          <a href="https://www.tiktok.com/@ua_legion_" target="_blank" rel="noopener" class="btn btn-tiktok">🎵 TIKTOK UA LEGION</a>
+
+          <div class="rules-intro">
+            Кожен учасник UA LEGION зобов'язаний дотримуватися
+            внутрішніх правил компанії та чинних правил TruckersMP.
+            <div class="rules-notice">
+              Внутрішні попередження, тайм-аути й обмеження участі
+              в конвоях є заходами компанії, а не покараннями TruckersMP.
+            </div>
+          </div>
         </section>
+
+        <section class="legion-section" id="general">
+          <div class="legion-section-head">
+            <span class="legion-eyebrow">01 / ОСНОВИ</span>
+            <h2>Загальні <em>положення</em></h2>
+          </div>
+
+          <div class="rules-grid">
+            <article class="rules-card">
+              <h3><span>01.1</span> Дотримання правил</h3>
+              <ul>
+                <li>Кожен учасник зобов'язаний дотримуватися правил компанії та офіційних правил платформ, на яких грає.</li>
+                <li>Незнання правил не звільняє від відповідальності.</li>
+                <li>Керівництво може оновлювати внутрішні правила та повідомляє про суттєві зміни через офіційні канали.</li>
+              </ul>
+            </article>
+
+            <article class="rules-card">
+              <h3><span>01.2</span> Нікнейм і тег</h3>
+              <ul>
+                <li>Нікнейм має бути читабельним і не містити образ, нецензурної лексики чи провокаційного контенту.</li>
+                <li>Заборонено використовувати службові звання, яких учаснику офіційно не надано.</li>
+                <li>На прохання адміністрації потрібно виправити невідповідний нікнейм або тег.</li>
+              </ul>
+              <div class="sanction">Захід компанії: вимога виправити нікнейм або тег і попередження.</div>
+            </article>
+
+            <article class="rules-card rules-card-wide">
+              <h3><span>01.3</span> Приватність і повага</h3>
+              <ul>
+                <li>Заборонено публікувати особисті дані іншого учасника без згоди: адресу, телефон, приватні акаунти, фотографії та іншу конфіденційну інформацію.</li>
+                <li>Заборонені образи, дискримінація, цькування, погрози, провокації та систематична токсична поведінка.</li>
+                <li>Не принижуй учасників або керівництво через їхню роль чи посаду. Суперечки вирішуй через відповідальні канали.</li>
+              </ul>
+              <div class="sanction">Залежно від серйозності: попередження, обмеження спілкування або виключення з компанії. Порушення приватності може призвести до негайного виключення.</div>
+            </article>
+          </div>
+        </section>
+
+        <section class="legion-section" id="communication">
+          <div class="legion-section-head">
+            <span class="legion-eyebrow">02 / DISCORD</span>
+            <h2>Текстові та <em>голосові канали</em></h2>
+          </div>
+
+          <div class="rules-grid">
+            <article class="rules-card">
+              <h3><span>02.1</span> Голосове спілкування</h3>
+              <ul>
+                <li>Не кричи, не створюй зайвого шуму та не перебивай інших.</li>
+                <li>Не вмикай музику або сторонні звуки без згоди учасників каналу.</li>
+                <li>Під час конвою голосовий канал використовується для координації та важливих повідомлень.</li>
+              </ul>
+              <div class="sanction">Захід компанії: попередження або тайм-аут до 30 хвилин.</div>
+            </article>
+
+            <article class="rules-card">
+              <h3><span>02.2</span> Текстові канали</h3>
+              <ul>
+                <li>Заборонені флуд, повторювані повідомлення, спам і навмисне засмічення каналів.</li>
+                <li>Дотримуйся призначення каналу та вказівок модераторів.</li>
+                <li>Реклама сторонніх серверів, VTC, проєктів і каналів дозволена лише з дозволу адміністрації.</li>
+              </ul>
+              <div class="sanction">Захід компанії: попередження, тайм-аут або обмеження доступу до каналів.</div>
+            </article>
+          </div>
+        </section>
+
+        <section class="legion-section" id="driving">
+          <div class="legion-section-head">
+            <span class="legion-eyebrow">03 / EURO TRUCK SIMULATOR 2</span>
+            <h2>Правила <em>на дорозі</em></h2>
+            <p>Правила TruckersMP мають пріоритет у питаннях мультиплеєра.</p>
+          </div>
+
+          <div class="rules-grid">
+            <article class="rules-card">
+              <h3><span>03.1</span> Правила TruckersMP</h3>
+              <ul>
+                <li>Дотримуйся актуальних правил TruckersMP.</li>
+                <li>Заборонені навмисні зіткнення, блокування доріг і навмисне перешкоджання іншим гравцям.</li>
+                <li>Не мстися порушникам: для повідомлення про порушення використовуй офіційну систему скарг.</li>
+              </ul>
+              <div class="rules-links">
+                <a href="https://truckersmp.com/rules" target="_blank" rel="noopener noreferrer">Офіційні правила TruckersMP ↗</a>
+                <a href="https://truckersmp.com/knowledge-base/article/361" target="_blank" rel="noopener noreferrer">Правила VTC ↗</a>
+              </div>
+            </article>
+
+            <article class="rules-card">
+              <h3><span>03.2</span> Тег компанії</h3>
+              <ul>
+                <li>Для офіційних рейсів і конвоїв використовуй погоджений тег <strong>Trucks of Ukraine</strong>, якщо організатор не повідомив інше.</li>
+                <li>Не використовуй службові позначення на кшталт «Dep. Director» або «Log. Manager», якщо відповідну роль не надано офіційно.</li>
+              </ul>
+              <div class="sanction">Захід компанії: прохання виправити тег і попередження за повторне порушення.</div>
+            </article>
+
+            <article class="rules-card">
+              <h3><span>03.3</span> Дисципліна конвою</h3>
+              <ul>
+                <li>Будь у визначеному голосовому каналі, якщо цього вимагає організатор.</li>
+                <li>Виконуй команди організатора або логіста щодо побудови, зупинок і маршруту, якщо вони не суперечать правилам платформи та безпеці.</li>
+                <li>Не обганяй колону самовільно та не створюй хаосу.</li>
+                <li>Учасники VTC не мають особливих привілеїв на дорозі.</li>
+              </ul>
+              <div class="sanction">Захід компанії: відсторонення від 1–3 конвоїв або перегляд класу водія.</div>
+            </article>
+
+            <article class="rules-card">
+              <h3><span>03.4</span> Безпечне водіння</h3>
+              <ul>
+                <li>Тримай безпечну дистанцію та контролюй швидкість з урахуванням дорожньої ситуації.</li>
+                <li>Не створюй аварійних ситуацій, намагаючись наздогнати колону.</li>
+                <li>Якщо відстав, приєднуйся лише безпечним способом або дій за інструкціями організатора.</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section class="legion-section" id="livery">
+          <div class="legion-section-head">
+            <span class="legion-eyebrow">04 / CORPORATE STYLE</span>
+            <h2>Корпоративний <em>стиль</em></h2>
+          </div>
+
+          <div class="rules-grid">
+            <article class="rules-card">
+              <h3><span>04.1</span> Офіційна ліврея</h3>
+              <ul>
+                <li>Під час офіційних конвоїв використовуй погоджене оформлення вантажівки та причепа.</li>
+                <li>Не змінюй затверджені кольори, наклейки та елементи лівреї на техніці, призначеній для офіційних виїздів.</li>
+                <li>Дотримуйся додаткових вимог організатора конкретного заходу.</li>
+              </ul>
+            </article>
+
+            <article class="rules-card">
+              <h3><span>04.2</span> Тюнінг</h3>
+              <ul>
+                <li>Для техніки поза офіційними конвоями дозволено індивідуальний тюнінг, якщо зберігається обов'язковий вигляд компанії.</li>
+                <li>Оформлення кабіни допускається, якщо воно не суперечить правилам платформи та вимогам заходу.</li>
+                <li>Усі модифікації мають відповідати правилам TruckersMP.</li>
+              </ul>
+              <div class="sanction">Захід компанії: попередження, вимога виправити оформлення або відсторонення від конвою.</div>
+            </article>
+          </div>
+        </section>
+
+        <section class="legion-section" id="responsibility">
+          <div class="legion-section-head">
+            <span class="legion-eyebrow">05 / ВІДПОВІДАЛЬНІСТЬ</span>
+            <h2>Розгляд <em>порушень</em></h2>
+          </div>
+
+          <div class="rules-grid">
+            <article class="rules-card rules-card-wide">
+              <h3><span>05.1</span> Заходи компанії</h3>
+              <ul>
+                <li>Керівництво враховує обставини, серйозність і повторюваність порушення.</li>
+                <li>Можливі заходи: усне або письмове попередження, тимчасове обмеження доступу до внутрішніх каналів, відсторонення від конвоїв, перегляд класу водія або виключення з компанії.</li>
+                <li>Повторні порушення можуть призвести до суворішого внутрішнього заходу.</li>
+                <li>Учасник може звернутися до керівництва з проханням переглянути внутрішнє рішення.</li>
+                <li>Внутрішні правила не скасовують правила, рішення чи процедури оскарження TruckersMP.</li>
+              </ul>
+            </article>
+          </div>
+
+          <div class="rules-notice">
+            Перевіряй офіційні правила TruckersMP за посиланням вище:
+            платформа може оновлювати їх незалежно від UA LEGION.
+          </div>
+        </section>
+
       </div>
     </div>
   </main>
+
   <footer>
-      <div class="footer-brand">
-        <img src="ua-legion-logo.png" alt="UA LEGION">
-        <div><b>UA LEGION ETS2</b><span>TRANSPORT DIVISION</span></div>
+    <div class="footer-brand">
+      <img src="ua-legion-logo.png" alt="UA LEGION">
+      <div>
+        <b>UA LEGION ETS2</b>
+        <span>TRANSPORT DIVISION</span>
       </div>
-      <p>Україна грає. ЛЕГІОН перемагає.</p>
-      <small>© 2026 UA LEGION</small>
-    </footer>
+    </div>
+    <p>Україна грає. ЛЕГІОН перемагає.</p>
+    <small>© 2026 UA LEGION</small>
+  </footer>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase.js"></script>
   <script src="script.js"></script>
