@@ -1,7 +1,7 @@
 
 /* ==========================================
    UA LEGION ETS2 — КОМПАКТНИЙ ДИЗАЙН
-   Більше видимого відеофону
+   Помітний відеофон, без цифр у кроках
    ========================================== */
 
 .ets2-info-page {
@@ -10,7 +10,7 @@
   color: #f5f7fb;
 }
 
-/* Відеофон — помітніший і світліший */
+/* Відеофон */
 .legion-page-background {
   position: fixed;
   inset: 78px 0 0;
@@ -131,7 +131,7 @@
   font-weight: 900;
 }
 
-/* Контент */
+/* Основний контент */
 .legion-content {
   min-width: 0;
   width: 100%;
@@ -176,7 +176,7 @@
   line-height: 1.6;
 }
 
-/* Історія */
+/* Історія — одна широка картка */
 .legion-about-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
@@ -283,7 +283,10 @@
   margin: 0;
 }
 
-/* Вступ — компактні п'ять кроків */
+/* ==========================================
+   ВСТУП — 5 КРОКІВ БЕЗ ЦИФР
+   ========================================== */
+
 .join-steps-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -292,9 +295,9 @@
 
 .join-step {
   display: grid;
-  grid-template-columns: 28px minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
   align-items: start;
-  gap: 8px;
+  gap: 0;
   min-width: 0;
   padding: 10px;
   background: rgba(5, 9, 16, 0.66);
@@ -307,9 +310,9 @@
   background: rgba(5, 9, 16, 0.82);
 }
 
+/* Приховуємо цифри 01–05 */
 .join-step-number {
-  color: #ffd45a;
-  font: 700 20px/1 Rajdhani, sans-serif;
+  display: none !important;
 }
 
 .join-step-content {
