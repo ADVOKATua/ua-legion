@@ -1,746 +1,99 @@
 
-/* =========================================================
-   UA LEGION ETS2 INFO — COMPACT EDITION
-   Фонове відео, компактні секції та адаптивний дизайн
-   ========================================================= */
+/* ==================================================
+   КОМПАКТНИЙ БЛОК ВСТУПУ — 5 КРОКІВ
+   ================================================== */
 
-/* ---------- Базові налаштування ---------- */
-
-.ets2-info-page {
-  position: relative;
-  min-height: 100vh;
-  background: #05070b;
-  color: #f4f6fa;
-}
-
-.ets-info-main {
-  padding-top: 0;
-}
-
-.ets2-info-page *,
-.ets2-info-page *::before,
-.ets2-info-page *::after {
-  box-sizing: border-box;
-}
-
-/* ---------- Фонове відео ---------- */
-
-.legion-page-background {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  overflow: hidden;
-  pointer-events: none;
-  background: #05070b
-    url("assets/ets2/ua-legion-ets2-poster.jpg")
-    center / cover no-repeat;
-}
-
-.legion-page-video {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center 52%;
-  filter: saturate(1.05);
-}
-
-.legion-page-shade {
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(
-      90deg,
-      rgba(3, 6, 11, .78),
-      rgba(3, 6, 11, .48) 50%,
-      rgba(3, 6, 11, .36)
-    ),
-    linear-gradient(
-      180deg,
-      rgba(3, 6, 11, .35),
-      rgba(3, 6, 11, .18) 40%,
-      rgba(3, 6, 11, .76)
-    );
-}
-
-.ets2-info-page .noise {
-  position: fixed;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-}
-
-/* ---------- Верхня панель ---------- */
-
-.ets2-info-page > .topbar {
-  position: relative;
-  z-index: 5;
-  background: rgba(5, 7, 11, .68);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
-}
-
-/* ---------- Основний макет ---------- */
-
-.legion-content-wrap {
-  display: grid;
-  grid-template-columns: 195px minmax(0, 1fr);
-  align-items: stretch;
-  gap: 10px;
-  width: 100%;
-  max-width: 1800px;
-  margin: 0 auto;
-  padding: 0 14px 22px;
-}
-
-.legion-content-wrap .ets-sidebar {
-  position: sticky;
-  top: 8px;
-  align-self: start;
-  margin-top: 0;
-  background: rgba(5, 7, 11, .70);
-  border: 1px solid rgba(255, 255, 255, .10);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-}
-
-.legion-content {
-  min-width: 0;
-  overflow: hidden;
-  background: rgba(7, 10, 16, .55);
-  border: 1px solid rgba(255, 255, 255, .08);
-  -webkit-backdrop-filter: blur(3px);
-  backdrop-filter: blur(3px);
-}
-
-.ets2-info-page > .ets-info-main,
-.ets2-info-page > footer {
-  position: relative;
-  z-index: 2;
-}
-
-/* ---------- Загальні секції ---------- */
-
-.legion-section {
-  padding: 22px 24px;
-  background: rgba(5, 8, 13, .28);
-  border-bottom: 1px solid rgba(255, 255, 255, .08);
-  scroll-margin-top: 12px;
-}
-
-.legion-section:last-child {
-  border-bottom: 0;
-}
-
-.legion-section-head {
-  max-width: none;
-  margin-bottom: 13px;
-}
-
-.legion-eyebrow,
-.legion-kicker {
-  color: #eab52b;
-  font-size: 9px;
-  font-weight: 900;
-  letter-spacing: 1.7px;
-}
-
-.legion-section-head h2 {
-  margin: 7px 0;
-  color: #f5f6f8;
-  font: 700 clamp(27px, 2.8vw, 38px)/1.05 Rajdhani, sans-serif;
-  letter-spacing: -.4px;
-}
-
-.legion-section-head h2 em {
-  color: #e8b326;
-  font-style: normal;
-}
-
-.legion-section-head > p {
-  max-width: 850px;
-  margin: 7px 0 0;
-  color: #b4bdc9;
-  font-size: 12px;
-  line-height: 1.6;
-}
-
-/* ---------- Картки ---------- */
-
-.legion-card,
-.legion-stat,
-.legion-value,
-.legion-activity {
-  min-width: 0;
-  background: rgba(8, 12, 19, .84);
-  border: 1px solid rgba(255, 255, 255, .09);
-}
-
-/* ---------- Історія компанії ---------- */
-
-.legion-about-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  width: 100%;
-  gap: 0;
-}
-
-.legion-story-card {
-  position: relative;
-  width: 100%;
-  min-width: 0;
-  overflow: hidden;
-  padding: 17px 20px;
-  background: linear-gradient(
-    135deg,
-    rgba(13, 19, 29, .94),
-    rgba(7, 11, 17, .88)
-  );
-  border: 1px solid rgba(255, 255, 255, .09);
-}
-
-.legion-story-card::after {
-  position: absolute;
-  right: -8px;
-  bottom: -44px;
-  color: rgba(255, 255, 255, .025);
-  content: "UA";
-  font: 700 150px/.8 Rajdhani, sans-serif;
-  pointer-events: none;
-}
-
-.card-index {
-  position: relative;
-  z-index: 1;
-  color: #e8b326;
-  font-size: 8px;
-  font-weight: 900;
-  letter-spacing: 1.8px;
-}
-
-.legion-story-card h3 {
-  position: relative;
-  z-index: 1;
-  margin: 8px 0;
-  color: #f4f6fa;
-  font: 700 24px/1.1 Rajdhani, sans-serif;
-}
-
-.legion-story-card p {
-  position: relative;
-  z-index: 1;
-  max-width: none;
-  margin: 6px 0 0;
-  color: #b4bdc9;
-  font-size: 12px;
-  line-height: 1.6;
-}
-
-.legion-story-card p + p {
-  margin-top: 7px;
-}
-
-.legion-story-card strong {
-  color: #f4f6fa;
-}
-
-/* ---------- Статистичні картки ---------- */
-
-.legion-stat-stack {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
-}
-
-.legion-stat {
-  display: flex;
-  min-height: 80px;
-  flex-direction: column;
-  justify-content: center;
-  padding: 12px;
-}
-
-.legion-stat span {
-  color: #8d98a8;
-  font-size: 8px;
-  font-weight: 900;
-  letter-spacing: 1.2px;
-}
-
-.legion-stat b {
-  margin: 5px 0 2px;
-  color: #f4f6fa;
-  font: 700 clamp(21px, 2vw, 28px)/1.1 Rajdhani, sans-serif;
-}
-
-.legion-stat:nth-child(3) b {
-  color: #e8b326;
-}
-
-.legion-stat small {
-  color: #9ca6b4;
-  font-size: 10px;
-}
-
-/* ---------- Цінності компанії ---------- */
-
-.legion-values-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 8px;
-}
-
-.legion-value {
-  position: relative;
-  min-width: 0;
-  min-height: 0;
-  padding: 13px;
-  transition: border-color .2s, transform .2s;
-}
-
-.legion-value:hover {
-  transform: translateY(-2px);
-  border-color: rgba(232, 179, 38, .5);
-}
-
-.value-icon {
-  font-size: 21px;
-}
-
-.value-number {
-  display: none !important;
-}
-
-.legion-value h3 {
-  margin: 8px 0 5px;
-  color: #f4f6fa;
-  font: 700 18px/1.15 Rajdhani, sans-serif;
-}
-
-.legion-value p {
-  margin: 0;
-  color: #aab4c2;
-  font-size: 11px;
-  line-height: 1.5;
-}
-
-.legion-value-wide {
-  grid-column: 1 / -1;
-  min-height: 0;
-  background:
-    linear-gradient(
-      100deg,
-      rgba(232, 179, 38, .08),
-      transparent 65%
-    ),
-    rgba(8, 12, 19, .88);
-}
-
-.legion-value-wide p {
-  max-width: 850px;
-}
-
-/* ---------- Діяльність ---------- */
-
-.legion-activities-grid {
+.join-steps-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
 }
 
-.legion-activity {
+.join-step {
   display: grid;
-  grid-template-columns: 32px minmax(0, 1fr);
+  grid-template-columns: 34px minmax(0, 1fr);
   align-items: start;
   gap: 10px;
-  padding: 14px;
+  min-width: 0;
+  padding: 13px;
+  background: rgba(8, 12, 19, .88);
+  border: 1px solid rgba(255, 255, 255, .10);
+  transition: border-color .2s, background .2s;
 }
 
-.legion-activity > span {
-  font-size: 23px;
+.join-step:hover {
+  border-color: rgba(232, 179, 38, .48);
+  background: rgba(13, 19, 29, .95);
 }
 
-.legion-activity h3 {
-  margin: 0 0 4px;
-  color: #f4f6fa;
-  font: 700 19px/1.15 Rajdhani, sans-serif;
-}
-
-.legion-activity p {
-  margin: 0;
-  color: #aab4c2;
-  font-size: 11px;
-  line-height: 1.5;
-}
-
-/* ---------- Блок вступу ---------- */
-
-.legion-join-panel {
-  display: grid;
-  grid-template-columns: 60px minmax(0, 1fr) 170px;
-  align-items: center;
-  gap: 14px;
-  padding: 16px;
-  background:
-    radial-gradient(
-      circle at 0 0,
-      rgba(23, 104, 255, .10),
-      transparent 45%
-    ),
-    linear-gradient(125deg, rgba(16, 23, 34, .95), rgba(8, 12, 18, .95));
-  border: 1px solid rgba(232, 179, 38, .32);
-}
-
-.join-emblem img {
-  display: block;
-  width: 100%;
-  max-width: 60px;
-  filter: drop-shadow(0 0 15px rgba(23, 104, 255, .18));
-}
-
-.legion-join-panel h2 {
-  margin: 6px 0;
-  color: #f5f6f8;
-  font: 700 clamp(25px, 2.5vw, 34px)/1.05 Rajdhani, sans-serif;
-}
-
-.legion-join-panel h2 em {
+.join-step-number {
   color: #e8b326;
-  font-style: normal;
+  font: 700 23px/1 Rajdhani, sans-serif;
 }
 
-.join-copy > p {
-  margin: 5px 0;
-  color: #b1bac7;
+.join-step-content {
+  min-width: 0;
+}
+
+.join-step h3 {
+  margin: 0 0 5px;
+  color: #f4f6fa;
+  font: 700 18px/1.15 Rajdhani, sans-serif;
+}
+
+.join-step p {
+  margin: 0 0 8px;
+  color: #aeb7c4;
   font-size: 11px;
   line-height: 1.5;
 }
 
-.join-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-  margin-top: 9px;
-}
-
-.join-tags span {
-  padding: 5px 7px;
-  color: #d4dbe4;
-  border: 1px solid rgba(255, 255, 255, .12);
-  font-size: 7px;
-  letter-spacing: .7px;
-}
-
-.join-actions {
-  display: grid;
-  gap: 6px;
-}
-
-.join-actions .legion-btn {
-  width: 100%;
-  min-height: 38px;
-  padding: 0 10px;
-  gap: 7px;
-  font-size: 9px;
-}
-
-.legion-text-link {
-  color: #aeb7c4;
-  font-size: 9px;
-  line-height: 1.5;
+.join-step a {
+  display: inline-block;
+  color: #e8b326;
+  font-size: 11px;
+  font-weight: 800;
   text-decoration: none;
 }
 
-.legion-text-link:hover {
-  color: #e8b326;
+.join-step a:hover {
+  color: #ffd45a;
 }
 
-/* ---------- Кнопки ---------- */
+.join-step-discord {
+  grid-column: 1 / -1;
+  background:
+    linear-gradient(90deg, rgba(88, 101, 242, .12), transparent 75%),
+    rgba(8, 12, 19, .90);
+  border-color: rgba(88, 101, 242, .35);
+}
 
-.legion-btn {
-  display: inline-flex;
-  min-height: 40px;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 0 14px;
-  border: 1px solid transparent;
+.join-step-discord:hover {
+  border-color: rgba(88, 101, 242, .75);
+}
+
+.join-step-discord .join-step-number,
+.join-step-discord a {
+  color: #aeb8ff;
+}
+
+.join-steps-note {
+  margin: 10px 0 0;
+  color: #929dad;
   font-size: 10px;
-  font-weight: 900;
-  letter-spacing: .5px;
-  text-decoration: none !important;
-  transition:
-    transform .2s ease,
-    border-color .2s ease,
-    background .2s ease;
+  line-height: 1.5;
 }
 
-.legion-btn:hover {
-  transform: translateY(-2px);
-}
-
-.legion-btn-primary {
-  color: #080b10;
-  background: #e8b326;
-  border-color: #e8b326;
-}
-
-.legion-btn-primary:hover {
-  color: #080b10;
-  background: #ffd45a;
-}
-
-.legion-btn-ghost {
-  color: #fff;
-  background: rgba(5, 8, 13, .45);
-  border-color: rgba(255, 255, 255, .30);
-}
-
-.legion-btn-ghost:hover {
-  background: rgba(5, 8, 13, .75);
-  border-color: #e8b326;
-}
-
-/* ---------- Приховані секції ---------- */
-
-.legion-facts-section,
-.legion-bottom-cta {
-  display: none !important;
-}
-
-/* ---------- Футер ---------- */
-
-.ets2-info-page > footer {
-  position: relative;
-  z-index: 2;
-  padding-top: 14px;
-  padding-bottom: 14px;
-  background: rgba(5, 7, 11, .82);
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
-}
-
-/* ---------- Планшети ---------- */
-
-@media (max-width: 1180px) {
-  .legion-content-wrap {
-    grid-template-columns: 170px minmax(0, 1fr);
-    gap: 8px;
-    padding-right: 10px;
-    padding-left: 10px;
+@media (max-width: 600px) {
+  .join-steps-grid {
+    grid-template-columns: minmax(0, 1fr);
   }
 
-  .legion-section {
-    padding: 18px;
+  .join-step-discord {
+    grid-column: auto;
   }
 
-  .legion-values-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .legion-join-panel {
-    grid-template-columns: 50px minmax(0, 1fr);
-    gap: 12px;
-  }
-
-  .join-emblem img {
-    max-width: 50px;
-  }
-
-  .join-actions {
-    grid-column: 2;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .legion-text-link {
-    grid-column: 1 / -1;
-  }
-}
-
-/* ---------- Телефони ---------- */
-
-@media (max-width: 800px) {
-  .legion-content-wrap {
-    display: block;
-    padding: 0 8px 16px;
-  }
-
-  .legion-content-wrap .ets-sidebar {
-    position: relative;
-    top: 0;
-    margin: 0;
-  }
-
-  .legion-content-wrap .ets-sidebar .side-group {
-    display: none;
-  }
-
-  .legion-content-wrap .side-logo {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 9px 13px;
-    text-align: left;
-  }
-
-  .legion-content-wrap .side-logo img {
-    width: 40px;
-    margin: 0;
-  }
-
-  .legion-content-wrap .side-logo b {
-    margin: 0;
-    font-size: 16px;
-  }
-
-  .legion-content-wrap .side-logo small {
-    display: none;
-  }
-
-  .legion-content-wrap .sidebar-discord {
-    margin: 0 8px 8px;
-  }
-
-  .legion-content {
-    border-top: 1px solid rgba(255, 255, 255, .08);
-    background: rgba(7, 10, 16, .48);
-  }
-
-  .legion-section {
-    padding: 17px 13px;
-  }
-
-  .legion-section-head {
-    margin-bottom: 11px;
-  }
-
-  .legion-section-head h2 {
-    font-size: clamp(25px, 6vw, 32px);
-  }
-
-  .legion-story-card {
-    padding: 14px;
-  }
-
-  .legion-story-card h3 {
-    font-size: 22px;
-  }
-
-  .legion-story-card p {
-    font-size: 11px;
-    line-height: 1.55;
-  }
-
-  .legion-values-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 7px;
-  }
-
-  .legion-value {
-    padding: 11px;
-  }
-
-  .legion-value h3 {
-    font-size: 17px;
-  }
-
-  .legion-activities-grid {
-    grid-template-columns: 1fr;
-    gap: 7px;
-  }
-
-  .legion-activity {
+  .join-step {
     padding: 12px;
-  }
-
-  .legion-join-panel {
-    grid-template-columns: 42px minmax(0, 1fr);
-    gap: 10px;
-    padding: 13px;
-  }
-
-  .join-emblem img {
-    max-width: 42px;
-  }
-
-  .legion-join-panel h2 {
-    font-size: 24px;
-  }
-
-  .join-actions {
-    grid-column: 1 / -1;
-    grid-template-columns: 1fr;
-  }
-
-  .legion-text-link {
-    grid-column: auto;
-  }
-
-  .legion-stat-stack {
-    grid-template-columns: 1fr;
-  }
-
-  .legion-stat {
-    min-height: 70px;
-  }
-}
-
-/* ---------- Вузькі телефони ---------- */
-
-@media (max-width: 420px) {
-  .legion-content-wrap {
-    padding-right: 5px;
-    padding-left: 5px;
-  }
-
-  .legion-section {
-    padding: 14px 10px;
-  }
-
-  .legion-values-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .legion-value-wide {
-    grid-column: auto;
-  }
-
-  .legion-join-panel {
-    grid-template-columns: 1fr;
-  }
-
-  .join-emblem {
-    width: 42px;
-  }
-
-  .join-emblem img {
-    max-width: 42px;
-  }
-
-  .legion-hero-actions {
-    display: grid;
-    grid-template-columns: 1fr;
-  }
-
-  .legion-btn {
-    width: 100%;
-  }
-}
-
-/* ---------- Налаштування зменшеного руху ---------- */
-
-@media (prefers-reduced-motion: reduce) {
-  .legion-btn,
-  .legion-value {
-    transition: none;
-  }
-
-  .legion-page-video {
-    display: none;
-  }
-
-  .legion-page-background {
-    background-image: url("assets/ets2/ua-legion-ets2-poster.jpg");
   }
 }
