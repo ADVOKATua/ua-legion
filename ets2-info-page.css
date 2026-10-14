@@ -1,8 +1,8 @@
 
 /* ==========================================
    UA LEGION ETS2
-   Компактна сторінка з видимим відеофоном
-   Номери кроків вступу приховані
+   Компактний дизайн, видимий відеофон
+   Смайлики збоку, без цифр у кроках
    ========================================== */
 
 .ets2-info-page {
@@ -223,7 +223,7 @@
   color: #fff;
 }
 
-/* ЦІННОСТІ */
+/* ЦІННОСТІ: СМАЙЛИК ЗЛІВА, ТЕКСТ СПРАВА */
 .legion-values-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -231,32 +231,43 @@
 }
 
 .legion-value {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  column-gap: 8px;
+  align-content: start;
+  align-items: center;
   min-width: 0;
-  padding: 10px;
-  background: rgba(5, 9, 16, 0.48);
+  padding: 10px 12px;
+  background: rgba(5, 9, 16, 0.42);
   border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.legion-value .value-icon {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  align-self: start;
+  margin-top: 2px;
+  font-size: 21px;
+  line-height: 1;
+}
+
+.legion-value h3 {
+  grid-column: 2;
+  margin: 0 0 4px;
+  color: #fff;
+  font: 700 17px/1.15 Rajdhani, sans-serif;
+}
+
+.legion-value p {
+  grid-column: 2;
+  margin: 0;
+  color: #e0e6ef;
+  font-size: 10px;
+  line-height: 1.5;
 }
 
 .legion-value-wide {
   grid-column: 1 / -1;
-}
-
-.value-icon {
-  font-size: 19px;
-}
-
-.legion-value h3,
-.legion-activity h3 {
-  margin: 3px 0;
-  color: #fff;
-  font: 700 16px/1.15 Rajdhani, sans-serif;
-}
-
-.legion-value p,
-.legion-activity p {
-  color: #e0e6ef;
-  font-size: 10px;
-  line-height: 1.45;
 }
 
 /* АКТИВНОСТІ */
@@ -271,7 +282,7 @@
   grid-template-columns: 26px minmax(0, 1fr);
   gap: 8px;
   padding: 10px;
-  background: rgba(5, 9, 16, 0.48);
+  background: rgba(5, 9, 16, 0.42);
   border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
@@ -280,11 +291,16 @@
 }
 
 .legion-activity h3 {
-  margin-top: 0;
+  margin: 0 0 3px;
+  color: #fff;
+  font: 700 16px/1.15 Rajdhani, sans-serif;
 }
 
 .legion-activity p {
   margin: 0;
+  color: #e0e6ef;
+  font-size: 10px;
+  line-height: 1.45;
 }
 
 /* ==========================================
@@ -309,7 +325,6 @@
   transition: border-color 0.2s, background 0.2s;
 }
 
-/* Приховати номери 01–05 */
 .join-step-number {
   display: none !important;
 }
@@ -480,6 +495,20 @@
   .legion-story-card p {
     font-size: 10px;
     line-height: 1.5;
+  }
+
+  .legion-value {
+    grid-template-columns: 25px minmax(0, 1fr);
+    padding: 9px;
+    column-gap: 7px;
+  }
+
+  .legion-value .value-icon {
+    font-size: 19px;
+  }
+
+  .legion-value h3 {
+    font-size: 16px;
   }
 
   .join-steps-grid {
