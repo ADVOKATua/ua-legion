@@ -2,7 +2,7 @@
 /* ==========================================
    UA LEGION ETS2
    Компактний дизайн, видимий відеофон
-   Широке меню, смайлики збоку, без цифр
+   Закріплене меню, смайлики збоку, без цифр
    ========================================== */
 
 .ets2-info-page {
@@ -54,41 +54,65 @@
   margin: 0 auto;
   display: grid;
   grid-template-columns: 220px minmax(0, 1fr);
-  align-items: stretch;
+  align-items: start;
   gap: 10px;
 }
 
 .legion-content {
+  grid-column: 2;
   min-width: 0;
   width: 100%;
 }
 
-/* ЛІВЕ МЕНЮ */
-.ets2-info-page .ets-sidebar {
-  position: relative;
-  top: auto;
-  align-self: stretch;
-  width: 100%;
-  height: auto;
-  min-height: 100%;
-  max-height: none;
-  overflow: visible;
-  padding: 10px 0;
-  background: rgba(5, 9, 16, 0.70);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+/* ==========================================
+   ЛІВЕ МЕНЮ — ЗАКРІПЛЕНЕ НА ВЕСЬ ЕКРАН
+   ========================================== */
+
+@media (min-width: 761px) {
+  .ets2-info-page .ets-sidebar {
+    position: fixed;
+    top: 88px;
+    bottom: 0;
+    left: 1%;
+    width: 220px;
+    height: calc(100vh - 88px);
+    min-height: 0;
+    max-height: none;
+    overflow-y: auto;
+    overflow-x: hidden;
+    margin: 0;
+    padding: 10px 0 16px;
+    box-sizing: border-box;
+    z-index: 80;
+    background: rgba(5, 9, 16, 0.88);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+  }
+
+  .legion-content-wrap {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr);
+    align-items: start;
+    gap: 10px;
+  }
+
+  .legion-content {
+    grid-column: 2;
+    min-width: 0;
+    width: 100%;
+  }
 }
 
 /* Логотип у меню */
 .ets2-info-page .side-logo {
   display: block;
-  padding: 10px 10px 14px;
+  padding: 10px 8px 14px;
   text-align: center;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .ets2-info-page .side-logo img {
   display: block;
-  width: 58px;
+  width: 52px;
   margin: 0 auto;
 }
 
@@ -106,7 +130,7 @@
 
 /* Категорії меню */
 .ets2-info-page .side-group {
-  padding: 8px 9px 3px;
+  padding: 8px 8px 3px;
 }
 
 .ets2-info-page .side-group > span {
@@ -118,7 +142,7 @@
   letter-spacing: 1.4px;
 }
 
-/* Посилання меню */
+/* Пункти меню */
 .ets2-info-page .side-group a {
   display: block;
   padding: 6px 8px;
@@ -310,7 +334,7 @@
   line-height: 1.45;
 }
 
-/* ВСТУП — П'ЯТЬ КРОКІВ БЕЗ ЦИФР */
+/* ВСТУП — 5 КРОКІВ БЕЗ ЦИФР */
 .join-steps-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -392,11 +416,16 @@
 }
 
 /* ПЛАНШЕТИ */
-@media (max-width: 1000px) {
+@media (max-width: 1000px) and (min-width: 761px) {
   .legion-content-wrap {
-    width: 97%;
-    grid-template-columns: 185px minmax(0, 1fr);
+    width: 98%;
+    grid-template-columns: 200px minmax(0, 1fr);
     gap: 8px;
+  }
+
+  .ets2-info-page .ets-sidebar {
+    left: 1%;
+    width: 200px;
   }
 
   .legion-section {
@@ -410,19 +439,6 @@
 
   .legion-value-wide {
     grid-column: auto;
-  }
-}
-
-/* КОМП'ЮТЕР — РОЗТЯГУВАННЯ МЕНЮ ДО ВИСОТИ КОНТЕНТУ */
-@media (min-width: 761px) {
-  .legion-content-wrap {
-    align-items: stretch;
-  }
-
-  .ets2-info-page .ets-sidebar {
-    align-self: stretch;
-    height: auto;
-    min-height: 100%;
   }
 }
 
@@ -449,7 +465,7 @@
 
   .ets2-info-page .ets-sidebar {
     position: relative;
-    top: auto;
+    inset: auto;
     width: 100%;
     height: auto;
     min-height: 0;
