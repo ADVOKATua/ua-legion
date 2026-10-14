@@ -192,6 +192,120 @@
   .rules-page-section .rules-link{transition:none}
   html{scroll-behavior:auto}
 }
+
+/* Фінальне узгодження правил із ets2-info.html */
+.rules-page-section{
+  width:100%;
+  padding-top:4px;
+}
+.rules-page-section .page-heading{
+  margin-bottom:22px;
+  padding-bottom:15px;
+  border-bottom:1px solid rgba(164,181,207,.16);
+}
+.rules-page-section .page-heading h1{
+  font:700 clamp(31px,3.8vw,43px)/1.02 'Rajdhani',sans-serif;
+  letter-spacing:0;
+}
+.rules-page-section .page-heading p{
+  max-width:900px;
+  margin:11px 0 0;
+  font-size:12px;
+  line-height:1.55;
+}
+.rules-page-section .legion-eyebrow{
+  font:700 10px/1.3 'Rajdhani',sans-serif;
+  letter-spacing:2px;
+}
+.rules-page-section .intro-card{
+  margin-bottom:18px;
+  padding:18px 20px;
+  background:rgba(8,12,19,.62);
+  border:1px solid rgba(164,181,207,.18);
+  border-radius:0;
+  box-shadow:none;
+  backdrop-filter:blur(10px);
+}
+.rules-page-section .intro-card h2{
+  font:700 22px/1.1 'Rajdhani',sans-serif;
+  margin:0 0 8px;
+}
+.rules-page-section .intro-card p{
+  margin:6px 0;
+  font-size:12px;
+  line-height:1.5;
+}
+.rules-page-section .rules-grid{
+  gap:13px;
+}
+.rules-page-section .rules-card{
+  background:rgba(8,12,19,.68);
+  border:1px solid rgba(164,181,207,.18);
+  border-radius:0;
+  box-shadow:none;
+  backdrop-filter:blur(10px);
+}
+.rules-page-section .rules-card-header{
+  gap:12px;
+  padding:14px 18px;
+  background:rgba(13,28,52,.62);
+  border-bottom:1px solid rgba(164,181,207,.18);
+}
+.rules-page-section .rules-number{
+  min-width:76px;
+  padding:5px 8px;
+  font:700 10px/1.2 'Rajdhani',sans-serif;
+  letter-spacing:.8px;
+}
+.rules-page-section .rules-card-header h2{
+  font:700 clamp(20px,2vw,24px)/1.08 'Rajdhani',sans-serif;
+}
+.rules-page-section .rules-content{
+  padding:17px 20px 20px;
+  font-size:12px;
+  line-height:1.5;
+}
+.rules-page-section .rules-content h3{
+  margin:18px 0 8px;
+  padding-left:10px;
+  font:700 17px/1.15 'Rajdhani',sans-serif;
+}
+.rules-page-section .rules-content h3:first-child{margin-top:0}
+.rules-page-section .rules-content p{
+  margin:8px 0;
+  line-height:1.55;
+}
+.rules-page-section .rules-content ol{
+  margin:8px 0 14px;
+  padding-left:25px;
+}
+.rules-page-section .rules-content li{
+  padding:2px 0 2px 4px;
+}
+.rules-page-section .sanction,
+.rules-page-section .warning{
+  margin:14px 0;
+  padding:12px 14px;
+  border-radius:0 4px 4px 0;
+  font-size:12px;
+  line-height:1.5;
+}
+.rules-page-section .rules-link{
+  border-radius:3px;
+}
+@media(max-width:900px){
+  .rules-page-section .page-heading{padding-bottom:12px}
+  .rules-page-section .rules-card-header{padding:13px 15px}
+  .rules-page-section .rules-content{padding:16px}
+}
+@media(max-width:520px){
+  .rules-page-section .page-heading h1{font-size:clamp(30px,9vw,39px)}
+  .rules-page-section .intro-card{padding:16px}
+  .rules-page-section .rules-card-header{padding:14px;gap:9px}
+  .rules-page-section .rules-content{padding:15px 13px}
+  .rules-page-section .rules-content ol{padding-left:21px}
+}
+
 </style>
 </head>
 <body class="ets2-info-page">
