@@ -1,8 +1,8 @@
 
 /* ==========================================
    UA LEGION ETS2
-   Компактний дизайн, видимий відеофон
-   Закріплене меню, смайлики збоку, без цифр
+   Компактний дизайн, відеофон, закріплене меню
+   Смайлики збоку, без цифр, без нижнього бренду
    ========================================== */
 
 .ets2-info-page {
@@ -65,7 +65,7 @@
 }
 
 /* ==========================================
-   ЛІВЕ МЕНЮ — ЗАКРІПЛЕНЕ НА ВЕСЬ ЕКРАН
+   ЛІВЕ МЕНЮ — ЗАКРІПЛЕНЕ НА ВСЮ ВИСОТУ
    ========================================== */
 
 @media (min-width: 761px) {
@@ -102,7 +102,7 @@
   }
 }
 
-/* Логотип у меню */
+/* ЛОГОТИП У МЕНЮ */
 .ets2-info-page .side-logo {
   display: block;
   padding: 10px 8px 14px;
@@ -128,7 +128,7 @@
   letter-spacing: 1.4px;
 }
 
-/* Категорії меню */
+/* КАТЕГОРІЇ МЕНЮ */
 .ets2-info-page .side-group {
   padding: 8px 8px 3px;
 }
@@ -142,7 +142,7 @@
   letter-spacing: 1.4px;
 }
 
-/* Пункти меню */
+/* ПОСИЛАННЯ МЕНЮ */
 .ets2-info-page .side-group a {
   display: block;
   padding: 6px 8px;
@@ -159,16 +159,9 @@
   color: #fff;
 }
 
-/* Discord у меню */
-.ets2-info-page .sidebar-discord {
-  display: block;
-  margin: 12px 8px 4px;
-  padding: 11px 6px;
-  background: #5865f2;
-  color: #fff;
-  text-align: center;
-  font-size: 10px;
-  font-weight: 900;
+/* ПРИБРАТИ КНОПКУ DISCORD У НИЖНІЙ ЧАСТИНІ МЕНЮ */
+.ets2-info-page .ets-sidebar .sidebar-discord {
+  display: none !important;
 }
 
 /* СЕКЦІЇ */
@@ -254,7 +247,7 @@
   color: #fff;
 }
 
-/* ЦІННОСТІ — СМАЙЛИК ЗЛІВА */
+/* ЦІННОСТІ — СМАЙЛИК ЗЛІВА ВІД ТЕКСТУ */
 .legion-values-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -408,14 +401,12 @@
   line-height: 1.45;
 }
 
-/* ФУТЕР */
-.ets2-info-page footer {
-  position: relative;
-  z-index: 1;
-  background: rgba(3, 5, 9, 0.65);
+/* ФУТЕР — ПРИБРАТИ НИЖНІЙ ЛОГОТИП І НАПИС */
+.ets2-info-page footer .footer-brand {
+  display: none !important;
 }
 
-/* ПЛАНШЕТИ */
+/* Планшети */
 @media (max-width: 1000px) and (min-width: 761px) {
   .legion-content-wrap {
     width: 98%;
@@ -502,8 +493,7 @@
   }
 
   .ets2-info-page .sidebar-discord {
-    margin: 0 8px 8px;
-    padding: 9px 5px;
+    display: none !important;
   }
 
   .legion-content {
