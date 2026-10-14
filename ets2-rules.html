@@ -2,520 +2,830 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#05070b">
-  <title>Правила ETS2 — UA LEGION</title>
-  <meta name="description" content="Офіційні правила транспортного підрозділу UA LEGION для Euro Truck Simulator 2 та TruckersMP.">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#080b11">
+    <title>Кодекс UA LEGION — ETS2 / TruckersMP</title>
 
-  <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="ets2.css">
-  <link rel="stylesheet" href="ets2-info-page.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="ets2.css">
+    <link rel="stylesheet" href="ets2-info-page.css">
 
-  <style>
-    .ets2-rules-page .rules-intro,
-    .ets2-rules-page .rules-card {
-      background: rgba(5, 9, 16, .68);
-      border: 1px solid rgba(255,255,255,.14);
-      padding: 12px;
-      min-width: 0;
-    }
+    <style>
+        :root {
+            --bg: #080b11;
+            --panel: rgba(15, 21, 31, .94);
+            --panel-light: rgba(23, 31, 44, .85);
+            --border: rgba(164, 181, 207, .16);
+            --text: #e9eef8;
+            --muted: #9eacc1;
+            --blue: #1765f5;
+            --blue-light: #64a8ff;
+            --gold: #ffbd35;
+            --orange: #ff9638;
+            --red: #ff555f;
+            --green: #46d6a0;
+        }
 
-    .ets2-rules-page .rules-intro {
-      color: #e0e6ef;
-      font-size: 11px;
-      line-height: 1.7;
-    }
+        * {
+            box-sizing: border-box;
+        }
 
-    .ets2-rules-page .rules-notice {
-      border-left: 3px solid #ffd45a;
-      padding: 9px 11px;
-      margin-top: 9px;
-      background: rgba(255,212,90,.08);
-      color: #f4e8bd;
-      font-size: 10px;
-      line-height: 1.7;
-    }
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 95px;
+        }
 
-    .ets2-rules-page .rules-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 8px;
-    }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: var(--bg);
+            color: var(--text);
+            font-family: Arial, Helvetica, sans-serif;
+            line-height: 1.7;
+        }
 
-    .ets2-rules-page .rules-card h3 {
-      margin: 0 0 9px;
-      color: #fff;
-      font: 700 19px/1.2 Rajdhani, sans-serif;
-    }
+        a {
+            color: var(--blue-light);
+        }
 
-    .ets2-rules-page .rules-card ul {
-      margin: 0;
-      padding-left: 17px;
-      color: #e0e6ef;
-      font-size: 10px;
-      line-height: 1.7;
-    }
+        .page-background {
+            position: fixed;
+            inset: 0;
+            z-index: -2;
+            background:
+                radial-gradient(ellipse at 15% 5%, rgba(22, 91, 207, .13), transparent 40%),
+                radial-gradient(ellipse at 90% 85%, rgba(255, 189, 53, .07), transparent 38%),
+                #080b11;
+        }
 
-    .ets2-rules-page .rules-card li {
-      margin-bottom: 7px;
-    }
+        .page-background::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                180deg,
+                rgba(5, 8, 13, .25),
+                rgba(5, 8, 13, .88)
+            );
+        }
 
-    .ets2-rules-page .rules-card strong {
-      color: #ffd45a;
-    }
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 8px 22px;
+            background: rgba(8, 11, 17, .96);
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(14px);
+        }
 
-    .ets2-rules-page .sanction {
-      margin-top: 10px;
-      padding-top: 8px;
-      border-top: 1px solid rgba(255,255,255,.1);
-      color: #ffd45a;
-      font-size: 9px;
-      line-height: 1.7;
-    }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #fff;
+            text-decoration: none;
+            font-size: 22px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            white-space: nowrap;
+        }
 
-    .ets2-rules-page .rules-card-wide {
-      grid-column: 1 / -1;
-    }
+        .brand img {
+            width: 42px;
+            height: 42px;
+            object-fit: contain;
+        }
 
-    .ets2-rules-page .rules-links {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 7px;
-      margin-top: 10px;
-    }
+        .topnav {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 23px;
+        }
 
-    .ets2-rules-page .rules-links a {
-      display: inline-block;
-      padding: 7px 10px;
-      border: 1px solid rgba(255,212,90,.45);
-      color: #ffd45a;
-      text-decoration: none;
-      font-size: 10px;
-      font-weight: 800;
-    }
+        .topnav a {
+            color: #b9c2d1;
+            font-size: 14px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: color .2s ease;
+        }
 
-    .ets2-rules-page .rules-links a:hover {
-      background: rgba(255,212,90,.12);
-      color: #fff;
-    }
+        .topnav a:hover,
+        .topnav a.active {
+            color: #fff;
+        }
 
-    @media (max-width: 1000px) and (min-width: 761px) {
-      .ets2-rules-page .rules-grid {
-        grid-template-columns: 1fr;
-      }
+        .layout {
+            width: min(1440px, 100%);
+            margin: 0 auto;
+            padding: 30px 24px 60px;
+            display: grid;
+            grid-template-columns: 245px minmax(0, 1fr);
+            gap: 28px;
+            align-items: start;
+        }
 
-      .ets2-rules-page .rules-card-wide {
-        grid-column: auto;
-      }
-    }
+        .sidebar {
+            position: sticky;
+            top: 82px;
+            padding: 18px 12px;
+            background: rgba(13, 18, 27, .86);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
 
-    @media (max-width: 760px) {
-      .ets2-rules-page .rules-grid {
-        grid-template-columns: 1fr;
-        gap: 7px;
-      }
+        .sidebar-title {
+            padding: 0 10px 12px;
+            color: var(--gold);
+            font-size: 11px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
 
-      .ets2-rules-page .rules-card-wide {
-        grid-column: auto;
-      }
+        .sidebar a {
+            display: block;
+            margin: 3px 0;
+            padding: 10px;
+            border-radius: 7px;
+            color: #c1ccdc;
+            font-size: 13px;
+            text-decoration: none;
+            transition: background .2s, color .2s;
+        }
 
-      .ets2-rules-page .rules-intro,
-      .ets2-rules-page .rules-card {
-        padding: 10px;
-      }
-    }
-  </style>
+        .sidebar a:hover {
+            color: white;
+            background: rgba(31, 99, 220, .18);
+        }
+
+        .sidebar a span {
+            display: inline-block;
+            min-width: 34px;
+            color: var(--gold);
+            font-weight: 900;
+        }
+
+        .content {
+            min-width: 0;
+        }
+
+        .page-heading {
+            margin: 0 0 25px;
+        }
+
+        .eyebrow {
+            margin-bottom: 7px;
+            color: var(--gold);
+            font-size: 12px;
+            font-weight: 900;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        .page-heading h1 {
+            margin: 0;
+            color: #f6f8fc;
+            font-size: clamp(32px, 5vw, 55px);
+            font-weight: 900;
+            line-height: 1.12;
+            letter-spacing: -.8px;
+        }
+
+        .page-heading p {
+            max-width: 850px;
+            margin: 15px 0 0;
+            color: #aebdd2;
+            font-size: 16px;
+        }
+
+        .intro-card {
+            margin-bottom: 22px;
+            padding: 23px;
+            background: linear-gradient(
+                135deg,
+                rgba(23, 101, 245, .13),
+                rgba(15, 21, 31, .95) 55%
+            );
+            border: 1px solid rgba(82, 139, 255, .25);
+            border-radius: 12px;
+        }
+
+        .intro-card h2 {
+            margin: 0 0 9px;
+            font-size: 20px;
+        }
+
+        .intro-card p {
+            margin: 7px 0;
+            color: #b9c5d7;
+        }
+
+        .rules-grid {
+            display: grid;
+            gap: 19px;
+        }
+
+        .rules-card {
+            overflow: hidden;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, .16);
+            scroll-margin-top: 85px;
+        }
+
+        .rules-card-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 20px 23px;
+            background: linear-gradient(
+                100deg,
+                rgba(24, 76, 158, .17),
+                rgba(15, 21, 31, .35)
+            );
+            border-bottom: 1px solid var(--border);
+        }
+
+        .rules-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            min-width: 91px;
+            padding: 7px 10px;
+            color: #15100a;
+            background: var(--gold);
+            border-radius: 5px;
+            font-size: 11px;
+            font-weight: 900;
+            letter-spacing: 1px;
+        }
+
+        .rules-card-header h2 {
+            margin: 0;
+            font-size: clamp(18px, 2.5vw, 23px);
+            line-height: 1.35;
+        }
+
+        .rules-content {
+            padding: 22px 25px 25px;
+        }
+
+        .rules-content h3 {
+            margin: 22px 0 12px;
+            padding-left: 12px;
+            border-left: 3px solid var(--blue);
+            color: #f0f4fc;
+            font-size: 17px;
+            line-height: 1.5;
+        }
+
+        .rules-content h3:first-child {
+            margin-top: 0;
+        }
+
+        .rules-content p {
+            margin: 9px 0;
+            color: #c0ccdd;
+        }
+
+        .rules-content ol {
+            margin: 10px 0 17px;
+            padding-left: 30px;
+            color: #c3cede;
+        }
+
+        .rules-content ol > li {
+            padding: 4px 0 4px 5px;
+        }
+
+        .rules-content ol > li::marker {
+            color: var(--blue-light);
+            font-weight: 800;
+        }
+
+        .rules-content ol ol {
+            margin-top: 7px;
+            list-style-type: lower-alpha;
+        }
+
+        .rules-content strong {
+            color: #f2f5fc;
+        }
+
+        .sanction {
+            margin: 18px 0;
+            padding: 15px 17px;
+            background: rgba(255, 150, 56, .08);
+            border: 1px solid rgba(255, 150, 56, .42);
+            border-left: 4px solid var(--orange);
+            border-radius: 7px;
+            color: #e4d3c1;
+        }
+
+        .sanction strong {
+            display: block;
+            margin-bottom: 5px;
+            color: #ffb16b;
+        }
+
+        .warning {
+            margin: 18px 0;
+            padding: 15px 17px;
+            background: rgba(255, 85, 95, .07);
+            border: 1px solid rgba(255, 85, 95, .32);
+            border-left: 4px solid var(--red);
+            border-radius: 7px;
+            color: #e5c6ca;
+        }
+
+        .rules-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 18px 0;
+        }
+
+        .rules-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            padding: 12px 17px;
+            background: linear-gradient(120deg, #1765f5, #104cc1);
+            border: 1px solid rgba(115, 165, 255, .3);
+            border-radius: 6px;
+            color: #fff;
+            font-size: 13px;
+            font-weight: 900;
+            text-decoration: none;
+            transition: filter .2s, transform .2s;
+        }
+
+        .rules-link:hover {
+            filter: brightness(1.15);
+            transform: translateY(-1px);
+        }
+
+        .rules-link.secondary {
+            background: rgba(30, 40, 56, .85);
+            border-color: var(--border);
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 3px 8px;
+            background: rgba(23, 101, 245, .14);
+            border: 1px solid rgba(100, 168, 255, .3);
+            border-radius: 4px;
+            color: #91c4ff;
+            font-family: Consolas, monospace;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .code-note {
+            margin-top: 22px;
+            padding: 18px 20px;
+            background: rgba(255, 189, 53, .055);
+            border: 1px solid rgba(255, 189, 53, .24);
+            border-radius: 9px;
+        }
+
+        .code-note h3 {
+            margin: 0 0 8px;
+            color: var(--gold);
+            font-size: 16px;
+        }
+
+        .code-note p {
+            margin: 0;
+            color: #c1ccdc;
+        }
+
+        .footer {
+            padding: 25px 20px;
+            border-top: 1px solid var(--border);
+            color: #8492a8;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        .footer strong {
+            color: #dce4f0;
+            letter-spacing: 2px;
+        }
+
+        @media (max-width: 900px) {
+            .layout {
+                grid-template-columns: 1fr;
+                padding: 22px 16px 40px;
+            }
+
+            .sidebar {
+                position: static;
+            }
+
+            .sidebar-links {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 3px;
+            }
+
+            .topbar {
+                flex-wrap: wrap;
+            }
+
+            .topnav {
+                gap: 12px;
+            }
+        }
+
+        @media (max-width: 520px) {
+            .topbar {
+                padding: 8px 13px;
+            }
+
+            .brand {
+                font-size: 18px;
+            }
+
+            .topnav {
+                width: 100%;
+                justify-content: space-between;
+                gap: 8px;
+            }
+
+            .topnav a {
+                font-size: 12px;
+            }
+
+            .layout {
+                padding: 18px 11px 30px;
+            }
+
+            .rules-card-header {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 10px;
+                padding: 17px;
+            }
+
+            .rules-content {
+                padding: 18px 16px;
+            }
+
+            .rules-content ol {
+                padding-left: 23px;
+            }
+
+            .sidebar-links {
+                grid-template-columns: 1fr;
+            }
+
+            .rules-link {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
 </head>
 
-<body class="ets2-info-page ets2-rules-page">
+<body>
+    <div class="page-background" aria-hidden="true"></div>
 
-  <div class="noise" aria-hidden="true"></div>
-
-  <div class="legion-page-background" aria-hidden="true">
-    <video class="legion-page-video" autoplay muted loop playsinline preload="metadata"
-      poster="assets/ets2/ua-legion-ets2-poster.jpg">
-      <source src="assets/ets2/ua-legion-ets2-bg.mp4" type="video/mp4">
-    </video>
-    <div class="legion-page-shade"></div>
-  </div>
-
-  <header class="topbar">
-    <a class="brand" href="index.html">
-      <img src="ua-legion-logo.png" alt="UA LEGION">
-      <span>UA LEGION</span>
-    </a>
-
-    <button class="menu-btn" aria-label="Відкрити меню" aria-expanded="false">☰</button>
-
-    <nav class="nav">
-      <a href="index.html">Головна</a>
-      <a href="about.html">Про нас</a>
-      <a href="games.html">Ігри</a>
-      <a href="events.html">Події</a>
-      <a href="media.html">Медіа</a>
-      <a href="gallery.html">Галерея</a>
-      <a href="https://www.tiktok.com/@ua_legion_" target="_blank" rel="noopener noreferrer">TikTok</a>
-      <a href="https://discord.gg/gfunf3yq7" target="_blank" rel="noopener noreferrer" class="nav-cta">Discord</a>
-      <a href="login.html" id="authButton">Увійти / Реєстрація</a>
-    </nav>
-  </header>
-
-  <main class="ets-info-main">
-    <div class="legion-content-wrap">
-
-      <aside class="ets-sidebar">
-        <a class="side-logo" href="ets2-info.html">
-          <img src="ua-legion-logo.png" alt="UA LEGION">
-          <b>UA LEGION ETS2</b>
-          <small>TRANSPORT DIVISION</small>
+    <header class="topbar">
+        <a class="brand" href="index.html" aria-label="UA LEGION — головна">
+            <img src="logo.png" alt="UA LEGION">
+            <span>UA LEGION</span>
         </a>
 
-        <div class="side-group">
-          <span>ETS2 / КОМПАНІЯ</span>
-          <a href="ets2-info.html">ℹ️ Інформація</a>
-          <a class="active" href="ets2-rules.html">📋 Правила ETS2</a>
-          <a href="ets2-news.html">📰 Новини та оголошення</a>
-          <a href="ets2-classes.html">⭐ Класи водіїв</a>
-        </div>
+        <nav class="topnav" aria-label="Головна навігація">
+            <a href="index.html">Головна</a>
+            <a href="about.html">Про нас</a>
+            <a href="games.html">Ігри</a>
+            <a href="events.html">Події</a>
+            <a href="media.html">Медіа</a>
+            <a href="support.html">Підтримка</a>
+        </nav>
+    </header>
 
-        <div class="side-group">
-          <span>КЕРІВНИЦТВО</span>
-          <a href="ets2-leadership.html">🛡️ Склад керівництва</a>
-          <a href="ets2-hierarchy.html">👑 Ієрархія та обов’язки</a>
-        </div>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="sidebar-title">Кодекс UA LEGION</div>
 
-        <div class="side-group">
-          <span>СПІЛЬНОТА</span>
-          <a href="https://discord.gg/gfunf3yq7" target="_blank" rel="noopener noreferrer">💬 Чат ETS2</a>
-          <a href="ets2-join.html">📝 Заявка на вступ</a>
-          <a href="ets2-roles.html">🎫 Отримання ролей</a>
-          <a href="ets2-partners.html">📣 Партнери</a>
-          <a href="ets2-blacklist.html">⛔ Чорний список</a>
-        </div>
+            <nav class="sidebar-links" aria-label="Зміст Кодексу">
+                <a href="#general"><span>01</span> Загальні положення</a>
+                <a href="#discord"><span>02</span> Discord і спілкування</a>
+                <a href="#convoys"><span>03</span> ETS2 та конвої</a>
+                <a href="#livery"><span>04</span> Корпоративна ліврея</a>
+                <a href="#complaints"><span>05</span> Відповідальність і скарги</a>
+                <a href="#support"><span>→</span> Подати звернення</a>
+            </nav>
+        </aside>
 
-        <div class="side-group">
-          <span>НА ДОРОЗІ</span>
-          <a href="ets2-fleet.html">🚚 Автопарк</a>
-          <a href="ets2-events.html">🏁 Події та конвої</a>
-          <a href="ets2-deliveries.html">📦 Завершені доставки</a>
-          <a href="ets2-drivers.html">👨‍✈️ Водії</a>
-          <a href="ets2-gallery.html">📸 Галерея</a>
-        </div>
-      </aside>
+        <main class="content">
+            <header class="page-heading">
+                <div class="eyebrow">UA LEGION · OFFICIAL REGULATIONS</div>
+                <h1>Кодекс компанії</h1>
+                <p>
+                    Єдині правила поведінки, комунікації, участі в конвоях
+                    та використання корпоративного стилю UA LEGION.
+                    Кодекс обов’язковий для всіх учасників компанії.
+                </p>
+            </header>
 
-      <div class="legion-content">
+            <section class="intro-card">
+                <h2>Порядок і відповідальність — основа команди</h2>
+                <p>
+                    Цей Кодекс визначає внутрішні правила UA LEGION,
+                    порядок взаємодії учасників і можливі заходи реагування
+                    на порушення.
+                </p>
+                <p>
+                    Участь у діяльності компанії означає згоду дотримуватися
+                    цих правил і чинних правил платформи TruckersMP.
+                </p>
+            </section>
 
-        <section class="legion-section">
-          <div class="legion-section-head">
-            <span class="legion-eyebrow">UA LEGION / ETS2</span>
-            <h2>Правила <em>компанії</em></h2>
-            <p>
-              Єдині вимоги до учасників UA LEGION: поведінка,
-              спілкування, ігровий тег, водіння та участь у конвоях.
-            </p>
-          </div>
+            <div class="rules-grid">
 
-          <div class="rules-intro">
-            Кожен учасник UA LEGION зобов’язаний дотримуватися цих
-            внутрішніх правил, поважати інших гравців і виконувати
-            вимоги організаторів офіційних заходів.
+                <!-- РОЗДІЛ 1 -->
+                <section class="rules-card" id="general">
+                    <div class="rules-card-header">
+                        <span class="rules-number">РОЗДІЛ 1</span>
+                        <h2>Загальні положення</h2>
+                    </div>
 
-            <div class="rules-notice">
-              Правила TruckersMP діють незалежно від внутрішніх правил
-              компанії. UA LEGION не може скасовувати або змінювати
-              правила платформи та рішення її адміністрації.
+                    <div class="rules-content">
+                        <h3>Стаття 1.1. Сфера дії Кодексу</h3>
+                        <ol>
+                            <li>Кодекс поширюється на всіх учасників UA LEGION незалежно від їхнього стажу, статусу чи посади.</li>
+                            <li>Учасники зобов’язані дотримуватися правил компанії, правил відповідних платформ і законних вимог їхніх адміністрацій.</li>
+                            <li>Незнання положень Кодексу не звільняє від відповідальності за порушення.</li>
+                            <li>Адміністрація може уточнювати та доповнювати Кодекс. Оновлення мають бути доведені до відома учасників.</li>
+                        </ol>
+
+                        <h3>Стаття 1.2. Ім’я та ідентифікація учасника</h3>
+                        <ol>
+                            <li>Ім’я або нікнейм учасника має бути читабельним і не містити образ, погроз, дискримінаційних висловлювань чи навмисно провокаційного контенту.</li>
+                            <li>Стандартний тег учасника компанії в TruckersMP — <span class="tag">UA_LEGION</span>.</li>
+                            <li>Посадові позначення дозволяються виключно особам, яким відповідні повноваження офіційно надані керівництвом.</li>
+                            <li>Позначення <span class="tag">UA_LEG | Director</span> та інші посадові теги не можуть використовуватися самовільно.</li>
+                        </ol>
+
+                        <h3>Стаття 1.3. Повага та конфіденційність</h3>
+                        <ol>
+                            <li>Учасники зобов’язані поважати інших членів компанії, керівництво та інших гравців.</li>
+                            <li>Забороняються цькування, дискримінація, погрози, навмисні провокації та систематичні образи.</li>
+                            <li>Забороняється без належної згоди розголошувати чужі приватні дані, паролі, приватні листування або іншу конфіденційну інформацію.</li>
+                            <li>Забороняється використовувати приватну інформацію для тиску, переслідування чи залякування інших осіб.</li>
+                        </ol>
+
+                        <div class="sanction">
+                            <strong>Заходи реагування</strong>
+                            Залежно від обставин можуть застосовуватися попередження,
+                            вимога припинити порушення, обмеження доступу до
+                            внутрішніх заходів або відсторонення від компанії.
+                            Серйозні порушення можуть розглядатися негайно.
+                        </div>
+                    </div>
+                </section>
+
+                <!-- РОЗДІЛ 2 -->
+                <section class="rules-card" id="discord">
+                    <div class="rules-card-header">
+                        <span class="rules-number">РОЗДІЛ 2</span>
+                        <h2>Discord і комунікація</h2>
+                    </div>
+
+                    <div class="rules-content">
+                        <h3>Стаття 2.1. Поведінка в голосових каналах</h3>
+                        <ol>
+                            <li>Учасники мають спілкуватися так, щоб не заважати іншим користувачам каналу.</li>
+                            <li>Забороняються навмисний крик у мікрофон, звуковий спам, постійні перебивання та відтворення сторонніх звуків з метою завадити спілкуванню.</li>
+                            <li>Музика та інші сторонні аудіоматеріали допускаються лише тоді, коли вони не порушують роботу каналу та не заважають іншим.</li>
+                            <li>Під час організованого конвою голосовий канал використовується насамперед для координації руху.</li>
+                        </ol>
+
+                        <h3>Стаття 2.2. Поведінка в текстових каналах</h3>
+                        <ol>
+                            <li>Забороняються флуд, спам, беззмістовне масове надсилання повідомлень і навмисне засмічення каналів.</li>
+                            <li>Реклама сторонніх проєктів, серверів або спільнот допускається лише з дозволу уповноваженої адміністрації.</li>
+                            <li>Потрібно дотримуватися призначення кожного каналу та вказівок модераторів.</li>
+                            <li>Забороняється обходити обмеження модерації через альтернативні облікові записи або інші канали.</li>
+                        </ol>
+
+                        <h3>Стаття 2.3. Виконання вимог модерації</h3>
+                        <ol>
+                            <li>Учасник зобов’язаний виконувати обґрунтовані вимоги модераторів у межах їхніх повноважень.</li>
+                            <li>Незгоду з діями модератора слід висловлювати спокійно та через відповідний канал звернень.</li>
+                            <li>Забороняються переслідування модераторів, тиск на них і навмисне перешкоджання виконанню їхніх обов’язків.</li>
+                        </ol>
+
+                        <div class="sanction">
+                            <strong>Заходи реагування</strong>
+                            Залежно від характеру порушення можуть застосовуватися
+                            усне або письмове попередження, тимчасове обмеження
+                            спілкування, видалення з каналу чи інші внутрішні заходи.
+                        </div>
+                    </div>
+                </section>
+
+                <!-- РОЗДІЛ 3 -->
+                <section class="rules-card" id="convoys">
+                    <div class="rules-card-header">
+                        <span class="rules-number">РОЗДІЛ 3</span>
+                        <h2>ETS2, TruckersMP та організовані конвої</h2>
+                    </div>
+
+                    <div class="rules-content">
+                        <h3>Стаття 3.1. Дотримання правил платформи</h3>
+                        <ol>
+                            <li>Учасники зобов’язані дотримуватися актуальних офіційних правил TruckersMP.</li>
+                            <li>Внутрішні правила UA LEGION не скасовують і не замінюють вимог TruckersMP.</li>
+                            <li>Кожен водій несе відповідальність за власну поведінку, безпечне керування транспортом і дотримання правил сервера.</li>
+                        </ol>
+
+                        <div class="rules-links">
+                            <a class="rules-link"
+                               href="https://truckersmp.com/rules"
+                               target="_blank"
+                               rel="noopener noreferrer">
+                                Офіційні правила TruckersMP ↗
+                            </a>
+                        </div>
+
+                        <h3>Стаття 3.2. Безпека руху</h3>
+                        <ol>
+                            <li>Забороняються навмисні зіткнення, блокування дороги, таран, переслідування інших гравців і навмисне створення аварійних ситуацій.</li>
+                            <li>Водій зобов’язаний дотримуватися безпечної дистанції та обирати швидкість відповідно до дорожніх умов і вказівок організатора.</li>
+                            <li>Забороняється навмисно створювати хаос у колоні, перешкоджати її руху або провокувати інших учасників.</li>
+                            <li>У разі інциденту водій має діяти спокійно, повідомити організатора за потреби та скористатися офіційними засобами подання скарг TruckersMP, якщо це необхідно.</li>
+                        </ol>
+
+                        <h3>Стаття 3.3. Порядок проведення конвою</h3>
+                        <ol>
+                            <li>Учасник повинен прибути до місця збору в зазначений час і підготувати транспорт до початку заходу.</li>
+                            <li>Під час руху необхідно виконувати вказівки організатора конвою та уповноважених супроводжувальних осіб.</li>
+                            <li>Забороняється самовільно обганяти колону, змінювати визначене місце в ній або порушувати погоджений порядок руху без необхідності чи дозволу організатора.</li>
+                            <li>Маршрут, формація, місця зупинок і порядок старту визначаються організатором конкретного заходу.</li>
+                            <li>Якщо водій затримується, має технічну проблему або не може продовжувати рух, він повинен повідомити організатора за першої можливості.</li>
+                            <li>Учасники повинні підтримувати зв’язок у визначеному голосовому каналі, якщо це передбачено організацією заходу.</li>
+                        </ol>
+
+                        <h3>Стаття 3.4. Технічні та дисциплінарні інциденти</h3>
+                        <ol>
+                            <li>У разі технічної проблеми водій має безпечно припинити рух і повідомити організатора.</li>
+                            <li>Учасник не повинен навмисно затримувати конвой або створювати перешкоди для інших водіїв.</li>
+                            <li>Порушення правил TruckersMP може бути передане на розгляд адміністрації платформи відповідно до її процедур.</li>
+                        </ol>
+
+                        <div class="sanction">
+                            <strong>Можливі внутрішні заходи</strong>
+                            Попередження, тимчасове недопущення до одного або кількох
+                            конвоїв, відсторонення до усунення порушення або перегляд
+                            внутрішнього класу водія відповідно до чинних правил компанії.
+                        </div>
+                    </div>
+                </section>
+
+                <!-- РОЗДІЛ 4 -->
+                <section class="rules-card" id="livery">
+                    <div class="rules-card-header">
+                        <span class="rules-number">РОЗДІЛ 4</span>
+                        <h2>Корпоративний стиль і ліврея</h2>
+                    </div>
+
+                    <div class="rules-content">
+                        <h3>Стаття 4.1. Обов’язкова ліврея на офіційних конвоях</h3>
+                        <ol>
+                            <li>Під час офіційних конвоїв UA LEGION використання затвердженої корпоративної лівреї вантажівки та причепа є обов’язковим.</li>
+                            <li>Учасник зобов’язаний використовувати затверджені кольори, схему оформлення та інші елементи дизайну, встановлені для відповідного заходу.</li>
+                            <li>Забороняється самовільно змінювати обов’язкові кольори, схему корпоративного оформлення або інші затверджені елементи лівреї.</li>
+                            <li>Забороняється додавати сторонні наклейки, графіку чи декоративні елементи, якщо вони не передбачені затвердженим дизайном.</li>
+                            <li>Якщо для окремого заходу встановлено спеціальну ліврею, учасник зобов’язаний виконати вимоги організатора до початку конвою.</li>
+                        </ol>
+
+                        <h3>Стаття 4.2. Індивідуальний тюнінг поза офіційними конвоями</h3>
+                        <ol>
+                            <li>Поза офіційними конвоями учасникам дозволяється індивідуально налаштовувати зовнішній вигляд вантажівки відповідно до правил платформи.</li>
+                            <li>Допускаються індивідуальні спойлери, диски, освітлення, аксесуари кабіни та інші дозволені елементи тюнінгу.</li>
+                            <li>Індивідуальний тюнінг не повинен містити образливих, дискримінаційних, погрозливих або провокаційних написів і зображень.</li>
+                            <li>Дозвіл на індивідуальний тюнінг поза конвоями не скасовує вимоги використовувати затверджену ліврею на офіційних заходах.</li>
+                        </ol>
+
+                        <h3>Стаття 4.3. Перевірка відповідності</h3>
+                        <ol>
+                            <li>До початку офіційного конвою учасник повинен перевірити відповідність вантажівки та причепа встановленим вимогам.</li>
+                            <li>Якщо оформлення не відповідає затвердженому дизайну, учасник повинен виправити його до початку руху.</li>
+                            <li>Якщо учасник не може самостійно виконати вимоги, він повинен завчасно звернутися до організатора або відповідального представника компанії.</li>
+                        </ol>
+
+                        <div class="sanction">
+                            <strong>Порядок застосування заходів</strong>
+                            <ol>
+                                <li>Перше порушення — попередження та вимога виправити оформлення до початку конвою.</li>
+                                <li>Повторне порушення — недопущення до конвою до усунення невідповідності.</li>
+                                <li>Систематичне невиконання вимог може бути підставою для перегляду класу водія відповідно до правил компанії.</li>
+                            </ol>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- РОЗДІЛ 5 -->
+                <section class="rules-card" id="complaints">
+                    <div class="rules-card-header">
+                        <span class="rules-number">РОЗДІЛ 5</span>
+                        <h2>Відповідальність і розгляд скарг</h2>
+                    </div>
+
+                    <div class="rules-content">
+                        <h3>Стаття 5.1. Загальні засади відповідальності</h3>
+                        <ol>
+                            <li>За порушення Кодексу до учасника можуть застосовуватися внутрішні дисциплінарні заходи в межах повноважень адміністрації.</li>
+                            <li>Під час визначення заходу враховуються характер порушення, його наслідки, наявні докази, обставини та повторність.</li>
+                            <li>Заходи мають бути співмірними порушенню. Серйозні порушення можуть розглядатися без попереднього попередження.</li>
+                            <li>Внутрішні заходи компанії не скасовують і не замінюють рішень адміністрації TruckersMP або Discord.</li>
+                        </ol>
+
+                        <h3>Стаття 5.2. Подання скарг</h3>
+                        <ol>
+                            <li>Розгляд скарг щодо діяльності UA LEGION, поведінки учасників, організації конвоїв або дій адміністрації проводиться через офіційну сторінку підтримки.</li>
+                            <li>Для подання скарги заявник повинен обрати відповідний напрям і категорію, зазначити тему та описати обставини звернення.</li>
+                            <li>Опис має бути чітким, послідовним і містити відомі заявнику факти.</li>
+                            <li>За наявності рекомендується додавати докази: скриншоти, відеозаписи, посилання, дату, час та інші матеріали, що допоможуть перевірити ситуацію.</li>
+                            <li>Забороняється свідомо подавати неправдиву інформацію, фабрикувати докази або використовувати скарги для переслідування інших учасників.</li>
+                        </ol>
+
+                        <div class="rules-links" id="support">
+                            <a class="rules-link"
+                               href="https://advokatua.github.io/ua-legion/support.html"
+                               target="_blank"
+                               rel="noopener noreferrer">
+                                Подати скаргу через службу підтримки ↗
+                            </a>
+                        </div>
+
+                        <h3>Стаття 5.3. Розгляд звернень</h3>
+                        <ol>
+                            <li>Звернення розглядають уповноважені представники UA LEGION у межах наданих їм повноважень.</li>
+                            <li>Під час розгляду можуть враховуватися пояснення сторін, надані докази та інші обставини, що стосуються справи.</li>
+                            <li>Заявник повинен утримуватися від тиску на осіб, які розглядають скаргу, а також від погроз чи переслідування інших учасників.</li>
+                            <li>Строк розгляду залежить від складності ситуації, наявності доказів та завантаженості відповідальних осіб.</li>
+                        </ol>
+
+                        <h3>Стаття 5.4. Оскарження внутрішнього рішення</h3>
+                        <ol>
+                            <li>Учасник має право звернутися з проханням переглянути застосований до нього внутрішній захід.</li>
+                            <li>У зверненні необхідно зазначити, яке рішення оскаржується, з чим саме учасник не погоджується та які обставини або докази потрібно врахувати.</li>
+                            <li>За можливості повторний розгляд доручається уповноваженому представнику, який не брав безпосередньої участі в ухваленні первинного рішення.</li>
+                            <li>Подання скарги саме по собі не призупиняє дію застосованого заходу, якщо уповноважена особа не ухвалила іншого рішення.</li>
+                        </ol>
+
+                        <div class="warning">
+                            <strong>Заборона тиску та помсти</strong>
+                            Забороняється переслідувати заявника, свідків або учасників,
+                            які добросовісно надали пояснення чи докази. Такі дії
+                            можуть бути предметом окремого розгляду.
+                        </div>
+                    </div>
+                </section>
+
             </div>
-          </div>
-        </section>
 
-        <section class="legion-section" id="general">
-          <div class="legion-section-head">
-            <span class="legion-eyebrow">ОСНОВИ КОМПАНІЇ</span>
-            <h2>Загальні <em>положення</em></h2>
-          </div>
-
-          <div class="rules-grid">
-
-            <article class="rules-card">
-              <h3>Дотримання правил</h3>
-              <ul>
-                <li>Кожен учасник зобов’язаний дотримуватися правил UA LEGION, Discord та офіційних правил ігрової платформи.</li>
-                <li>Незнання правил не звільняє від відповідальності за їх порушення.</li>
-                <li>Керівництво може оновлювати внутрішні правила та повідомляти про суттєві зміни через офіційні канали.</li>
-                <li>Якщо правило незрозуміле, учасник може звернутися до керівництва за роз’ясненням.</li>
-              </ul>
-            </article>
-
-            <article class="rules-card">
-              <h3>Повага та поведінка</h3>
-              <ul>
-                <li>Заборонені образи, цькування, погрози, дискримінація та навмисні провокації.</li>
-                <li>Поважай інших учасників незалежно від їхнього досвіду, класу водія чи посади.</li>
-                <li>Не провокуй конфлікти в чатах, голосових каналах і під час спільних рейсів.</li>
-                <li>Суперечки вирішуй спокійно через відповідальні канали, а не шляхом публічних образ.</li>
-              </ul>
-              <div class="sanction">
-                Заходи компанії: попередження, тимчасове обмеження спілкування або виключення залежно від серйозності порушення.
-              </div>
-            </article>
-
-            <article class="rules-card">
-              <h3>Нікнейм та ігровий тег</h3>
-              <ul>
-                <li>Ігровий тег звичайного учасника — <strong>UA_LEGION</strong>.</li>
-                <li>Для учасників, яким офіційно надано керівну посаду, дозволено використовувати формат <strong>UA_LEG | Director</strong> та відповідні позначення інших затверджених керівних посад.</li>
-                <li>Керівні позначення дозволено використовувати лише після офіційного призначення на відповідну посаду.</li>
-                <li>Заборонено самовільно додавати собі звання, посади або інші позначення, які не були надані керівництвом.</li>
-                <li>Нікнейм не повинен містити образ, нецензурної лексики чи провокаційного контенту.</li>
-              </ul>
-              <div class="sanction">
-                Захід компанії: вимога виправити тег або нікнейм і попередження за повторне порушення.
-              </div>
-            </article>
-
-            <article class="rules-card">
-              <h3>Приватність та безпека</h3>
-              <ul>
-                <li>Заборонено публікувати приватні дані інших учасників без їхньої згоди.</li>
-                <li>Не поширюй паролі, приватні повідомлення або персональні матеріали з метою тиску, приниження чи переслідування.</li>
-                <li>Не видавай себе за іншого учасника або представника керівництва.</li>
-                <li>Про підозрілі дії, шахрайство або серйозні порушення повідомляй адміністрації.</li>
-              </ul>
-              <div class="sanction">
-                Серйозні порушення можуть призвести до негайного обмеження доступу або виключення з компанії.
-              </div>
-            </article>
-
-          </div>
-        </section>
-
-        <section class="legion-section" id="communication">
-          <div class="legion-section-head">
-            <span class="legion-eyebrow">DISCORD / СПІЛКУВАННЯ</span>
-            <h2>Текстові та <em>голосові канали</em></h2>
-          </div>
-
-          <div class="rules-grid">
-
-            <article class="rules-card">
-              <h3>Голосове спілкування</h3>
-              <ul>
-                <li>Не кричи, не створюй зайвого шуму та не перебивай інших учасників.</li>
-                <li>Не вмикай музику, звукові ефекти або сторонні трансляції без згоди учасників каналу.</li>
-                <li>Під час конвою голосовий канал використовується передусім для координації та важливих повідомлень.</li>
-                <li>Виконуй обґрунтовані прохання модераторів щодо порядку спілкування.</li>
-                <li>Не використовуй голосовий зв’язок для образ, погроз або навмисного зриву заходу.</li>
-              </ul>
-              <div class="sanction">
-                Захід компанії: попередження, тимчасовий тайм-аут або відсторонення від заходу.
-              </div>
-            </article>
-
-            <article class="rules-card">
-              <h3>Текстові канали</h3>
-              <ul>
-                <li>Заборонені флуд, спам, повторювані повідомлення та навмисне засмічення каналів.</li>
-                <li>Дотримуйся призначення кожного каналу.</li>
-                <li>Не публікуй образливий, незаконний або навмисно провокаційний контент.</li>
-                <li>Реклама сторонніх серверів, компаній, проєктів і каналів дозволена лише за погодженням з адміністрацією.</li>
-                <li>Не обходь обмеження модерації через альтернативні акаунти або інші канали.</li>
-              </ul>
-              <div class="sanction">
-                Захід компанії: попередження, тайм-аут або тимчасове обмеження доступу до каналів.
-              </div>
-            </article>
-
-            <article class="rules-card rules-card-wide">
-              <h3>Виконання вказівок адміністрації</h3>
-              <ul>
-                <li>Учасники повинні дотримуватися правил Discord та вимог модерації сервера.</li>
-                <li>Якщо не погоджуєшся з рішенням модератора, звернися до керівництва через відповідний канал.</li>
-                <li>Заборонено навмисно зривати роботу адміністрації, провокувати модераторів або перешкоджати розгляду скарг.</li>
-              </ul>
-            </article>
-
-          </div>
-        </section>
-
-        <section class="legion-section" id="driving">
-          <div class="legion-section-head">
-            <span class="legion-eyebrow">EURO TRUCK SIMULATOR 2 / TRUCKERSMP</span>
-            <h2>Правила <em>на дорозі</em></h2>
-            <p>
-              Безпечне водіння та дотримання правил платформи —
-              обов’язкова умова участі в рейсах і конвоях.
-            </p>
-          </div>
-
-          <div class="rules-grid">
-
-            <article class="rules-card">
-              <h3>Правила TruckersMP</h3>
-              <ul>
-                <li>Кожен водій зобов’язаний знати й дотримуватися чинних правил TruckersMP.</li>
-                <li>Заборонені навмисні зіткнення, блокування доріг, переслідування та навмисне перешкоджання іншим гравцям.</li>
-                <li>Не використовуй сторонні програми, експлойти або інші заборонені засоби для отримання переваги.</li>
-                <li>Не відповідай на провокації порушенням правил. Зафіксуй ситуацію та використовуй офіційну систему скарг.</li>
-              </ul>
-              <div class="rules-links">
-                <a href="https://truckersmp.com/rules" target="_blank" rel="noopener noreferrer">
-                  Офіційні правила TruckersMP ↗
-                </a>
-              </div>
-            </article>
-
-            <article class="rules-card">
-              <h3>Безпечне водіння</h3>
-              <ul>
-                <li>Дотримуйся безпечної дистанції та контролюй швидкість відповідно до дорожньої ситуації.</li>
-                <li>Зважай на трафік, перехрестя, повороти, гальмування та поведінку інших гравців.</li>
-                <li>Не намагайся наздогнати колону шляхом небезпечних маневрів.</li>
-                <li>Перед зміною смуги або обгоном переконайся, що маневр безпечний і дозволений правилами платформи.</li>
-                <li>Якщо сталася аварія, не створюй додаткових перешкод для руху.</li>
-              </ul>
-            </article>
-
-            <article class="rules-card">
-              <h3>Участь у конвоях</h3>
-              <ul>
-                <li>Прибувай до місця збору завчасно та перевір готовність вантажівки й причепа.</li>
-                <li>Виконуй інструкції організатора щодо маршруту, побудови колони, зупинок і порядку руху.</li>
-                <li>Дотримуйся визначеної позиції в колоні та не обганяй інших учасників без дозволу організатора.</li>
-                <li>Не створюй хаосу, не змінюй самовільно маршрут і не провокуй зіткнення.</li>
-                <li>Якщо виникли технічні проблеми або ти відстав, повідом організатора та приєднуйся лише безпечним способом.</li>
-              </ul>
-              <div class="sanction">
-                Захід компанії: відсторонення від майбутніх конвоїв або перегляд допуску до заходів.
-              </div>
-            </article>
-
-            <article class="rules-card">
-              <h3>Дисципліна водія</h3>
-              <ul>
-                <li>Не залишай транспортний засіб у місці, де він створює небезпеку або перешкоду для колони.</li>
-                <li>Не використовуй аварійні зупинки або телепортацію для навмисного зриву конвою.</li>
-                <li>Не провокуй інших гравців на конфлікти та не переслідуй їх після інциденту.</li>
-                <li>Участь у компанії не надає привілеїв на дорозі та не звільняє від правил TruckersMP.</li>
-              </ul>
-            </article>
-
-            <article class="rules-card rules-card-wide">
-              <h3>Повідомлення про порушення</h3>
-              <ul>
-                <li>Якщо учасник UA LEGION став свідком серйозного порушення, він може повідомити керівництво та надати доступні докази.</li>
-                <li>Не публікуй неперевірені звинувачення та не організовуй переслідування порушника.</li>
-                <li>Порушення правил платформи розглядаються через офіційні процедури TruckersMP. Внутрішній розгляд компанії не замінює процедури платформи.</li>
-              </ul>
-            </article>
-
-          </div>
-        </section>
-
-        <section class="legion-section" id="livery">
-          <div class="legion-section-head">
-            <span class="legion-eyebrow">CORPORATE STYLE / ОФОРМЛЕННЯ</span>
-            <h2>Корпоративний <em>стиль</em></h2>
-          </div>
-
-          <div class="rules-grid">
-
-            <article class="rules-card">
-              <h3>Офіційна ліврея</h3>
-              <ul>
-                <li>Під час офіційного конвою використовуй ліврею вантажівки та причепа, якщо її вимагає організатор.</li>
-                <li>Якщо для заходу опубліковано схему кольорів, обов’язкові наклейки або конкретну модель техніки, дотримуйся цих вимог до початку збору.</li>
-                <li>Не прибирай і не змінюй обов’язкові елементи затвердженої лівреї без погодження з організатором.</li>
-                <li>Заборонено використовувати оформлення, наліпки чи написи з образливим, дискримінаційним або провокаційним змістом.</li>
-                <li>Якщо вимоги до лівреї не оголошені, достатньо охайного оформлення без заборонених елементів; окрема корпоративна схема не вважається обов’язковою автоматично.</li>
-              </ul>
-            </article>
-
-            <article class="rules-card">
-              <h3>Тюнінг та модифікації</h3>
-              <ul>
-                <li>Індивідуальний тюнінг допускається, якщо він не порушує правила платформи та вимоги офіційних заходів.</li>
-                <li>Зовнішній вигляд транспортного засобу не повинен містити образливих або провокаційних елементів.</li>
-                <li>Не використовуй модифікації, які заборонені правилами TruckersMP.</li>
-                <li>За вимогою організатора приведи техніку у відповідність до затвердженого оформлення перед участю в конвої.</li>
-              </ul>
-              <div class="sanction">
-                Захід компанії: вимога виправити оформлення або відсторонення від конкретного конвою.
-              </div>
-            </article>
-
-          </div>
-        </section>
-
-        <section class="legion-section" id="responsibility">
-          <div class="legion-section-head">
-            <span class="legion-eyebrow">ВІДПОВІДАЛЬНІСТЬ / РОЗГЛЯД ПОРУШЕНЬ</span>
-            <h2>Порядок <em>відповідальності</em></h2>
-          </div>
-
-          <div class="rules-grid">
-
-            <article class="rules-card">
-              <h3>Заходи компанії</h3>
-              <ul>
-                <li>Керівництво оцінює серйозність порушення, обставини, наявні докази, завдану шкоду та повторюваність поведінки.</li>
-                <li>За перше незначне порушення зазвичай застосовується усне або письмове попередження з поясненням, що саме потрібно виправити.</li>
-                <li>За повторне порушення можуть застосовуватися письмове попередження, тимчасове обмеження доступу до внутрішніх каналів або відсторонення від окремих заходів.</li>
-                <li>За систематичні чи серйозні порушення можливе тимчасове відсторонення від конвоїв або виключення з компанії.</li>
-                <li>У випадках загрози безпеці, переслідування, розголошення приватних даних або навмисного зриву заходу керівництво може застосувати суворий захід одразу, без попередніх попереджень.</li>
-                <li>Рішення має відповідати характеру порушення та компетенції особи, яка його ухвалює. Учасник може попросити перегляд рішення через офіційний канал.</li>
-              </ul>
-            </article>
-
-            <article class="rules-card">
-              <h3>Розгляд скарг</h3>
-              <ul>
-                <li>Учасник може звернутися до керівництва для пояснення ситуації або перегляду внутрішнього рішення.</li>
-                <li>Під час розгляду скарги важливо надавати факти, докази та зрозумілий опис події.</li>
-                <li>Заборонено тиснути на учасників, які добросовісно повідомили про порушення або беруть участь у його розгляді.</li>
-                <li>Внутрішні рішення UA LEGION не скасовують покарання, правила чи процедури оскарження TruckersMP.</li>
-              </ul>
-            </article>
-
-            <article class="rules-card rules-card-wide">
-              <h3>Повноваження керівництва</h3>
-              <ul>
-                <li>Керівництво організовує діяльність компанії, координує офіційні заходи та контролює дотримання внутрішніх правил у межах наданих повноважень.</li>
-                <li>Керівна посада та відповідне позначення в ігровому тегу мають бути офіційно надані.</li>
-                <li>Посада не дає права порушувати правила платформи, принижувати інших учасників або зловживати повноваженнями.</li>
-                <li>Учасники можуть звертатися до керівництва з питаннями, пропозиціями та скаргами через офіційні канали.</li>
-              </ul>
-            </article>
-
-          </div>
-
-          <div class="rules-notice">
-            Ці правила регулюють внутрішню діяльність UA LEGION.
-            У питаннях гри в мультиплеєрі необхідно також дотримуватися
-            чинних правил TruckersMP. Перевіряй їх за офіційним посиланням,
-            оскільки платформа може оновлювати правила незалежно від компанії.
-          </div>
-        </section>
-
-      </div>
+            <section class="code-note">
+                <h3>Заключне положення</h3>
+                <p>
+                    Цей Кодекс застосовується разом з актуальними правилами
+                    відповідних платформ. Питання, не врегульовані Кодексом,
+                    розглядаються уповноваженою адміністрацією з урахуванням
+                    обставин, доказів та принципів справедливості.
+                </p>
+            </section>
+        </main>
     </div>
-  </main>
 
-  <footer>
-    <div class="footer-brand">
-      <img src="ua-legion-logo.png" alt="UA LEGION">
-      <div>
-        <b>UA LEGION ETS2</b>
-        <span>TRANSPORT DIVISION</span>
-      </div>
-    </div>
-    <p>Україна грає. ЛЕГІОН перемагає.</p>
-    <small>© 2026 UA LEGION</small>
-  </footer>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase.js"></script>
-  <script src="script.js"></script>
-  <script src="auth-menu.js"></script>
+    <footer class="footer">
+        <strong>UA LEGION</strong>
+        <p>Офіційний Кодекс компанії · ETS2 / TruckersMP</p>
+        <p>
+            <a href="support.html">Підтримка</a>
+            ·
+            <a href="https://truckersmp.com/rules"
+               target="_blank"
+               rel="noopener noreferrer">Правила TruckersMP</a>
+        </p>
+    </footer>
 </body>
 </html>
