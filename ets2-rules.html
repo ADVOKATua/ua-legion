@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#080b11">
-<title>Правила UA LEGION — ETS2 / TruckersMP</title>
+<title>Правила ETS2 — UA LEGION</title>
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="ets2.css">
 <link rel="stylesheet" href="ets2-info-page.css">
@@ -24,22 +24,62 @@ a{color:var(--light)}.page-background{position:fixed;inset:0;z-index:-1;backgrou
 .footer{padding:25px 20px;border-top:1px solid var(--border);color:#8492a8;text-align:center;font-size:12px}.footer strong{color:#dce4f0;letter-spacing:2px}
 @media(max-width:900px){.layout{grid-template-columns:1fr;padding:22px 16px 40px}.sidebar{position:static}.sidebar-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:3px}.topbar{flex-wrap:wrap}.topnav{gap:12px}}
 @media(max-width:520px){.topbar{padding:8px 13px}.brand{font-size:18px}.topnav{width:100%;justify-content:space-between;gap:8px}.topnav a{font-size:12px}.layout{padding:18px 11px 30px}.rules-card-header{align-items:flex-start;flex-direction:column;gap:10px;padding:17px}.rules-content{padding:18px 16px}.rules-content ol{padding-left:23px}.sidebar-links{grid-template-columns:1fr}.rules-link{width:100%;text-align:center}}
+
+/* Правила візуально узгоджені зі сторінкою ets2-info.html */
+.rules-page-section{width:100%;padding-top:8px}
+.rules-page-section .page-heading{margin-bottom:28px}
+.rules-page-section .page-heading h1{margin:0}
+.rules-page-section .page-heading p{max-width:850px}
+.rules-page-section .rules-card{background:rgba(9,13,21,.82);backdrop-filter:blur(12px)}
+.rules-page-section .rules-card-header{background:linear-gradient(100deg,rgba(23,101,245,.18),rgba(9,13,21,.35))}
+.rules-page-section .intro-card{background:linear-gradient(135deg,rgba(23,101,245,.16),rgba(9,13,21,.84) 60%)}
+.rules-page-section .sidebar-title{letter-spacing:1.5px}
+@media(max-width:900px){.rules-page-section{padding-top:0}}
 </style>
 </head>
-<body>
-<div class="page-background" aria-hidden="true"></div>
+<body class="ets2-info-page">
+<div class="noise" aria-hidden="true"></div>
+<div class="legion-page-background" aria-hidden="true">
+  <video class="legion-page-video" autoplay muted loop playsinline preload="metadata" poster="assets/ets2/ua-legion-ets2-poster.jpg">
+    <source src="assets/ets2/ua-legion-ets2-bg.mp4" type="video/mp4">
+  </video>
+  <div class="legion-page-shade"></div>
+</div>
 <header class="topbar">
-<a class="brand" href="index.html" aria-label="UA LEGION — головна"><img src="logo.png" alt="UA LEGION"><span>UA LEGION</span></a>
-<nav class="topnav" aria-label="Головна навігація"><a href="index.html">Головна</a><a href="about.html">Про нас</a><a href="games.html">Ігри</a><a href="events.html">Події</a><a href="media.html">Медіа</a><a href="support.html">Підтримка</a></nav>
+  <a class="brand" href="index.html"><img src="ua-legion-logo.png" alt="UA LEGION"><span>UA LEGION</span></a>
+  <button class="menu-btn" aria-label="Відкрити меню" aria-expanded="false">☰</button>
+  <nav class="nav">
+    <a href="index.html">Головна</a><a href="about.html">Про нас</a><a href="games.html">Ігри</a>
+    <a href="events.html">Події</a><a href="media.html">Медіа</a><a href="gallery.html">Галерея</a>
+    <a href="https://www.tiktok.com/@ua_legion_" target="_blank" rel="noopener">TikTok</a>
+    <a href="https://discord.gg/gfunf3yq7" target="_blank" rel="noopener" class="nav-cta">Discord</a>
+    <a href="login.html" id="authButton">Увійти / Реєстрація</a>
+  </nav>
 </header>
-<div class="layout">
-<aside class="sidebar"><div class="sidebar-title">Правила UA LEGION</div><nav class="sidebar-links" aria-label="Розділи правил">
-<a href="#general"><span>01</span> Основні положення</a><a href="#discord"><span>02</span> Discord і спілкування</a><a href="#convoys"><span>03</span> ETS2 і TruckersMP</a><a href="#livery"><span>04</span> Корпоративний стиль</a><a href="#complaints"><span>05</span> Відповідальність і скарги</a><a href="#support"><span>→</span> Подати скаргу</a>
-</nav></aside>
-<main class="content">
-<header class="page-heading"><div class="eyebrow">UA LEGION · OFFICIAL RULES</div><h1>Правила компанії</h1><p>Правила поведінки, спілкування, участі в конвоях та використання корпоративного стилю UA LEGION. Вони обов’язкові для всіх учасників компанії.</p></header>
-<section class="intro-card"><h2>Порядок і відповідальність — основа команди</h2><p>Дотримуйся правил компанії, поважай інших учасників і допомагай зберігати організованість команди.</p><p>Внутрішні правила UA LEGION діють разом з актуальними правилами TruckersMP.</p></section>
-<div class="rules-grid">
+<main class="ets-info-main">
+<div class="legion-content-wrap">
+<aside class="ets-sidebar">
+  <a class="side-logo" href="ets2-info.html"><img src="ua-legion-logo.png" alt="UA LEGION"><b>UA LEGION ETS2</b><small>TRANSPORT DIVISION</small></a>
+  <div class="side-group"><span>ETS2 / КОМПАНІЯ</span>
+    <a href="ets2-info.html">ℹ️ Інформація</a><a class="active" href="ets2-rules.html">📋 Правила ETS2</a>
+    <a href="ets2-news.html">📰 Новини та оголошення</a><a href="ets2-classes.html">⭐ Класи водіїв</a>
+  </div>
+  <div class="side-group"><span>КЕРІВНИЦТВО</span><a href="ets2-leadership.html">🛡️ Склад керівництва</a><a href="ets2-hierarchy.html">👑 Ієрархія та обов’язки</a></div>
+  <div class="side-group"><span>СПІЛЬНОТА</span>
+    <a href="https://discord.gg/gfunf3yq7" target="_blank" rel="noopener">💬 Чат ETS2</a><a href="ets2-join.html">📝 Заявка на вступ</a>
+    <a href="ets2-roles.html">🎫 Отримання ролей</a><a href="ets2-partners.html">📣 Партнери</a><a href="ets2-blacklist.html">⛔ Чорний список</a>
+  </div>
+  <div class="side-group"><span>НА ДОРОЗІ</span>
+    <a href="ets2-fleet.html">🚚 Автопарк</a><a href="ets2-events.html">🏁 Події та конвої</a><a href="ets2-deliveries.html">📦 Завершені доставки</a>
+    <a href="ets2-drivers.html">👨‍✈️ Водії</a><a href="ets2-gallery.html">📸 Галерея</a>
+  </div>
+  <a href="https://discord.gg/gfunf3yq7" target="_blank" rel="noopener" class="sidebar-discord">💬 ВІДКРИТИ DISCORD</a>
+</aside>
+<div class="legion-content">
+<div class="legion-section rules-page-section">
+<header class="legion-section-head page-heading"><span class="legion-eyebrow">ETS2 / ВНУТРІШНІ ПРАВИЛА</span><h1>Правила компанії</h1><p>Правила поведінки, спілкування, участі в конвоях та використання корпоративного стилю UA LEGION. Вони обов’язкові для всіх учасників компанії.</p></header>
+<section class="intro-card legion-card"><h2>Порядок і відповідальність — основа команди</h2><p>Дотримуйся правил компанії, поважай інших учасників і допомагай зберігати організованість команди.</p><p>Внутрішні правила UA LEGION діють разом з актуальними правилами TruckersMP.</p></section>
+<div class="rules-grid legion-rules-grid">
 
 <section class="rules-card" id="general"><div class="rules-card-header"><span class="rules-number">РОЗДІЛ 1</span><h2>Основні положення</h2></div><div class="rules-content">
 <h3>1.1. Загальні вимоги</h3><ol><li>Учасники зобов’язані дотримуватися правил компанії та TruckersMP.</li><li>Керівництво може оновлювати внутрішні правила та повідомляє про зміни через офіційні канали.</li><li>Нікнейм має бути читабельним, без образливих, нецензурних і провокаційних елементів.</li><li>Заборонено публікувати приватні дані інших людей без згоди, видавати себе за керівника або привласнювати чужі повноваження.</li></ol>
@@ -78,8 +118,16 @@ a{color:var(--light)}.page-background{position:fixed;inset:0;z-index:-1;backgrou
 </div></section>
 
 </div>
-</main>
 </div>
-<footer class="footer"><strong>UA LEGION</strong><p>Правила компанії · ETS2 / TruckersMP</p><p><a href="support.html">Підтримка</a> · <a href="https://truckersmp.com/rules" target="_blank" rel="noopener noreferrer">Офіційні правила TruckersMP</a></p></footer>
+</main>
+<footer>
+  <div class="footer-brand"><img src="ua-legion-logo.png" alt="UA LEGION"><div><b>UA LEGION ETS2</b><span>TRANSPORT DIVISION</span></div></div>
+  <p>Правила компанії · ETS2 / TruckersMP</p>
+  <small>© 2026 UA LEGION</small>
+</footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
+<script src="script.js"></script>
+<script src="auth-menu.js"></script>
 </body>
 </html>
