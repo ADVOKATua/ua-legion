@@ -1,635 +1,559 @@
 
-<!doctype html>
+<!DOCTYPE html>
 <html lang="uk">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#080b11">
-<title>Класи водіїв ETS2 — UA LEGION</title>
-<link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="ets2.css">
-<link rel="stylesheet" href="ets2-info-page.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#05070b">
+  <title>Класи водіїв ETS2 — UA LEGION</title>
+  <meta name="description" content="Класи водіїв UA LEGION ETS2 та умови підвищення.">
 
-<style>
-/* Основна структура */
-.legion-classes-page {
-  --cl-panel: rgba(9,13,21,.92);
-  --cl-border: rgba(164,181,207,.2);
-  --cl-blue: #1765f5;
-  --cl-light: #64a8ff;
-  --cl-gold: #ffbd35;
-  color: #e9eef8;
-}
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="ets2.css">
+  <link rel="stylesheet" href="ets2-info-page.css">
 
-.legion-classes-page .classes-layout {
-  display: grid !important;
-  grid-template-columns: 230px minmax(0,1fr) !important;
-  gap: 26px !important;
-  width: 100% !important;
-  max-width: 1500px !important;
-  margin: 0 auto !important;
-  padding: 30px 24px 60px !important;
-  align-items: start !important;
-  box-sizing: border-box !important;
-}
+  <style>
+    /* Структура повністю відповідає ets2-info.html */
+    .ets2-classes-page .classes-heading,
+    .ets2-classes-page .classes-intro,
+    .ets2-classes-page .class-card,
+    .ets2-classes-page .promotion-card {
+      box-sizing: border-box;
+      min-width: 0;
+    }
 
-.legion-classes-page .classes-sidebar {
-  position: sticky;
-  top: 90px;
-  width: 100%;
-  min-width: 0;
-  box-sizing: border-box;
-  padding: 16px 12px;
-  background: rgba(8,12,20,.92);
-  border: 1px solid var(--cl-border);
-  border-radius: 12px;
-  backdrop-filter: blur(12px);
-}
+    .ets2-classes-page .classes-heading {
+      margin-bottom: 10px;
+      padding: 14px;
+      background: rgba(5, 9, 16, .65);
+      border: 1px solid rgba(255,255,255,.12);
+    }
 
-.legion-classes-page .classes-sidebar h2 {
-  margin: 0 8px 12px;
-  color: var(--cl-gold);
-  font-size: 12px;
-  letter-spacing: 1px;
-}
+    .ets2-classes-page .classes-heading h1 {
+      margin: 6px 0 8px;
+      font: 700 clamp(26px, 3vw, 36px)/1.1 Rajdhani, sans-serif;
+    }
 
-.legion-classes-page .sidebar-links a {
-  display: block;
-  margin: 4px 0;
-  padding: 10px;
-  border-radius: 6px;
-  color: #c8d3e3;
-  text-decoration: none;
-  font-size: 13px;
-  line-height: 1.5;
-  overflow-wrap: anywhere;
-}
+    .ets2-classes-page .classes-heading p,
+    .ets2-classes-page .classes-intro p {
+      color: #e0e6ef;
+      font-size: 12px;
+      line-height: 1.6;
+    }
 
-.legion-classes-page .sidebar-links a:hover,
-.legion-classes-page .sidebar-links a.active {
-  background: rgba(23,101,245,.2);
-  color: #fff;
-}
+    .ets2-classes-page .classes-intro {
+      margin-bottom: 10px;
+      padding: 14px;
+      background: rgba(5, 9, 16, .65);
+      border: 1px solid rgba(255,255,255,.12);
+    }
 
-.legion-classes-page .sidebar-links a span {
-  color: var(--cl-gold);
-  font-weight: 800;
-}
+    .ets2-classes-page .classes-intro h2 {
+      margin: 4px 0 8px;
+      font: 700 23px/1.2 Rajdhani, sans-serif;
+    }
 
-.legion-classes-page .classes-main {
-  display: block;
-  width: 100%;
-  min-width: 0;
-  max-width: none !important;
-  box-sizing: border-box;
-}
+    /* Дві рівні колонки в межах оригінального legion-content */
+    .ets2-classes-page .classes-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      width: 100%;
+      min-width: 0;
+    }
 
-.legion-classes-page .classes-heading {
-  margin: 0 0 24px;
-}
+    .ets2-classes-page .class-card,
+    .ets2-classes-page .promotion-card {
+      width: 100%;
+      min-width: 0;
+      margin: 0;
+      overflow: hidden;
+      background: rgba(5, 9, 16, .78);
+      border: 1px solid rgba(255,255,255,.14);
+    }
 
-.legion-classes-page .classes-heading h1 {
-  margin: 0 0 12px;
-  font-size: clamp(30px, 3vw, 46px);
-  line-height: 1.15;
-  overflow-wrap: break-word;
-}
+    .ets2-classes-page .rules-card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 15px;
+      background: rgba(23,104,255,.15);
+      border-bottom: 1px solid rgba(255,255,255,.12);
+    }
 
-.legion-classes-page .classes-heading p {
-  max-width: 850px;
-  color: #c0ccdc;
-  line-height: 1.7;
-}
+    .ets2-classes-page .rules-number {
+      flex: 0 0 auto;
+      padding: 7px 10px;
+      color: #111;
+      background: #ffd45a;
+      border-radius: 3px;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .8px;
+    }
 
-/* Вступний блок */
-.legion-classes-page .classes-intro {
-  margin-bottom: 24px;
-  padding: 22px 24px;
-  background: linear-gradient(
-    135deg,
-    rgba(23,101,245,.2),
-    rgba(9,13,21,.94) 70%
-  );
-  border: 1px solid rgba(100,168,255,.3);
-  border-radius: 12px;
-  box-sizing: border-box;
-}
+    .ets2-classes-page .class-card h2,
+    .ets2-classes-page .promotion-card h2 {
+      min-width: 0;
+      margin: 0;
+      color: #fff;
+      font: 700 clamp(17px, 1.6vw, 22px)/1.25 Rajdhani, sans-serif;
+      overflow-wrap: anywhere;
+    }
 
-.legion-classes-page .classes-intro h2 {
-  margin: 0 0 12px;
-  font-size: 22px;
-}
+    .ets2-classes-page .rules-content {
+      min-width: 0;
+      padding: 16px;
+    }
 
-.legion-classes-page .classes-intro p {
-  margin: 8px 0;
-  color: #c3cede;
-  line-height: 1.7;
-}
+    .ets2-classes-page .rules-content p {
+      color: #d5deeb;
+      font-size: 12px;
+      line-height: 1.65;
+    }
 
-/* Сітка карток */
-.legion-classes-page .classes-grid {
-  display: grid !important;
-  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  gap: 22px !important;
-  width: 100% !important;
-  min-width: 0;
-  align-items: stretch;
-  box-sizing: border-box;
-}
+    .ets2-classes-page .rules-content h3 {
+      margin: 20px 0 9px;
+      padding-left: 10px;
+      border-left: 3px solid #1768ff;
+      color: #fff;
+      font-size: 14px;
+      line-height: 1.5;
+    }
 
-.legion-classes-page .class-card {
-  display: flex;
-  flex-direction: column;
-  width: auto !important;
-  min-width: 0 !important;
-  max-width: none !important;
-  margin: 0 !important;
-  overflow: hidden;
-  background: var(--cl-panel);
-  border: 1px solid var(--cl-border);
-  border-radius: 12px;
-  box-shadow: 0 12px 35px rgba(0,0,0,.25);
-  box-sizing: border-box;
-  scroll-margin-top: 100px;
-}
+    .ets2-classes-page .rules-content ol {
+      margin: 8px 0 14px;
+      padding-left: 22px;
+      color: #d5deeb;
+    }
 
-.legion-classes-page .rules-card-header {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  min-width: 0;
-  padding: 18px 20px;
-  background: linear-gradient(
-    100deg,
-    rgba(23,101,245,.2),
-    rgba(9,13,21,.35)
-  );
-  border-bottom: 1px solid var(--cl-border);
-  box-sizing: border-box;
-}
+    .ets2-classes-page .rules-content li {
+      padding: 4px 0;
+      font-size: 12px;
+      line-height: 1.6;
+      overflow-wrap: anywhere;
+    }
 
-.legion-classes-page .rules-number {
-  flex: 0 0 auto;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 85px;
-  padding: 8px 10px;
-  background: var(--cl-gold);
-  border-radius: 5px;
-  color: #16120a;
-  font-size: 11px;
-  font-weight: 900;
-  letter-spacing: .7px;
-  text-align: center;
-}
+    .ets2-classes-page .rules-content li::marker {
+      color: #64a8ff;
+      font-weight: 800;
+    }
 
-.legion-classes-page .class-card h2 {
-  min-width: 0;
-  margin: 0;
-  color: #f5f7fc;
-  font-size: clamp(17px, 1.4vw, 22px);
-  line-height: 1.4;
-  overflow-wrap: anywhere;
-}
+    .ets2-classes-page .class-facts {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin: 14px 0;
+    }
 
-.legion-classes-page .rules-content {
-  flex: 1;
-  min-width: 0;
-  padding: 20px 22px 24px;
-  box-sizing: border-box;
-}
+    .ets2-classes-page .class-facts > div {
+      min-width: 0;
+      padding: 10px;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.12);
+    }
 
-.legion-classes-page .class-card p {
-  color: #c2cede;
-  line-height: 1.75;
-}
+    .ets2-classes-page .class-facts span,
+    .ets2-classes-page .class-facts strong {
+      display: block;
+      overflow-wrap: anywhere;
+    }
 
-.legion-classes-page .class-card h3 {
-  margin: 22px 0 10px;
-  padding-left: 11px;
-  border-left: 3px solid var(--cl-blue);
-  font-size: 16px;
-  line-height: 1.5;
-}
+    .ets2-classes-page .class-facts span {
+      margin-bottom: 5px;
+      color: #aebbd0;
+      font-size: 9px;
+      line-height: 1.5;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
 
-.legion-classes-page .class-card ol {
-  margin: 10px 0 16px;
-  padding-left: 24px;
-  color: #c7d1e0;
-}
+    .ets2-classes-page .class-facts strong {
+      color: #fff;
+      font-size: 12px;
+      line-height: 1.5;
+    }
 
-.legion-classes-page .class-card li {
-  padding: 5px 0 5px 4px;
-  line-height: 1.65;
-  overflow-wrap: anywhere;
-}
+    .ets2-classes-page .class-next {
+      margin-top: 14px;
+      padding: 11px;
+      border-left: 3px solid #ffd45a;
+      background: rgba(255,212,90,.07);
+    }
 
-.legion-classes-page .class-card li::marker {
-  color: var(--cl-light);
-  font-weight: 800;
-}
+    .ets2-classes-page .class-next b {
+      display: block;
+      margin-bottom: 5px;
+      color: #ffd45a;
+      font-size: 10px;
+      text-transform: uppercase;
+    }
 
-/* Факти про кожен клас */
-.legion-classes-page .class-facts {
-  display: grid !important;
-  grid-template-columns: repeat(2, minmax(0,1fr)) !important;
-  gap: 10px !important;
-  margin: 18px 0 !important;
-}
+    .ets2-classes-page .class-next span {
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+    }
 
-.legion-classes-page .class-facts > div {
-  min-width: 0;
-  padding: 13px;
-  background: rgba(255,255,255,.04);
-  border: 1px solid var(--cl-border);
-  border-radius: 7px;
-  box-sizing: border-box;
-}
+    .ets2-classes-page .class-master .rules-number {
+      background: #c5a5ff;
+    }
 
-.legion-classes-page .class-facts span,
-.legion-classes-page .class-facts strong {
-  display: block;
-  overflow-wrap: anywhere;
-}
+    .ets2-classes-page .promotion-card {
+      grid-column: 1 / -1;
+    }
 
-.legion-classes-page .class-facts span {
-  margin-bottom: 6px;
-  color: #9eafc6;
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: .6px;
-  line-height: 1.5;
-}
+    .ets2-classes-page .sanction {
+      margin: 16px 0;
+      padding: 13px;
+      border-left: 3px solid #ff9638;
+      background: rgba(255,150,56,.08);
+      color: #e4d3c1;
+      font-size: 12px;
+      line-height: 1.7;
+    }
 
-.legion-classes-page .class-facts strong {
-  color: #f0f4fc;
-  font-size: 14px;
-  line-height: 1.5;
-}
+    .ets2-classes-page .sanction strong {
+      display: block;
+      margin-bottom: 5px;
+      color: #ffb16b;
+    }
 
-/* Наступний клас */
-.legion-classes-page .class-next {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  margin-top: 18px;
-  padding: 13px 14px;
-  border-left: 3px solid var(--cl-gold);
-  background: rgba(255,189,53,.08);
-  border-radius: 4px;
-}
+    .ets2-classes-page .rules-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 16px;
+    }
 
-.legion-classes-page .class-next b {
-  color: var(--cl-gold);
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: .7px;
-}
+    .ets2-classes-page .rules-link {
+      display: inline-block;
+      padding: 10px 13px;
+      background: #1559d6;
+      border: 1px solid rgba(115,165,255,.3);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 800;
+      text-decoration: none;
+    }
 
-.legion-classes-page .class-next span {
-  color: #f0f4fc;
-  font-weight: 700;
-}
+    .ets2-classes-page .rules-link:hover {
+      background: #2472ff;
+    }
 
-/* Кольори та загальні блоки */
-.legion-classes-page .class-master .rules-number {
-  background: #c5a5ff;
-}
+    /* Планшет: одна колонка контенту */
+    @media (max-width: 1000px) and (min-width: 761px) {
+      .ets2-classes-page .classes-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
 
-.legion-classes-page .promotion-card {
-  grid-column: 1 / -1;
-}
+      .ets2-classes-page .promotion-card {
+        grid-column: auto;
+      }
+    }
 
-.legion-classes-page .sanction {
-  margin: 18px 0;
-  padding: 15px 16px;
-  background: rgba(255,150,56,.09);
-  border: 1px solid rgba(255,150,56,.4);
-  border-left: 4px solid #ff9638;
-  border-radius: 7px;
-  color: #e4d3c1;
-  line-height: 1.7;
-}
+    /* Мобільна структура така сама, як у ets2-info.html */
+    @media (max-width: 760px) {
+      .ets2-classes-page .classes-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
 
-.legion-classes-page .sanction strong {
-  display: block;
-  margin-bottom: 5px;
-  color: #ffb16b;
-}
+      .ets2-classes-page .promotion-card {
+        grid-column: auto;
+      }
 
-.legion-classes-page .rules-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin: 20px 0;
-}
+      .ets2-classes-page .rules-content {
+        padding: 13px;
+      }
 
-.legion-classes-page .rules-link {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 12px 16px;
-  background: linear-gradient(120deg,#1765f5,#104cc1);
-  border: 1px solid #73a5ff4d;
-  border-radius: 6px;
-  color: #fff;
-  font-size: 13px;
-  font-weight: 800;
-  text-decoration: none;
-}
+      .ets2-classes-page .class-card .rules-card-header {
+        align-items: flex-start;
+      }
 
-.legion-classes-page .rules-link:hover {
-  filter: brightness(1.15);
-}
+      .ets2-classes-page .rules-links {
+        flex-direction: column;
+      }
 
-/* Планшети */
-@media (max-width: 1000px) {
-  .legion-classes-page .classes-layout {
-    grid-template-columns: 190px minmax(0,1fr) !important;
-    gap: 18px !important;
-    padding: 22px 16px 44px !important;
-  }
+      .ets2-classes-page .rules-link {
+        text-align: center;
+      }
+    }
 
-  .legion-classes-page .classes-grid {
-    grid-template-columns: minmax(0,1fr) !important;
-  }
+    @media (max-width: 420px) {
+      .ets2-classes-page .class-facts {
+        grid-template-columns: minmax(0, 1fr);
+      }
 
-  .legion-classes-page .promotion-card {
-    grid-column: auto;
-  }
-}
-
-/* Телефони */
-@media (max-width: 700px) {
-  .legion-classes-page .classes-layout {
-    grid-template-columns: minmax(0,1fr) !important;
-    gap: 18px !important;
-    padding: 18px 12px 34px !important;
-  }
-
-  .legion-classes-page .classes-sidebar {
-    position: static;
-  }
-
-  .legion-classes-page .sidebar-links {
-    display: grid;
-    grid-template-columns: repeat(2,minmax(0,1fr));
-    gap: 4px;
-  }
-
-  .legion-classes-page .classes-intro {
-    padding: 18px;
-  }
-
-  .legion-classes-page .rules-content {
-    padding: 17px;
-  }
-}
-
-@media (max-width: 420px) {
-  .legion-classes-page .sidebar-links {
-    grid-template-columns: minmax(0,1fr);
-  }
-
-  .legion-classes-page .class-facts {
-    grid-template-columns: minmax(0,1fr) !important;
-  }
-
-  .legion-classes-page .rules-card-header {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .legion-classes-page .rules-link {
-    width: 100%;
-    box-sizing: border-box;
-    text-align: center;
-  }
-}
-</style>
+      .ets2-classes-page .class-card .rules-card-header {
+        flex-direction: column;
+        gap: 8px;
+      }
+    }
+  </style>
 </head>
 
-<body class="ets2-info-page legion-classes-page">
-<div class="noise" aria-hidden="true"></div>
+<body class="ets2-info-page ets2-classes-page">
+  <div class="noise" aria-hidden="true"></div>
 
-<div class="legion-page-background" aria-hidden="true">
-  <video class="legion-page-video" autoplay muted loop playsinline preload="metadata"
-    poster="assets/ets2/ua-legion-ets2-poster.jpg">
-    <source src="assets/ets2/ua-legion-ets2-bg.mp4" type="video/mp4">
-  </video>
-  <div class="legion-page-shade"></div>
-</div>
-
-<header class="topbar">
-  <a class="brand" href="index.html">
-    <img src="ua-legion-logo.png" alt="UA LEGION">
-    <span>UA LEGION</span>
-  </a>
-
-  <button class="menu-btn" aria-label="Відкрити меню" aria-expanded="false">☰</button>
-
-  <nav class="nav">
-    <a href="index.html">Головна</a>
-    <a href="about.html">Про нас</a>
-    <a href="games.html">Ігри</a>
-    <a href="events.html">Події</a>
-    <a href="media.html">Медіа</a>
-    <a href="gallery.html">Галерея</a>
-    <a href="https://www.tiktok.com/@ua_legion_" target="_blank" rel="noopener noreferrer">TikTok</a>
-    <a href="https://discord.com/" target="_blank" rel="noopener noreferrer">Discord</a>
-  </nav>
-</header>
-
-<main class="classes-layout">
-  <aside class="classes-sidebar">
-    <h2>ETS2 · НАВІГАЦІЯ</h2>
-    <div class="sidebar-links">
-      <a href="ets2-info.html">Огляд ETS2</a>
-      <a href="ets2-drivers.html">Водії</a>
-      <a class="active" href="ets2-classes.html"><span>E–A</span> Класи водіїв</a>
-      <a href="ets2-rules.html">Правила компанії</a>
-      <a href="support.html">Підтримка</a>
-    </div>
-  </aside>
-
-  <div class="classes-main">
-    <header class="classes-heading">
-      <span class="legion-eyebrow">ETS2 / РОЗВИТОК ВОДІЇВ</span>
-      <h1>Класи водіїв UA LEGION</h1>
-      <p>Структурована система класів водіїв і прозорі умови підвищення. Клас відображає досвід, активність, дисципліну та внесок учасника в життя компанії.</p>
-    </header>
-
-    <section class="classes-intro">
-      <h2>Від стажера до майстра водія</h2>
-      <p>Кожен водій проходить поступові етапи розвитку — від класу E до класу A. Підвищення не відбувається автоматично: кандидат має виконати всі вимоги відповідного класу, а остаточне рішення затверджує менеджмент UA LEGION.</p>
-      <p><strong>Основні критерії:</strong> пробіг, участь у конвоях, дисципліна, активність у спільноті та рекомендації керівництва.</p>
-    </section>
-
-    <div class="classes-grid">
-
-      <section class="rules-card class-card" id="class-e">
-        <div class="rules-card-header">
-          <span class="rules-number">КЛАС E</span>
-          <h2>Стажер</h2>
-        </div>
-        <div class="rules-content">
-          <p>Новий учасник, який знайомиться з внутрішніми процесами UA LEGION, каналами Discord і правилами безпечної участі в рейсах та конвоях.</p>
-          <div class="class-facts">
-            <div><span>Доступна вантажівка</span><strong>Renault Magnum</strong></div>
-            <div><span>Початковий період</span><strong>До 7 діб</strong></div>
-          </div>
-          <h3>Умови проходження класу</h3>
-          <ol>
-            <li>Бути прийнятим до UA LEGION.</li>
-            <li>Пройти інструктаж та ознайомитися з правилами компанії й TruckersMP.</li>
-            <li>Пройти початковий випробувальний термін тривалістю до 7 діб.</li>
-            <li>Виконати перші рейси та набрати до 5 000 км пробігу.</li>
-            <li>Дотримуватися правил і виконувати вказівки відповідальних осіб.</li>
-          </ol>
-          <div class="class-next"><b>Наступний етап</b><span>Клас D — «Водій»</span></div>
-        </div>
-      </section>
-
-      <section class="rules-card class-card" id="class-d">
-        <div class="rules-card-header">
-          <span class="rules-number">КЛАС D</span>
-          <h2>Водій</h2>
-        </div>
-        <div class="rules-content">
-          <p>Водій, який завершив адаптацію та починає активно брати участь у житті компанії. Знає порядок проведення конвоїв і дотримується корпоративних стандартів.</p>
-          <div class="class-facts">
-            <div><span>Доступна техніка</span><strong>Renault Trucks</strong></div>
-            <div><span>Мінімальний термін</span><strong>15 днів у компанії</strong></div>
-          </div>
-          <h3>Умови підвищення до класу C</h3>
-          <ol>
-            <li>Успішно завершити стажування в класі E.</li>
-            <li>Провести в компанії не менше 15 днів.</li>
-            <li>Набрати понад 10 000 км пробігу.</li>
-            <li>Не мати серйозних порушень внутрішніх правил і правил TruckersMP.</li>
-          </ol>
-          <div class="class-next"><b>Наступний етап</b><span>Клас C — «Досвідчений водій»</span></div>
-        </div>
-      </section>
-
-      <section class="rules-card class-card" id="class-c">
-        <div class="rules-card-header">
-          <span class="rules-number">КЛАС C</span>
-          <h2>Досвідчений водій</h2>
-        </div>
-        <div class="rules-content">
-          <p>Досвідчений і дисциплінований учасник, який стабільно долучається до активностей компанії та демонструє відповідальну поведінку на дорозі.</p>
-          <div class="class-facts">
-            <div><span>Доступні вантажівки</span><strong>DAF, Iveco</strong></div>
-            <div><span>Конвої</span><strong>Щонайменше 15</strong></div>
-          </div>
-          <h3>Умови підвищення до класу B</h3>
-          <ol>
-            <li>Відвідати щонайменше 15 конвоїв компанії.</li>
-            <li>Набрати понад 20 000 км пробігу.</li>
-            <li>Дотримуватися правил компанії та платформи; відсутність порушень враховується під час перевірки.</li>
-            <li>Підтримувати активність у Discord та стежити за оголошеннями.</li>
-          </ol>
-          <div class="class-next"><b>Наступний етап</b><span>Клас B — «Старший водій»</span></div>
-        </div>
-      </section>
-
-      <section class="rules-card class-card" id="class-b">
-        <div class="rules-card-header">
-          <span class="rules-number">КЛАС B</span>
-          <h2>Старший водій</h2>
-        </div>
-        <div class="rules-content">
-          <p>Водій із високим рівнем навичок, який демонструє професіоналізм, пунктуальність і відповідальність та є позитивним прикладом для інших учасників.</p>
-          <div class="class-facts">
-            <div><span>Доступні вантажівки</span><strong>Mercedes-Benz, Volvo</strong></div>
-            <div><span>Конвої</span><strong>Щонайменше 25</strong></div>
-          </div>
-          <h3>Умови підвищення до класу A</h3>
-          <ol>
-            <li>Відвідати щонайменше 25 конвоїв.</li>
-            <li>Набрати понад 35 000 км пробігу.</li>
-            <li>Брати участь у спільних конвоях із компаніями-партнерами.</li>
-            <li>Дотримуватися правил компанії та платформи й демонструвати стабільну дисципліну.</li>
-          </ol>
-          <div class="class-next"><b>Наступний етап</b><span>Клас A — «Майстер водій»</span></div>
-        </div>
-      </section>
-
-      <section class="rules-card class-card class-master" id="class-a">
-        <div class="rules-card-header">
-          <span class="rules-number">КЛАС A</span>
-          <h2>Майстер водій</h2>
-        </div>
-        <div class="rules-content">
-          <p>Найвищий клас водіїв UA LEGION. Майстер водій є прикладом для спільноти та представляє компанію на офіційних і партнерських заходах.</p>
-          <div class="class-facts">
-            <div><span>Доступні вантажівки</span><strong>Scania, MAN</strong></div>
-            <div><span>Конвої</span><strong>40 або більше</strong></div>
-          </div>
-          <h3>Критерії присвоєння класу</h3>
-          <ol>
-            <li>Відвідати щонайменше 40 конвоїв.</li>
-            <li>Набрати понад 45 000 км пробігу.</li>
-            <li>Підтримувати активність у Discord.</li>
-            <li>Брати участь у спільних конвоях із компаніями-партнерами.</li>
-            <li>Не мати порушень правил; історія дисципліни оцінюється менеджментом.</li>
-            <li>Отримати рекомендацію від керівництва компанії.</li>
-          </ol>
-          <div class="class-next"><b>Статус</b><span>Найвищий клас водія</span></div>
-        </div>
-      </section>
-
-      <section class="rules-card promotion-card" id="promotion">
-        <div class="rules-card-header">
-          <span class="rules-number">ПОРЯДОК</span>
-          <h2>Затвердження підвищення та перегляд класу</h2>
-        </div>
-        <div class="rules-content">
-          <h3>Як розглядається підвищення</h3>
-          <ol>
-            <li>Менеджмент перевіряє виконання всіх вимог відповідного класу: пробіг, відвідані конвої, термін перебування в компанії, дисципліну й активність.</li>
-            <li>Кандидат має виконати всі обов’язкові критерії; часткове виконання не гарантує підвищення.</li>
-            <li>Усі підвищення затверджуються уповноваженим менеджментом UA LEGION.</li>
-            <li>Дострокове підвищення можливе як виняток за особливі досягнення або окреме відзначення керівництвом.</li>
-          </ol>
-          <h3>Пониження або виключення</h3>
-          <ol>
-            <li>За порушення правил, систематичну неактивність або невиконання обов’язків клас може бути переглянутий.</li>
-            <li>Залежно від обставин менеджмент може застосувати попередження, тимчасове відсторонення, пониження класу або виключення з компанії.</li>
-            <li>Рішення має враховувати серйозність порушення, наявні докази та попередню історію учасника.</li>
-          </ol>
-          <div class="sanction">
-            <strong>Важливо</strong>
-            Пробіг і кількість конвоїв є критеріями розвитку, але самі по собі не дають автоматичного права на підвищення. Остаточне рішення ухвалює менеджмент UA LEGION.
-          </div>
-          <div class="rules-links">
-            <a class="rules-link" href="ets2-rules.html">Переглянути правила компанії ↗</a>
-            <a class="rules-link" href="support.html">Звернутися до підтримки ↗</a>
-          </div>
-        </div>
-      </section>
-
-    </div>
+  <div class="legion-page-background" aria-hidden="true">
+    <video class="legion-page-video" autoplay muted loop playsinline preload="metadata"
+      poster="assets/ets2/ua-legion-ets2-poster.jpg">
+      <source src="assets/ets2/ua-legion-ets2-bg.mp4" type="video/mp4">
+    </video>
+    <div class="legion-page-shade"></div>
   </div>
-</main>
 
-<footer>
-  <div class="footer-brand">
-    <img src="ua-legion-logo.png" alt="UA LEGION">
-    <div><b>UA LEGION ETS2</b><span>TRANSPORT DIVISION</span></div>
-  </div>
-  <p>Класи водіїв · ETS2 / UA LEGION</p>
-  <small>© 2026 UA LEGION</small>
-</footer>
+  <!-- Верхня панель — як на ets2-info.html -->
+  <header class="topbar">
+    <a class="brand" href="index.html">
+      <img src="ua-legion-logo.png" alt="UA LEGION">
+      <span>UA LEGION</span>
+    </a>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="supabase.js"></script>
-<script src="script.js"></script>
-<script src="auth-menu.js"></script>
+    <button class="menu-btn" aria-label="Відкрити меню" aria-expanded="false">☰</button>
+
+    <nav class="nav">
+      <a href="index.html">Головна</a>
+      <a href="about.html">Про нас</a>
+      <a href="games.html">Ігри</a>
+      <a href="events.html">Події</a>
+      <a href="media.html">Медіа</a>
+      <a href="gallery.html">Галерея</a>
+      <a href="https://www.tiktok.com/@ua_legion_" target="_blank" rel="noopener">TikTok</a>
+      <a href="https://discord.gg/gfunf3yq7" target="_blank" rel="noopener" class="nav-cta">Discord</a>
+      <a href="login.html" id="authButton">Увійти / Реєстрація</a>
+    </nav>
+  </header>
+
+  <main class="ets-info-main">
+    <div class="legion-content-wrap">
+
+      <!-- Оригінальне бокове меню ETS2 -->
+      <aside class="ets-sidebar">
+        <a class="side-logo" href="ets2-info.html">
+          <img src="ua-legion-logo.png" alt="UA LEGION">
+          <b>UA LEGION ETS2</b>
+          <small>TRANSPORT DIVISION</small>
+        </a>
+
+        <div class="side-group">
+          <span>ETS2 / КОМПАНІЯ</span>
+          <a href="ets2-info.html">ℹ️ Інформація</a>
+          <a href="ets2-rules.html">📋 Правила ETS2</a>
+          <a href="ets2-news.html">📰 Новини та оголошення</a>
+          <a class="active" href="ets2-classes.html">⭐ Класи водіїв</a>
+        </div>
+
+        <div class="side-group">
+          <span>КЕРІВНИЦТВО</span>
+          <a href="ets2-leadership.html">🛡️ Склад керівництва</a>
+          <a href="ets2-hierarchy.html">👑 Ієрархія та обов’язки</a>
+        </div>
+
+        <div class="side-group">
+          <span>СПІЛЬНОТА</span>
+          <a href="https://discord.gg/gfunf3yq7" target="_blank" rel="noopener">💬 Чат ETS2</a>
+          <a href="ets2-join.html">📝 Заявка на вступ</a>
+          <a href="ets2-roles.html">🎫 Отримання ролей</a>
+          <a href="ets2-partners.html">📣 Партнери</a>
+          <a href="ets2-blacklist.html">⛔ Чорний список</a>
+        </div>
+
+        <div class="side-group">
+          <span>НА ДОРОЗІ</span>
+          <a href="ets2-fleet.html">🚚 Автопарк</a>
+          <a href="ets2-events.html">🏁 Події та конвої</a>
+          <a href="ets2-deliveries.html">📦 Завершені доставки</a>
+          <a href="ets2-drivers.html">👨‍✈️ Водії</a>
+          <a href="ets2-gallery.html">📸 Галерея</a>
+        </div>
+      </aside>
+
+      <!-- Основний контент використовує legion-content -->
+      <div class="legion-content">
+
+        <section class="legion-section" id="classes">
+          <div class="classes-heading">
+            <span class="legion-eyebrow">ETS2 / РОЗВИТОК ВОДІЇВ</span>
+            <h1>Класи водіїв UA LEGION</h1>
+            <p>Структурована система класів водіїв та прозорі умови підвищення. Клас відображає досвід, активність, дисципліну й внесок учасника в життя компанії.</p>
+          </div>
+
+          <div class="classes-intro">
+            <h2>Від стажера до майстра водія</h2>
+            <p>Кожен водій проходить поступові етапи розвитку — від класу E до класу A. Підвищення не відбувається автоматично: кандидат має виконати всі вимоги відповідного класу, а остаточне рішення затверджує менеджмент UA LEGION.</p>
+            <p><strong>Основні критерії:</strong> пробіг, участь у конвоях, дисципліна, активність у спільноті та рекомендації керівництва.</p>
+          </div>
+
+          <div class="classes-grid">
+
+            <article class="rules-card class-card" id="class-e">
+              <div class="rules-card-header">
+                <span class="rules-number">КЛАС E</span>
+                <h2>Стажер</h2>
+              </div>
+              <div class="rules-content">
+                <p>Новий учасник, який знайомиться з внутрішніми процесами UA LEGION, каналами Discord і правилами участі в рейсах та конвоях.</p>
+                <div class="class-facts">
+                  <div><span>Доступна вантажівка</span><strong>Renault Magnum</strong></div>
+                  <div><span>Початковий період</span><strong>До 7 діб</strong></div>
+                </div>
+                <h3>Умови проходження класу</h3>
+                <ol>
+                  <li>Бути прийнятим до UA LEGION.</li>
+                  <li>Пройти інструктаж та ознайомитися з правилами компанії й TruckersMP.</li>
+                  <li>Пройти початковий випробувальний термін до 7 діб.</li>
+                  <li>Виконати перші рейси; орієнтир початкового пробігу — до 5 000 км.</li>
+                  <li>Дотримуватися правил і виконувати вказівки відповідальних осіб.</li>
+                </ol>
+                <div class="class-next"><b>Наступний етап</b><span>Клас D — «Водій»</span></div>
+              </div>
+            </article>
+
+            <article class="rules-card class-card" id="class-d">
+              <div class="rules-card-header">
+                <span class="rules-number">КЛАС D</span>
+                <h2>Водій</h2>
+              </div>
+              <div class="rules-content">
+                <p>Водій, який завершив адаптацію та починає активно брати участь у житті компанії. Знає порядок проведення конвоїв і дотримується корпоративних стандартів.</p>
+                <div class="class-facts">
+                  <div><span>Доступна техніка</span><strong>Renault Trucks</strong></div>
+                  <div><span>Мінімальний термін</span><strong>15 днів у компанії</strong></div>
+                </div>
+                <h3>Умови підвищення до класу C</h3>
+                <ol>
+                  <li>Успішно завершити стажування в класі E.</li>
+                  <li>Провести в компанії не менше 15 днів.</li>
+                  <li>Набрати понад 10 000 км пробігу.</li>
+                  <li>Не мати серйозних порушень правил компанії та TruckersMP.</li>
+                </ol>
+                <div class="class-next"><b>Наступний етап</b><span>Клас C — «Досвідчений водій»</span></div>
+              </div>
+            </article>
+
+            <article class="rules-card class-card" id="class-c">
+              <div class="rules-card-header">
+                <span class="rules-number">КЛАС C</span>
+                <h2>Досвідчений водій</h2>
+              </div>
+              <div class="rules-content">
+                <p>Досвідчений і дисциплінований учасник, який стабільно долучається до активностей компанії та демонструє відповідальну поведінку на дорозі.</p>
+                <div class="class-facts">
+                  <div><span>Доступні вантажівки</span><strong>DAF, Iveco</strong></div>
+                  <div><span>Конвої</span><strong>Щонайменше 15</strong></div>
+                </div>
+                <h3>Умови підвищення до класу B</h3>
+                <ol>
+                  <li>Відвідати щонайменше 15 конвоїв компанії.</li>
+                  <li>Набрати понад 20 000 км пробігу.</li>
+                  <li>Дотримуватися правил компанії та платформи.</li>
+                  <li>Підтримувати активність у Discord та стежити за оголошеннями.</li>
+                </ol>
+                <div class="class-next"><b>Наступний етап</b><span>Клас B — «Старший водій»</span></div>
+              </div>
+            </article>
+
+            <article class="rules-card class-card" id="class-b">
+              <div class="rules-card-header">
+                <span class="rules-number">КЛАС B</span>
+                <h2>Старший водій</h2>
+              </div>
+              <div class="rules-content">
+                <p>Водій із високим рівнем навичок, який демонструє професіоналізм, пунктуальність і відповідальність та є позитивним прикладом для інших учасників.</p>
+                <div class="class-facts">
+                  <div><span>Доступні вантажівки</span><strong>Mercedes-Benz, Volvo</strong></div>
+                  <div><span>Конвої</span><strong>Щонайменше 25</strong></div>
+                </div>
+                <h3>Умови підвищення до класу A</h3>
+                <ol>
+                  <li>Відвідати щонайменше 25 конвоїв.</li>
+                  <li>Набрати понад 35 000 км пробігу.</li>
+                  <li>Брати участь у спільних конвоях із компаніями-партнерами.</li>
+                  <li>Дотримуватися правил і демонструвати стабільну дисципліну.</li>
+                </ol>
+                <div class="class-next"><b>Наступний етап</b><span>Клас A — «Майстер водій»</span></div>
+              </div>
+            </article>
+
+            <article class="rules-card class-card class-master" id="class-a">
+              <div class="rules-card-header">
+                <span class="rules-number">КЛАС A</span>
+                <h2>Майстер водій</h2>
+              </div>
+              <div class="rules-content">
+                <p>Найвищий клас водіїв UA LEGION. Майстер водій є прикладом для спільноти та представляє компанію на офіційних і партнерських заходах.</p>
+                <div class="class-facts">
+                  <div><span>Доступні вантажівки</span><strong>Scania, MAN</strong></div>
+                  <div><span>Конвої</span><strong>40 або більше</strong></div>
+                </div>
+                <h3>Критерії присвоєння класу</h3>
+                <ol>
+                  <li>Відвідати щонайменше 40 конвоїв.</li>
+                  <li>Набрати понад 45 000 км пробігу.</li>
+                  <li>Підтримувати активність у Discord.</li>
+                  <li>Брати участь у спільних конвоях із компаніями-партнерами.</li>
+                  <li>Дотримуватися правил компанії та платформи.</li>
+                  <li>Отримати рекомендацію від керівництва компанії.</li>
+                </ol>
+                <div class="class-next"><b>Статус</b><span>Найвищий клас водія</span></div>
+              </div>
+            </article>
+
+            <article class="rules-card promotion-card">
+              <div class="rules-card-header">
+                <span class="rules-number">ПОРЯДОК</span>
+                <h2>Затвердження підвищення та перегляд класу</h2>
+              </div>
+              <div class="rules-content">
+                <h3>Як розглядається підвищення</h3>
+                <ol>
+                  <li>Менеджмент перевіряє пробіг, відвідані конвої, термін перебування в компанії, дисципліну й активність.</li>
+                  <li>Кандидат має виконати всі обов’язкові вимоги відповідного класу.</li>
+                  <li>Усі підвищення затверджуються уповноваженим менеджментом UA LEGION.</li>
+                  <li>Дострокове підвищення можливе як виняток за особливі досягнення або відзначення керівництвом.</li>
+                </ol>
+
+                <h3>Пониження або виключення</h3>
+                <ol>
+                  <li>За порушення правил, систематичну неактивність або невиконання обов’язків клас може бути переглянутий.</li>
+                  <li>Залежно від обставин менеджмент може застосувати попередження, пониження класу або виключення з компанії.</li>
+                  <li>Рішення враховує серйозність порушення, наявні докази та попередню історію учасника.</li>
+                </ol>
+
+                <div class="sanction">
+                  <strong>Важливо</strong>
+                  Пробіг і кількість конвоїв самі по собі не гарантують підвищення. Остаточне рішення ухвалює менеджмент UA LEGION.
+                </div>
+
+                <div class="rules-links">
+                  <a class="rules-link" href="ets2-rules.html">Переглянути правила компанії ↗</a>
+                  <a class="rules-link" href="support.html">Звернутися до підтримки ↗</a>
+                </div>
+              </div>
+            </article>
+
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-brand">
+      <img src="ua-legion-logo.png" alt="UA LEGION">
+      <div>
+        <b>UA LEGION ETS2</b>
+        <span>TRANSPORT DIVISION</span>
+      </div>
+    </div>
+    <p>Україна грає. Легіон перемагає.</p>
+    <small>© 2026 UA LEGION</small>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
+  <script src="script.js"></script>
+  <script src="auth-menu.js"></script>
 </body>
 </html>
