@@ -1,8 +1,8 @@
 
 /* ==========================================
    UA LEGION ETS2
-   Компактний дизайн, відеофон, закріплене меню
-   Смайлики збоку, без цифр, без нижнього бренду
+   Компактний дизайн, видимий відеофон
+   Закріплене меню, без нижнього слогана
    ========================================== */
 
 .ets2-info-page {
@@ -64,10 +64,7 @@
   width: 100%;
 }
 
-/* ==========================================
-   ЛІВЕ МЕНЮ — ЗАКРІПЛЕНЕ НА ВСЮ ВИСОТУ
-   ========================================== */
-
+/* ЛІВЕ МЕНЮ — ЗАКРІПЛЕНЕ НА ВСЮ ВИСОТУ */
 @media (min-width: 761px) {
   .ets2-info-page .ets-sidebar {
     position: fixed;
@@ -142,7 +139,7 @@
   letter-spacing: 1.4px;
 }
 
-/* ПОСИЛАННЯ МЕНЮ */
+/* ПУНКТИ МЕНЮ */
 .ets2-info-page .side-group a {
   display: block;
   padding: 6px 8px;
@@ -159,7 +156,7 @@
   color: #fff;
 }
 
-/* ПРИБРАТИ КНОПКУ DISCORD У НИЖНІЙ ЧАСТИНІ МЕНЮ */
+/* ПРИБРАТИ DISCORD У ЛІВОМУ МЕНЮ */
 .ets2-info-page .ets-sidebar .sidebar-discord {
   display: none !important;
 }
@@ -247,7 +244,7 @@
   color: #fff;
 }
 
-/* ЦІННОСТІ — СМАЙЛИК ЗЛІВА ВІД ТЕКСТУ */
+/* ЦІННОСТІ — СМАЙЛИК ЛІВОРУЧ */
 .legion-values-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -401,12 +398,16 @@
   line-height: 1.45;
 }
 
-/* ФУТЕР — ПРИБРАТИ НИЖНІЙ ЛОГОТИП І НАПИС */
-.ets2-info-page footer .footer-brand {
+/* ПРИБРАТИ НИЖНІЙ СЛОГАН І БРЕНД У ФУТЕРІ */
+.ets2-info-page footer .footer-brand,
+.ets2-info-page footer .footer-logo,
+.ets2-info-page footer .brand-block,
+.ets2-info-page footer .side-logo,
+.ets2-info-page footer > p {
   display: none !important;
 }
 
-/* Планшети */
+/* ПЛАНШЕТИ */
 @media (max-width: 1000px) and (min-width: 761px) {
   .legion-content-wrap {
     width: 98%;
