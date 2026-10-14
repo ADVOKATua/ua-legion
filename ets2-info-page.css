@@ -2,7 +2,7 @@
 /* ==========================================
    UA LEGION ETS2
    Компактний дизайн, видимий відеофон
-   Закріплене меню, без нижнього слогана
+   Закріплене меню, слоган у нижньому футері
    ========================================== */
 
 .ets2-info-page {
@@ -156,7 +156,7 @@
   color: #fff;
 }
 
-/* ПРИБРАТИ DISCORD У ЛІВОМУ МЕНЮ */
+/* КНОПКА DISCORD У ЛІВОМУ МЕНЮ ПРИХОВАНА */
 .ets2-info-page .ets-sidebar .sidebar-discord {
   display: none !important;
 }
@@ -398,13 +398,39 @@
   line-height: 1.45;
 }
 
-/* ПРИБРАТИ НИЖНІЙ СЛОГАН І БРЕНД У ФУТЕРІ */
+/* ФУТЕР — СЛОГАН ЗАЛИШАЄТЬСЯ ВНИЗУ СТОРІНКИ */
+.ets2-info-page footer {
+  display: block !important;
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  min-height: 70px;
+  margin-top: 12px;
+  padding: 18px 12px 24px;
+  box-sizing: border-box;
+  background: rgba(3, 5, 9, 0.82);
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  text-align: center;
+}
+
+/* Повернути та показувати нижній слоган */
+.ets2-info-page footer > p {
+  display: block !important;
+  margin: 0 auto;
+  padding: 8px 0;
+  color: #dce5f5;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.5;
+  text-align: center;
+}
+
+/* Не приховувати нижній логотип або бренд */
 .ets2-info-page footer .footer-brand,
 .ets2-info-page footer .footer-logo,
 .ets2-info-page footer .brand-block,
-.ets2-info-page footer .side-logo,
-.ets2-info-page footer > p {
-  display: none !important;
+.ets2-info-page footer .side-logo {
+  display: block;
 }
 
 /* ПЛАНШЕТИ */
@@ -546,6 +572,14 @@
 
   .join-step-discord {
     grid-column: auto;
+  }
+
+  .ets2-info-page footer {
+    padding: 16px 10px 22px;
+  }
+
+  .ets2-info-page footer > p {
+    font-size: 14px;
   }
 }
 
