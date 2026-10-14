@@ -11,21 +11,17 @@
   <link rel="stylesheet" href="ets2.css">
   <link rel="stylesheet" href="ets2-info-page.css">
 </head>
-
 <body class="ets2-info-page">
   <div class="noise" aria-hidden="true"></div>
 
-  <!-- Фонове відео зберігаємо -->
   <div class="legion-page-background" aria-hidden="true">
-    <video class="legion-page-video"
-      autoplay muted loop playsinline preload="metadata"
+    <video class="legion-page-video" autoplay muted loop playsinline preload="metadata"
       poster="assets/ets2/ua-legion-ets2-poster.jpg">
       <source src="assets/ets2/ua-legion-ets2-bg.mp4" type="video/mp4">
     </video>
     <div class="legion-page-shade"></div>
   </div>
 
-  <!-- Верхнє меню -->
   <header class="topbar">
     <a class="brand" href="index.html">
       <img src="ua-legion-logo.png" alt="UA LEGION">
@@ -50,7 +46,6 @@
   <main class="ets-info-main">
     <div class="legion-content-wrap">
 
-      <!-- Ліва навігація -->
       <aside class="ets-sidebar">
         <a class="side-logo" href="ets2-info.html">
           <img src="ua-legion-logo.png" alt="UA LEGION">
@@ -96,10 +91,9 @@
         </a>
       </aside>
 
-      <!-- Основний контент -->
       <div class="legion-content">
 
-        <!-- Історія компанії: на всю ширину -->
+        <!-- ІСТОРІЯ: ЗБЕРІГАЄМО ПОВНІСТЮ -->
         <section class="legion-section" id="about">
           <div class="legion-section-head">
             <span class="legion-eyebrow">НАША ІСТОРІЯ</span>
@@ -137,7 +131,7 @@
           </div>
         </section>
 
-        <!-- Мета компанії -->
+        <!-- МЕТА ТА ЦІННОСТІ -->
         <section class="legion-section" id="mission">
           <div class="legion-section-head">
             <span class="legion-eyebrow">НАША МЕТА</span>
@@ -184,7 +178,7 @@
           </div>
         </section>
 
-        <!-- Діяльність компанії -->
+        <!-- ЖИТТЯ КОМПАНІЇ -->
         <section class="legion-section" id="activities">
           <div class="legion-section-head">
             <span class="legion-eyebrow">ЖИТТЯ КОМПАНІЇ</span>
@@ -227,45 +221,64 @@
           </div>
         </section>
 
-        <!-- Вступ до компанії -->
+        <!-- НОВИЙ КОМПАКТНИЙ БЛОК ВСТУПУ -->
         <section class="legion-section" id="join">
-          <div class="legion-join-panel">
-            <div class="join-emblem">
-              <img src="ua-legion-logo.png" alt="Емблема UA LEGION">
-            </div>
-
-            <div class="join-copy">
-              <span class="legion-eyebrow">ТВОЯ ДОРОГА ПОЧИНАЄТЬСЯ ТУТ</span>
-              <h2>Готовий стати<br>частиною <em>LEGION?</em></h2>
-              <p>
-                Любиш Euro Truck Simulator 2, далекі дороги та командні
-                поїздки? Хочеш знайти українських напарників і долучитися
-                до розвитку віртуальної транспортної компанії?
-                Приєднуйся до нашої спільноти, знайомся з командою,
-                бери участь у спільних рейсах і ставай частиною нашої історії.
-              </p>
-
-              <div class="join-tags">
-                <span>EURO TRUCK SIMULATOR 2</span>
-                <span>TRUCKERSMP</span>
-                <span>UA_LEG</span>
-              </div>
-            </div>
-
-            <div class="join-actions">
-              <a class="legion-btn legion-btn-primary" href="ets2-join.html">
-                Подати заявку <span>↗</span>
-              </a>
-              <a class="legion-btn legion-btn-ghost"
-                href="https://discord.gg/gfunf3yq7"
-                target="_blank" rel="noopener">
-                Відкрити Discord <span>↗</span>
-              </a>
-              <a class="legion-text-link" href="ets2-rules.html">
-                Перед вступом ознайомся з правилами →
-              </a>
-            </div>
+          <div class="legion-section-head">
+            <span class="legion-eyebrow">ПРИЄДНАТИСЯ ДО КОМАНДИ</span>
+            <h2>Твоя дорога починається <em>тут.</em></h2>
+            <p>Виконай п’ять кроків, щоб приєднатися до Trucks of Ukraine.</p>
           </div>
+
+          <div class="join-steps-grid">
+            <article class="join-step">
+              <span class="join-step-number">01</span>
+              <div class="join-step-content">
+                <h3>Реєстрація в TruckersMP</h3>
+                <p>Створи обліковий запис на платформі мультиплеєра.</p>
+                <a href="https://truckersmp.com/" target="_blank" rel="noopener noreferrer">Зареєструватися ↗</a>
+              </div>
+            </article>
+
+            <article class="join-step">
+              <span class="join-step-number">02</span>
+              <div class="join-step-content">
+                <h3>Реєстрація в TruckersHub</h3>
+                <p>Створи обліковий запис у TruckersHub.</p>
+                <a href="https://truckershub.in/" target="_blank" rel="noopener noreferrer">Зареєструватися ↗</a>
+              </div>
+            </article>
+
+            <article class="join-step">
+              <span class="join-step-number">03</span>
+              <div class="join-step-content">
+                <h3>Заявка в TruckersMP</h3>
+                <p>Подай заявку на вступ до Trucks of Ukraine.</p>
+                <a href="https://truckersmp.com/vtc/80829" target="_blank" rel="noopener noreferrer">Подати заявку ↗</a>
+              </div>
+            </article>
+
+            <article class="join-step">
+              <span class="join-step-number">04</span>
+              <div class="join-step-content">
+                <h3>Заявка в TruckersHub</h3>
+                <p>Подай заявку на вступ до Trucks of Ukraine.</p>
+                <a href="https://truckershub.in/vtc/1379" target="_blank" rel="noopener noreferrer">Подати заявку ↗</a>
+              </div>
+            </article>
+
+            <article class="join-step join-step-discord">
+              <span class="join-step-number">05</span>
+              <div class="join-step-content">
+                <h3>Приєднання до Discord</h3>
+                <p>Приєднайся до спільноти для спілкування, координації та участі в конвоях.</p>
+                <a href="https://discord.gg/vYqNMTmNP" target="_blank" rel="noopener noreferrer">Приєднатися до Discord ↗</a>
+              </div>
+            </article>
+          </div>
+
+          <p class="join-steps-note">
+            Після подання заявок стеж за їхнім статусом на відповідних платформах.
+          </p>
         </section>
 
       </div>
