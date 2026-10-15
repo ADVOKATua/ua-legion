@@ -36,7 +36,7 @@
       backdrop-filter: none;
     }
 
-    /* Заголовок */
+    /* Заголовок сторінки */
 
     .leadership-heading {
       width: 100%;
@@ -72,11 +72,11 @@
       font-family: Arial, sans-serif;
       font-size: clamp(13px, 1.15vw, 17px);
       font-weight: 500;
-      line-height: 1.4;
+      line-height: 1.3;
       text-shadow: 0 2px 7px #000;
     }
 
-    /* Ієрархія керівництва */
+    /* Дерево ієрархії */
 
     .leadership-tree {
       display: flex;
@@ -101,7 +101,7 @@
       width: min(100%, 410px);
     }
 
-    /* Вертикальні лінії між керівниками */
+    /* Вертикальні лінії керівництва */
 
     .tree-connector-main {
       align-self: center;
@@ -127,7 +127,7 @@
       display: grid;
       grid-template-columns: repeat(5, minmax(0, 1fr));
       align-items: start;
-      gap: 12px;
+      gap: 10px;
       width: 100%;
       min-width: 0;
       padding-top: 0;
@@ -162,7 +162,7 @@
       transform: translateX(-50%);
     }
 
-    /* Логіст під менеджером з логістики */
+    /* Логіст під менеджером логістики */
 
     .tree-manager-logistics {
       display: flex;
@@ -183,7 +183,7 @@
       background: var(--lead-gold);
     }
 
-    /* Картки */
+    /* Основні картки */
 
     .leader-card {
       position: relative;
@@ -208,14 +208,14 @@
       display: flex;
       flex-direction: row;
       align-items: center;
-      gap: 11px;
+      gap: 10px;
       min-width: 0;
-      min-height: 118px;
-      padding: 12px 16px;
+      min-height: 96px;
+      padding: 10px 12px;
       background: transparent;
     }
 
-    /* АВАТАРИ — ЗМЕНШЕНО ДО 52 × 52 PX */
+    /* Аватари — 52 × 52 px */
 
     .leader-avatar,
     .leader-avatar-fallback {
@@ -242,23 +242,29 @@
       font: 700 20px Rajdhani, sans-serif;
     }
 
-    /* Текст */
+    /* Контент картки */
 
     .leader-identity {
-      flex: 1;
+      flex: 1 1 auto;
       min-width: 0;
       overflow-wrap: anywhere;
     }
 
+    /* Посада: більший шрифт, щільні рядки */
+
     .leader-position {
-      margin: 0 0 7px;
+      margin: 0 0 4px;
       color: var(--lead-gold);
       font-family: Arial, sans-serif;
-      font-size: 11px;
+      font-size: 13px;
       font-weight: 800;
-      line-height: 1.35;
+      line-height: 1.12;
+      letter-spacing: 0;
       overflow-wrap: anywhere;
+      hyphens: auto;
     }
+
+    /* Нікнейм */
 
     .leader-name {
       margin: 0;
@@ -266,7 +272,7 @@
       font-family: Arial, sans-serif;
       font-size: 22px;
       font-weight: 700;
-      line-height: 1.15;
+      line-height: 1.08;
       overflow-wrap: anywhere;
     }
 
@@ -285,7 +291,7 @@
       color: #fff;
     }
 
-    /* Повідомлення */
+    /* Повідомлення про завантаження та помилки */
 
     .leadership-message {
       width: 100%;
@@ -295,7 +301,7 @@
       background: rgba(1, 10, 18, .94);
       color: #e0e6ef;
       font-size: 13px;
-      line-height: 1.65;
+      line-height: 1.5;
       text-align: center;
     }
 
@@ -308,7 +314,7 @@
       color: #ffaaa9;
     }
 
-    /* Планшети */
+    /* Адаптація карток менеджерів */
 
     @media (max-width: 1250px) {
       .leadership-tree > .tree-managers {
@@ -323,6 +329,12 @@
 
       .tree-manager {
         padding-top: 0;
+      }
+
+      .tree-manager .leader-card-top {
+        gap: 8px;
+        padding: 9px;
+        min-height: 96px;
       }
     }
 
@@ -349,6 +361,7 @@
 
       .leadership-heading p {
         font-size: 14px;
+        line-height: 1.3;
       }
 
       .tree-level-head .leader-card,
@@ -364,8 +377,21 @@
 
       .leader-card-top,
       .tree-manager .leader-card-top {
-        min-height: 118px;
-        padding: 12px;
+        min-height: 96px;
+        padding: 10px;
+        gap: 10px;
+      }
+
+      .leader-position,
+      .tree-manager .leader-position {
+        font-size: 13px;
+        line-height: 1.12;
+      }
+
+      .leader-name,
+      .tree-manager .leader-name {
+        font-size: 22px;
+        line-height: 1.08;
       }
     }
   </style>
@@ -545,7 +571,7 @@
     <small>© 2026 UA LEGION</small>
   </footer>
 
-  <!-- Скрипти -->
+  <!-- Скрипти сайту -->
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase.js"></script>
