@@ -6,7 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#05070b">
   <meta name="description" content="Керівний склад UA LEGION ETS2.">
-
   <title>Керівний склад — UA LEGION ETS2</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,7 +19,6 @@
   <style>
     /* =========================================
        UA LEGION ETS2 — КЕРІВНИЙ СКЛАД
-       Ієрархія за референсним зображенням
        ========================================= */
 
     .ets2-leadership-page {
@@ -78,7 +76,7 @@
       text-shadow: 0 2px 7px #000;
     }
 
-    /* Дерево керівництва */
+    /* Ієрархія керівництва */
 
     .leadership-tree {
       display: flex;
@@ -103,7 +101,7 @@
       width: min(100%, 410px);
     }
 
-    /* Вертикальні з'єднання керівництва */
+    /* Вертикальні лінії між керівниками */
 
     .tree-connector-main {
       align-self: center;
@@ -114,8 +112,6 @@
       box-shadow: 0 0 6px rgba(255, 211, 79, .35);
     }
 
-    /* Лінія до п'яти менеджерів */
-
     .tree-connector-branch {
       align-self: center;
       width: 3px;
@@ -124,7 +120,7 @@
       background: var(--lead-gold);
     }
 
-    /* Ряд менеджерів */
+    /* П'ять менеджерів */
 
     .leadership-tree > .tree-managers {
       position: relative;
@@ -166,7 +162,7 @@
       transform: translateX(-50%);
     }
 
-    /* Картка логіста під менеджером логістики */
+    /* Логіст під менеджером з логістики */
 
     .tree-manager-logistics {
       display: flex;
@@ -212,24 +208,24 @@
       display: flex;
       flex-direction: row;
       align-items: center;
-      gap: 13px;
+      gap: 11px;
       min-width: 0;
       min-height: 118px;
       padding: 12px 16px;
       background: transparent;
     }
 
-    /* Розмір аватарів не змінюється */
+    /* АВАТАРИ — ЗМЕНШЕНО ДО 52 × 52 PX */
 
     .leader-avatar,
     .leader-avatar-fallback {
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 68px;
-      height: 68px;
-      min-width: 68px;
-      flex: 0 0 68px;
+      width: 52px;
+      height: 52px;
+      min-width: 52px;
+      flex: 0 0 52px;
       overflow: hidden;
       border: 2px solid var(--lead-gold);
       border-radius: 50%;
@@ -243,16 +239,16 @@
 
     .leader-avatar-fallback {
       color: #fff;
-      font: 700 23px Rajdhani, sans-serif;
+      font: 700 20px Rajdhani, sans-serif;
     }
+
+    /* Текст */
 
     .leader-identity {
       flex: 1;
       min-width: 0;
       overflow-wrap: anywhere;
     }
-
-    /* Назва посади */
 
     .leader-position {
       margin: 0 0 7px;
@@ -263,8 +259,6 @@
       line-height: 1.35;
       overflow-wrap: anywhere;
     }
-
-    /* Нікнейм */
 
     .leader-name {
       margin: 0;
@@ -291,7 +285,7 @@
       color: #fff;
     }
 
-    /* Повідомлення про завантаження та помилки */
+    /* Повідомлення */
 
     .leadership-message {
       width: 100%;
@@ -314,7 +308,7 @@
       color: #ffaaa9;
     }
 
-    /* Планшети та невеликі ноутбуки */
+    /* Планшети */
 
     @media (max-width: 1250px) {
       .leadership-tree > .tree-managers {
@@ -551,7 +545,7 @@
     <small>© 2026 UA LEGION</small>
   </footer>
 
-  <!-- Скрипти сайту -->
+  <!-- Скрипти -->
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase.js"></script>
