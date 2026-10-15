@@ -3,125 +3,227 @@
 <html lang="uk">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#05070b">
-  <meta name="description" content="Керівний склад і команда UA LEGION ETS2. Актуальні посади та фотографії учасників.">
-  <title>Керівний склад — UA LEGION ETS2</title>
+  <meta
+    name="description"
+    content="Керівництво транспортного напрямку ETS2 — UA LEGION."
+  >
+
+  <title>Керівництво — UA LEGION ETS2</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&display=swap"
+    rel="stylesheet"
+  >
 
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="ets2.css">
   <link rel="stylesheet" href="ets2-info-page.css">
 
   <style>
+    /* =========================================
+       UA LEGION — LEADERSHIP
+    ========================================= */
+
     .leadership-page {
+      width: 100%;
       min-width: 0;
     }
 
-    .leadership-heading,
-    .leadership-intro,
-    .leadership-toolbar,
-    .leadership-hierarchy {
-      padding: 14px;
-      margin: 0 0 10px;
-      background: rgba(5, 9, 16, .65);
-      border: 1px solid rgba(255, 255, 255, .12);
-      backdrop-filter: blur(4px);
+    .leadership-heading {
+      margin-bottom: 14px;
+      padding: 20px;
+      border: 1px solid rgba(255, 255, 255, .13);
+      background: rgba(5, 9, 16, .76);
+      backdrop-filter: blur(6px);
     }
 
     .leadership-eyebrow {
       display: inline-block;
+      margin-bottom: 7px;
       color: #ffd45a;
-      font: 700 10px/1.3 Rajdhani, sans-serif;
+      font: 700 10px/1.4 Rajdhani, sans-serif;
       letter-spacing: 2px;
+      text-transform: uppercase;
     }
 
     .leadership-heading h1 {
-      margin: 5px 0 8px;
-      color: #fff;
-      font: 700 clamp(28px, 3vw, 40px)/1.05 Rajdhani, sans-serif;
-    }
-
-    .leadership-heading p,
-    .leadership-intro p {
       margin: 0;
-      color: #e0e6ef;
-      font-size: 11px;
-      line-height: 1.55;
+      color: #fff;
+      font: 700 clamp(28px, 3vw, 42px)/1.08 Rajdhani, sans-serif;
     }
 
-    .leadership-intro h2,
-    .leadership-hierarchy h2 {
-      margin: 0 0 7px;
-      color: #fff;
-      font: 700 23px/1.1 Rajdhani, sans-serif;
+    .leadership-heading p {
+      max-width: 760px;
+      margin: 10px 0 0;
+      color: #c4cfdf;
+      font-size: 12px;
+      line-height: 1.65;
     }
+
+    /* Панель оновлення */
 
     .leadership-toolbar {
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
       gap: 12px;
+      margin-bottom: 18px;
+      padding: 12px 14px;
+      border: 1px solid rgba(255, 255, 255, .13);
+      background: rgba(5, 9, 16, .76);
+      backdrop-filter: blur(6px);
     }
 
     .leadership-count {
       color: #c4cfdf;
       font-size: 11px;
+      line-height: 1.5;
     }
 
     .leadership-refresh {
-      padding: 8px 12px;
-      border: 1px solid rgba(255, 212, 90, .35);
-      background: rgba(255, 212, 90, .08);
+      flex: 0 0 auto;
+      padding: 9px 13px;
+      border: 1px solid rgba(255, 212, 90, .4);
+      border-radius: 2px;
+      background: rgba(255, 212, 90, .07);
       color: #ffd45a;
-      font-weight: 800;
-      font-size: 11px;
+      font: 700 12px Rajdhani, sans-serif;
       cursor: pointer;
+      transition: background .2s ease;
     }
 
     .leadership-refresh:hover {
-      background: rgba(255, 212, 90, .18);
+      background: rgba(255, 212, 90, .17);
     }
 
-    .leadership-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 10px;
+    .leadership-refresh:disabled {
+      cursor: wait;
+      opacity: .6;
+    }
+
+    /* =========================================
+       ІЄРАРХІЧНЕ ДЕРЕВО
+    ========================================= */
+
+    .leadership-tree {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      min-width: 0;
+      padding: 8px 0 28px;
+    }
+
+    .tree-level {
+      display: flex;
+      justify-content: center;
+      width: 100%;
       min-width: 0;
     }
+
+    .tree-level-head .leader-card {
+      width: min(100%, 390px);
+    }
+
+    .tree-level-deputy .leader-card {
+      width: min(100%, 360px);
+    }
+
+    .tree-connector {
+      width: 2px;
+      height: 32px;
+      flex: 0 0 32px;
+      background: linear-gradient(
+        to bottom,
+        rgba(255, 212, 90, .8),
+        rgba(255, 212, 90, .35)
+      );
+    }
+
+    .tree-connector-branch {
+      width: 75%;
+      height: 28px;
+      flex: 0 0 28px;
+      border-top: 2px solid rgba(255, 212, 90, .5);
+      border-right: 2px solid rgba(255, 212, 90, .5);
+      border-left: 2px solid rgba(255, 212, 90, .5);
+      background: transparent;
+    }
+
+    .tree-managers {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      align-items: stretch;
+      gap: 12px;
+      width: 100%;
+      min-width: 0;
+    }
+
+    .tree-manager {
+      position: relative;
+      min-width: 0;
+    }
+
+    .tree-manager::before {
+      position: absolute;
+      top: -14px;
+      left: 50%;
+      width: 2px;
+      height: 14px;
+      background: rgba(255, 212, 90, .5);
+      content: "";
+    }
+
+    /* =========================================
+       КАРТКИ УЧАСНИКІВ
+    ========================================= */
 
     .leader-card {
       display: flex;
       flex-direction: column;
+      height: 100%;
       min-width: 0;
-      background: rgba(5, 9, 16, .78);
-      border: 1px solid rgba(255, 255, 255, .14);
-      backdrop-filter: blur(4px);
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, .15);
+      background: rgba(5, 9, 16, .84);
+      backdrop-filter: blur(6px);
+      transition:
+        border-color .2s ease,
+        transform .2s ease;
+    }
+
+    .leader-card:hover {
+      border-color: rgba(255, 212, 90, .5);
+      transform: translateY(-2px);
     }
 
     .leader-card-top {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 13px;
       min-width: 0;
-      padding: 14px;
-      border-bottom: 1px solid rgba(255, 255, 255, .12);
+      padding: 16px;
       background: linear-gradient(
-        100deg,
-        rgba(23, 101, 245, .2),
-        rgba(5, 9, 16, .25)
+        110deg,
+        rgba(23, 101, 245, .16),
+        rgba(5, 9, 16, .2)
       );
     }
 
     .leader-avatar,
     .leader-avatar-fallback {
-      width: 72px;
-      height: 72px;
-      flex: 0 0 72px;
-      border: 2px solid rgba(255, 212, 90, .55);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 68px;
+      height: 68px;
+      flex: 0 0 68px;
+      overflow: hidden;
+      border: 2px solid rgba(255, 212, 90, .48);
       border-radius: 50%;
       background: #111722;
     }
@@ -131,83 +233,36 @@
     }
 
     .leader-avatar-fallback {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #ffd45a;
-      font: 700 27px Rajdhani, sans-serif;
+      color: #dce5f3;
+      font: 700 23px Rajdhani, sans-serif;
     }
 
     .leader-identity {
+      flex: 1;
       min-width: 0;
-    }
-
-    .leader-rank {
-      display: block;
-      margin-bottom: 4px;
-      color: #ffd45a;
-      font: 700 10px/1.4 Rajdhani, sans-serif;
-      letter-spacing: 1px;
+      overflow-wrap: anywhere;
     }
 
     .leader-name {
       margin: 0;
       color: #fff;
-      font: 700 21px/1.08 Rajdhani, sans-serif;
+      font: 700 22px/1.15 Rajdhani, sans-serif;
       overflow-wrap: anywhere;
     }
 
     .leader-nickname {
-      margin-top: 5px;
+      margin-top: 6px;
       color: #aebbd0;
-      font-size: 10px;
+      font-size: 11px;
+      line-height: 1.55;
       overflow-wrap: anywhere;
     }
 
-    .leader-card-body {
-      display: flex;
-      flex: 1;
-      flex-direction: column;
-      gap: 10px;
-      padding: 13px;
-    }
-
-    .leader-role-label {
-      color: #9eafc6;
-      font-size: 9px;
-      font-weight: 800;
-      letter-spacing: 1px;
-    }
-
-    .leader-roles {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
-
-    .leader-role {
-      display: inline-flex;
-      max-width: 100%;
-      padding: 6px 8px;
-      border: 1px solid rgba(255, 212, 90, .25);
-      background: rgba(255, 212, 90, .07);
-      color: #f5d979;
-      font-size: 10px;
-      font-weight: 700;
-      overflow-wrap: anywhere;
-    }
-
-    .leader-status {
-      margin-top: auto;
-      padding-top: 8px;
-      border-top: 1px solid rgba(255, 255, 255, .08);
-      color: #8ee0ad;
-      font-size: 10px;
-    }
+    /* Вакантна посада */
 
     .leader-card.vacant {
-      border-color: rgba(255, 255, 255, .12);
-      background: rgba(5, 9, 16, .58);
+      border-color: rgba(255, 255, 255, .13);
+      background: rgba(5, 9, 16, .65);
     }
 
     .leader-card.vacant .leader-card-top {
@@ -219,73 +274,86 @@
       color: #aebbd0;
     }
 
-    .leader-card.vacant .leader-status {
+    .leader-card.vacant .leader-name {
       color: #ffd45a;
     }
 
+    .leader-card.vacant .leader-nickname {
+      color: #aebbd0;
+    }
+
+    /* Повідомлення про помилки */
+
     .leadership-message {
-      padding: 22px 14px;
-      background: rgba(5, 9, 16, .7);
-      border: 1px solid rgba(255, 255, 255, .13);
+      width: 100%;
+      padding: 24px 16px;
+      border: 1px solid rgba(255, 255, 255, .14);
+      background: rgba(5, 9, 16, .8);
       color: #c4cfdf;
       font-size: 12px;
-      line-height: 1.6;
+      line-height: 1.65;
       text-align: center;
     }
 
+    .leadership-message p {
+      margin: 8px 0 0;
+    }
+
     .leadership-message.error {
+      border-color: rgba(255, 90, 90, .35);
       color: #ffaaa9;
-      border-color: rgba(255, 90, 90, .3);
     }
 
-    .hierarchy-flow {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-
-    .hierarchy-flow span {
-      padding: 8px 10px;
-      border: 1px solid rgba(255, 255, 255, .13);
-      background: rgba(255, 255, 255, .035);
-      color: #e7edf7;
-      font: 700 12px Rajdhani, sans-serif;
-    }
-
-    .hierarchy-flow i {
-      color: #ffd45a;
-      font-style: normal;
-    }
+    /* =========================================
+       АДАПТИВНІСТЬ
+    ========================================= */
 
     @media (max-width: 1100px) {
-      .leadership-grid {
+      .tree-managers {
         grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .tree-connector-branch {
+        width: 65%;
       }
     }
 
-    @media (max-width: 760px) {
-      .leadership-grid {
-        grid-template-columns: minmax(0, 1fr);
-      }
-
-      .leadership-heading,
-      .leadership-intro,
-      .leadership-hierarchy {
-        padding: 12px;
+    @media (max-width: 650px) {
+      .leadership-heading {
+        padding: 15px;
       }
 
       .leadership-toolbar {
         align-items: flex-start;
       }
 
-      .leader-card-top {
-        padding: 12px;
+      .tree-managers {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 10px;
       }
-    }
 
-    @media (max-width: 380px) {
+      .tree-level-head .leader-card,
+      .tree-level-deputy .leader-card {
+        width: 100%;
+      }
+
+      .tree-connector-branch {
+        width: 2px;
+        height: 28px;
+        flex-basis: 28px;
+        border: 0;
+        background: rgba(255, 212, 90, .5);
+      }
+
+      .tree-manager::before {
+        top: -10px;
+        height: 10px;
+      }
+
+      .leader-card-top {
+        padding: 13px;
+      }
+
       .leader-avatar,
       .leader-avatar-fallback {
         width: 60px;
@@ -294,9 +362,11 @@
       }
 
       .leader-name {
-        font-size: 19px;
+        font-size: 20px;
       }
+    }
 
+    @media (max-width: 400px) {
       .leadership-toolbar {
         flex-direction: column;
       }
@@ -310,6 +380,7 @@
 
 <body class="ets2-info-page ets2-leadership-page">
 
+  <!-- Фонове оформлення сайту -->
   <div class="noise" aria-hidden="true"></div>
 
   <div class="legion-page-background" aria-hidden="true">
@@ -327,8 +398,13 @@
         type="video/mp4"
       >
     </video>
+
     <div class="legion-page-shade"></div>
   </div>
+
+  <!-- =======================================
+       ГОЛОВНЕ МЕНЮ
+  ======================================== -->
 
   <header class="topbar">
     <a class="brand" href="index.html">
@@ -338,6 +414,7 @@
 
     <button
       class="menu-btn"
+      type="button"
       aria-label="Відкрити меню"
       aria-expanded="false"
     >☰</button>
@@ -349,25 +426,36 @@
       <a href="events.html">Події</a>
       <a href="media.html">Медіа</a>
       <a href="gallery.html">Галерея</a>
+
       <a
         href="https://www.tiktok.com/@ua_legion_"
         target="_blank"
-        rel="noopener"
+        rel="noopener noreferrer"
       >TikTok</a>
+
       <a
         href="https://discord.gg/gfunf3yq7"
         target="_blank"
-        rel="noopener"
+        rel="noopener noreferrer"
         class="nav-cta"
       >Discord</a>
-      <a href="login.html" id="authButton">Увійти / Реєстрація</a>
+
+      <a href="login.html" id="authButton">
+        Увійти / Реєстрація
+      </a>
     </nav>
   </header>
+
+  <!-- =======================================
+       ОСНОВНИЙ ВМІСТ
+  ======================================== -->
 
   <main class="ets-info-main">
     <div class="legion-content-wrap">
 
+      <!-- ЛІВЕ МЕНЮ -->
       <aside class="ets-sidebar">
+
         <a class="side-logo" href="ets2-info.html">
           <img src="ua-legion-logo.png" alt="UA LEGION">
           <b>UA LEGION ETS2</b>
@@ -384,21 +472,27 @@
 
         <div class="side-group">
           <span>КЕРІВНИЦТВО</span>
+
           <a
             class="active"
             href="ets2-leadership.html"
             aria-current="page"
           >🛡️ Склад керівництва</a>
-          <a href="ets2-hierarchy.html">👑 Ієрархія та обов’язки</a>
+
+          <a href="ets2-hierarchy.html">
+            👑 Ієрархія та обов’язки
+          </a>
         </div>
 
         <div class="side-group">
           <span>СПІЛЬНОТА</span>
+
           <a
             href="https://discord.gg/gfunf3yq7"
             target="_blank"
-            rel="noopener"
+            rel="noopener noreferrer"
           >💬 Чат ETS2</a>
+
           <a href="ets2-join.html">📝 Заявка на вступ</a>
           <a href="ets2-roles.html">🎫 Отримання ролей</a>
           <a href="ets2-partners.html">📣 Партнери</a>
@@ -413,8 +507,10 @@
           <a href="ets2-drivers.html">👨‍✈️ Водії</a>
           <a href="ets2-gallery.html">📸 Галерея</a>
         </div>
+
       </aside>
 
+      <!-- ПРАВА ЧАСТИНА -->
       <div class="legion-content">
         <section class="legion-section leadership-page">
 
@@ -422,65 +518,62 @@
             <span class="leadership-eyebrow">
               UA LEGION / ETS2 / КЕРІВНИЦТВО
             </span>
+
             <h1>Наша команда UA LEGION</h1>
+
             <p>
               Керівний склад транспортного напрямку ETS2.
-              Тут відображатимуться призначені учасники, їхні фотографії
-              та вільні керівні посади.
+              Ієрархія посад, фотографії та ігрові нікнейми учасників.
             </p>
           </header>
 
-          <section class="leadership-intro">
-            <h2>Команда, що рухає нас уперед</h2>
-            <p>
-              Посади та фотографії учасників завантажуються з бази даних.
-              Якщо посада не призначена, вона відображатиметься як «ВАКАНТ».
-              Після зміни призначень список можна оновити кнопкою нижче.
-            </p>
-          </section>
-
+          <!-- ОНОВЛЕННЯ ТА СТАТИСТИКА -->
           <div class="leadership-toolbar">
             <div
               class="leadership-count"
               id="leadershipCount"
               aria-live="polite"
-            >Завантаження складу керівництва…</div>
+            >
+              Завантаження складу керівництва…
+            </div>
 
             <button
               class="leadership-refresh"
               id="leadershipRefresh"
               type="button"
-            >↻ Оновити список</button>
+            >
+              ↻ Оновити список
+            </button>
           </div>
 
-          <!-- JavaScript заповнить цей контейнер картками посад -->
+          <!--
+            Дерево формується файлом ets2-leadership.js.
+            Посади без призначених учасників відображаються як ВАКАНТ.
+          -->
           <div
-            class="leadership-grid"
+            class="leadership-tree"
             id="leadershipGrid"
             aria-live="polite"
-          ></div>
-
-          <div class="leadership-hierarchy">
-            <h2>Структура керівництва</h2>
-            <div class="hierarchy-flow">
-              <span>Керівник ETS2</span>
-              <i>→</i>
-              <span>Заступник керівника</span>
-              <i>→</i>
-              <span>Менеджери напрямку</span>
-              <i>→</i>
-              <span>Учасники</span>
+          >
+            <div class="leadership-message">
+              Завантаження керівництва UA LEGION…
             </div>
           </div>
 
         </section>
       </div>
+
     </div>
   </main>
+
+  <!-- =======================================
+       ПІДВАЛ
+  ======================================== -->
 
   <footer class="footer">
     <div class="footer-brand">
       <img src="ua-legion-logo.png" alt="UA LEGION">
+
       <div>
         <b>UA LEGION ETS2</b>
         <span>TRANSPORT DIVISION</span>
@@ -491,13 +584,14 @@
     <small>© 2026 UA LEGION</small>
   </footer>
 
-  <!-- Supabase та загальні скрипти сайту -->
+  <!-- =======================================
+       СКРИПТИ
+  ======================================== -->
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase.js"></script>
   <script src="script.js"></script>
   <script src="auth-menu.js"></script>
-
-  <!-- Логіка керівних посад і вакансій -->
   <script src="ets2-leadership.js"></script>
 
 </body>
