@@ -19,18 +19,30 @@
 
   <style>
     /* =========================================
-       СТОРІНКА КЕРІВНИЦТВА
+       UA LEGION ETS2 — КЕРІВНИЙ СКЛАД
+       Ієрархія за референсним зображенням
        ========================================= */
 
-    .leadership-page {
-      width: 100%;
-      min-width: 0;
-      padding-top: 8px;
+    .ets2-leadership-page {
+      --lead-gold: #ffd34f;
+      --lead-gold-light: #ffe58a;
+      --lead-card: rgba(1, 11, 19, .96);
+      color: #f5f7fb;
     }
+
+    .ets2-leadership-page .legion-section.leadership-page {
+      min-width: 0;
+      padding: 8px 10px 18px;
+      background: rgba(1, 8, 15, .22);
+      border-color: transparent;
+      backdrop-filter: none;
+    }
+
+    /* Заголовок */
 
     .leadership-heading {
       width: 100%;
-      margin: 0 0 16px;
+      margin: 0 auto 18px;
       padding: 0;
       border: 0;
       background: transparent;
@@ -40,38 +52,33 @@
     .leadership-heading h1 {
       margin: 0;
       color: #fff;
-      font-family: Rajdhani, sans-serif;
-      font-size: clamp(36px, 4.2vw, 54px);
-      font-weight: 700;
-      line-height: 1.02;
-      letter-spacing: -0.5px;
+      font-family: Arial, sans-serif;
+      font-size: clamp(36px, 3.6vw, 54px);
+      font-weight: 800;
+      line-height: 1.03;
+      letter-spacing: -1px;
+      text-shadow: 0 3px 12px #000;
     }
 
     .leadership-heading h1 span {
       display: block;
       margin-top: 3px;
-      color: #ffd45a;
+      color: var(--lead-gold);
+      text-shadow: 0 2px 12px rgba(255, 190, 30, .24);
     }
 
     .leadership-heading p {
-      max-width: 900px;
-      margin: 12px auto 0;
-      color: #d5dbe5;
-      font-family: Rajdhani, sans-serif;
-      font-size: clamp(18px, 1.8vw, 23px);
-      font-weight: 600;
-      line-height: 1.3;
+      max-width: 1000px;
+      margin: 8px auto 0;
+      color: #f1f3f7;
+      font-family: Arial, sans-serif;
+      font-size: clamp(13px, 1.15vw, 17px);
+      font-weight: 500;
+      line-height: 1.4;
+      text-shadow: 0 2px 7px #000;
     }
 
-    /* =========================================
-       СХЕМА ІЄРАРХІЇ
-
-       Ряд 1: Керівник
-       Ряд 2: Заступник
-       Ряд 3: Топ-менеджер
-       Ряд 4: П'ять менеджерів
-       Під логістичним менеджером: Логіст
-       ========================================= */
+    /* Дерево керівництва */
 
     .leadership-tree {
       display: flex;
@@ -87,72 +94,80 @@
       justify-content: center;
       width: 100%;
       min-width: 0;
-    }
-
-    /* Центруємо три головні картки вертикально */
-    .tree-level-head,
-    .tree-level-deputy,
-    .tree-level-top {
       margin: 0;
     }
 
-    .tree-level-head .leader-card {
-      width: min(100%, 410px);
-    }
-
-    .tree-level-deputy .leader-card {
-      width: min(100%, 410px);
-    }
-
+    .tree-level-head .leader-card,
+    .tree-level-deputy .leader-card,
     .tree-level-top .leader-card {
       width: min(100%, 410px);
     }
 
-    /* Вертикальні лінії між керівником,
-       заступником і топ-менеджером */
+    /* Вертикальні з'єднання керівництва */
+
     .tree-connector-main {
-      width: 2px;
-      height: 15px;
-      flex: 0 0 15px;
       align-self: center;
-      background: linear-gradient(
-        to bottom,
-        rgba(255, 212, 90, .85),
-        rgba(255, 212, 90, .45)
-      );
+      width: 3px;
+      height: 23px;
+      flex: 0 0 23px;
+      background: var(--lead-gold);
+      box-shadow: 0 0 6px rgba(255, 211, 79, .35);
     }
 
-    /* Лінія від топ-менеджера до п'яти менеджерів */
+    /* Лінія до п'яти менеджерів */
+
     .tree-connector-branch {
-      display: block;
-      width: 2px;
-      height: 15px;
-      flex: 0 0 15px;
       align-self: center;
-      border: 0;
-      background: rgba(255, 212, 90, .65);
+      width: 3px;
+      height: 20px;
+      flex: 0 0 20px;
+      background: var(--lead-gold);
     }
 
-    /* П'ять менеджерів в одному горизонтальному ряду */
+    /* Ряд менеджерів */
+
     .leadership-tree > .tree-managers {
+      position: relative;
       display: grid;
       grid-template-columns: repeat(5, minmax(0, 1fr));
       align-items: start;
-      gap: 10px;
+      gap: 12px;
       width: 100%;
       min-width: 0;
+      padding-top: 0;
+    }
+
+    .tree-managers::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 9.5%;
+      right: 9.5%;
+      height: 3px;
+      background: var(--lead-gold);
+      box-shadow: 0 0 5px rgba(255, 211, 79, .25);
     }
 
     .tree-manager {
       position: relative;
       min-width: 0;
+      padding-top: 20px;
     }
 
     .tree-manager::before {
-      display: none;
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 50%;
+      display: block;
+      width: 3px;
+      height: 20px;
+      background: var(--lead-gold);
+      transform: translateX(-50%);
     }
 
-    /* Логіст безпосередньо під менеджером з логістики */
+    /* Картка логіста під менеджером логістики */
+
     .tree-manager-logistics {
       display: flex;
       flex-direction: column;
@@ -160,61 +175,51 @@
     }
 
     .tree-logistician {
+      position: relative;
+      min-width: 0;
       margin-top: 8px;
     }
 
     .tree-connector-child {
-      width: 2px;
-      height: 14px;
+      width: 3px;
+      height: 19px;
       margin: 0 auto;
-      background: rgba(255, 212, 90, .65);
+      background: var(--lead-gold);
     }
 
-    .tree-logistician .leader-card {
-      border-color: rgba(255, 212, 90, .45);
-      background: rgba(5, 9, 16, .9);
-    }
-
-    /* =========================================
-       КАРТКИ УЧАСНИКІВ
-
-       Аватар: 68 × 68 px
-       Ім'я: 22 px
-       Посада: 11 px
-       ========================================= */
+    /* Картки */
 
     .leader-card {
-      display: flex;
-      flex-direction: column;
+      position: relative;
+      display: block;
       width: 100%;
-      height: auto;
       min-width: 0;
       overflow: hidden;
-      border: 1px solid rgba(255, 255, 255, .17);
-      background: rgba(5, 9, 16, .88);
-      backdrop-filter: blur(6px);
-      transition:
-        border-color .2s ease,
-        transform .2s ease;
+      border: 2px solid var(--lead-gold);
+      border-radius: 9px;
+      background: var(--lead-card);
+      box-shadow: 0 5px 18px rgba(0, 0, 0, .28);
+      backdrop-filter: blur(5px);
+      transition: border-color .2s ease, background .2s ease;
     }
 
     .leader-card:hover {
-      border-color: rgba(255, 212, 90, .65);
-      transform: translateY(-2px);
+      border-color: var(--lead-gold-light);
+      background: rgba(2, 15, 26, .98);
     }
 
     .leader-card-top {
       display: flex;
+      flex-direction: row;
       align-items: center;
       gap: 13px;
       min-width: 0;
-      padding: 12px;
-      background: linear-gradient(
-        110deg,
-        rgba(23, 101, 245, .16),
-        rgba(5, 9, 16, .2)
-      );
+      min-height: 118px;
+      padding: 12px 16px;
+      background: transparent;
     }
+
+    /* Розмір аватарів не змінюється */
 
     .leader-avatar,
     .leader-avatar-fallback {
@@ -223,11 +228,13 @@
       justify-content: center;
       width: 68px;
       height: 68px;
+      min-width: 68px;
       flex: 0 0 68px;
       overflow: hidden;
-      border: 2px solid rgba(255, 212, 90, .55);
+      border: 2px solid var(--lead-gold);
       border-radius: 50%;
       background: #111722;
+      box-shadow: 0 0 0 2px rgba(255, 211, 79, .1);
     }
 
     .leader-avatar {
@@ -235,7 +242,7 @@
     }
 
     .leader-avatar-fallback {
-      color: #dce5f3;
+      color: #fff;
       font: 700 23px Rajdhani, sans-serif;
     }
 
@@ -245,51 +252,54 @@
       overflow-wrap: anywhere;
     }
 
-    .leader-name {
-      margin: 0;
-      color: #fff;
-      font: 700 22px/1.15 Rajdhani, sans-serif;
+    /* Назва посади */
+
+    .leader-position {
+      margin: 0 0 7px;
+      color: var(--lead-gold);
+      font-family: Arial, sans-serif;
+      font-size: 11px;
+      font-weight: 800;
+      line-height: 1.35;
       overflow-wrap: anywhere;
     }
 
-    .leader-nickname {
-      margin-top: 6px;
-      color: #aebbd0;
-      font-size: 11px;
-      line-height: 1.45;
+    /* Нікнейм */
+
+    .leader-name {
+      margin: 0;
+      color: #f6f8fc;
+      font-family: Arial, sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 1.15;
       overflow-wrap: anywhere;
     }
 
     /* Вакантні посади */
+
     .leader-card.vacant {
-      border-color: rgba(255, 255, 255, .15);
-      background: rgba(5, 9, 16, .76);
+      border-color: rgba(255, 211, 79, .75);
+      background: rgba(1, 11, 19, .92);
     }
 
-    .leader-card.vacant .leader-card-top {
-      background: rgba(255, 255, 255, .025);
-    }
-
-    .leader-card.vacant .leader-avatar-fallback {
-      border-color: rgba(255, 255, 255, .22);
-      color: #aebbd0;
+    .leader-card.vacant .leader-position {
+      color: var(--lead-gold);
     }
 
     .leader-card.vacant .leader-name {
-      color: #ffd45a;
+      color: #fff;
     }
 
-    .leader-card.vacant .leader-nickname {
-      color: #aebbd0;
-    }
+    /* Повідомлення про завантаження та помилки */
 
-    /* Повідомлення */
     .leadership-message {
       width: 100%;
       padding: 24px 16px;
-      border: 1px solid rgba(255, 255, 255, .14);
-      background: rgba(5, 9, 16, .85);
-      color: #c4cfdf;
+      border: 1px solid var(--lead-gold);
+      border-radius: 8px;
+      background: rgba(1, 10, 18, .94);
+      color: #e0e6ef;
       font-size: 13px;
       line-height: 1.65;
       text-align: center;
@@ -300,41 +310,43 @@
     }
 
     .leadership-message.error {
-      border-color: rgba(255, 90, 90, .35);
+      border-color: rgba(255, 90, 90, .6);
       color: #ffaaa9;
     }
 
-    /* =========================================
-       АДАПТИВНІСТЬ
-       На менших екранах дозволяємо перенос,
-       не зменшуючи аватари та шрифти.
-       ========================================= */
+    /* Планшети та невеликі ноутбуки */
 
-    @media (max-width: 1250px) and (min-width: 901px) {
+    @media (max-width: 1250px) {
       .leadership-tree > .tree-managers {
         grid-template-columns: repeat(3, minmax(0, 1fr));
         row-gap: 12px;
       }
 
-      .tree-manager-logistics {
-        grid-column: auto;
+      .tree-managers::before,
+      .tree-manager::before {
+        display: none;
+      }
+
+      .tree-manager {
+        padding-top: 0;
       }
     }
 
-    @media (max-width: 900px) and (min-width: 651px) {
+    @media (max-width: 900px) {
       .leadership-tree > .tree-managers {
         grid-template-columns: repeat(2, minmax(0, 1fr));
-        row-gap: 12px;
-      }
-
-      .leader-card-top {
-        padding: 12px;
       }
     }
 
+    /* Телефони */
+
     @media (max-width: 650px) {
+      .ets2-leadership-page .legion-section.leadership-page {
+        padding: 8px 5px 14px;
+      }
+
       .leadership-heading {
-        margin-bottom: 18px;
+        margin-bottom: 16px;
       }
 
       .leadership-heading h1 {
@@ -342,14 +354,7 @@
       }
 
       .leadership-heading p {
-        margin-top: 12px;
-        font-size: 18px;
-        line-height: 1.4;
-      }
-
-      .leadership-tree > .tree-managers {
-        grid-template-columns: minmax(0, 1fr);
-        gap: 12px;
+        font-size: 14px;
       }
 
       .tree-level-head .leader-card,
@@ -358,7 +363,14 @@
         width: 100%;
       }
 
-      .leader-card-top {
+      .leadership-tree > .tree-managers {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 12px;
+      }
+
+      .leader-card-top,
+      .tree-manager .leader-card-top {
+        min-height: 118px;
         padding: 12px;
       }
     }
@@ -367,7 +379,8 @@
 
 <body class="ets2-info-page ets2-leadership-page">
 
-  <!-- Фонове оформлення -->
+  <!-- Фонове відео -->
+
   <div class="noise" aria-hidden="true"></div>
 
   <div class="legion-page-background" aria-hidden="true">
@@ -389,7 +402,8 @@
     <div class="legion-page-shade"></div>
   </div>
 
-  <!-- Головне меню -->
+  <!-- Верхнє меню -->
+
   <header class="topbar">
     <a class="brand" href="index.html">
       <img src="ua-legion-logo.png" alt="UA LEGION">
@@ -431,10 +445,12 @@
   </header>
 
   <!-- Основний вміст -->
+
   <main class="ets-info-main">
     <div class="legion-content-wrap">
 
-      <!-- Ліве меню -->
+      <!-- Ліве меню ETS2 -->
+
       <aside class="ets-sidebar">
 
         <a class="side-logo" href="ets2-info.html">
@@ -485,7 +501,8 @@
 
       </aside>
 
-      <!-- Права частина -->
+      <!-- Керівний склад -->
+
       <div class="legion-content">
         <section class="legion-section leadership-page">
 
@@ -501,7 +518,6 @@
             </p>
           </header>
 
-          <!-- Динамічне дерево посад -->
           <div
             class="leadership-tree"
             id="leadershipGrid"
@@ -520,6 +536,7 @@
   </main>
 
   <!-- Підвал -->
+
   <footer class="footer">
     <div class="footer-brand">
       <img src="ua-legion-logo.png" alt="UA LEGION">
@@ -535,6 +552,7 @@
   </footer>
 
   <!-- Скрипти сайту -->
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase.js"></script>
   <script src="script.js"></script>
