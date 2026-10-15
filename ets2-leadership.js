@@ -3,482 +3,261 @@
   "use strict";
 
   const POSITIONS = [
-    {
-      id: "head",
-      title: "Керівник ETS2 UA LEGION",
-      level: 1
-    },
-    {
-      id: "deputy",
-      title: "Заступник керівника ETS2 UA LEGION",
-      level: 2
-    },
-    {
-      id: "top",
-      title: "Топ-менеджер ETS2 UA LEGION",
-      level: 3
-    },
-    {
-      id: "hr",
-      title: "HR-менеджер ETS2 UA LEGION",
-      level: 3
-    },
-    {
-      id: "logistics",
-      title: "Менеджер з логістики ETS2 UA LEGION",
-      level: 3
-    },
-    {
-      id: "event",
-      title: "Івент-менеджер ETS2 UA LEGION",
-      level: 3
-    },
-    {
-      id: "pr",
-      title: "PR-менеджер ETS2 UA LEGION",
-      level: 3
-    },
-    {
-      id: "technical",
-      title: "Технічний менеджер ETS2 UA LEGION",
-      level: 3
-    },
-    {
-      id: "lawyer",
-      title: "Юрист ETS2 UA LEGION",
-      level: 3
-    }
+    { id: "head", code: "ets2_director", title: "Керівник ETS2 UA LEGION" },
+    { id: "deputy", code: "ets2_deputy_director", title: "Заступник керівника ETS2 UA LEGION" },
+    { id: "top", code: "ets2_top_manager", title: "Топ-менеджер ETS2 UA LEGION" },
+    { id: "hr", code: "ets2_hr_manager", title: "HR-менеджер ETS2 UA LEGION" },
+    { id: "logistics", code: "ets2_logistics_manager", title: "Менеджер з логістики ETS2 UA LEGION" },
+    { id: "event", code: "ets2_event_manager", title: "Івент-менеджер ETS2 UA LEGION" },
+    { id: "pr", code: "ets2_pr_manager", title: "PR-менеджер ETS2 UA LEGION" },
+    { id: "technical", code: "ets2_technical_manager", title: "Технічний менеджер ETS2 UA LEGION" },
+    { id: "logistician", code: "ets2_logistician", title: "Логіст ETS2 UA LEGION" }
   ];
 
-  const REFRESH_INTERVAL = 60000;
-
   const grid = document.getElementById("leadershipGrid");
-  const count = document.getElementById("leadershipCount");
-  const refreshButton = document.getElementById("leadershipRefresh");
-
-  if (!grid || !count || !refreshButton) {
-    console.error("[UA LEGION] Не знайдені елементи керівництва.");
+  if (!grid) {
+    console.error("[UA LEGION] Не знайдено #leadershipGrid");
     return;
   }
 
-  let isLoading = false;
-  let hasLoaded = false;
-  let refreshTimer = null;
+  let loading = false;
+  let loaded = false;
 
-  function normalize(value) {
-    return String(value ?? "")
-      .normalize("NFKC")
-      .toLocaleLowerCase("uk-UA")
-      .replace(/[’‘`]/g, "'")
-      .replace(/\s+/g, " ")
-      .trim();
+  const normalize = value => String(value ?? "")
+    .normalize("NFKC")
+    .toLocaleLowerCase("uk-UA")
+    .replace(/[’‘`]/g, "'")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  const escapeHTML = value => String(value ?? "").replace(/[&<>"']/g, ch => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;",
+    '"': "&quot;", "'": "&#039;"
+  })[ch]);
+
+  function asArray(value) {
+    if (Array.isArray(value)) return value;
+    if (typeof value === "string") {
+      try {
+        const parsed = JSON.parse(value);
+        return Array.isArray(parsed) ? parsed : [value];
+      } catch {
+        return value.trim() ? [value] : [];
+      }
+    }
+    return value && typeof value === "object" ? [value] : [];
   }
 
-  function escapeHTML(value) {
-    return String(value ?? "").replace(/[&<>"']/g, character => ({
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&#039;"
-    })[character]);
+  function getRoles(member) {
+    const result = [];
+
+    // Ролі, вкладені в directions[].roles[].
+    for (const direction of asArray(member.directions)) {
+      const directionValues = [
+        direction?.slug, direction?.code, direction?.name
+      ].map(normalize);
+
+      const isETS2 = directionValues.some(value =>
+        value === "ets2" ||
+        value.includes("euro truck simulator") ||
+        value.includes("eurotruck simulator")
+      );
+
+      if (!isETS2) continue;
+
+      for (const role of asArray(direction.roles)) {
+        if (typeof role === "string") result.push(role);
+        else if (role && typeof role === "object") {
+          result.push(role.code, role.name, role.title, role.label, role.role_name);
+        }
+      }
+    }
+
+    // Ролі, передані окремим масивом.
+    for (const role of asArray(member.roles)) {
+      if (typeof role === "string") result.push(role);
+      else if (role && typeof role === "object") {
+        result.push(role.code, role.name, role.title, role.label, role.role_name);
+      }
+    }
+
+    // Окремі поля, які можуть повертати RPC.
+    result.push(member.role, member.role_code, member.role_name);
+
+    return new Set(result.filter(Boolean).map(normalize));
   }
 
-  function getClient() {
-    return window.supabaseClient;
+  function matches(member, position) {
+    const roles = getRoles(member);
+    return roles.has(normalize(position.code)) ||
+      roles.has(normalize(position.title));
   }
 
-  // Не використовуємо email або ім'я профілю як ігровий нікнейм.
-  function getNickname(member) {
-    return String(member.game_nickname ?? "").trim();
-  }
-
-  function getAvatar(member) {
-    const value = String(
-      member.avatar_url ||
-      member.avatar ||
+  function nicknameOf(member) {
+    return String(
+      member.game_nickname ??
+      member.nickname ??
+      member.discord_username ??
       ""
     ).trim();
+  }
 
+  function avatarOf(member) {
+    const value = String(member.avatar_url ?? member.avatar ?? "").trim();
     if (!value) return "";
-
     try {
       const url = new URL(value, window.location.origin);
-
-      if (!["https:", "http:"].includes(url.protocol)) {
-        return "";
-      }
-
-      return url.href;
+      return ["https:", "http:"].includes(url.protocol) ? url.href : "";
     } catch {
       return "";
     }
   }
 
-  function getMemberId(member) {
-    return String(
-      member.user_id ||
-      member.profile_id ||
-      member.member_id ||
-      member.id ||
-      ""
-    );
+  function memberId(member) {
+    return String(member.user_id ?? member.profile_id ?? member.member_id ?? member.id ?? "");
   }
 
-  function toArray(value) {
-    if (Array.isArray(value)) return value;
-
-    if (typeof value === "string") {
-      try {
-        const parsed = JSON.parse(value);
-        return Array.isArray(parsed) ? parsed : [];
-      } catch {
-        return [];
-      }
-    }
-
-    return [];
+  function initials(name) {
+    return (name.replace(/^@/, "").slice(0, 2) || "UA").toLocaleUpperCase("uk-UA");
   }
 
-  function getDirections(member) {
-    return toArray(member.directions);
-  }
-
-  function isETS2Direction(direction) {
-    const values = [
-      direction.slug,
-      direction.code,
-      direction.name
-    ].map(normalize);
-
-    return values.some(value =>
-      value === "ets2" ||
-      value.includes("euro truck simulator") ||
-      value.includes("eurotruck simulator")
-    );
-  }
-
-  function getRoleValues(role) {
-    if (typeof role === "string") {
-      return [role];
-    }
-
-    if (!role || typeof role !== "object") {
-      return [];
-    }
-
-    return [
-      role.name,
-      role.code,
-      role.title,
-      role.label,
-      role.role_name
-    ].filter(Boolean);
-  }
-
-  function getMemberRoles(member) {
-    const roles = [];
-
-    // Формат, який використовується в members.js:
-    // member.directions[].roles[].
-    for (const direction of getDirections(member)) {
-      if (!isETS2Direction(direction)) continue;
-
-      for (const role of toArray(direction.roles)) {
-        roles.push(...getRoleValues(role));
-      }
-    }
-
-    // Підтримка RPC-відповідей, де ролі передані окремо.
-    for (const role of toArray(member.roles)) {
-      roles.push(...getRoleValues(role));
-    }
-
-    return [...new Set(roles.map(normalize).filter(Boolean))];
-  }
-
-  function matchesPosition(member, position) {
-    const roles = getMemberRoles(member);
-    const expected = normalize(position.title);
-
-    return roles.includes(expected);
-  }
-
-  function getMembersFromResponse(data) {
-    if (Array.isArray(data)) return data;
-    if (data && Array.isArray(data.members)) return data.members;
-    if (data && Array.isArray(data.data)) return data.data;
-
-    throw new Error(
-      "Невідомий формат відповіді get_ua_legion_members."
-    );
-  }
-
-  function initialsFor(nickname) {
-    const nicknameValue = nickname.trim();
-
-    if (!nicknameValue) return "UA";
-
-    return nicknameValue
-      .replace(/^@/, "")
-      .slice(0, 2)
-      .toLocaleUpperCase("uk-UA");
-  }
-
-  function renderAvatar(member) {
-    const avatar = getAvatar(member);
-    const nickname = getNickname(member);
-    const initials = escapeHTML(initialsFor(nickname));
-
-    if (!avatar) {
+  function renderCard(position, members) {
+    if (!members.length) {
       return `
-        <div class="leader-avatar-fallback" aria-label="Фото не додано">
-          ${initials}
-        </div>
-      `;
-    }
-
-    return `
-      <img
-        class="leader-avatar"
-        src="${escapeHTML(avatar)}"
-        alt="Аватар учасника"
-        loading="lazy"
-        referrerpolicy="no-referrer"
-        onerror="
-          const fallback = document.createElement('div');
-          fallback.className = 'leader-avatar-fallback';
-          fallback.textContent = '${initials}';
-          fallback.setAttribute('aria-label', 'Фото недоступне');
-          this.replaceWith(fallback);
-        "
-      >
-    `;
-  }
-
-  function renderMemberCard(position, member) {
-    const nickname = getNickname(member);
-    const nicknameHTML = nickname
-      ? `<h3 class="leader-name">${escapeHTML(nickname)}</h3>`
-      : `<h3 class="leader-name">Нікнейм не вказано</h3>`;
-
-    return `
-      <article class="leader-card">
-        <div class="leader-card-top">
-          ${renderAvatar(member)}
-
-          <div class="leader-identity">
-            ${nicknameHTML}
-            <div class="leader-nickname">
-              ${escapeHTML(position.title)}
+        <article class="leader-card vacant">
+          <div class="leader-card-top">
+            <div class="leader-avatar-fallback">UA</div>
+            <div class="leader-identity">
+              <h3 class="leader-name">ВАКАНТ</h3>
+              <div class="leader-nickname">${escapeHTML(position.title)}</div>
             </div>
           </div>
-        </div>
-      </article>
-    `;
-  }
+        </article>`;
+    }
 
-  function renderVacantCard(position) {
-    return `
-      <article class="leader-card vacant">
-        <div class="leader-card-top">
-          <div class="leader-avatar-fallback" aria-hidden="true">UA</div>
+    return members.map(member => {
+      const name = nicknameOf(member);
+      const avatar = avatarOf(member);
+      const avatarHTML = avatar
+        ? `<img class="leader-avatar" src="${escapeHTML(avatar)}" alt="Аватар учасника" loading="lazy">`
+        : `<div class="leader-avatar-fallback">${escapeHTML(initials(name))}</div>`;
 
-          <div class="leader-identity">
-            <h3 class="leader-name">ВАКАНТ</h3>
-            <div class="leader-nickname">
-              ${escapeHTML(position.title)}
+      return `
+        <article class="leader-card">
+          <div class="leader-card-top">
+            ${avatarHTML}
+            <div class="leader-identity">
+              <h3 class="leader-name">${escapeHTML(name || "Нікнейм не вказано")}</h3>
+              <div class="leader-nickname">${escapeHTML(position.title)}</div>
             </div>
           </div>
-        </div>
-      </article>
-    `;
+        </article>`;
+    }).join("");
   }
 
-  function renderPosition(position, assignedMembers) {
-    if (assignedMembers.length === 0) {
-      return renderVacantCard(position);
-    }
-
-    return assignedMembers
-      .map(member => renderMemberCard(position, member))
-      .join("");
-  }
-
-  function buildTree(members) {
-    const assignedByPosition = new Map(
-      POSITIONS.map(position => [position.id, []])
-    );
-
-    for (const member of members) {
-      for (const position of POSITIONS) {
-        if (!matchesPosition(member, position)) continue;
-
-        const assigned = assignedByPosition.get(position.id);
-        const memberId = getMemberId(member);
-
-        const duplicate = assigned.some(existing => {
-          const existingId = getMemberId(existing);
-
-          if (memberId && existingId) {
-            return memberId === existingId;
-          }
-
-          return (
-            getNickname(existing) &&
-            getNickname(existing) === getNickname(member)
-          );
-        });
-
-        if (!duplicate) assigned.push(member);
-      }
-    }
-
-    const head = POSITIONS.find(position => position.id === "head");
-    const deputy = POSITIONS.find(position => position.id === "deputy");
-    const managers = POSITIONS.filter(position => position.level === 3);
-
-    let occupied = 0;
-    let vacant = 0;
+  function renderTree(members) {
+    const assigned = new Map(POSITIONS.map(position => [position.id, []]));
 
     for (const position of POSITIONS) {
-      if (assignedByPosition.get(position.id).length) {
-        occupied++;
-      } else {
-        vacant++;
+      for (const member of members) {
+        if (!matches(member, position)) continue;
+
+        const list = assigned.get(position.id);
+        const id = memberId(member);
+        const duplicate = list.some(existing => {
+          const existingId = memberId(existing);
+          if (id && existingId) return id === existingId;
+          return nicknameOf(member) &&
+            nicknameOf(member) === nicknameOf(existing);
+        });
+
+        if (!duplicate) list.push(member);
       }
     }
 
-    const headHTML = renderPosition(
-      head,
-      assignedByPosition.get(head.id)
-    );
+    const get = id => POSITIONS.find(position => position.id === id);
+    const card = id => renderCard(get(id), assigned.get(id));
 
-    const deputyHTML = renderPosition(
-      deputy,
-      assignedByPosition.get(deputy.id)
-    );
+    const managerIds = ["hr", "logistics", "event", "pr", "technical"];
+    const managerHTML = managerIds.map(id => {
+      const position = get(id);
+      const managerCard = card(id);
 
-    const managersHTML = managers.map(position => `
-      <div class="tree-manager" data-position="${escapeHTML(position.id)}">
-        ${renderPosition(position, assignedByPosition.get(position.id))}
-      </div>
-    `).join("");
+      if (id !== "logistics") {
+        return `<div class="tree-manager">${managerCard}</div>`;
+      }
+
+      return `
+        <div class="tree-manager tree-manager-logistics">
+          ${managerCard}
+          <div class="tree-logistician">
+            <div class="tree-connector tree-connector-child" aria-hidden="true"></div>
+            ${card("logistician")}
+          </div>
+        </div>`;
+    }).join("");
 
     grid.className = "leadership-tree";
-
     grid.innerHTML = `
       <section class="tree-level tree-level-head" aria-label="Керівник">
-        ${headHTML}
+        ${card("head")}
       </section>
-
       <div class="tree-connector tree-connector-main" aria-hidden="true"></div>
-
       <section class="tree-level tree-level-deputy" aria-label="Заступник керівника">
-        ${deputyHTML}
+        ${card("deputy")}
       </section>
-
+      <div class="tree-connector tree-connector-main" aria-hidden="true"></div>
+      <section class="tree-level tree-level-top" aria-label="Топ-менеджер">
+        ${card("top")}
+      </section>
       <div class="tree-connector tree-connector-branch" aria-hidden="true"></div>
-
       <section class="tree-managers" aria-label="Менеджери напрямків">
-        ${managersHTML}
-      </section>
-    `;
-
-    count.textContent =
-      `Керівних посад: ${POSITIONS.length} · ` +
-      `Зайнято: ${occupied} · Вакантних: ${vacant}`;
+        ${managerHTML}
+      </section>`;
   }
 
-  function renderError(message) {
+  function showError(message) {
     grid.className = "leadership-tree";
     grid.innerHTML = `
       <div class="leadership-message error">
-        <strong>Не вдалося завантажити склад керівництва.</strong>
+        <strong>Не вдалося завантажити керівний склад.</strong>
         <p>${escapeHTML(message)}</p>
-        <p>
-          Список вакансій не сформовано, оскільки актуальні
-          призначення не підтверджені.
-        </p>
-      </div>
-    `;
+      </div>`;
+  }
 
-    count.textContent = "Помилка завантаження";
+  function getMembers(data) {
+    if (Array.isArray(data)) return data;
+    if (Array.isArray(data?.members)) return data.members;
+    if (Array.isArray(data?.data)) return data.data;
+    throw new Error("RPC повернув невідомий формат даних.");
   }
 
   async function loadLeadership() {
-    if (isLoading) return;
-
-    isLoading = true;
-    refreshButton.disabled = true;
-    refreshButton.textContent = "Завантаження…";
+    if (loading) return;
+    loading = true;
 
     try {
-      const client = getClient();
+      const client = window.supabaseClient;
+      if (!client?.rpc) throw new Error("Supabase не підключено.");
 
-      if (!client || typeof client.rpc !== "function") {
-        throw new Error(
-          "Supabase не підключено. Перевір файл supabase.js."
-        );
-      }
+      const { data, error } = await client.rpc("get_ua_legion_members");
+      if (error) throw error;
 
-      const { data, error } = await client.rpc(
-        "get_ua_legion_members"
-      );
-
-      if (error) {
-        console.error("[UA LEGION] RPC:", error);
-
-        throw new Error(
-          "Не вдалося отримати учасників. Перевір права доступу " +
-          "до get_ua_legion_members."
-        );
-      }
-
-      const members = getMembersFromResponse(data);
-
-      buildTree(members);
-      hasLoaded = true;
-
-      console.info(
-        `[UA LEGION] Склад оновлено. Учасників: ${members.length}`
-      );
+      const members = getMembers(data);
+      renderTree(members);
+      loaded = true;
+      console.info(`[UA LEGION] Керівництво завантажено. Учасників: ${members.length}`);
     } catch (error) {
-      console.error("[UA LEGION] Помилка:", error);
-
-      if (!hasLoaded) {
-        renderError(
-          error instanceof Error ? error.message : "Невідома помилка."
-        );
-      } else {
-        count.textContent =
-          "Не вдалося оновити дані. Показано попередній список.";
-      }
+      console.error("[UA LEGION] Помилка завантаження:", error);
+      if (!loaded) showError(error?.message || "Невідома помилка.");
     } finally {
-      isLoading = false;
-      refreshButton.disabled = false;
-      refreshButton.textContent = "↻ Оновити список";
+      loading = false;
     }
   }
 
-  refreshButton.addEventListener("click", loadLeadership);
-
   loadLeadership();
-
-  refreshTimer = window.setInterval(
-    loadLeadership,
-    REFRESH_INTERVAL
-  );
-
+  window.setInterval(loadLeadership, 60000);
   document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "visible") {
-      loadLeadership();
-    }
-  });
-
-  window.addEventListener("beforeunload", () => {
-    if (refreshTimer !== null) {
-      window.clearInterval(refreshTimer);
-    }
+    if (document.visibilityState === "visible") loadLeadership();
   });
 })();
