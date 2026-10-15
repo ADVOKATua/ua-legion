@@ -23,22 +23,42 @@
       min-width: 0;
     }
 
-    /* ЄДИНИЙ ВЕРХНІЙ БЛОК */
+    /* ЦЕНТРОВАНИЙ ЗАГОЛОВОК */
     .leadership-heading {
-      margin: 0 0 18px;
-      padding: 22px 18px;
-      border: 1px solid rgba(255,255,255,.13);
-      border-left: 3px solid #ffd45a;
-      background: rgba(5,9,16,.78);
-      backdrop-filter: blur(6px);
+      width: 100%;
+      margin: 0 0 28px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      text-align: center;
+    }
+
+    .leadership-heading h1 {
+      margin: 0;
+      color: #fff;
+      font-family: Rajdhani, sans-serif;
+      font-size: clamp(36px, 4.5vw, 54px);
+      font-weight: 700;
+      line-height: 1.05;
+      letter-spacing: -0.5px;
+      text-align: center;
+    }
+
+    .leadership-heading h1 span {
+      display: block;
+      margin-top: 3px;
+      color: #ffd45a;
     }
 
     .leadership-heading p {
-      margin: 0;
-      color: #e0e5ee;
-      font-size: 14px;
+      max-width: 900px;
+      margin: 20px auto 0;
+      color: #d5dbe5;
+      font-family: Rajdhani, sans-serif;
+      font-size: clamp(18px, 2vw, 23px);
       font-weight: 600;
-      line-height: 1.8;
+      line-height: 1.45;
+      text-align: center;
     }
 
     /* ПАНЕЛЬ ОНОВЛЕННЯ */
@@ -248,7 +268,7 @@
       color: #aebbd0;
     }
 
-    /* СТАН ЗАВАНТАЖЕННЯ ТА ПОМИЛКИ */
+    /* ЗАВАНТАЖЕННЯ ТА ПОМИЛКИ */
     .leadership-message {
       width: 100%;
       padding: 24px 16px;
@@ -282,11 +302,17 @@
 
     @media (max-width: 650px) {
       .leadership-heading {
-        padding: 16px 14px;
+        margin-bottom: 22px;
+      }
+
+      .leadership-heading h1 {
+        font-size: clamp(32px, 8vw, 42px);
       }
 
       .leadership-heading p {
-        font-size: 13px;
+        margin-top: 14px;
+        font-size: 18px;
+        line-height: 1.5;
       }
 
       .leadership-toolbar {
@@ -432,27 +458,13 @@
 
         <div class="side-group">
           <span>КЕРІВНИЦТВО</span>
-
-          <a
-            class="active"
-            href="ets2-leadership.html"
-            aria-current="page"
-          >🛡️ Склад керівництва</a>
-
-          <a href="ets2-hierarchy.html">
-            👑 Ієрархія та обов’язки
-          </a>
+          <a class="active" href="ets2-leadership.html" aria-current="page">🛡️ Склад керівництва</a>
+          <a href="ets2-hierarchy.html">👑 Ієрархія та обов’язки</a>
         </div>
 
         <div class="side-group">
           <span>СПІЛЬНОТА</span>
-
-          <a
-            href="https://discord.gg/gfunf3yq7"
-            target="_blank"
-            rel="noopener noreferrer"
-          >💬 Чат ETS2</a>
-
+          <a href="https://discord.gg/gfunf3yq7" target="_blank" rel="noopener noreferrer">💬 Чат ETS2</a>
           <a href="ets2-join.html">📝 Заявка на вступ</a>
           <a href="ets2-roles.html">🎫 Отримання ролей</a>
           <a href="ets2-partners.html">📣 Партнери</a>
@@ -474,12 +486,16 @@
       <div class="legion-content">
         <section class="legion-section leadership-page">
 
-          <!-- ЄДИНИЙ ТЕКСТОВИЙ БЛОК -->
+          <!-- ЗАГОЛОВОК ПО ЦЕНТРУ -->
           <header class="leadership-heading">
+            <h1>
+              Керівний склад
+              <span>UA LEGION ETS2</span>
+            </h1>
+
             <p>
-              Керівний склад UA LEGION ETS2, який координує
-              роботу команди, забезпечує її розвиток та веде
-              компанію до нових досягнень.
+              Координуємо роботу команди, забезпечуємо її розвиток
+              та ведемо компанію до нових досягнень.
             </p>
           </header>
 
