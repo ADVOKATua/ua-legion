@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="uk">
 <head>
@@ -6,85 +7,616 @@
   <meta name="theme-color" content="#05070b">
   <meta name="description" content="Структура управління UA LEGION ETS2 та посадові обов’язки.">
   <title>Структура управління UA LEGION ETS2 та посадові обов’язки</title>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="ets2.css">
   <link rel="stylesheet" href="ets2-info-page.css">
+
   <style>
-    .ets2-leadership-page{--lead-gold:#ffd34f;--lead-card:rgba(1,11,19,.96);color:#f5f7fb}
-    .ets2-leadership-page .legion-section.leadership-page{min-width:0;padding:8px 10px 22px;background:rgba(1,8,15,.22);border-color:transparent;backdrop-filter:none}
-    .leadership-heading{margin:0 auto 20px;padding:18px 16px 16px;border-radius:8px;background:#303030;color:#f5f5f5;text-align:left;box-shadow:0 4px 18px rgba(0,0,0,.2)}
-    .leadership-heading h1{margin:0;color:#f5f5f5;font:800 24px/1.2 Arial,sans-serif;text-shadow:none}
-    .leadership-heading h1 span{display:block;margin-top:7px;color:var(--lead-gold);font:800 24px/1.2 Arial,sans-serif}
-    .leadership-heading p{max-width:900px;margin:6px 0 0;color:#c9cdd3;font:500 14px/1.45 Arial,sans-serif;text-shadow:none}
-    .leadership-tree{display:flex;flex-direction:column;align-items:stretch;width:100%;min-width:0}
-    .tree-level{display:flex;justify-content:center;width:100%;min-width:0}
-    .tree-level-head .leader-card,.tree-level-deputy .leader-card,.tree-level-top .leader-card{width:min(100%,410px)}
-    .tree-connector-main,.tree-connector-branch{align-self:center;width:3px;background:var(--lead-gold);flex:0 0 auto}
-    .tree-connector-main{height:22px}.tree-connector-branch{height:20px}
-    .tree-managers{position:relative;display:flex;flex-wrap:wrap;align-items:flex-start;gap:10px;width:100%;min-width:0}
-    .tree-managers:before{content:"";position:absolute;top:0;left:9.5%;right:9.5%;height:3px;background:var(--lead-gold)}
-    .tree-manager{position:relative;flex:1 1 calc(20% - 10px);min-width:0;padding-top:20px}
-    .tree-manager:before{content:"";position:absolute;top:0;left:50%;width:3px;height:20px;background:var(--lead-gold);transform:translateX(-50%)}
-    .tree-logistician-row{display:flex;flex-direction:column;align-items:center;width:100%;min-width:0;margin-top:0}
-    .tree-logistician-row .leader-card{width:min(100%,410px)}
-    .tree-connector-child{width:3px;height:19px;margin:0 auto;background:var(--lead-gold)}
-    .leader-card{position:relative;display:block;width:100%;min-width:0;overflow:hidden;border:2px solid var(--lead-gold);border-radius:9px;background:var(--lead-card);box-shadow:0 5px 18px rgba(0,0,0,.28);transition:border-color .2s,background .2s,box-shadow .2s}
-    .role-card{cursor:pointer;text-align:left;outline:none}
-    .role-card:hover,.role-card.is-selected{border-color:#fff0a8;background:rgba(12,25,35,.98);box-shadow:0 0 0 2px rgba(255,211,79,.2),0 8px 24px rgba(0,0,0,.35)}
-    .role-card:focus-visible{box-shadow:0 0 0 3px #fff,0 0 0 6px var(--lead-gold)}
-    .leader-card-top{display:flex;align-items:center;gap:10px;min-width:0;min-height:80px;padding:10px}
-    .leader-avatar,.leader-avatar-fallback{display:flex;align-items:center;justify-content:center;width:52px;height:52px;min-width:52px;flex:0 0 52px;overflow:hidden;border:2px solid var(--lead-gold);border-radius:50%;background:#111722;box-shadow:0 0 0 2px rgba(255,211,79,.1)}
-    .leader-avatar{object-fit:cover}
-    .leader-avatar-fallback{color:#fff;font:700 20px Rajdhani,Arial,sans-serif}
-    .leader-identity{flex:1 1 auto;min-width:0;overflow-wrap:anywhere}
-    .leader-position{margin:0 0 4px;color:var(--lead-gold);font:800 13px/1.12 Arial,sans-serif;overflow-wrap:anywhere;hyphens:auto}
-    .leader-name{margin:0;color:#f6f8fc;font:700 22px/1.08 Arial,sans-serif;overflow-wrap:anywhere}
-    .leader-card.vacant{background:rgba(1,11,19,.92)}
-    .leader-card-hint{display:block;padding:0 10px 8px;color:rgba(255,211,79,.82);font:700 9px/1.2 Arial,sans-serif;letter-spacing:.35px}
-    .leadership-message{width:100%;padding:24px 16px;border:1px solid var(--lead-gold);border-radius:8px;background:rgba(1,10,18,.94);color:#e0e6ef;font:13px/1.5 Arial,sans-serif;text-align:center}
-    .leadership-message.error{border-color:rgba(255,90,90,.6);color:#ffaaa9}
-    .role-block{display:flex;flex-direction:column;align-items:stretch;width:100%;min-width:0;gap:0}
-    .tree-level>.role-block{width:min(100%,410px)}
-    .tree-manager>.role-block{width:100%}
-    .tree-logistician-row>.role-block{width:min(100%,410px)}
-    .role-details{flex:0 0 100%;width:100%;min-width:0;margin-top:14px;padding:clamp(16px,2.4vw,28px);border:1px solid rgba(255,211,79,.8);border-radius:12px;background:linear-gradient(145deg,rgba(2,15,25,.98),rgba(4,8,15,.98));box-shadow:0 12px 36px rgba(0,0,0,.38),inset 0 0 24px rgba(255,211,79,.035)}
-    .role-details[hidden]{display:none}
-    .role-details-header{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;padding-bottom:18px;border-bottom:1px solid rgba(255,211,79,.3)}
-    .role-details-eyebrow{color:var(--lead-gold);font:800 11px/1.2 Arial,sans-serif;letter-spacing:1.4px}
-    .role-details-header h2{margin:8px 0;color:#fff;font:800 clamp(23px,3vw,34px)/1.1 Arial,sans-serif}
-    .role-details-header p{max-width:900px;margin:0;color:#d7e0eb;font:500 15px/1.5 Arial,sans-serif}
-    .role-details-close{width:38px;height:38px;flex:0 0 38px;border:1px solid rgba(255,211,79,.6);border-radius:8px;background:rgba(255,211,79,.08);color:var(--lead-gold);cursor:pointer;font-size:27px;line-height:1}
-    .role-details-close:hover{background:rgba(255,211,79,.18)}
-    .role-details-content{display:grid;grid-template-columns:minmax(0,1fr) minmax(220px,.38fr);gap:24px;padding-top:18px}
-    .role-duties h3{margin:0 0 12px;color:var(--lead-gold);font:800 17px/1.2 Arial,sans-serif}
-    .role-duties ul{display:grid;gap:10px;margin:0;padding-left:22px;color:#edf2f8;font:500 15px/1.5 Arial,sans-serif}
-    .role-duties li::marker{color:var(--lead-gold)}
-    .role-reporting{align-self:start;padding:16px;border:1px solid rgba(255,211,79,.35);border-radius:9px;background:rgba(255,211,79,.045)}
-    .role-reporting span{color:var(--lead-gold);font:800 11px/1.3 Arial,sans-serif;letter-spacing:1px}
-    .role-reporting p{margin:9px 0 0;color:#f4f6fa;font:600 14px/1.5 Arial,sans-serif}
-    @media(max-width:1250px){.tree-managers{row-gap:12px}.tree-managers:before,.tree-manager:before{display:none}.tree-manager{flex:1 1 calc(33.333% - 10px);padding-top:0}}
-    @media(max-width:900px){.tree-manager{flex:1 1 calc(50% - 10px)}}
-    @media(max-width:760px){.role-details-content{grid-template-columns:1fr;gap:16px}.role-details-header p{font-size:14px}.role-duties ul{font-size:14px}}
-    @media(max-width:650px){.ets2-leadership-page .legion-section.leadership-page{padding:8px 5px 14px}.leadership-heading{padding:16px 14px}.leadership-heading h1,.leadership-heading h1 span{font-size:22px}.leadership-heading p{font-size:13px}.tree-managers{gap:12px}.tree-manager{flex:1 1 100%}.tree-level-head .leader-card,.tree-level-deputy .leader-card,.tree-level-top .leader-card{width:100%}.leader-card-top{min-height:80px;padding:10px;gap:10px}}
+    .ets2-leadership-page {
+      --lead-gold: #ffd34f;
+      --lead-card: rgba(1, 11, 19, .96);
+      color: #f5f7fb;
+    }
+
+    .ets2-leadership-page .legion-section.leadership-page {
+      min-width: 0;
+      padding: 8px 10px 22px;
+      background: rgba(1, 8, 15, .22);
+      border-color: transparent;
+      backdrop-filter: none;
+    }
+
+    .leadership-heading {
+      margin: 0 auto 20px;
+      padding: 18px 16px 16px;
+      border-radius: 8px;
+      background: #303030;
+      color: #f5f5f5;
+      text-align: left;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, .2);
+    }
+
+    .leadership-heading h1 {
+      margin: 0;
+      color: #f5f5f5;
+      font: 800 24px/1.2 Arial, sans-serif;
+      text-shadow: none;
+    }
+
+    .leadership-heading h1 span {
+      display: block;
+      margin-top: 7px;
+      color: var(--lead-gold);
+      font: 800 24px/1.2 Arial, sans-serif;
+    }
+
+    .leadership-heading p {
+      max-width: 900px;
+      margin: 6px 0 0;
+      color: #c9cdd3;
+      font: 500 14px/1.45 Arial, sans-serif;
+      text-shadow: none;
+    }
+
+    .leadership-tree {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      width: 100%;
+      min-width: 0;
+    }
+
+    .tree-level {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      min-width: 0;
+    }
+
+    .tree-level-head .leader-card,
+    .tree-level-deputy .leader-card,
+    .tree-level-top .leader-card {
+      width: min(100%, 410px);
+    }
+
+    .tree-connector-main,
+    .tree-connector-branch {
+      align-self: center;
+      width: 3px;
+      background: var(--lead-gold);
+      flex: 0 0 auto;
+    }
+
+    .tree-connector-main {
+      height: 22px;
+    }
+
+    .tree-connector-branch {
+      height: 20px;
+    }
+
+    .tree-managers {
+      position: relative;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      gap: 10px;
+      width: 100%;
+      min-width: 0;
+    }
+
+    .tree-managers::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 9.5%;
+      right: 9.5%;
+      height: 3px;
+      background: var(--lead-gold);
+    }
+
+    .tree-manager {
+      position: relative;
+      flex: 1 1 calc(20% - 10px);
+      min-width: 0;
+      padding-top: 20px;
+    }
+
+    .tree-manager::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: 3px;
+      height: 20px;
+      background: var(--lead-gold);
+      transform: translateX(-50%);
+    }
+
+    .tree-logistician-row {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      min-width: 0;
+      margin-top: 0;
+    }
+
+    .tree-logistician-row .leader-card {
+      width: min(100%, 410px);
+    }
+
+    .tree-connector-child {
+      width: 3px;
+      height: 19px;
+      margin: 0 auto;
+      background: var(--lead-gold);
+    }
+
+    .leader-card {
+      position: relative;
+      display: block;
+      box-sizing: border-box;
+      width: 100%;
+      min-width: 0;
+      overflow: hidden;
+      border: 2px solid var(--lead-gold);
+      border-radius: 9px;
+      background: var(--lead-card);
+      box-shadow: 0 5px 18px rgba(0, 0, 0, .28);
+      transition: border-color .2s, background .2s, box-shadow .2s;
+    }
+
+    .role-card {
+      cursor: pointer;
+      text-align: left;
+      outline: none;
+    }
+
+    .role-card:hover,
+    .role-card.is-selected {
+      border-color: #fff0a8;
+      background: rgba(12, 25, 35, .98);
+      box-shadow:
+        0 0 0 2px rgba(255, 211, 79, .2),
+        0 8px 24px rgba(0, 0, 0, .35);
+    }
+
+    .role-card:focus-visible {
+      box-shadow: 0 0 0 3px #fff, 0 0 0 6px var(--lead-gold);
+    }
+
+    .leader-card-top {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      min-height: 80px;
+      padding: 10px;
+    }
+
+    .leader-avatar,
+    .leader-avatar-fallback {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 52px;
+      height: 52px;
+      min-width: 52px;
+      flex: 0 0 52px;
+      overflow: hidden;
+      border: 2px solid var(--lead-gold);
+      border-radius: 50%;
+      background: #111722;
+      box-shadow: 0 0 0 2px rgba(255, 211, 79, .1);
+    }
+
+    .leader-avatar {
+      object-fit: cover;
+    }
+
+    .leader-avatar-fallback {
+      color: #fff;
+      font: 700 20px Rajdhani, Arial, sans-serif;
+    }
+
+    .leader-identity {
+      flex: 1 1 auto;
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .leader-position {
+      margin: 0 0 4px;
+      color: var(--lead-gold);
+      font: 800 13px/1.12 Arial, sans-serif;
+      overflow-wrap: anywhere;
+      hyphens: auto;
+    }
+
+    .leader-name {
+      margin: 0;
+      color: #f6f8fc;
+      font: 700 22px/1.08 Arial, sans-serif;
+      overflow-wrap: anywhere;
+    }
+
+    .leader-card.vacant {
+      background: rgba(1, 11, 19, .92);
+    }
+
+    .leader-card-hint {
+      display: block;
+      padding: 0 10px 8px;
+      color: rgba(255, 211, 79, .82);
+      font: 700 9px/1.2 Arial, sans-serif;
+      letter-spacing: .35px;
+    }
+
+    .leadership-message {
+      width: 100%;
+      padding: 24px 16px;
+      border: 1px solid var(--lead-gold);
+      border-radius: 8px;
+      background: rgba(1, 10, 18, .94);
+      color: #e0e6ef;
+      font: 13px/1.5 Arial, sans-serif;
+      text-align: center;
+    }
+
+    .leadership-message.error {
+      border-color: rgba(255, 90, 90, .6);
+      color: #ffaaa9;
+    }
+
+    /* Контейнер однієї посади та її обов'язків */
+    .role-block {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0;
+      width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
+    }
+
+    .tree-level > .role-block {
+      width: min(100%, 410px);
+    }
+
+    .tree-manager > .role-block {
+      width: 100%;
+    }
+
+    .tree-logistician-row > .role-block {
+      width: min(100%, 410px);
+    }
+
+    .role-details {
+      box-sizing: border-box;
+      flex: 0 0 auto;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      margin-top: 12px;
+      padding: clamp(16px, 2.4vw, 28px);
+      border: 1px solid rgba(255, 211, 79, .8);
+      border-radius: 12px;
+      background: linear-gradient(
+        145deg,
+        rgba(2, 15, 25, .98),
+        rgba(4, 8, 15, .98)
+      );
+      box-shadow:
+        0 12px 36px rgba(0, 0, 0, .38),
+        inset 0 0 24px rgba(255, 211, 79, .035);
+      overflow-wrap: anywhere;
+    }
+
+    .role-details[hidden] {
+      display: none !important;
+    }
+
+    .role-details-header {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 38px;
+      align-items: start;
+      gap: 14px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid rgba(255, 211, 79, .3);
+    }
+
+    .role-details-header > div {
+      min-width: 0;
+    }
+
+    .role-details-eyebrow {
+      color: var(--lead-gold);
+      font: 800 11px/1.4 Arial, sans-serif;
+      letter-spacing: 1.4px;
+    }
+
+    .role-details-header h2 {
+      margin: 8px 0;
+      color: #fff;
+      font: 800 clamp(23px, 3vw, 34px)/1.15 Arial, sans-serif;
+      overflow-wrap: anywhere;
+      word-break: normal;
+    }
+
+    .role-details-header p {
+      max-width: 900px;
+      margin: 0;
+      color: #d7e0eb;
+      font: 500 15px/1.5 Arial, sans-serif;
+      overflow-wrap: anywhere;
+    }
+
+    .role-details-close {
+      position: static;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-sizing: border-box;
+      width: 38px;
+      height: 38px;
+      min-width: 38px;
+      margin: 0;
+      padding: 0;
+      border: 1px solid rgba(255, 211, 79, .6);
+      border-radius: 8px;
+      background: rgba(255, 211, 79, .08);
+      color: var(--lead-gold);
+      cursor: pointer;
+      font-size: 27px;
+      line-height: 1;
+    }
+
+    .role-details-close:hover {
+      background: rgba(255, 211, 79, .18);
+    }
+
+    .role-details-content {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(220px, .38fr);
+      align-items: start;
+      gap: 24px;
+      padding-top: 18px;
+      min-width: 0;
+    }
+
+    .role-duties {
+      min-width: 0;
+    }
+
+    .role-duties h3 {
+      margin: 0 0 12px;
+      color: var(--lead-gold);
+      font: 800 17px/1.3 Arial, sans-serif;
+    }
+
+    .role-duties ul {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding-left: 22px;
+      color: #edf2f8;
+      font: 500 15px/1.6 Arial, sans-serif;
+      overflow-wrap: anywhere;
+    }
+
+    .role-duties li::marker {
+      color: var(--lead-gold);
+    }
+
+    .role-reporting {
+      box-sizing: border-box;
+      align-self: start;
+      min-width: 0;
+      padding: 16px;
+      border: 1px solid rgba(255, 211, 79, .35);
+      border-radius: 9px;
+      background: rgba(255, 211, 79, .045);
+      overflow-wrap: anywhere;
+    }
+
+    .role-reporting span {
+      color: var(--lead-gold);
+      font: 800 11px/1.4 Arial, sans-serif;
+      letter-spacing: 1px;
+    }
+
+    .role-reporting p {
+      margin: 9px 0 0;
+      color: #f4f6fa;
+      font: 600 14px/1.5 Arial, sans-serif;
+      overflow-wrap: anywhere;
+    }
+
+    @media (max-width: 1250px) {
+      .tree-managers {
+        row-gap: 12px;
+      }
+
+      .tree-managers::before,
+      .tree-manager::before {
+        display: none;
+      }
+
+      .tree-manager {
+        flex: 1 1 calc(33.333% - 10px);
+        padding-top: 0;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .tree-manager {
+        flex: 1 1 calc(50% - 10px);
+      }
+
+      .role-details-content {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 18px;
+      }
+
+      .role-reporting {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .role-details {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        margin-top: 12px;
+        padding: 16px;
+      }
+
+      .role-details-header {
+        grid-template-columns: minmax(0, 1fr) 38px;
+        gap: 12px;
+        padding-bottom: 14px;
+      }
+
+      .role-details-header h2 {
+        font-size: clamp(21px, 5vw, 28px);
+        line-height: 1.2;
+      }
+
+      .role-details-header p {
+        font-size: 14px;
+        line-height: 1.5;
+      }
+
+      .role-details-content {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+        padding-top: 16px;
+      }
+
+      .role-duties,
+      .role-reporting {
+        width: 100%;
+        min-width: 0;
+      }
+
+      .role-duties h3 {
+        font-size: 17px;
+        line-height: 1.3;
+      }
+
+      .role-duties ul {
+        padding-left: 20px;
+        font-size: 14px;
+        line-height: 1.6;
+      }
+
+      .role-reporting {
+        padding: 14px;
+      }
+
+      .role-reporting p {
+        font-size: 14px;
+        line-height: 1.5;
+      }
+    }
+
+    @media (max-width: 650px) {
+      .ets2-leadership-page .legion-section.leadership-page {
+        padding: 8px 5px 14px;
+      }
+
+      .leadership-heading {
+        padding: 16px 14px;
+      }
+
+      .leadership-heading h1,
+      .leadership-heading h1 span {
+        font-size: 22px;
+      }
+
+      .leadership-heading p {
+        font-size: 13px;
+      }
+
+      .tree-managers {
+        gap: 12px;
+      }
+
+      .tree-manager {
+        flex: 1 1 100%;
+        padding-top: 0;
+      }
+
+      .tree-level-head .leader-card,
+      .tree-level-deputy .leader-card,
+      .tree-level-top .leader-card {
+        width: 100%;
+      }
+
+      .tree-level > .role-block,
+      .tree-logistician-row > .role-block {
+        width: 100%;
+      }
+
+      .leader-card-top {
+        min-height: 80px;
+        padding: 10px;
+        gap: 10px;
+      }
+
+      .role-details-header h2 {
+        font-size: 22px;
+      }
+    }
   </style>
 </head>
+
 <body class="ets2-info-page ets2-leadership-page">
   <div class="noise" aria-hidden="true"></div>
+
   <div class="legion-page-background" aria-hidden="true">
-    <video class="legion-page-video" autoplay muted loop playsinline preload="metadata" poster="assets/ets2/ua-legion-ets2-poster.jpg">
+    <video
+      class="legion-page-video"
+      autoplay
+      muted
+      loop
+      playsinline
+      preload="metadata"
+      poster="assets/ets2/ua-legion-ets2-poster.jpg"
+    >
       <source src="assets/ets2/ua-legion-ets2-bg.mp4" type="video/mp4">
     </video>
     <div class="legion-page-shade"></div>
   </div>
 
   <header class="topbar">
-    <a class="brand" href="index.html"><img src="ua-legion-logo.png" alt="UA LEGION"><span>UA LEGION</span></a>
-    <button class="menu-btn" type="button" aria-label="Відкрити меню" aria-expanded="false">☰</button>
+    <a class="brand" href="index.html">
+      <img src="ua-legion-logo.png" alt="UA LEGION">
+      <span>UA LEGION</span>
+    </a>
+
+    <button
+      class="menu-btn"
+      type="button"
+      aria-label="Відкрити меню"
+      aria-expanded="false"
+    >☰</button>
+
     <nav class="nav" aria-label="Головна навігація">
-      <a href="index.html">Головна</a><a href="about.html">Про нас</a><a href="games.html">Ігри</a><a href="events.html">Події</a><a href="media.html">Медіа</a><a href="gallery.html">Галерея</a>
+      <a href="index.html">Головна</a>
+      <a href="about.html">Про нас</a>
+      <a href="games.html">Ігри</a>
+      <a href="events.html">Події</a>
+      <a href="media.html">Медіа</a>
+      <a href="gallery.html">Галерея</a>
       <a href="https://www.tiktok.com/@ua_legion_" target="_blank" rel="noopener noreferrer">TikTok</a>
       <a href="https://discord.gg/gfunf3yq7" target="_blank" rel="noopener noreferrer" class="nav-cta">Discord</a>
       <a href="login.html" id="authButton">Увійти / Реєстрація</a>
@@ -94,28 +626,62 @@
   <main class="ets-info-main">
     <div class="legion-content-wrap">
       <aside class="ets-sidebar">
-        <a class="side-logo" href="ets2-info.html"><img src="ua-legion-logo.png" alt="UA LEGION"><b>UA LEGION ETS2</b><small>TRANSPORT DIVISION</small></a>
-        <div class="side-group"><span>ETS2 / КОМПАНІЯ</span>
-          <a href="ets2-info.html">ℹ️ Інформація</a><a href="ets2-rules.html">📋 Правила ETS2</a><a href="ets2-news.html">📰 Новини та оголошення</a><a href="ets2-classes.html">⭐ Класи водіїв</a>
+        <a class="side-logo" href="ets2-info.html">
+          <img src="ua-legion-logo.png" alt="UA LEGION">
+          <b>UA LEGION ETS2</b>
+          <small>TRANSPORT DIVISION</small>
+        </a>
+
+        <div class="side-group">
+          <span>ETS2 / КОМПАНІЯ</span>
+          <a href="ets2-info.html">ℹ️ Інформація</a>
+          <a href="ets2-rules.html">📋 Правила ETS2</a>
+          <a href="ets2-news.html">📰 Новини та оголошення</a>
+          <a href="ets2-classes.html">⭐ Класи водіїв</a>
         </div>
+
         <div class="side-group">
           <a class="active" href="ets2-leadership.html" aria-current="page">🛡️ Структура управління UA LEGION ETS2 та посадові обов’язки</a>
         </div>
-        <div class="side-group"><span>СПІЛЬНОТА</span>
-          <a href="https://discord.gg/gfunf3yq7" target="_blank" rel="noopener noreferrer">💬 Чат ETS2</a><a href="ets2-join.html">📝 Заявка на вступ</a><a href="ets2-roles.html">🎫 Отримання ролей</a><a href="ets2-partners.html">📣 Партнери</a><a href="ets2-blacklist.html">⛔ Чорний список</a>
+
+        <div class="side-group">
+          <span>СПІЛЬНОТА</span>
+          <a href="https://discord.gg/gfunf3yq7" target="_blank" rel="noopener noreferrer">💬 Чат ETS2</a>
+          <a href="ets2-join.html">📝 Заявка на вступ</a>
+          <a href="ets2-roles.html">🎫 Отримання ролей</a>
+          <a href="ets2-partners.html">📣 Партнери</a>
+          <a href="ets2-blacklist.html">⛔ Чорний список</a>
         </div>
-        <div class="side-group"><span>НА ДОРОЗІ</span>
-          <a href="ets2-fleet.html">🚚 Автопарк</a><a href="ets2-events.html">🏁 Події та конвої</a><a href="ets2-deliveries.html">📦 Завершені доставки</a><a href="ets2-drivers.html">👨‍✈️ Водії</a><a href="ets2-gallery.html">📸 Галерея</a>
+
+        <div class="side-group">
+          <span>НА ДОРОЗІ</span>
+          <a href="ets2-fleet.html">🚚 Автопарк</a>
+          <a href="ets2-events.html">🏁 Події та конвої</a>
+          <a href="ets2-deliveries.html">📦 Завершені доставки</a>
+          <a href="ets2-drivers.html">👨‍✈️ Водії</a>
+          <a href="ets2-gallery.html">📸 Галерея</a>
         </div>
       </aside>
 
       <div class="legion-content">
         <section class="legion-section leadership-page" id="duties">
           <header class="leadership-heading">
-            <h1>Структура управління <span>UA LEGION ETS2 та посадові обов’язки</span></h1>
-            <p>Координуємо роботу команди, забезпечуємо її розвиток та ведемо компанію до нових досягнень.</p>
+            <h1>
+              Структура управління
+              <span>UA LEGION ETS2 та посадові обов’язки</span>
+            </h1>
+            <p>
+              Координуємо роботу команди, забезпечуємо її розвиток та ведемо
+              компанію до нових досягнень.
+            </p>
           </header>
-          <div class="leadership-tree" id="leadershipGrid" aria-label="Ієрархія керівництва UA LEGION ETS2" aria-busy="true">
+
+          <div
+            class="leadership-tree"
+            id="leadershipGrid"
+            aria-label="Ієрархія керівництва UA LEGION ETS2"
+            aria-busy="true"
+          >
             <div class="leadership-message">Завантаження керівництва UA LEGION…</div>
           </div>
         </section>
@@ -124,8 +690,16 @@
   </main>
 
   <footer class="footer">
-    <div class="footer-brand"><img src="ua-legion-logo.png" alt="UA LEGION"><div><b>UA LEGION ETS2</b><span>TRANSPORT DIVISION</span></div></div>
-    <p>Україна грає. ЛЕГІОН перемагає.</p><small>© 2026 UA LEGION</small>
+    <div class="footer-brand">
+      <img src="ua-legion-logo.png" alt="UA LEGION">
+      <div>
+        <b>UA LEGION ETS2</b>
+        <span>TRANSPORT DIVISION</span>
+      </div>
+    </div>
+
+    <p>Україна грає. ЛЕГІОН перемагає.</p>
+    <small>© 2026 UA LEGION</small>
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
