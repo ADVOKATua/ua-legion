@@ -266,10 +266,17 @@
       </div>`;
     panel.hidden = false;
 
-    // Розміщуємо опис безпосередньо після рівня або картки менеджера,
-    // а не в кінці всієї ієрархії.
+    // Обов’язки менеджерів показуємо після всього ряду менеджерів,
+    // але перед окремим блоком логіста. Для керівних посад — після їхнього рівня.
     const selectedCard = grid.querySelector(`.role-card[data-role="${CSS.escape(selectedRole)}"]`);
-    const anchor = selectedCard?.closest(".tree-manager") || selectedCard?.closest(".tree-level");
+    let anchor = null;
+    if (selectedCard?.closest(".tree-manager")) {
+      anchor = grid.querySelector(".tree-managers");
+    } else if (selectedCard?.closest(".tree-logistician-row")) {
+      anchor = grid.querySelector(".tree-logistician-row");
+    } else {
+      anchor = selectedCard?.closest(".tree-level");
+    }
     if (anchor && panel.previousElementSibling !== anchor) {
       anchor.insertAdjacentElement("afterend", panel);
     }
@@ -322,11 +329,8 @@
     const byId = id => POSITIONS.find(position => position.id === id);
     const card = id => renderCard(byId(id), assigned.get(id));
     const managerIds = ["hr", "event", "logistics", "pr", "technical"];
-    const managerHTML = managerIds.map(id => id !== "logistics"
-      ? `<div class="tree-manager">${card(id)}</div>`
-      : `<div class="tree-manager tree-manager-logistics">${card("logistics")}
-          <div class="tree-logistician"><div class="tree-connector-child" aria-hidden="true"></div>${card("logistician")}</div>
-        </div>`
+    const managerHTML = managerIds.map(id =>
+      `<div class="tree-manager">${card(id)}</div>`
     ).join("");
 
     grid.className = "leadership-tree";
@@ -339,7 +343,11 @@
       <section class="tree-level tree-level-top" aria-label="Топ-менеджер">${card("top")}</section>
       <div class="tree-connector-branch" aria-hidden="true"></div>
       <section class="tree-managers" aria-label="Менеджери напрямків">${managerHTML}</section>
-      <section class="role-details" id="roleDetails" hidden aria-live="polite" aria-label="Обов’язки обраної посади"></section>`;
+      <section class="role-details" id="roleDetails" hidden aria-live="polite" aria-label="Обов’язки обраної посади"></section>
+      <section class="tree-logistician-row" aria-label="Логіст">
+        <div class="tree-connector-child" aria-hidden="true"></div>
+        ${card("logistician")}
+      </section>`;
     renderDetails();
   }
 
