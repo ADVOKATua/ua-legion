@@ -247,10 +247,14 @@
 
   function renderDetails() {
     const panel = document.getElementById("roleDetails");
-    if (!panel || !selectedRole || !DUTIES[selectedRole]) {
-      if (panel) { panel.hidden = true; panel.innerHTML = ""; }
+    if (!panel) return;
+
+    if (!selectedRole || !DUTIES[selectedRole]) {
+      panel.hidden = true;
+      panel.innerHTML = "";
       return;
     }
+
     const duty = DUTIES[selectedRole];
     const tasks = duty.tasks.map(task => `<li>${escapeHTML(task)}</li>`).join("");
     panel.innerHTML = `
@@ -266,6 +270,19 @@
       </div>`;
     panel.hidden = false;
     panel.querySelector(".role-details-close")?.addEventListener("click", closeDetails);
+
+    // Для керівника, заступника й топ-менеджера показуємо опис одразу після їхнього рівня.
+    // Для менеджерів напрямків — одразу після всього рядка менеджерів, на всю ширину.
+    const selectedCard = grid.querySelector(`.role-card[data-role="${selectedRole}"]`);
+    if (selectedCard) {
+      const managerSection = selectedCard.closest(".tree-managers");
+      const levelSection = selectedCard.closest(".tree-level");
+      if (managerSection) {
+        managerSection.insertAdjacentElement("afterend", panel);
+      } else if (levelSection) {
+        levelSection.insertAdjacentElement("afterend", panel);
+      }
+    }
   }
 
   function closeDetails() {
