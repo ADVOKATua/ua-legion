@@ -217,80 +217,81 @@
     return (name.replace(/^@/, "").slice(0, 2) || "UA").toLocaleUpperCase("uk-UA");
   }
 
-  function renderRoleDetails(position) {
-    const duty = DUTIES[position.id];
-    const tasks = duty.tasks.map(task => `<li>${escapeHTML(task)}</li>`).join("");
-    return `<section class="role-details" id="roleDetails-${escapeHTML(position.id)}" data-details-role="${escapeHTML(position.id)}" hidden aria-live="polite" aria-label="Обов’язки: ${escapeHTML(position.title)}">
-      <div class="role-details-header">
-        <div><span class="role-details-eyebrow">UA LEGION ETS2 / ПОСАДА</span>
-          <h2>${escapeHTML(duty.heading)}</h2><p>${escapeHTML(duty.summary)}</p>
-        </div>
-        <button class="role-details-close" type="button" data-close-role="${escapeHTML(position.id)}" aria-label="Закрити обов’язки">×</button>
-      </div>
-      <div class="role-details-content">
-        <div class="role-duties"><h3>Основні обов’язки</h3><ul>${tasks}</ul></div>
-        <aside class="role-reporting"><span>ПІДПОРЯДКУВАННЯ</span><p>${escapeHTML(duty.reports)}</p></aside>
-      </div>
-    </section>`;
-  }
-
   function renderCard(position, members) {
+    const duty = DUTIES[position.id];
     const selected = selectedRole === position.id;
-    const baseAttrs = `class="leader-card role-card${members.length ? "" : " vacant"}${selected ? " is-selected" : ""}" data-role="${escapeHTML(position.id)}" tabindex="0" role="button" aria-expanded="${selected}" aria-controls="roleDetails-${escapeHTML(position.id)}" aria-label="Переглянути обов’язки: ${escapeHTML(position.title)}"`;
-    let cardHTML = "";
+    const baseAttrs = `class="leader-card role-card${members.length ? "" : " vacant"}${selected ? " is-selected" : ""}" data-role="${escapeHTML(position.id)}" tabindex="0" role="button" aria-expanded="${selected}" aria-controls="roleDetails" aria-label="Переглянути обов’язки: ${escapeHTML(position.title)}"`;
     if (!members.length) {
-      cardHTML = `<article ${baseAttrs}>
+      return `<article ${baseAttrs}>
         <div class="leader-card-top">
           <div class="leader-avatar-fallback" aria-hidden="true">UA</div>
           <div class="leader-identity"><div class="leader-position">${escapeHTML(position.title)}</div><h3 class="leader-name">ВАКАНТ</h3></div>
         </div>
         <span class="leader-card-hint">НАТИСНІТЬ, ЩОБ ПЕРЕГЛЯНУТИ ОБОВ’ЯЗКИ</span>
       </article>`;
-    } else {
-      cardHTML = members.map(member => {
-        const name = nicknameOf(member) || "Нікнейм не вказано";
-        const avatar = avatarOf(member);
-        const avatarHTML = avatar
-          ? `<img class="leader-avatar" src="${escapeHTML(avatar)}" alt="Аватар учасника" loading="lazy">`
-          : `<div class="leader-avatar-fallback" aria-hidden="true">${escapeHTML(initials(name))}</div>`;
-        return `<article ${baseAttrs}>
-          <div class="leader-card-top">${avatarHTML}
-            <div class="leader-identity"><div class="leader-position">${escapeHTML(position.title)}</div><h3 class="leader-name">${escapeHTML(name)}</h3></div>
-          </div>
-          <span class="leader-card-hint">НАТИСНІТЬ, ЩОБ ПЕРЕГЛЯНУТИ ОБОВ’ЯЗКИ</span>
-        </article>`;
-      }).join("");
     }
-    return `<div class="role-block${selected ? " is-open" : ""}" data-role-block="${escapeHTML(position.id)}">${cardHTML}${renderRoleDetails(position)}</div>`;
+    return members.map(member => {
+      const name = nicknameOf(member) || "Нікнейм не вказано";
+      const avatar = avatarOf(member);
+      const avatarHTML = avatar
+        ? `<img class="leader-avatar" src="${escapeHTML(avatar)}" alt="Аватар учасника" loading="lazy">`
+        : `<div class="leader-avatar-fallback" aria-hidden="true">${escapeHTML(initials(name))}</div>`;
+      return `<article ${baseAttrs}>
+        <div class="leader-card-top">${avatarHTML}
+          <div class="leader-identity"><div class="leader-position">${escapeHTML(position.title)}</div><h3 class="leader-name">${escapeHTML(name)}</h3></div>
+        </div>
+        <span class="leader-card-hint">НАТИСНІТЬ, ЩОБ ПЕРЕГЛЯНУТИ ОБОВ’ЯЗКИ</span>
+      </article>`;
+    }).join("");
   }
 
   function renderDetails() {
-    grid.querySelectorAll("[data-details-role]").forEach(panel => {
-      const active = panel.dataset.detailsRole === selectedRole;
-      panel.hidden = !active;
-      const block = panel.closest("[data-role-block]");
-      if (block) block.classList.toggle("is-open", active);
-    });
-    grid.querySelectorAll(".role-card").forEach(card => {
-      const active = card.dataset.role === selectedRole;
-      card.classList.toggle("is-selected", active);
-      card.setAttribute("aria-expanded", String(active));
-    });
+    const panel = document.getElementById("roleDetails");
+    if (!panel || !selectedRole || !DUTIES[selectedRole]) {
+      if (panel) { panel.hidden = true; panel.innerHTML = ""; }
+      return;
+    }
+    const duty = DUTIES[selectedRole];
+    const tasks = duty.tasks.map(task => `<li>${escapeHTML(task)}</li>`).join("");
+    panel.innerHTML = `
+      <div class="role-details-header">
+        <div><span class="role-details-eyebrow">UA LEGION ETS2 / ПОСАДА</span>
+          <h2>${escapeHTML(duty.heading)}</h2><p>${escapeHTML(duty.summary)}</p>
+        </div>
+        <button class="role-details-close" type="button" aria-label="Закрити обов’язки">×</button>
+      </div>
+      <div class="role-details-content">
+        <div class="role-duties"><h3>Основні обов’язки</h3><ul>${tasks}</ul></div>
+        <aside class="role-reporting"><span>ПІДПОРЯДКУВАННЯ</span><p>${escapeHTML(duty.reports)}</p></aside>
+      </div>`;
+    panel.hidden = false;
+    panel.querySelector(".role-details-close")?.addEventListener("click", closeDetails);
   }
 
   function closeDetails() {
     selectedRole = null;
+    grid.querySelectorAll(".role-card").forEach(card => {
+      card.classList.remove("is-selected");
+      card.setAttribute("aria-expanded", "false");
+    });
     renderDetails();
   }
 
   function toggleDetails(card) {
     const id = card.dataset.role;
     if (!DUTIES[id]) return;
-    selectedRole = selectedRole === id ? null : id;
-    renderDetails();
-    if (selectedRole) {
-      document.getElementById(`roleDetails-${selectedRole}`)?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    if (selectedRole === id) {
+      closeDetails();
+      return;
     }
+    selectedRole = id;
+    grid.querySelectorAll(".role-card").forEach(item => {
+      const active = item.dataset.role === selectedRole;
+      item.classList.toggle("is-selected", active);
+      item.setAttribute("aria-expanded", String(active));
+    });
+    renderDetails();
+    document.getElementById("roleDetails")?.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }
 
   function renderTree(members) {
@@ -312,7 +313,12 @@
     const byId = id => POSITIONS.find(position => position.id === id);
     const card = id => renderCard(byId(id), assigned.get(id));
     const managerIds = ["hr", "event", "logistics", "pr", "technical"];
-    const managerHTML = managerIds.map(id => `<div class="tree-manager">${card(id)}</div>`).join("");
+    const managerHTML = managerIds.map(id => id !== "logistics"
+      ? `<div class="tree-manager">${card(id)}</div>`
+      : `<div class="tree-manager tree-manager-logistics">${card("logistics")}
+          <div class="tree-logistician"><div class="tree-connector-child" aria-hidden="true"></div>${card("logistician")}</div>
+        </div>`
+    ).join("");
 
     grid.className = "leadership-tree";
     grid.setAttribute("aria-busy", "false");
@@ -324,10 +330,7 @@
       <section class="tree-level tree-level-top" aria-label="Топ-менеджер">${card("top")}</section>
       <div class="tree-connector-branch" aria-hidden="true"></div>
       <section class="tree-managers" aria-label="Менеджери напрямків">${managerHTML}</section>
-      <section class="tree-logistician-row" aria-label="Логіст">
-        <div class="tree-connector-child" aria-hidden="true"></div>
-        ${card("logistician")}
-      </section>`;
+      <section class="role-details" id="roleDetails" hidden aria-live="polite" aria-label="Обов’язки обраної посади"></section>`;
     renderDetails();
   }
 
@@ -364,8 +367,6 @@
   }
 
   grid.addEventListener("click", event => {
-    const closeButton = event.target.closest("[data-close-role]");
-    if (closeButton) { closeDetails(); return; }
     const card = event.target.closest(".role-card");
     if (card) toggleDetails(card);
   });
