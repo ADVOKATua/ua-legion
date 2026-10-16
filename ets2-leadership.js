@@ -220,7 +220,7 @@
   function renderCard(position, members) {
     const duty = DUTIES[position.id];
     const selected = selectedRole === position.id;
-    const baseAttrs = `class="leader-card role-card${members.length ? "" : " vacant"}${selected ? " is-selected" : ""}" data-role="${escapeHTML(position.id)}" tabindex="0" role="button" aria-expanded="${selected}" aria-controls="roleDetails-${escapeHTML(position.id)}" aria-label="Переглянути обов’язки: ${escapeHTML(position.title)}"`;
+    const baseAttrs = `class="leader-card role-card${members.length ? "" : " vacant"}${selected ? " is-selected" : ""}" data-role="${escapeHTML(position.id)}" tabindex="0" role="button" aria-expanded="${selected}" aria-controls="roleDetailsGlobal" aria-label="Переглянути обов’язки: ${escapeHTML(position.title)}"`;
     if (!members.length) {
       return `<article ${baseAttrs}>
         <div class="leader-card-top">
@@ -246,24 +246,23 @@
   }
 
   function renderDetails() {
-    grid.querySelectorAll(".role-details").forEach(panel => {
-      const roleId = panel.dataset.roleDetails;
-      if (!selectedRole || roleId !== selectedRole || !DUTIES[roleId]) {
-        panel.hidden = true;
-        panel.innerHTML = "";
-      }
-    });
-
-    if (!selectedRole || !DUTIES[selectedRole]) return;
-    const panel = grid.querySelector(`[data-role-details="${selectedRole}"]`);
+    const panel = grid.querySelector("#roleDetailsGlobal");
     if (!panel) return;
+
+    if (!selectedRole || !DUTIES[selectedRole]) {
+      panel.hidden = true;
+      panel.innerHTML = "";
+      return;
+    }
 
     const duty = DUTIES[selectedRole];
     const tasks = duty.tasks.map(task => `<li>${escapeHTML(task)}</li>`).join("");
     panel.innerHTML = `
       <div class="role-details-header">
-        <div><span class="role-details-eyebrow">UA LEGION ETS2 / ПОСАДА</span>
-          <h2>${escapeHTML(duty.heading)}</h2><p>${escapeHTML(duty.summary)}</p>
+        <div>
+          <span class="role-details-eyebrow">UA LEGION ETS2 / ПОСАДА</span>
+          <h2>${escapeHTML(duty.heading)}</h2>
+          <p>${escapeHTML(duty.summary)}</p>
         </div>
         <button class="role-details-close" type="button" aria-label="Закрити обов’язки">×</button>
       </div>
@@ -271,6 +270,21 @@
         <div class="role-duties"><h3>Основні обов’язки</h3><ul>${tasks}</ul></div>
         <aside class="role-reporting"><span>ПІДПОРЯДКУВАННЯ</span><p>${escapeHTML(duty.reports)}</p></aside>
       </div>`;
+
+    // Розміщуємо єдину широку панель під тим рівнем ієрархії,
+    // до якого належить натиснута посада.
+    let anchor;
+    if (["hr", "event", "logistics", "pr", "technical"].includes(selectedRole)) {
+      anchor = grid.querySelector(".tree-managers");
+    } else if (selectedRole === "logistician") {
+      anchor = grid.querySelector(".tree-logistician-row");
+    } else {
+      anchor = grid.querySelector(`.tree-level-${selectedRole}`);
+    }
+    if (anchor && panel.previousElementSibling !== anchor) {
+      anchor.insertAdjacentElement("afterend", panel);
+    }
+
     panel.hidden = false;
     panel.querySelector(".role-details-close")?.addEventListener("click", closeDetails);
   }
@@ -303,7 +317,7 @@
     });
 
     renderDetails();
-    const panel = grid.querySelector(`[data-role-details="${id}"]`);
+    const panel = grid.querySelector("#roleDetailsGlobal");
     if (panel) panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }
 
@@ -324,7 +338,7 @@
     }
 
     const byId = id => POSITIONS.find(position => position.id === id);
-    const card = id => `<div class="role-block role-block-${id}">${renderCard(byId(id), assigned.get(id))}<section class="role-details" id="roleDetails-${id}" data-role-details="${id}" hidden aria-live="polite" aria-label="Обов’язки посади"></section></div>`;
+    const card = id => `<div class="role-block role-block-${id}">${renderCard(byId(id), assigned.get(id))}</div>`;
     const managerIds = ["hr", "event", "logistics", "pr", "technical"];
     const managerHTML = managerIds.map(id =>
       `<div class="tree-manager">${card(id)}</div>`
@@ -342,7 +356,8 @@
       <section class="tree-managers" aria-label="Менеджери напрямків">${managerHTML}</section>
       <section class="tree-logistician-row" aria-label="Логіст">
         <div class="tree-connector-child" aria-hidden="true"></div>${card("logistician")}
-      </section>`;
+      </section>
+      <section class="role-details" id="roleDetailsGlobal" hidden aria-live="polite" aria-label="Обов’язки посади"></section>`;
     renderDetails();
   }
 

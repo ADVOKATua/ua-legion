@@ -277,6 +277,47 @@
       }
     }
 
+  
+
+    /* Єдина широка панель обов’язків — поза окремими картками */
+    .ets2-leadership-page #roleDetailsGlobal {
+      display: block;
+      box-sizing: border-box;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      margin: 16px 0 20px;
+    }
+
+    .ets2-leadership-page #roleDetailsGlobal[hidden] {
+      display: none !important;
+    }
+
+    .ets2-leadership-page #roleDetailsGlobal .role-details-content {
+      grid-template-columns: minmax(0, 1fr) minmax(240px, 30%);
+      width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
+    }
+
+    @media (max-width: 760px) {
+      .ets2-leadership-page #roleDetailsGlobal {
+        padding: 16px;
+      }
+
+      .ets2-leadership-page #roleDetailsGlobal .role-details-content {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+
+      .ets2-leadership-page #roleDetailsGlobal .role-duties,
+      .ets2-leadership-page #roleDetailsGlobal .role-reporting {
+        width: 100%;
+        min-width: 0;
+      }
+    }
+
   </style>
 </head>
 <body class="ets2-info-page ets2-leadership-page">
