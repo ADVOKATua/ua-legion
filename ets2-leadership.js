@@ -247,14 +247,10 @@
 
   function renderDetails() {
     const panel = document.getElementById("roleDetails");
-    if (!panel) return;
-
-    if (!selectedRole || !DUTIES[selectedRole]) {
-      panel.hidden = true;
-      panel.innerHTML = "";
+    if (!panel || !selectedRole || !DUTIES[selectedRole]) {
+      if (panel) { panel.hidden = true; panel.innerHTML = ""; }
       return;
     }
-
     const duty = DUTIES[selectedRole];
     const tasks = duty.tasks.map(task => `<li>${escapeHTML(task)}</li>`).join("");
     panel.innerHTML = `
@@ -269,20 +265,16 @@
         <aside class="role-reporting"><span>ПІДПОРЯДКУВАННЯ</span><p>${escapeHTML(duty.reports)}</p></aside>
       </div>`;
     panel.hidden = false;
-    panel.querySelector(".role-details-close")?.addEventListener("click", closeDetails);
 
-    // Для керівника, заступника й топ-менеджера показуємо опис одразу після їхнього рівня.
-    // Для менеджерів напрямків — одразу після всього рядка менеджерів, на всю ширину.
-    const selectedCard = grid.querySelector(`.role-card[data-role="${selectedRole}"]`);
-    if (selectedCard) {
-      const managerSection = selectedCard.closest(".tree-managers");
-      const levelSection = selectedCard.closest(".tree-level");
-      if (managerSection) {
-        managerSection.insertAdjacentElement("afterend", panel);
-      } else if (levelSection) {
-        levelSection.insertAdjacentElement("afterend", panel);
-      }
+    // Розміщуємо опис безпосередньо після рівня або картки менеджера,
+    // а не в кінці всієї ієрархії.
+    const selectedCard = grid.querySelector(`.role-card[data-role="${CSS.escape(selectedRole)}"]`);
+    const anchor = selectedCard?.closest(".tree-manager") || selectedCard?.closest(".tree-level");
+    if (anchor && panel.previousElementSibling !== anchor) {
+      anchor.insertAdjacentElement("afterend", panel);
     }
+
+    panel.querySelector(".role-details-close")?.addEventListener("click", closeDetails);
   }
 
   function closeDetails() {
