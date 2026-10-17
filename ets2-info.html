@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="ets2.css">
   <link rel="stylesheet" href="ets2-info-page.css">
+  <link rel="stylesheet" href="ets2-chat.css">
 </head>
 <body class="ets2-info-page">
   <div class="noise" aria-hidden="true"></div>
@@ -62,12 +63,14 @@
         </div>
 
         <div class="side-group">
-          <a href="ets2-leadership.html">🛡️ Структура управління UA LEGION ETS2 та посадові обов’язки</a>
+          <span>КЕРІВНИЦТВО</span>
+          <a href="ets2-leadership.html">🛡️ Склад керівництва</a>
+          <a href="ets2-hierarchy.html">👑 Ієрархія та обов’язки</a>
         </div>
 
         <div class="side-group">
           <span>СПІЛЬНОТА</span>
-          <a href="https://discord.gg/gfunf3yq7" target="_blank" rel="noopener">💬 Чат ETS2</a>
+          <a href="https://discord.gg/gfunf3yq7" target="_blank" rel="noopener" data-chat-trigger="true" href="ets2-chat.html">💬 Чат ETS2</a>
           <a href="ets2-join.html">📝 Заявка на вступ</a>
           <a href="ets2-roles.html">🎫 Отримання ролей</a>
           <a href="ets2-partners.html">📣 Партнери</a>
@@ -297,6 +300,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase.js"></script>
+  <script src="ets2-chat.js" defer></script>
   <script src="script.js"></script>
   <script src="auth-menu.js"></script>
 </body>

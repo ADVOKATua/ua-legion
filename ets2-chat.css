@@ -1,0 +1,30 @@
+/* UA LEGION ETS2 — floating chat widget */
+#ul-chat-panel { box-sizing: border-box; font-family: inherit;
+  position: fixed; z-index: 99999; right: 24px; bottom: 84px;
+  width: min(390px, calc(100vw - 24px)); height: min(570px, calc(100dvh - 115px));
+  display: flex; flex-direction: column; overflow: hidden; color: #f3f5fa;
+  background: rgba(8, 13, 21, .98); border: 1px solid #344255; border-radius: 16px;
+  box-shadow: 0 18px 65px #000b; backdrop-filter: blur(14px);
+}
+#ul-chat-panel[hidden], #ul-chat-panel [hidden] { display: none !important; }
+.ul-chat-head { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:15px 16px; background:linear-gradient(110deg,#142c4d,#10151e); border-bottom:1px solid #2d3a4c; }
+.ul-chat-head strong { display:block; font-size:16px; }
+.ul-chat-head small { display:block; margin-top:3px; color:#aab7c9; font-size:11px; }
+.ul-chat-head-actions { display:flex; gap:6px; }
+.ul-chat-head-actions button { width:30px; height:30px; border:1px solid #46546a; border-radius:8px; background:#101722; color:white; font-size:19px; cursor:pointer; }
+.ul-chat-status { padding:8px 14px; color:#ffd34e; font-size:11px; border-bottom:1px solid #202b39; }
+.ul-chat-messages { flex:1; overflow:auto; padding:12px; display:flex; flex-direction:column; gap:9px; }
+.ul-chat-message { max-width:100%; padding:10px 11px; border:1px solid #293648; border-radius:10px; background:#111a27; overflow-wrap:anywhere; }
+.ul-chat-message-meta { display:flex; justify-content:space-between; gap:10px; align-items:center; color:#dbe6f5; font-size:11px; }
+.ul-chat-message-meta time { color:#8291a5; white-space:nowrap; }
+.ul-chat-message p { margin:7px 0 0; font-size:13px; line-height:1.45; white-space:pre-wrap; }
+.ul-chat-form { padding:10px; display:flex; align-items:flex-end; gap:8px; border-top:1px solid #293648; background:#0b111a; }
+.ul-chat-form textarea { flex:1; min-width:0; resize:vertical; max-height:100px; color:#f4f7fb; background:#121c29; border:1px solid #34445a; border-radius:9px; padding:10px; font:inherit; font-size:13px; }
+.ul-chat-form button { border:0; border-radius:9px; padding:11px 12px; color:#121721; background:#ffd34e; font-weight:800; cursor:pointer; }
+.ul-chat-form button:disabled { opacity:.55; cursor:wait; }
+.ul-chat-login { padding:20px; color:#d5deea; font-size:13px; line-height:1.5; }
+.ul-chat-login a { display:inline-block; margin-top:12px; color:#ffd34e; font-weight:800; }
+.ul-chat-sr { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+@media (max-width: 520px) {
+  #ul-chat-panel { right:8px; bottom:72px; width:calc(100vw - 16px); height:min(600px, calc(100dvh - 92px)); }
+}
