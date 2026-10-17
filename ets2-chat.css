@@ -28,3 +28,23 @@
 @media (max-width: 520px) {
   #ul-chat-panel { right:8px; bottom:72px; width:calc(100vw - 16px); height:min(600px, calc(100dvh - 92px)); }
 }
+
+.ul-chat-presence { padding:8px 12px; border-bottom:1px solid #202b39; background:#0d1420; color:#b9c7d9; font-size:11px; line-height:1.5; }
+.ul-chat-presence strong { color:#ffd34e; margin-right:7px; }
+.ul-chat-presence [data-chat-presence-list] { overflow-wrap:anywhere; }
+.ul-chat-typing { padding:5px 13px 8px; color:#9db4d1; font-size:11px; font-style:italic; }
+
+/* Global fallback launcher on site pages without the ETS2 sidebar link */
+button#ul-chat-launcher {
+  position: fixed; z-index: 99990; right: 24px; bottom: 24px;
+  display: flex; align-items: center; gap: 10px; border: 1px solid #3568a8;
+  border-radius: 999px; padding: 13px 18px; color: #fff; font-weight: 800;
+  background: linear-gradient(135deg, #173a68, #101722 75%); box-shadow: 0 10px 35px #0009;
+  cursor: pointer; transition: transform .18s, border-color .18s;
+}
+button#ul-chat-launcher:hover { transform: translateY(-2px); border-color: #ffd34e; }
+button#ul-chat-launcher span:first-child { font-size: 20px; }
+
+.ul-chat-toast { margin:8px 10px 0; padding:9px 11px; border:1px solid #45638a; border-radius:9px; background:#17283e; color:#f4f7fb; font-size:12px; line-height:1.4; overflow-wrap:anywhere; }
+#ul-chat-launcher.has-unread::after { content: attr(data-unread); position:absolute; top:-7px; right:-5px; min-width:19px; height:19px; display:grid; place-items:center; padding:0 3px; border-radius:999px; border:2px solid #101722; background:#f04b4b; color:#fff; font-size:10px; font-weight:900; }
+#ul-chat-launcher { position:relative; }
