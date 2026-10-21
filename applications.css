@@ -71,3 +71,334 @@
   .ets2-applications-panel .application-actions { flex-direction: column; }
   .ets2-applications-panel .application-btn { width: 100%; }
 }
+
+/* ==========================================
+   ETS2 VISUAL THEME — matches ETS2 section UI
+   Scoped to the ETS2 applications page only.
+========================================== */
+body:has(.ets2-applications-panel) {
+  font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.ets-main .content-section:has(.ets2-applications-panel) {
+  color: #f5f6f8;
+  background: rgba(5, 9, 15, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.22);
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+}
+
+.ets2-applications-panel {
+  --ets2-gold: #ffca45;
+  --ets2-muted: #c2c8d2;
+  --ets2-line: rgba(255, 255, 255, 0.16);
+  margin: 18px 0 4px;
+  color: #f5f6f8;
+  font-family: inherit;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.ets2-applications-panel,
+.ets2-applications-panel * {
+  box-sizing: border-box;
+}
+
+.ets2-applications-panel .applications-header {
+  margin: 0 0 20px;
+  gap: 18px;
+}
+
+.ets2-applications-panel .applications-kicker {
+  margin-bottom: 5px;
+  color: var(--ets2-gold);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.ets2-applications-panel .applications-header h1 {
+  color: #fff;
+  font-size: clamp(24px, 2.2vw, 34px);
+  font-weight: 850;
+  letter-spacing: -0.7px;
+  line-height: 1.12;
+}
+
+.ets2-applications-panel .applications-header p {
+  max-width: 760px;
+  margin: 9px 0 0;
+  color: var(--ets2-muted);
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+.ets2-applications-panel .admin-applications-panel {
+  padding: 17px;
+  border: 1px solid var(--ets2-line);
+  background: rgba(3, 7, 12, 0.43);
+}
+
+.ets2-applications-panel .admin-panel-title {
+  margin-bottom: 15px;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 850;
+}
+
+.ets2-applications-panel .applications-stats {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.ets2-applications-panel .stat-card {
+  padding: 15px 17px;
+  border: 1px solid var(--ets2-line);
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.ets2-applications-panel .stat-card span {
+  font-size: 19px;
+}
+
+.ets2-applications-panel .stat-card strong {
+  margin-top: 5px;
+  color: #fff;
+  font-size: 25px;
+  font-weight: 850;
+}
+
+.ets2-applications-panel .stat-card p {
+  margin-top: 3px;
+  color: var(--ets2-muted);
+  font-size: 11px;
+}
+
+.ets2-applications-panel .applications-filters {
+  gap: 10px;
+  margin-bottom: 0;
+}
+
+.ets2-applications-panel .applications-filters select,
+.ets2-applications-panel .applications-filters input,
+.ets2-applications-panel .review-comment,
+.ets2-applications-panel .application-driver-class-select {
+  min-width: 0;
+  border: 1px solid var(--ets2-line);
+  border-radius: 2px;
+  outline: none;
+  background: rgba(2, 6, 11, 0.78);
+  color: #f5f6f8;
+  font: inherit;
+  transition: border-color 0.18s ease, background 0.18s ease;
+}
+
+.ets2-applications-panel .applications-filters select,
+.ets2-applications-panel .applications-filters input {
+  padding: 11px 12px;
+}
+
+.ets2-applications-panel .applications-filters select:focus,
+.ets2-applications-panel .applications-filters input:focus,
+.ets2-applications-panel .review-comment:focus,
+.ets2-applications-panel .application-driver-class-select:focus {
+  border-color: var(--ets2-gold);
+  background: rgba(2, 6, 11, 0.95);
+}
+
+.ets2-applications-panel .applications-message {
+  margin: 14px 0;
+  padding: 11px 13px;
+  border: 1px solid var(--ets2-line);
+  border-radius: 2px;
+  font-size: 12px;
+}
+
+.ets2-applications-panel .applications-list {
+  margin-top: 15px;
+}
+
+.ets2-applications-panel .application-card {
+  margin-bottom: 13px;
+  padding: 18px;
+  border: 1px solid var(--ets2-line);
+  border-radius: 2px;
+  background: rgba(3, 7, 12, 0.62);
+  box-shadow: none;
+  overflow-wrap: anywhere;
+}
+
+.ets2-applications-panel .application-card-header {
+  gap: 14px;
+  margin-bottom: 17px;
+  padding-bottom: 13px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ets2-applications-panel .application-card h2 {
+  color: #fff;
+  font-size: 17px;
+  font-weight: 850;
+  letter-spacing: -0.2px;
+}
+
+.ets2-applications-panel .application-card-header p {
+  color: var(--ets2-muted);
+  font-size: 12px;
+}
+
+.ets2-applications-panel .application-status {
+  flex: 0 0 auto;
+  padding: 5px 9px;
+  border: 1px solid currentColor;
+  border-radius: 2px;
+  font-size: 10px;
+  letter-spacing: 0.2px;
+}
+
+.ets2-applications-panel .application-grid {
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.ets2-applications-panel .application-grid div {
+  min-width: 0;
+  padding: 11px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.ets2-applications-panel .application-grid span,
+.ets2-applications-panel .application-section span {
+  margin-bottom: 4px;
+  color: #aeb6c2;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.15px;
+}
+
+.ets2-applications-panel .application-grid strong,
+.ets2-applications-panel .application-card strong {
+  color: #f6f7f9;
+  font-size: 12px;
+  font-weight: 750;
+  overflow-wrap: anywhere;
+}
+
+.ets2-applications-panel .application-section {
+  margin: 14px 0;
+}
+
+.ets2-applications-panel .application-section p,
+.ets2-applications-panel .admin-comment-block p {
+  color: #d0d5dd;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.ets2-applications-panel .application-date {
+  margin-top: 14px;
+  color: #a6afbc;
+  font-size: 11px;
+}
+
+.ets2-applications-panel .admin-comment-block {
+  margin-top: 16px;
+}
+
+.ets2-applications-panel .admin-comment-block label {
+  margin-bottom: 7px;
+  color: #f5f6f8;
+  font-size: 12px;
+}
+
+.ets2-applications-panel .review-comment {
+  min-height: 78px;
+  padding: 11px 12px;
+  resize: vertical;
+}
+
+.ets2-applications-panel .application-driver-class-select {
+  width: 100%;
+  max-width: 320px;
+  padding: 10px 12px;
+}
+
+.ets2-applications-panel .application-actions {
+  gap: 9px;
+  margin-top: 15px;
+}
+
+.ets2-applications-panel .application-btn {
+  padding: 10px 14px;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: 0.35px;
+  transition: filter 0.18s ease, transform 0.18s ease;
+}
+
+.ets2-applications-panel .application-btn:hover:not(:disabled) {
+  filter: brightness(1.12);
+  transform: translateY(-1px);
+}
+
+.ets2-applications-panel .approve-btn {
+  background: #dba925;
+  color: #15120a;
+}
+
+.ets2-applications-panel .reject-btn {
+  border-color: rgba(255, 107, 107, 0.45);
+  background: rgba(132, 32, 41, 0.82);
+  color: #fff;
+}
+
+.ets2-applications-panel .applications-empty,
+.ets2-applications-panel .applications-loading {
+  padding: 28px 18px;
+  border: 1px solid var(--ets2-line);
+  border-radius: 2px;
+  background: rgba(3, 7, 12, 0.55);
+  color: var(--ets2-muted);
+  font-size: 12px;
+}
+
+@media (max-width: 700px) {
+  .ets-main .content-section:has(.ets2-applications-panel) {
+    padding: 16px;
+  }
+
+  .ets2-applications-panel .admin-applications-panel {
+    padding: 12px;
+  }
+
+  .ets2-applications-panel .applications-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .ets2-applications-panel .application-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ets2-applications-panel .application-card-header {
+    flex-direction: column;
+  }
+
+  .ets2-applications-panel .application-actions {
+    flex-direction: column;
+  }
+
+  .ets2-applications-panel .application-btn {
+    width: 100%;
+  }
+}
