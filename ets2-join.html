@@ -111,13 +111,6 @@
 
       <div class="legion-content">
         <section class="content-section">
-          <div class="section-head">
-            <span>ETS2 / КЕРІВНИЦТВО</span>
-            <h2>Заявки на вступ до ETS2</h2>
-          </div>
-
-          <div id="ets2ApplicationsGateMessage" role="status" aria-live="polite">Перевірка доступу…</div>
-
           <div id="ets2ApplicationsPanel" class="ets2-applications-panel" hidden>
             <div class="applications-header">
               <div>
@@ -170,7 +163,6 @@
   <script>
     // The promise exists immediately so applications.js can await it.
     window.ets2ApplicationsAccessPromise = (async function protectEts2ApplicationsPage() {
-      const gateMessage = document.getElementById("ets2ApplicationsGateMessage");
       const panel = document.getElementById("ets2ApplicationsPanel");
       const navLink = document.getElementById("ets2ApplicationsNavLink");
 
@@ -198,7 +190,6 @@
 
         if (panel) panel.hidden = false;
         if (navLink) navLink.hidden = false;
-        if (gateMessage) gateMessage.textContent = "Доступ підтверджено. Завантаження заявок ETS2…";
         document.body.style.visibility = "visible";
         console.log("ETS2 APPLICATIONS ACCESS: дозволено");
         return true;
