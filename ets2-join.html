@@ -9,6 +9,7 @@
 
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="ets2.css">
+  <link rel="stylesheet" href="ets2-info-page.css">
   <link rel="stylesheet" href="applications.css">
   <link rel="stylesheet" href="ets2-chat.css">
 
@@ -35,8 +36,17 @@
     }
   </style>
 </head>
-<body>
-  <div class="noise"></div>
+<body class="ets2-info-page ets2-applications-page">
+  <div class="noise" aria-hidden="true"></div>
+
+  <!-- Той самий відеофон, що й на ets2-info.html -->
+  <div class="legion-page-background" aria-hidden="true">
+    <video class="legion-page-video" autoplay muted loop playsinline preload="metadata"
+      poster="assets/ets2/ua-legion-ets2-poster.jpg">
+      <source src="assets/ets2/ua-legion-ets2-bg.mp4" type="video/mp4">
+    </video>
+    <div class="legion-page-shade"></div>
+  </div>
 
   <header class="topbar">
     <a class="brand" href="index.html">
