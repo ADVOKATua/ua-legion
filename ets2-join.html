@@ -9,16 +9,32 @@
 
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="ets2.css">
+  <link rel="stylesheet" href="applications.css">
   <link rel="stylesheet" href="ets2-chat.css">
 
-  <!-- Приховуємо сторінку до завершення перевірки доступу -->
   <style>
-    body {
-      visibility: hidden;
+    body { visibility: hidden; }
+    .ets2-applications-panel { margin: 24px 0; color: #e5e7eb; }
+    .ets2-applications-panel .applications-page { min-height: 0; padding: 0; }
+    .ets2-applications-panel .applications-container { max-width: none; margin: 0; }
+    .ets2-applications-panel .applications-header { align-items: flex-start; }
+    .ets2-applications-panel .applications-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .ets2-applications-panel .applications-filters select,
+    .ets2-applications-panel .applications-filters input { min-width: 0; box-sizing: border-box; }
+    .ets2-applications-panel .application-card { overflow-wrap: anywhere; }
+    .ets2-applications-panel .application-actions { flex-wrap: wrap; }
+    .ets2-applications-panel .applications-message { display: block; }
+    .ets2-applications-panel .applications-message:empty { display: none; }
+    @media (max-width: 700px) {
+      .ets2-applications-panel .applications-stats { grid-template-columns: 1fr; }
+      .ets2-applications-panel .applications-filters { flex-direction: column; }
+      .ets2-applications-panel .application-grid { grid-template-columns: 1fr; }
+      .ets2-applications-panel .application-card-header { flex-direction: column; }
+      .ets2-applications-panel .application-actions { flex-direction: column; }
+      .ets2-applications-panel .application-btn { width: 100%; }
     }
   </style>
 </head>
-
 <body>
   <div class="noise"></div>
 
@@ -27,9 +43,7 @@
       <img src="ua-legion-logo.png" alt="UA LEGION">
       <span>UA LEGION</span>
     </a>
-
     <button class="menu-btn" aria-label="Відкрити меню">☰</button>
-
     <nav class="nav">
       <a href="index.html">Головна</a>
       <a href="about.html">Про нас</a>
@@ -37,29 +51,24 @@
       <a href="events.html">Події</a>
       <a href="media.html">Медіа</a>
       <a href="gallery.html">Галерея</a>
-      <a href="https://www.tiktok.com/@ua_legion_"
-         target="_blank" rel="noopener noreferrer">TikTok</a>
-      <a href="https://discord.gg/gfunf3yq7"
-         target="_blank" rel="noopener noreferrer" class="nav-cta">Discord</a>
+      <a href="https://www.tiktok.com/@ua_legion_" target="_blank" rel="noopener noreferrer">TikTok</a>
+      <a href="https://discord.gg/gfunf3yq7" target="_blank" rel="noopener noreferrer" class="nav-cta">Discord</a>
       <a href="login.html" id="authButton">Увійти / Реєстрація</a>
     </nav>
   </header>
 
   <main>
     <div class="ets-shell">
-
       <aside class="ets-sidebar">
         <a class="side-logo" href="ets2.html">
           <img src="ua-legion-logo.png" alt="UA LEGION">
           <b>UA LEGION ETS2</b>
           <small>TRANSPORT DIVISION</small>
         </a>
-
         <div class="side-group">
           <span>ГОЛОВНА</span>
           <a href="ets2.html">🏠 Головна ETS2</a>
         </div>
-
         <div class="side-group">
           <span>ГОЛОВНИЙ РОЗДІЛ</span>
           <a href="ets2-info.html">ℹ️ Інформація</a>
@@ -67,30 +76,17 @@
           <a href="ets2-news.html">📰 Новини та оголошення</a>
           <a href="ets2-classes.html">⭐ Класи водіїв</a>
         </div>
-
         <div class="side-group">
-          <a href="ets2-leadership.html">
-            🛡️ Структура управління UA LEGION ETS2 та посадові обов’язки
-          </a>
+          <a href="ets2-leadership.html">🛡️ Структура управління UA LEGION ETS2 та посадові обов’язки</a>
         </div>
-
         <div class="side-group">
           <span>СПІЛЬНОТА</span>
-
-          <a href="https://discord.gg/gfunf3yq7"
-             target="_blank" rel="noopener noreferrer">💬 Чат ETS2</a>
-
-          <!-- Пункт доступний лише дозволеним посадовцям -->
-          <a class="active"
-             href="ets2-join.html"
-             hidden
-             style="display:none">📝 Заявки ETS2</a>
-
+          <a href="https://discord.gg/gfunf3yq7" target="_blank" rel="noopener noreferrer">💬 Чат ETS2</a>
+          <a class="active" href="ets2-join.html" id="ets2ApplicationsNavLink" hidden>📝 Заявки ETS2</a>
           <a href="ets2-roles.html">🎫 Отримання ролей</a>
           <a href="ets2-partners.html">📣 Партнери</a>
           <a href="ets2-blacklist.html">⛔ Чорний список</a>
         </div>
-
         <div class="side-group">
           <span>ETS2</span>
           <a href="ets2-fleet.html">🚚 Автопарк</a>
@@ -99,10 +95,7 @@
           <a href="ets2-drivers.html">👨‍✈️ Водії</a>
           <a href="ets2-gallery.html">📸 Галерея</a>
         </div>
-
-        <a href="https://discord.gg/gfunf3yq7"
-           target="_blank" rel="noopener noreferrer"
-           class="sidebar-discord">💬 ВІДКРИТИ DISCORD</a>
+        <a href="https://discord.gg/gfunf3yq7" target="_blank" rel="noopener noreferrer" class="sidebar-discord">💬 ВІДКРИТИ DISCORD</a>
       </aside>
 
       <div class="ets-main">
@@ -112,16 +105,40 @@
             <h2>Заявки на вступ до ETS2</h2>
           </div>
 
-          <div id="ets2ApplicationsMessage" role="status" aria-live="polite">
-            Перевірка доступу…
-          </div>
+          <div id="ets2ApplicationsGateMessage" role="status" aria-live="polite">Перевірка доступу…</div>
 
-          <!--
-            Сюди додаватиметься адміністративна панель заявок.
-            Вона має отримувати дані з applications через захищені
-            запити та показувати лише заявки напрямку ETS2.
-          -->
-          <div id="ets2ApplicationsPanel" hidden></div>
+          <div id="ets2ApplicationsPanel" class="ets2-applications-panel" hidden>
+            <div class="applications-header">
+              <div>
+                <span class="applications-kicker" id="applicationsKicker">UA LEGION ETS2</span>
+                <h1 id="applicationsTitle">📝 Заявки на вступ до ETS2</h1>
+                <p id="applicationsSubtitle">Перегляд і розгляд заявок транспортного підрозділу ETS2.</p>
+              </div>
+            </div>
+
+            <div id="adminApplicationsPanel" class="admin-applications-panel">
+              <div class="admin-panel-title">🛡️ Панель заявок ETS2</div>
+              <div class="applications-stats">
+                <div class="stat-card"><span>🟡</span><strong id="newApplicationsCount">0</strong><p>На розгляді</p></div>
+                <div class="stat-card"><span>🟢</span><strong id="approvedApplicationsCount">0</strong><p>Схвалені</p></div>
+                <div class="stat-card"><span>🔴</span><strong id="rejectedApplicationsCount">0</strong><p>Відхилені</p></div>
+              </div>
+              <div class="applications-filters">
+                <select id="statusFilter" aria-label="Фільтр за статусом">
+                  <option value="all">Усі заявки</option>
+                  <option value="new">🟡 На розгляді</option>
+                  <option value="approved">🟢 Схвалені</option>
+                  <option value="rejected">🔴 Відхилені</option>
+                </select>
+                <input type="text" id="applicationSearch" placeholder="🔎 Пошук за ім’ям, Discord або ігровим ніком…" aria-label="Пошук заявок">
+              </div>
+            </div>
+
+            <div id="applicationsMessage" class="applications-message" role="status" aria-live="polite"></div>
+            <div id="applicationsList" class="applications-list">
+              <div class="applications-loading">⏳ Завантаження заявок…</div>
+            </div>
+          </div>
         </section>
       </div>
     </div>
@@ -130,10 +147,7 @@
   <footer>
     <div class="footer-brand">
       <img src="ua-legion-logo.png" alt="UA LEGION">
-      <div>
-        <b>UA LEGION ETS2</b>
-        <span>TRANSPORT DIVISION</span>
-      </div>
+      <div><b>UA LEGION ETS2</b><span>TRANSPORT DIVISION</span></div>
     </div>
     <p>Україна грає. ЛЕГІОН перемагає.</p>
     <small>© 2026 UA LEGION</small>
@@ -142,61 +156,45 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase.js"></script>
 
-  <!-- Перевірка доступу до сторінки -->
   <script>
-    (async function protectEts2ApplicationsPage() {
-      const message = document.getElementById(
-        "ets2ApplicationsMessage"
-      );
+    // The promise exists immediately so applications.js can await it.
+    window.ets2ApplicationsAccessPromise = (async function protectEts2ApplicationsPage() {
+      const gateMessage = document.getElementById("ets2ApplicationsGateMessage");
+      const panel = document.getElementById("ets2ApplicationsPanel");
+      const navLink = document.getElementById("ets2ApplicationsNavLink");
 
       try {
         const supabase = window.supabaseClient;
+        if (!supabase) throw new Error("Supabase не підключений");
 
-        if (!supabase) {
-          throw new Error("Supabase не підключений");
-        }
-
-        const {
-          data: { session },
-          error: sessionError
-        } = await supabase.auth.getSession();
-
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         if (sessionError || !session?.user) {
           window.location.replace("ets2.html");
-          return;
+          return false;
         }
 
-        const { data, error } = await supabase.rpc(
-          "can_access_ets2_applications"
-        );
-
+        const { data, error } = await supabase.rpc("can_access_ets2_applications");
         if (error) {
           console.error("Помилка перевірки доступу:", error);
           window.location.replace("ets2.html");
-          return;
+          return false;
         }
 
         if (data !== true) {
           window.location.replace("ets2.html");
-          return;
+          return false;
         }
 
-        // Доступ підтверджено.
+        if (panel) panel.hidden = false;
+        if (navLink) navLink.hidden = false;
+        if (gateMessage) gateMessage.textContent = "Доступ підтверджено. Завантаження заявок ETS2…";
         document.body.style.visibility = "visible";
-
-        if (message) {
-          message.textContent =
-            "Доступ підтверджено. Панель заявок можна завантажувати.";
-        }
-
         console.log("ETS2 APPLICATIONS ACCESS: дозволено");
+        return true;
       } catch (error) {
-        console.error(
-          "Не вдалося перевірити доступ до заявок ETS2:",
-          error
-        );
-
+        console.error("Не вдалося перевірити доступ до заявок ETS2:", error);
         window.location.replace("ets2.html");
+        return false;
       }
     })();
   </script>
@@ -204,5 +202,6 @@
   <script src="ets2-chat.js" defer></script>
   <script src="script.js"></script>
   <script src="auth-menu.js"></script>
+  <script src="applications.js"></script>
 </body>
 </html>

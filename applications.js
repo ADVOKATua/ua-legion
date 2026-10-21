@@ -36,8 +36,18 @@ document.addEventListener(
   async () => {
 
     // ======================================
-    // SUPABASE
+    // PAGE MODE / SUPABASE
     // ======================================
+
+    const isEts2ApplicationsPage =
+      Boolean(document.getElementById("ets2ApplicationsPanel"));
+
+    // ETS2 page must not start loading data until its dedicated access
+    // guard has finished. The promise is created synchronously by ets2-join.html.
+    if (isEts2ApplicationsPage) {
+      const accessGranted = await window.ets2ApplicationsAccessPromise;
+      if (accessGranted !== true) return;
+    }
 
     const supabase =
       window.supabaseClient;
@@ -475,73 +485,64 @@ document.addEventListener(
       application
     ) {
 
-      if (
+      const primaryDirection = normalizeDirection(
         application?.direction
-      ) {
+      );
 
-        return normalizeDirection(
-          application.direction
-        );
+      let directions = application?.directions;
 
-      }
-
-
-      if (
-        Array.isArray(
-          application?.directions
-        )
-      ) {
-
-        return normalizeDirection(
-          application.directions[0]
-        );
-
-      }
-
-
-      if (
-        typeof application?.directions ===
-        "string"
-      ) {
-
+      if (typeof directions === "string") {
         try {
-
-          const parsed =
-            JSON.parse(
-              application.directions
-            );
-
-
-          if (
-            Array.isArray(parsed)
-          ) {
-
-            return normalizeDirection(
-              parsed[0]
-            );
-
-          }
-
-
-          return normalizeDirection(
-            parsed
-          );
-
+          directions = JSON.parse(directions);
+        } catch {
+          directions = [directions];
         }
-
-        catch {
-
-          return normalizeDirection(
-            application.directions
-          );
-
-        }
-
       }
 
+      if (!Array.isArray(directions) && directions) {
+        directions = [directions];
+      }
 
-      return null;
+      const normalizedDirections = Array.isArray(directions)
+        ? directions.map(normalizeDirection).filter(Boolean)
+        : [];
 
+      // Legacy/multi-direction records can have direction NULL while ETS2
+      // is recorded in the JSON/array column. Prefer ETS2 on its own page.
+      if (isEts2ApplicationsPage && normalizedDirections.includes("ets2")) {
+        return "ets2";
+      }
+
+      if (primaryDirection) {
+        return primaryDirection;
+      }
+
+      return normalizedDirections[0] || null;
+
+    }
+
+
+    function isEts2Application(application) {
+      if (normalizeDirection(application?.direction) === "ets2") {
+        return true;
+      }
+
+      let directions = application?.directions;
+      if (typeof directions === "string") {
+        try {
+          directions = JSON.parse(directions);
+        } catch {
+          directions = [directions];
+        }
+      }
+
+      if (!Array.isArray(directions)) {
+        directions = directions ? [directions] : [];
+      }
+
+      return directions.some(
+        value => normalizeDirection(value) === "ets2"
+      );
     }
 
 
@@ -1410,6 +1411,20 @@ document.addEventListener(
       application
     ) {
 
+      if (isEts2ApplicationsPage) {
+        const ets2Direction = allDirections.find(direction =>
+          Number(direction.id) === 1 ||
+          normalizeDirection(direction.slug) === "ets2" ||
+          normalizeDirection(direction.code) === "ets2"
+        );
+
+        return Boolean(
+          isEts2Application(application) &&
+          ets2Direction &&
+          directionPermissions.has(Number(ets2Direction.id))
+        );
+      }
+
       const directionRecord =
         getDirectionRecord(
           application
@@ -1429,6 +1444,54 @@ document.addEventListener(
         )
       );
 
+    }
+
+
+    // ======================================
+    // ETS2 PAGE ACCESS CONFIGURATION
+    // ======================================
+
+    async function configureEts2PageAccess() {
+      if (!isEts2ApplicationsPage) return true;
+
+      const ets2Direction = allDirections.find(direction =>
+        Number(direction.id) === 1 ||
+        normalizeDirection(direction.slug) === "ets2" ||
+        normalizeDirection(direction.code) === "ets2"
+      );
+
+      if (!ets2Direction) {
+        showMessage("Не вдалося знайти активний напрямок ETS2.", "error");
+        return false;
+      }
+
+      const directionId = Number(ets2Direction.id);
+      const [view, review, approve, reject] = await Promise.all([
+        checkPermission("applications.view", directionId),
+        checkPermission("applications.review", directionId),
+        checkPermission("applications.approve", directionId),
+        checkPermission("applications.reject", directionId)
+      ]);
+
+      if (!view) {
+        showMessage("У вас немає дозволу на перегляд заявок ETS2.", "error");
+        return false;
+      }
+
+      directionPermissions.clear();
+      directionPermissions.set(directionId, {
+        view: true,
+        review,
+        approve,
+        reject,
+        direction: ets2Direction
+      });
+
+      // This is a dedicated direction-only mode, even if the account also
+      // happens to have global permissions. It prevents other directions
+      // from appearing on ets2-join.html.
+      accessMode = "direction";
+      return true;
     }
 
 
@@ -1508,11 +1571,13 @@ document.addEventListener(
         }
 
 
-        query =
-          query.in(
-            "direction",
-            allowedDirections
-          );
+        if (!isEts2ApplicationsPage) {
+          query =
+            query.in(
+              "direction",
+              allowedDirections
+            );
+        }
 
       }
 
@@ -1566,6 +1631,10 @@ document.addEventListener(
 
       allApplications =
         data || [];
+
+      if (isEts2ApplicationsPage) {
+        allApplications = allApplications.filter(isEts2Application);
+      }
 
 
       // ====================================
@@ -3446,12 +3515,31 @@ document.addEventListener(
 
     await checkApplicationAccess();
 
+    if (isEts2ApplicationsPage) {
+      const configured = await configureEts2PageAccess();
+      if (!configured) {
+        if (applicationsList) applicationsList.innerHTML = "";
+        return;
+      }
+
+      if (applicationsKicker) applicationsKicker.textContent = "UA LEGION ETS2";
+      if (applicationsTitle) applicationsTitle.textContent = "📝 Заявки на вступ до ETS2";
+      if (applicationsSubtitle) {
+        applicationsSubtitle.textContent =
+          "Перегляд і розгляд заявок транспортного підрозділу ETS2.";
+      }
+      if (adminApplicationsPanel) adminApplicationsPanel.style.display = "block";
+      if (userApplicationsInfo) userApplicationsInfo.style.display = "none";
+      if (createApplicationBlock) createApplicationBlock.style.display = "none";
+    }
+
 
     // ======================================
     // GLOBAL MODE
     // ======================================
 
     if (
+      !isEts2ApplicationsPage &&
       accessMode === "global"
     ) {
 
@@ -3502,6 +3590,7 @@ document.addEventListener(
     // ======================================
 
     else if (
+      !isEts2ApplicationsPage &&
       accessMode === "direction"
     ) {
 
@@ -3551,7 +3640,7 @@ document.addEventListener(
     // USER MODE
     // ======================================
 
-    else {
+    else if (!isEts2ApplicationsPage) {
 
       if (adminApplicationsPanel) {
 
