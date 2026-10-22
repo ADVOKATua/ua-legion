@@ -36,6 +36,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   const directionDataCache = new Map();
   const nicknameCache = new Map();
   const profileCache = new Map();
+  let verifiedTruckersHubStats = null;
 
   // ==========================================
   // ELEMENTS
@@ -108,7 +109,10 @@ document.addEventListener("DOMContentLoaded", async function () {
         <div class="support-field support-full" id="hrTruckersHubField" hidden>
           <label for="hrTruckersHubUrl">Посилання на профіль TruckersHub</label>
           <input id="hrTruckersHubUrl" type="url" maxlength="500" placeholder="https://truckershub.in/profile/21243">
-          <small class="field-help">Статистика поки не завантажується автоматично. Керівництво перевірить її за посиланням профілю.</small>
+          <small class="field-help">Перевірка виконується через ваш авторизований профіль UA LEGION. SteamID64 має бути прив’язаний у профілі.</small>
+          <button id="hrVerifyTruckersHubButton" type="button" class="support-button">🔄 Перевірити статистику TruckersHub</button>
+          <div id="hrTruckersHubVerification" class="field-help" role="status" aria-live="polite">Статистику ще не перевірено.</div>
+          <div id="hrTruckersHubVerifiedStats" class="field-help" hidden></div>
         </div>
         <div class="support-field" id="hrTruckersHubIdField" hidden>
           <label for="hrTruckersHubId">TruckersHub User ID</label>
@@ -136,7 +140,66 @@ document.addEventListener("DOMContentLoaded", async function () {
     const type = hrRequestBuilder.querySelector("#hrRequestType");
     type.addEventListener("change", updateHRRequestVisibility);
     hrRequestBuilder.querySelector("#hrCurrentDriverClass")?.addEventListener("change", refreshDriverClassOptions);
+    hrRequestBuilder.querySelector("#hrVerifyTruckersHubButton")?.addEventListener("click", verifyTruckersHubStats);
     updateHRRequestVisibility();
+  }
+
+  async function verifyTruckersHubStats() {
+    if (!hrRequestBuilder) return;
+
+    const button = hrRequestBuilder.querySelector("#hrVerifyTruckersHubButton");
+    const status = hrRequestBuilder.querySelector("#hrTruckersHubVerification");
+    const output = hrRequestBuilder.querySelector("#hrTruckersHubVerifiedStats");
+    if (!button || !status || !output) return;
+
+    const originalText = button.textContent;
+    button.disabled = true;
+    button.textContent = "Перевіряємо...";
+    status.textContent = "Звертаємося до TruckersHub через захищену серверну функцію...";
+    output.hidden = true;
+    verifiedTruckersHubStats = null;
+
+    try {
+      // invoke бере активну сесію Supabase з цього клієнта; токен не виводиться в консоль.
+      const { data, error } = await supabase.functions.invoke("truckershub-stats", {
+        method: "GET"
+      });
+
+      if (error) throw error;
+      if (!data?.ok || !data?.verified || !data?.statistics) {
+        throw new Error(data?.error || "TruckersHub не підтвердив статистику цього профілю.");
+      }
+
+      verifiedTruckersHubStats = data;
+      const stats = data.statistics;
+      const distance = stats.distanceTotal;
+      const jobs = stats.jobs;
+      const thp = stats.thp;
+      const rating = stats.rating;
+
+      status.textContent = `Профіль підтверджено: ${data.driver?.truckersHubUsername || data.driver?.gameNickname || "водій"}.`;
+      output.innerHTML = `
+        <strong>Дані з TruckersHub:</strong><br>
+        Пробіг (значення API, одиниці потрібно підтвердити): ${distance == null ? "—" : escapeHtml(distance)}<br>
+        Доставки (jobs, це НЕ кількість конвоїв): ${jobs == null ? "—" : escapeHtml(jobs)}<br>
+        THP: ${thp == null ? "—" : escapeHtml(thp)}<br>
+        Рейтинг: ${rating == null ? "—" : escapeHtml(rating)}<br>
+        <span>Конвої перевіряються окремо. Не вказуйте кількість доставок як кількість конвоїв.</span>`;
+      output.hidden = false;
+
+      // Заповнюємо THP автоматично, але не підміняємо пробіг (одиниці ще не підтверджені)
+      // і не підставляємо кількість доставок у поле конвоїв.
+      const thpInput = hrRequestBuilder.querySelector("#hrTruckersHubThp");
+      if (thpInput && thp != null) thpInput.value = String(thp);
+    } catch (error) {
+      console.error("TruckersHub verification failed:", error);
+      status.textContent = error?.message || "Не вдалося перевірити статистику TruckersHub.";
+      output.hidden = true;
+      showMessage(status.textContent, "error");
+    } finally {
+      button.disabled = false;
+      button.textContent = originalText;
+    }
   }
 
   function isETS2Direction() {
@@ -319,7 +382,13 @@ TruckersHub User ID: ${hubId || "Не вказано"}
 Пробіг, км (введено заявником): ${hubDistance || "Не вказано"}
 Відвідані конвої (введено заявником): ${hubJobs || "Не вказано"}
 THP (введено заявником): ${hubThp || "Не вказано"}
-Примітка: статистика не перевірена автоматично; потрібна перевірка керівництвом.` : ""}
+${verifiedTruckersHubStats ? `Автоматична перевірка TruckersHub: успішна
+TruckersHub username: ${verifiedTruckersHubStats.driver?.truckersHubUsername || "Не вказано"}
+SteamID64: ${verifiedTruckersHubStats.driver?.steamID || "Не вказано"}
+Пробіг API (одиниці не підтверджені): ${verifiedTruckersHubStats.statistics?.distanceTotal ?? "Не вказано"}
+Кількість доставок API (не є кількістю конвоїв): ${verifiedTruckersHubStats.statistics?.jobs ?? "Не вказано"}
+THP API: ${verifiedTruckersHubStats.statistics?.thp ?? "Не вказано"}
+Рейтинг API: ${verifiedTruckersHubStats.statistics?.rating ?? "Не вказано"}` : "Автоматична перевірка TruckersHub не виконана; потрібна перевірка керівництвом."}` : ""}
 Обґрунтування: ${details}`;
   }
 
@@ -1360,6 +1429,11 @@ THP (введено заявником): ${hubThp || "Не вказано"}
 
     updateDataChangeVisibility();
     if (hrRequestBuilder) {
+      verifiedTruckersHubStats = null;
+      const verificationStatus = hrRequestBuilder.querySelector("#hrTruckersHubVerification");
+      const verificationOutput = hrRequestBuilder.querySelector("#hrTruckersHubVerifiedStats");
+      if (verificationStatus) verificationStatus.textContent = "Статистику ще не перевірено.";
+      if (verificationOutput) { verificationOutput.hidden = true; verificationOutput.textContent = ""; }
       hrRequestBuilder.querySelector("#hrRequestType").value = "appointment";
       hrRequestBuilder.querySelector("#hrDesiredPosition").value = "";
       hrRequestBuilder.querySelector("#hrDriverClass").value = "";
