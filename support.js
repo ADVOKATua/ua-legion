@@ -162,7 +162,8 @@ document.addEventListener("DOMContentLoaded", async function () {
     try {
       // invoke бере активну сесію Supabase з цього клієнта; токен не виводиться в консоль.
       const { data, error } = await supabase.functions.invoke("truckershub-stats", {
-        method: "GET"
+        method: "POST",
+        body: {}
       });
 
       if (error) throw error;
