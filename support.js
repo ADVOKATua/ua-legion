@@ -88,15 +88,43 @@ document.addEventListener("DOMContentLoaded", async function () {
           <input id="hrDesiredPosition" type="text" maxlength="160" placeholder="Вкажіть посаду">
         </div>
         <div class="support-field support-full" id="hrClassField" hidden>
-          <label for="hrDriverClass">Клас водія ETS2</label>
-          <select id="hrDriverClass">
-            <option value="">Оберіть клас водія</option>
-            <option value="Клас E — Стажер">Клас E — Стажер</option>
-            <option value="Клас D — Водій">Клас D — Водій</option>
-            <option value="Клас C — Досвідчений водій">Клас C — Досвідчений водій</option>
-            <option value="Клас B — Старший водій">Клас B — Старший водій</option>
-            <option value="Клас A — Майстер водій">Клас A — Майстер водій</option>
+          <label for="hrCurrentDriverClass">Поточний клас водія ETS2</label>
+          <select id="hrCurrentDriverClass">
+            <option value="">Оберіть поточний клас</option>
+            <option value="E">Клас E — Стажер</option>
+            <option value="D">Клас D — Водій</option>
+            <option value="C">Клас C — Досвідчений водій</option>
+            <option value="B">Клас B — Старший водій</option>
+            <option value="A">Клас A — Майстер водій</option>
           </select>
+        </div>
+        <div class="support-field support-full" id="hrTargetClassField" hidden>
+          <label for="hrDriverClass">Клас, на який подається заявка</label>
+          <select id="hrDriverClass" disabled>
+            <option value="">Спочатку оберіть поточний клас</option>
+          </select>
+          <small id="hrClassRequirements" class="field-help">Вимоги наступного класу відобразяться після вибору поточного класу.</small>
+        </div>
+        <div class="support-field support-full" id="hrTruckersHubField" hidden>
+          <label for="hrTruckersHubUrl">Посилання на профіль TruckersHub</label>
+          <input id="hrTruckersHubUrl" type="url" maxlength="500" placeholder="https://truckershub.in/profile/21243">
+          <small class="field-help">Статистика поки не завантажується автоматично. Керівництво перевірить її за посиланням профілю.</small>
+        </div>
+        <div class="support-field" id="hrTruckersHubIdField" hidden>
+          <label for="hrTruckersHubId">TruckersHub User ID</label>
+          <input id="hrTruckersHubId" type="number" min="1" step="1" placeholder="Наприклад, 21243">
+        </div>
+        <div class="support-field" id="hrDistanceField" hidden>
+          <label for="hrTruckersHubDistance">Пробіг, км (за профілем)</label>
+          <input id="hrTruckersHubDistance" type="number" min="0" step="1" placeholder="Вкажіть значення з профілю">
+        </div>
+        <div class="support-field" id="hrJobsField" hidden>
+          <label for="hrTruckersHubJobs">Кількість доставок</label>
+          <input id="hrTruckersHubJobs" type="number" min="0" step="1" placeholder="Вкажіть значення з профілю">
+        </div>
+        <div class="support-field" id="hrThpField" hidden>
+          <label for="hrTruckersHubThp">THP</label>
+          <input id="hrTruckersHubThp" type="number" min="0" step="any" placeholder="Вкажіть значення з профілю">
         </div>
         <div class="support-field support-full">
           <label for="hrRequestDetails">Додаткова інформація / обґрунтування</label>
@@ -107,6 +135,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     if (grid && grid.parentNode) grid.insertAdjacentElement("afterend", hrRequestBuilder);
     const type = hrRequestBuilder.querySelector("#hrRequestType");
     type.addEventListener("change", updateHRRequestVisibility);
+    hrRequestBuilder.querySelector("#hrCurrentDriverClass")?.addEventListener("change", refreshDriverClassOptions);
     updateHRRequestVisibility();
   }
 
@@ -116,13 +145,50 @@ document.addEventListener("DOMContentLoaded", async function () {
     return /ets\s*2|euro truck|єтс2|єтс 2/.test(text);
   }
 
+  function refreshDriverClassOptions() {
+    if (!hrRequestBuilder) return;
+    const currentSelect = hrRequestBuilder.querySelector("#hrCurrentDriverClass");
+    const targetSelect = hrRequestBuilder.querySelector("#hrDriverClass");
+    const requirements = hrRequestBuilder.querySelector("#hrClassRequirements");
+    if (!currentSelect || !targetSelect) return;
+
+    const classes = {
+      E: { label: "Клас E — Стажер", next: "D" },
+      D: { label: "Клас D — Водій", next: "C" },
+      C: { label: "Клас C — Досвідчений водій", next: "B" },
+      B: { label: "Клас B — Старший водій", next: "A" },
+      A: { label: "Клас A — Майстер водій", next: null }
+    };
+    const requirementsByTarget = {
+      D: "Клас D є наступним після стажування E. На сторінці правил немає окремого числового порогу для присвоєння D; перевірка стажування та рішення — за менеджментом.",
+      C: "Понад 10 000 км, не менше 15 днів у компанії, завершене стажування в E та відсутність серйозних порушень.",
+      B: "Щонайменше 15 конвоїв компанії, понад 20 000 км, належна дисципліна й активність у Discord.",
+      A: "Щонайменше 25 конвоїв, понад 35 000 км, участь у партнерських конвоях і стабільна дисципліна."
+    };
+    const current = currentSelect.value;
+    const next = classes[current]?.next || "";
+    targetSelect.innerHTML = next
+      ? `<option value="${next}">${classes[next].label}</option>`
+      : '<option value="">Клас A — найвищий клас</option>';
+    targetSelect.disabled = !next;
+    if (requirements) {
+      requirements.textContent = next
+        ? requirementsByTarget[next]
+        : "Клас A — найвищий клас водія. Подати заявку на вищий клас неможливо.";
+    }
+  }
+
   function updateHRRequestVisibility() {
     if (!hrRequestBuilder) return;
 
     const active = ticketCategory?.value === "hr";
     const type = hrRequestBuilder.querySelector("#hrRequestType");
     const classField = hrRequestBuilder.querySelector("#hrClassField");
+    const currentClassSelect = hrRequestBuilder.querySelector("#hrCurrentDriverClass");
+    const targetClassField = hrRequestBuilder.querySelector("#hrTargetClassField");
     const classSelect = hrRequestBuilder.querySelector("#hrDriverClass");
+    const requirements = hrRequestBuilder.querySelector("#hrClassRequirements");
+    const hubFieldIds = ["hrTruckersHubField", "hrTruckersHubIdField", "hrDistanceField", "hrJobsField", "hrThpField"];
     const positionField = hrRequestBuilder.querySelector("#hrPositionField");
     const positionInput = hrRequestBuilder.querySelector("#hrDesiredPosition");
     const details = hrRequestBuilder.querySelector("#hrRequestDetails");
@@ -144,16 +210,30 @@ document.addEventListener("DOMContentLoaded", async function () {
     const classAllowed = active && isETS2 && type?.value === "driver_class";
     if (classField) {
       classField.hidden = !classAllowed;
-      if (classAllowed) {
-        classField.style.removeProperty("display");
-      } else {
-        classField.style.setProperty("display", "none", "important");
+      classField.style.setProperty("display", classAllowed ? "" : "none", classAllowed ? "" : "important");
+    }
+    if (targetClassField) {
+      targetClassField.hidden = !classAllowed;
+      targetClassField.style.setProperty("display", classAllowed ? "" : "none", classAllowed ? "" : "important");
+    }
+    hubFieldIds.forEach(id => {
+      const field = hrRequestBuilder.querySelector("#" + id);
+      if (!field) return;
+      field.hidden = !classAllowed;
+      field.style.setProperty("display", classAllowed ? "" : "none", classAllowed ? "" : "important");
+    });
+    if (classAllowed) {
+      refreshDriverClassOptions();
+    } else {
+      if (currentClassSelect) currentClassSelect.value = "";
+      if (classSelect) {
+        classSelect.value = "";
+        classSelect.disabled = true;
       }
+      if (requirements) requirements.textContent = "Вимоги наступного класу відобразяться після вибору поточного класу.";
     }
-    if (classSelect) {
-      classSelect.required = classAllowed;
-      if (!classAllowed) classSelect.value = "";
-    }
+    if (currentClassSelect) currentClassSelect.required = classAllowed;
+    if (classSelect) classSelect.required = classAllowed;
 
     const positionAllowed = active && ["appointment", "position_change"].includes(type?.value);
     if (positionField) {
@@ -181,14 +261,31 @@ document.addEventListener("DOMContentLoaded", async function () {
     const type = typeSelect?.value || "other";
     const position = hrRequestBuilder.querySelector("#hrDesiredPosition")?.value.trim() || "";
     const driverClass = hrRequestBuilder.querySelector("#hrDriverClass")?.value || "";
+    const currentDriverClass = hrRequestBuilder.querySelector("#hrCurrentDriverClass")?.value || "";
+    const hubUrl = hrRequestBuilder.querySelector("#hrTruckersHubUrl")?.value.trim() || "";
+    const hubId = hrRequestBuilder.querySelector("#hrTruckersHubId")?.value.trim() || "";
+    const hubDistance = hrRequestBuilder.querySelector("#hrTruckersHubDistance")?.value.trim() || "";
+    const hubJobs = hrRequestBuilder.querySelector("#hrTruckersHubJobs")?.value.trim() || "";
+    const hubThp = hrRequestBuilder.querySelector("#hrTruckersHubThp")?.value.trim() || "";
     const details = hrRequestBuilder.querySelector("#hrRequestDetails")?.value.trim() || "";
     if (["appointment", "position_change"].includes(type) && !position) {
       showMessage("Вкажіть посаду або бажану посаду.", "error");
       return null;
     }
-    if (type === "driver_class" && isETS2Direction() && !driverClass) {
-      showMessage("Оберіть клас водія ETS2.", "error");
-      return null;
+    if (type === "driver_class" && isETS2Direction()) {
+      const nextClass = { E: "D", D: "C", C: "B", B: "A", A: null }[currentDriverClass];
+      if (!currentDriverClass) {
+        showMessage("Оберіть поточний клас водія.", "error");
+        return null;
+      }
+      if (!driverClass || driverClass !== nextClass) {
+        showMessage("Можна подати заявку лише на наступний клас. Для класу A підвищення вище не передбачене.", "error");
+        return null;
+      }
+      if (!hubUrl || !/^https:\/\/truckershub\.in\/profile\/\d+\/?(?:[?#].*)?$/i.test(hubUrl)) {
+        showMessage("Додайте коректне посилання на профіль TruckersHub у форматі https://truckershub.in/profile/ID.", "error");
+        return null;
+      }
     }
     if (!details) {
       showMessage("Заповніть додаткову інформацію кадрового звернення.", "error");
@@ -200,6 +297,15 @@ document.addEventListener("DOMContentLoaded", async function () {
 Тип: ${typeNames[type] || typeNames.other}${position ? `
 Посада: ${position}` : ""}${type === "driver_class" && driverClass ? `
 Клас водія ETS2: ${driverClass}` : ""}
+${type === "driver_class" && currentDriverClass ? `
+Поточний клас: ${{E:"Клас E — Стажер",D:"Клас D — Водій",C:"Клас C — Досвідчений водій",B:"Клас B — Старший водій",A:"Клас A — Майстер водій"}[currentDriverClass]}
+Цільовий клас: ${driverClass}` : ""}${type === "driver_class" ? `
+TruckersHub профіль: ${hubUrl || "Не вказано"}
+TruckersHub User ID: ${hubId || "Не вказано"}
+Пробіг, км (введено заявником): ${hubDistance || "Не вказано"}
+Доставки (введено заявником): ${hubJobs || "Не вказано"}
+THP (введено заявником): ${hubThp || "Не вказано"}
+Примітка: статистика не перевірена автоматично; потрібна перевірка керівництвом.` : ""}
 Обґрунтування: ${details}`;
   }
 
@@ -1243,6 +1349,11 @@ document.addEventListener("DOMContentLoaded", async function () {
       hrRequestBuilder.querySelector("#hrRequestType").value = "appointment";
       hrRequestBuilder.querySelector("#hrDesiredPosition").value = "";
       hrRequestBuilder.querySelector("#hrDriverClass").value = "";
+      hrRequestBuilder.querySelector("#hrCurrentDriverClass").value = "";
+      ["hrTruckersHubUrl", "hrTruckersHubId", "hrTruckersHubDistance", "hrTruckersHubJobs", "hrTruckersHubThp"].forEach(id => {
+        const field = hrRequestBuilder.querySelector("#" + id);
+        if (field) field.value = "";
+      });
       hrRequestBuilder.querySelector("#hrRequestDetails").value = "";
     }
     updateHRRequestVisibility();
