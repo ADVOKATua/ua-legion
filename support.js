@@ -90,12 +90,12 @@ document.addEventListener("DOMContentLoaded", async function () {
         <div class="support-field support-full" id="hrClassField" hidden>
           <label for="hrDriverClass">Клас водія ETS2</label>
           <select id="hrDriverClass">
-            <option value="">Оберіть клас</option>
-            <option value="Новачок">Новачок</option>
-            <option value="Любитель">Любитель</option>
-            <option value="Професіонал">Професіонал</option>
-            <option value="Експерт">Експерт</option>
-            <option value="Інше / уточнити">Інше / уточнити</option>
+            <option value="">Оберіть клас водія</option>
+            <option value="Клас E — Стажер">Клас E — Стажер</option>
+            <option value="Клас D — Водій">Клас D — Водій</option>
+            <option value="Клас C — Досвідчений водій">Клас C — Досвідчений водій</option>
+            <option value="Клас B — Старший водій">Клас B — Старший водій</option>
+            <option value="Клас A — Майстер водій">Клас A — Майстер водій</option>
           </select>
         </div>
         <div class="support-field support-full">
