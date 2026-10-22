@@ -55,6 +55,123 @@ document.addEventListener("DOMContentLoaded", async function () {
   const dataChangeBuilder = el("dataChangeBuilder");
   const dataChangeRows = el("dataChangeRows");
   const addChangeButton = el("addChangeButton");
+  let hrRequestBuilder = null;
+
+  // Додаткова форма кадрових питань.
+  function ensureHRRequestBuilder() {
+    if (!ticketForm || hrRequestBuilder) return;
+    hrRequestBuilder = document.createElement("section");
+    hrRequestBuilder.id = "hrRequestBuilder";
+    hrRequestBuilder.className = "data-change-builder";
+    hrRequestBuilder.hidden = true;
+    hrRequestBuilder.innerHTML = `
+      <div class="support-subtitle">
+        <span>👥</span>
+        <div>
+          <h3>Кадрове питання</h3>
+          <p>Оберіть тип кадрового звернення та заповніть додаткові дані.</p>
+        </div>
+      </div>
+      <div class="support-form-grid">
+        <div class="support-field support-full">
+          <label for="hrRequestType">Тип кадрового питання</label>
+          <select id="hrRequestType" required>
+            <option value="appointment">Призначення на посаду</option>
+            <option value="position_change">Зміна посади</option>
+            <option value="driver_class">Присвоєння / зміна класу водія</option>
+            <option value="dismissal">Звільнення з посади</option>
+            <option value="other">Інше кадрове питання</option>
+          </select>
+        </div>
+        <div class="support-field support-full" id="hrPositionField">
+          <label for="hrDesiredPosition">Посада або бажана посада</label>
+          <input id="hrDesiredPosition" type="text" maxlength="160" placeholder="Вкажіть посаду">
+        </div>
+        <div class="support-field support-full" id="hrClassField" hidden>
+          <label for="hrDriverClass">Клас водія ETS2</label>
+          <select id="hrDriverClass">
+            <option value="">Оберіть клас</option>
+            <option value="Новачок">Новачок</option>
+            <option value="Любитель">Любитель</option>
+            <option value="Професіонал">Професіонал</option>
+            <option value="Експерт">Експерт</option>
+            <option value="Інше / уточнити">Інше / уточнити</option>
+          </select>
+        </div>
+        <div class="support-field support-full">
+          <label for="hrRequestDetails">Додаткова інформація / обґрунтування</label>
+          <textarea id="hrRequestDetails" rows="4" maxlength="3000" placeholder="Опишіть, що потрібно зробити та чому"></textarea>
+        </div>
+      </div>`;
+    const grid = ticketForm.querySelector(".support-form-grid");
+    if (grid && grid.parentNode) grid.insertAdjacentElement("afterend", hrRequestBuilder);
+    const type = hrRequestBuilder.querySelector("#hrRequestType");
+    type.addEventListener("change", updateHRRequestVisibility);
+    updateHRRequestVisibility();
+  }
+
+  function isETS2Direction() {
+    const selected = ticketDirection?.selectedOptions?.[0];
+    const text = `${selected?.textContent || ""} ${selected?.dataset?.code || ""}`.toLowerCase();
+    return /ets\s*2|euro truck|єтс2|єтс 2/.test(text);
+  }
+
+  function updateHRRequestVisibility() {
+    if (!hrRequestBuilder) return;
+    const active = ticketCategory?.value === "hr";
+    hrRequestBuilder.hidden = !active;
+    const type = hrRequestBuilder.querySelector("#hrRequestType");
+    const classField = hrRequestBuilder.querySelector("#hrClassField");
+    const classSelect = hrRequestBuilder.querySelector("#hrDriverClass");
+    const positionField = hrRequestBuilder.querySelector("#hrPositionField");
+    const positionInput = hrRequestBuilder.querySelector("#hrDesiredPosition");
+    const details = hrRequestBuilder.querySelector("#hrRequestDetails");
+    const classAllowed = active && isETS2Direction() && type?.value === "driver_class";
+    if (classField) classField.hidden = !classAllowed;
+    if (classSelect) classSelect.required = classAllowed;
+    const positionAllowed = active && ["appointment", "position_change"].includes(type?.value);
+    if (positionField) positionField.hidden = !positionAllowed;
+    if (positionInput) positionInput.required = positionAllowed;
+    if (details) details.required = active;
+    const classOption = type?.querySelector('option[value="driver_class"]');
+    if (classOption) classOption.hidden = !isETS2Direction();
+    if (type?.value === "driver_class" && !isETS2Direction()) type.value = "appointment";
+  }
+
+  function collectHRDetails() {
+    if (!hrRequestBuilder || hrRequestBuilder.hidden) return "";
+    const typeSelect = hrRequestBuilder.querySelector("#hrRequestType");
+    const typeNames = {
+      appointment: "Призначення на посаду",
+      position_change: "Зміна посади",
+      driver_class: "Присвоєння / зміна класу водія ETS2",
+      dismissal: "Звільнення з посади",
+      other: "Інше кадрове питання"
+    };
+    const type = typeSelect?.value || "other";
+    const position = hrRequestBuilder.querySelector("#hrDesiredPosition")?.value.trim() || "";
+    const driverClass = hrRequestBuilder.querySelector("#hrDriverClass")?.value || "";
+    const details = hrRequestBuilder.querySelector("#hrRequestDetails")?.value.trim() || "";
+    if (["appointment", "position_change"].includes(type) && !position) {
+      showMessage("Вкажіть посаду або бажану посаду.", "error");
+      return null;
+    }
+    if (type === "driver_class" && isETS2Direction() && !driverClass) {
+      showMessage("Оберіть клас водія ETS2.", "error");
+      return null;
+    }
+    if (!details) {
+      showMessage("Заповніть додаткову інформацію кадрового звернення.", "error");
+      return null;
+    }
+    return `
+
+--- КАДРОВА ІНФОРМАЦІЯ ---
+Тип: ${typeNames[type] || typeNames.other}${position ? `
+Посада: ${position}` : ""}${type === "driver_class" && driverClass ? `
+Клас водія ETS2: ${driverClass}` : ""}
+Обґрунтування: ${details}`;
+  }
 
   const myTicketsList = el("myTicketsList");
 
@@ -820,6 +937,9 @@ document.addEventListener("DOMContentLoaded", async function () {
       return;
     }
 
+    ensureHRRequestBuilder();
+    updateHRRequestVisibility();
+
     const active =
       ticketCategory.value ===
       "data_change";
@@ -989,7 +1109,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     const subject =
       ticketSubject?.value.trim() || "";
 
-    const message =
+    let message =
       ticketMessage?.value.trim() || "";
 
     if (
@@ -1004,6 +1124,10 @@ document.addEventListener("DOMContentLoaded", async function () {
 
       return;
     }
+
+    const hrDetails = collectHRDetails();
+    if (hrDetails === null) return;
+    if (hrDetails) message += hrDetails;
 
     const changes =
       collectChanges();
@@ -1085,6 +1209,13 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
     updateDataChangeVisibility();
+    if (hrRequestBuilder) {
+      hrRequestBuilder.querySelector("#hrRequestType").value = "appointment";
+      hrRequestBuilder.querySelector("#hrDesiredPosition").value = "";
+      hrRequestBuilder.querySelector("#hrDriverClass").value = "";
+      hrRequestBuilder.querySelector("#hrRequestDetails").value = "";
+    }
+    updateHRRequestVisibility();
 
     showMessage(
       "Звернення успішно створено.",
@@ -3010,15 +3141,18 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     await renderAssignment();
 
+    const isHR =
+      category.code === "hr";
+
     const canReview =
       isStaff &&
-
-      currentTicket.changes.some(
-        change =>
-          change.status ===
-          "pending"
+      (
+        isHR ||
+        currentTicket.changes.some(
+          change =>
+            change.status === "pending"
+        )
       ) &&
-
       ![
         "resolved",
         "closed"
@@ -3382,15 +3516,27 @@ document.addEventListener("DOMContentLoaded", async function () {
       return;
     }
 
+    const ticket =
+      currentTicket.ticket;
+
+    const categoryCode =
+      ticket.support_categories?.code;
+
+    const isHR =
+      categoryCode === "hr";
+
     const pending =
-      currentTicket.changes.filter(
+      (currentTicket.changes || []).filter(
         change =>
-          change.status ===
-          "pending"
+          change.status === "pending"
       );
 
-    if (!pending.length) {
-
+    // Кадрові заявки не мають записів у support_data_changes.
+    // Звичайні зміни профілю продовжують перевірятися окремо.
+    if (
+      !isHR &&
+      !pending.length
+    ) {
       showMessage(
         "У цьому зверненні немає змін, які очікують рішення.",
         "info"
@@ -3400,83 +3546,115 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
     const comment =
-      decisionComment.value.trim();
+      decisionComment?.value.trim() || "";
 
     if (
       decision === "rejected" &&
       !comment
     ) {
-
       showMessage(
-        "Для відхилення вкажіть причину.",
+        isHR
+          ? "Для відхилення кадрової заявки вкажіть причину."
+          : "Для відхилення вкажіть причину.",
         "error"
       );
 
       return;
     }
 
-    approveTicketButton.disabled =
-      true;
+    if (approveTicketButton) {
+      approveTicketButton.disabled = true;
+    }
 
-    rejectTicketButton.disabled =
-      true;
+    if (rejectTicketButton) {
+      rejectTicketButton.disabled = true;
+    }
 
-    const result =
-      await supabase.rpc(
-        "review_support_ticket",
-        {
+    try {
 
-          p_ticket_id:
-            currentTicket.ticket.id,
+      const result =
+        await supabase.rpc(
+          isHR
+            ? "review_hr_support_ticket"
+            : "review_support_ticket",
+          {
+            p_ticket_id:
+              ticket.id,
 
-          p_decision:
-            decision,
+            p_decision:
+              decision,
 
-          p_review_comment:
-            comment || null
+            p_review_comment:
+              comment || null
+          }
+        );
 
-        }
+      if (result.error) {
+
+        console.error(
+          isHR
+            ? "review_hr_support_ticket:"
+            : "review_support_ticket:",
+          result.error
+        );
+
+        showMessage(
+          "Не вдалося обробити звернення: " +
+          result.error.message,
+          "error"
+        );
+
+        return;
+      }
+
+      if (decisionComment) {
+        decisionComment.value = "";
+      }
+
+      showMessage(
+        isHR
+          ? (
+              decision === "approved"
+                ? "Кадрову заявку схвалено. Посаду або клас водія потрібно призначити окремо через керування учасниками."
+                : "Кадрову заявку відхилено."
+            )
+          : (
+              decision === "approved"
+                ? "Зміни схвалено та автоматично застосовано."
+                : "Зміни відхилено. Дані залишилися без змін."
+            ),
+        "success"
       );
 
-    approveTicketButton.disabled =
-      false;
+      await openTicket(ticket.id);
 
-    rejectTicketButton.disabled =
-      false;
+      await loadMyTickets();
 
-    if (result.error) {
+      if (isStaff) {
+        await loadStaffTickets();
+      }
+
+    } catch (error) {
 
       console.error(
-        "review_support_ticket:",
-        result.error
+        "Review ticket:",
+        error
       );
 
       showMessage(
-        "Не вдалося обробити звернення: " +
-        result.error.message,
+        "Сталася помилка під час розгляду звернення.",
         "error"
       );
 
-      return;
-    }
+    } finally {
 
-    decisionComment.value = "";
+      if (approveTicketButton) {
+        approveTicketButton.disabled = false;
+      }
 
-    showMessage(
-      decision === "approved"
-        ? "Зміни схвалено та автоматично застосовано."
-        : "Зміни відхилено. Дані залишилися без змін.",
-      "success"
-    );
-
-    await openTicket(
-      currentTicket.ticket.id
-    );
-
-    await loadMyTickets();
-
-    if (isStaff) {
-      await loadStaffTickets();
+      if (rejectTicketButton) {
+        rejectTicketButton.disabled = false;
+      }
     }
   }
 
@@ -3488,7 +3666,10 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     ticketCategory.addEventListener(
       "change",
-      updateDataChangeVisibility
+      () => {
+        updateDataChangeVisibility();
+        updateHRRequestVisibility();
+      }
     );
 
   }
@@ -3498,6 +3679,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     ticketDirection.addEventListener(
       "change",
       () => {
+        updateHRRequestVisibility();
 
         if (
           ticketCategory?.value ===
