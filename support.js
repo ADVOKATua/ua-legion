@@ -119,7 +119,7 @@ document.addEventListener("DOMContentLoaded", async function () {
           <input id="hrTruckersHubDistance" type="number" min="0" step="1" placeholder="Вкажіть значення з профілю">
         </div>
         <div class="support-field" id="hrJobsField" hidden>
-          <label for="hrTruckersHubJobs">Кількість доставок</label>
+          <label for="hrTruckersHubJobs">Кількість відвіданих конвоїв</label>
           <input id="hrTruckersHubJobs" type="number" min="0" step="1" placeholder="Вкажіть значення з профілю">
         </div>
         <div class="support-field" id="hrThpField" hidden>
@@ -152,30 +152,44 @@ document.addEventListener("DOMContentLoaded", async function () {
     const requirements = hrRequestBuilder.querySelector("#hrClassRequirements");
     if (!currentSelect || !targetSelect) return;
 
-    const classes = {
-      E: { label: "Клас E — Стажер", next: "D" },
-      D: { label: "Клас D — Водій", next: "C" },
-      C: { label: "Клас C — Досвідчений водій", next: "B" },
-      B: { label: "Клас B — Старший водій", next: "A" },
-      A: { label: "Клас A — Майстер водій", next: null }
-    };
+    const classes = [
+      { code: "E", label: "Клас E — Стажер" },
+      { code: "D", label: "Клас D — Водій" },
+      { code: "C", label: "Клас C — Досвідчений водій" },
+      { code: "B", label: "Клас B — Старший водій" },
+      { code: "A", label: "Клас A — Майстер водій" }
+    ];
     const requirementsByTarget = {
-      D: "Клас D є наступним після стажування E. На сторінці правил немає окремого числового порогу для присвоєння D; перевірка стажування та рішення — за менеджментом.",
-      C: "Понад 10 000 км, не менше 15 днів у компанії, завершене стажування в E та відсутність серйозних порушень.",
-      B: "Щонайменше 15 конвоїв компанії, понад 20 000 км, належна дисципліна й активність у Discord.",
-      A: "Щонайменше 25 конвоїв, понад 35 000 км, участь у партнерських конвоях і стабільна дисципліна."
+      D: "Клас D: завершення початкового стажування та перевірка менеджментом.",
+      C: "Клас C: понад 10 000 км, щонайменше 15 днів у компанії, завершене стажування та відсутність серйозних порушень.",
+      B: "Клас B: понад 20 000 км, щонайменше 15 відвіданих конвоїв, належна дисципліна й активність у Discord.",
+      A: "Клас A: понад 45 000 км, щонайменше 40 відвіданих конвоїв, активність у Discord, партнерські конвої, належна дисципліна та рекомендація керівництва."
     };
     const current = currentSelect.value;
-    const next = classes[current]?.next || "";
-    targetSelect.innerHTML = next
-      ? `<option value="${next}">${classes[next].label}</option>`
-      : '<option value="">Клас A — найвищий клас</option>';
-    targetSelect.disabled = !next;
+    const currentIndex = classes.findIndex(item => item.code === current);
+    const eligibleTargets = currentIndex < 0 ? [] : classes.slice(currentIndex + 1);
+    const previousTarget = targetSelect.value;
+
+    targetSelect.innerHTML = eligibleTargets.length
+      ? '<option value="">Оберіть цільовий клас</option>' + eligibleTargets.map(item => `<option value="${item.code}">${item.label}</option>`).join("")
+      : '<option value="">Немає вищого класу</option>';
+    targetSelect.disabled = eligibleTargets.length === 0;
+    if (eligibleTargets.some(item => item.code === previousTarget)) targetSelect.value = previousTarget;
+
+    const selectedTarget = targetSelect.value;
     if (requirements) {
-      requirements.textContent = next
-        ? requirementsByTarget[next]
-        : "Клас A — найвищий клас водія. Подати заявку на вищий клас неможливо.";
+      requirements.textContent = selectedTarget
+        ? requirementsByTarget[selectedTarget]
+        : eligibleTargets.length
+          ? "Можна обрати будь-який вищий клас. Керівництво перевірить пробіг, конвої та інші вимоги обраного класу."
+          : "Клас A — найвищий клас водія. Подати заявку на вищий клас неможливо.";
     }
+    targetSelect.onchange = () => {
+      const chosen = targetSelect.value;
+      if (requirements) requirements.textContent = chosen
+        ? requirementsByTarget[chosen]
+        : "Можна обрати будь-який вищий клас. Керівництво перевірить пробіг, конвої та інші вимоги обраного класу.";
+    };
   }
 
   function updateHRRequestVisibility() {
@@ -273,13 +287,13 @@ document.addEventListener("DOMContentLoaded", async function () {
       return null;
     }
     if (type === "driver_class" && isETS2Direction()) {
-      const nextClass = { E: "D", D: "C", C: "B", B: "A", A: null }[currentDriverClass];
+      const classOrder = ["E", "D", "C", "B", "A"];
       if (!currentDriverClass) {
         showMessage("Оберіть поточний клас водія.", "error");
         return null;
       }
-      if (!driverClass || driverClass !== nextClass) {
-        showMessage("Можна подати заявку лише на наступний клас. Для класу A підвищення вище не передбачене.", "error");
+      if (!driverClass || classOrder.indexOf(driverClass) <= classOrder.indexOf(currentDriverClass)) {
+        showMessage("Оберіть будь-який клас, вищий за поточний. Для класу A підвищення вище не передбачене.", "error");
         return null;
       }
       if (!hubUrl || !/^https:\/\/truckershub\.in\/profile\/\d+\/?(?:[?#].*)?$/i.test(hubUrl)) {
@@ -303,7 +317,7 @@ ${type === "driver_class" && currentDriverClass ? `
 TruckersHub профіль: ${hubUrl || "Не вказано"}
 TruckersHub User ID: ${hubId || "Не вказано"}
 Пробіг, км (введено заявником): ${hubDistance || "Не вказано"}
-Доставки (введено заявником): ${hubJobs || "Не вказано"}
+Відвідані конвої (введено заявником): ${hubJobs || "Не вказано"}
 THP (введено заявником): ${hubThp || "Не вказано"}
 Примітка: статистика не перевірена автоматично; потрібна перевірка керівництвом.` : ""}
 Обґрунтування: ${details}`;
