@@ -118,24 +118,54 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   function updateHRRequestVisibility() {
     if (!hrRequestBuilder) return;
+
     const active = ticketCategory?.value === "hr";
-    hrRequestBuilder.hidden = !active;
     const type = hrRequestBuilder.querySelector("#hrRequestType");
     const classField = hrRequestBuilder.querySelector("#hrClassField");
     const classSelect = hrRequestBuilder.querySelector("#hrDriverClass");
     const positionField = hrRequestBuilder.querySelector("#hrPositionField");
     const positionInput = hrRequestBuilder.querySelector("#hrDesiredPosition");
     const details = hrRequestBuilder.querySelector("#hrRequestDetails");
-    const classAllowed = active && isETS2Direction() && type?.value === "driver_class";
-    if (classField) classField.hidden = !classAllowed;
-    if (classSelect) classSelect.required = classAllowed;
+    const isETS2 = isETS2Direction();
+
+    // Використовуємо і hidden, і inline display, щоб CSS сторінки
+    // не міг випадково показати приховане поле.
+    hrRequestBuilder.hidden = !active;
+    hrRequestBuilder.style.setProperty("display", active ? "" : "none", active ? "" : "important");
+
+    // Варіант зміни класу доступний лише для ETS2.
+    const classOption = type?.querySelector('option[value="driver_class"]');
+    if (classOption) classOption.hidden = !isETS2;
+
+    if (type?.value === "driver_class" && !isETS2) {
+      type.value = "appointment";
+    }
+
+    const classAllowed = active && isETS2 && type?.value === "driver_class";
+    if (classField) {
+      classField.hidden = !classAllowed;
+      if (classAllowed) {
+        classField.style.removeProperty("display");
+      } else {
+        classField.style.setProperty("display", "none", "important");
+      }
+    }
+    if (classSelect) {
+      classSelect.required = classAllowed;
+      if (!classAllowed) classSelect.value = "";
+    }
+
     const positionAllowed = active && ["appointment", "position_change"].includes(type?.value);
-    if (positionField) positionField.hidden = !positionAllowed;
+    if (positionField) {
+      positionField.hidden = !positionAllowed;
+      if (positionAllowed) {
+        positionField.style.removeProperty("display");
+      } else {
+        positionField.style.setProperty("display", "none", "important");
+      }
+    }
     if (positionInput) positionInput.required = positionAllowed;
     if (details) details.required = active;
-    const classOption = type?.querySelector('option[value="driver_class"]');
-    if (classOption) classOption.hidden = !isETS2Direction();
-    if (type?.value === "driver_class" && !isETS2Direction()) type.value = "appointment";
   }
 
   function collectHRDetails() {
